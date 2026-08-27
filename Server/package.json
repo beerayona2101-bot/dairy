@@ -1,0 +1,40 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "1516",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --no-deprecation index.js",
+    "dev": "nodemon --no-deprecation -e js,mjs,json index.js",
+    "seed:admin": "node --no-deprecation seeds/adminSeed.mjs",
+    "test:qa": "node --no-deprecation scripts/qaReportRunner.js"
+  },
+  "dependencies": {
+    "@express-rate-limit/tsconfig": "^1.0.2",
+    "@getbrevo/brevo": "^1.0.1",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^1.41.3",
+    "cookie": "^1.0.2",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "google-auth-library": "^10.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.16.0",
+    "mongodb-memory-server": "^11.2.0",
+    "mongoose": "^8.15.0",
+    "multer": "^2.0.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "pdfkit": "^0.17.1",
+    "razorpay": "^2.9.6",
+    "resend": "^4.5.2",
+    "socket.io": "^4.8.1"
+  }
+}

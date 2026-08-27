@@ -1,0 +1,302 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary-purple: #6C5CE7;
+  --color-primary-purple-dark: #6D28D9;
+  --color-emerald-green: #00B894;
+  --color-salmon-orange: #FF7675;
+  --color-bg-main: #EFF1F5;
+  --color-card-white: #FFFFFF;
+  --color-text-dark: #2D3748;
+  --color-text-muted: #718096;
+  --color-discount-bg: #FEF9C3;
+  --color-discount-border: #FDE047;
+  --color-discount-text: #854D0E;
+}
+
+:root {
+  --primary-purple: #6C5CE7;
+  --primary-purple-dark: #6D28D9;
+  --emerald-green: #00B894;
+  --salmon-orange: #FF7675;
+  --bg-main: #EFF1F5;
+  --card-white: #FFFFFF;
+  --text-dark: #2D3748;
+  --text-muted: #718096;
+  --discount-bg: #FEF9C3;
+  --discount-border: #FDE047;
+  --discount-text: #854D0E;
+
+  /* Legacy Fallbacks */
+  --primary-blue: #6C5CE7;
+  --primary-blue-hover: #6D28D9;
+  --deep-navy: #2D3748;
+  --farm-green: #00B894;
+  --farm-green-hover: #008f72;
+}
+
+body {
+  font-family: "Inter", "Nunito", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  top: 0px !important;
+  background-color: #EFF1F5;
+  color: #2D3748;
+  overflow-x: hidden;
+}
+
+/* Global Form Input & Select Thin, Sleek Styling (No Double Borders) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+select,
+textarea {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #1E88E5;
+  box-shadow: 0 0 0 2px rgba(0, 80, 158, 0.15);
+  outline: none;
+}
+
+/* Disable inner border on nested inputs inside composite wrappers */
+div > input[type="text"],
+div > input[type="number"],
+div > input[type="email"] {
+  border-style: none !important;
+  border-width: 0 !important;
+}
+
+/* Material UI Outlined Inputs Thin Single Border */
+.MuiOutlinedInput-root fieldset {
+  border-width: 1px !important;
+  border-color: #cbd5e1 !important;
+}
+
+.MuiOutlinedInput-root:hover fieldset,
+.MuiOutlinedInput-root.Mui-focused fieldset {
+  border-width: 1.5px !important;
+  border-color: #1E88E5 !important;
+  box-shadow: 0 0 0 2px rgba(0, 80, 158, 0.15) !important;
+}
+
+.MuiFormLabel-root.Mui-focused {
+  color: #1E88E5 !important;
+  font-weight: 600 !important;
+}
+
+/* Glassmorphism System Utility Classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+}
+
+.dark .glass-card {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.glass-panel {
+  background: #EFF1F5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 36px !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06) !important;
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Global Dialog & Modal Glassmorphism Overrides */
+.MuiDialog-paper,
+.MuiPaper-elevation {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.dark .MuiDialog-paper,
+.dark .MuiPaper-elevation {
+  background: rgba(30, 41, 59, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Soft Light Palette Utility Classes to Differentiate Cards */
+/* Soft Light Palette Utility Classes to Differentiate Cards */
+.card-light-blue {
+  background-color: #F4F8FC !important;
+  border: 1px solid rgba(30, 136, 229, 0.15) !important;
+}
+
+.card-light-green {
+  background-color: #F0FDF4 !important;
+  border: 1px solid rgba(67, 160, 71, 0.2) !important;
+}
+
+.card-light-cyan {
+  background-color: #ECFEFF !important;
+  border: 1px solid rgba(0, 172, 193, 0.2) !important;
+}
+
+.card-light-gold {
+  background-color: #FFFBEB !important;
+  border: 1px solid rgba(251, 140, 0, 0.3) !important;
+}
+
+/* Brand Utility Classes matching Palette */
+.bg-primary-blue,
+.bg-madhur-blue {
+  background-color: #1E88E5 !important;
+}
+.hover\:bg-madhur-blue-dark:hover,
+.hover\:bg-primary-blue-dark:hover {
+  background-color: #1565C0 !important;
+}
+.text-primary-blue,
+.text-madhur-blue {
+  color: #1E88E5 !important;
+}
+.border-primary-blue,
+.border-madhur-blue {
+  border-color: #1E88E5 !important;
+}
+
+.bg-deep-navy {
+  background-color: #0F2742 !important;
+}
+.text-deep-navy {
+  color: #0F2742 !important;
+}
+.border-deep-navy {
+  border-color: #0F2742 !important;
+}
+
+.bg-farm-green,
+.bg-madhur-green {
+  background-color: #43A047 !important;
+}
+.hover\:bg-madhur-green-dark:hover,
+.hover\:bg-farm-green-dark:hover {
+  background-color: #2E7D32 !important;
+}
+.text-farm-green,
+.text-madhur-green {
+  color: #43A047 !important;
+}
+.border-farm-green {
+  border-color: #43A047 !important;
+}
+
+.bg-accent-teal,
+.bg-madhur-cyan {
+  background-color: #00ACC1 !important;
+}
+.text-accent-teal,
+.text-madhur-cyan {
+  color: #00ACC1 !important;
+}
+.border-accent-teal {
+  border-color: #00ACC1 !important;
+}
+
+.bg-madhur-gold {
+  background-color: #FB8C00 !important;
+}
+.text-madhur-gold {
+  color: #FB8C00 !important;
+}
+
+.hide-input-spin::-webkit-outer-spin-button,
+.hide-input-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide scrollbars globally across the entire application for all browsers while maintaining smooth scrolling */
+html,
+body,
+*,
+*::before,
+*::after {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge, and Opera */
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+/* Premium Light Reflection / Gloss Shimmer Sweep Animation */
+@keyframes reflectionSweep {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  35%, 100% {
+    transform: translateX(350%) skewX(-25deg);
+  }
+}
+
+.btn-reflection {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.btn-reflection::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -30% !important;
+  left: 0 !important;
+  width: 60% !important;
+  height: 160% !important;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 25%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.3) 75%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.9) !important;
+  transform: translateX(-150%) skewX(-25deg) !important;
+  animation: reflectionSweep 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
+
+.dark .btn-reflection::before {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+}
+
+.btn-reflection:hover::before {
+  animation: reflectionSweep 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+}

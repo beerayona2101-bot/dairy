@@ -1,0 +1,14 @@
+config:
+  target: 'http://localhost:9000'
+  phases:
+    - duration: 30
+      arrivalRate: 3
+  defaults:
+    headers:
+      Content-Type: application/json
+scenarios:
+  - flow:
+    - post:
+        url: "/admin/get-admin"
+        json:
+          _id: "codecrust1615@gmail.com"

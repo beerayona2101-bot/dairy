@@ -1,0 +1,29 @@
+{
+  "name": "Madhur Dairy & Daily Needs",
+  "tagline": "Bringing Nature's Best, Straight to Your Home",
+  "description": "From farm-fresh milk to creamy ghee, soft paneer to delicious sweets — savor the pure taste of tradition in every bite.",
+  "logoDaraTheme": "https://res.cloudinary.com/dyahibuzy/image/upload/v1751790345/user-profiles/xvq34ufjsdxsrwng60iq.png",
+  "logoLightTheme": "https://res.cloudinary.com/dyahibuzy/image/upload/v1751790314/user-profiles/sinjn059nw0c6x1o9nvb.png",
+  "address": {
+    "line": "Shed no. A-31, Madhur Dairy & Daily Needs, NAVNATH NAGAR, MIDC Ambad",
+    "city": "Nashik",
+    "state": "Maharashtra",
+    "pincode": "422010",
+    "country": "India"
+  },
+  "phone": "+91 94906 44434",
+  "alternatePhone": "+91 94906 44434",
+  "email": "beerayona143@gmail.com",
+  "supportText": "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
+  "workingHours": "Everyday, 5:00 AM - 12:00 PM",
+  "website": "http://localhost:5173",
+  "googleMaps": "https://maps.app.goo.gl/K3jYs18wKzLfTEv99?g_st=aw",
+  "socials": {
+    "instagram": "https://instagram.com/madhurDairy&DailyNeeds",
+    "facebook": "https://facebook.com/madhurDairy&DailyNeeds",
+    "twitter": "https://twitter.com/madhurDairy&DailyNeeds",
+    "linkedin": "https://linkedin.com/company/madhurDairy&DailyNeeds",
+    "youtube": "https://youtube.com/@madhurDairy&DailyNeeds",
+    "whatsapp": "https://wa.me/919490644434"
+  }
+}
