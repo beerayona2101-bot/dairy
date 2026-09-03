@@ -1,0 +1,116 @@
+Implementation Plan - Flutter Mobile Application (Material 3 Auth & Clean Architecture)
+Create a production-ready Flutter mobile/web project in mobile/ featuring Material 3, 
+clean folder architecture, responsive layout (mobile/tablet/desktop), state management, 
+form validation, loading overlay/states, forgot password dialog, and Google login integration.
+
+Proposed Architecture & Structure
+
+mobile/
+├── pubspec.yaml
+├── lib/
+│   ├── main.dart
+│   ├── core/
+│   │   ├── constants/
+│   │   │   ├── app_colors.dart
+│   │   │   └── app_strings.dart
+│   │   ├── theme/
+│   │   │   └── app_theme.dart (Material 3 ThemeData, light & dark mode support)
+│   │   ├── utils/
+│   │   │   ├── validators.dart (Email & password validation rules)
+│   │   │   └── responsive_layout.dart (Breakpoints & adaptive container helpers)
+│   │   └── widgets/
+│   │       ├── custom_text_field.dart (Reusable styled input field with obscure toggle, icons, error handling)
+│   │       ├── custom_button.dart (Primary & outlined button widgets with loading spinners)
+│   │       ├── google_sign_in_button.dart (Standard brand Google login button)
+│   │       └── custom_snackbar.dart (Success & error notifications)
+│   └── features/
+│       └── auth/
+│           ├── data/
+│           │   └── auth_repository.dart (Repository pattern for auth requests and backend/mock API integration)
+│           ├── providers/
+│           │   └── auth_provider.dart (ChangeNotifier state management for auth state, loading, and error states)
+│           └── presentation/
+│               ├── screens/
+│               │   ├── login_screen.dart (Responsive Login Screen adapting to screen size)
+│               │   └── home_screen.dart (Dashboard/Home screen displayed after successful login)
+│               └── widgets/
+│                   ├── login_header.dart (App logo, title, and subtitle presentation)
+│                   ├── login_form.dart (Email, password input form with state binding)
+│                   └── forgot_password_dialog.dart (Interactive modal dialog for password reset)
+User Review Required
+NOTE
+
+The Flutter project will be initialized in mobile/ within the repository root so it co-exists cleanly with existing Client and Server folders.
+
+IMPORTANT
+
+The project will use provider for state management, google_sign_in / SVG assets for Google authentication styling, and flutter_spinkit or built-in M3 CircularProgressIndicator for polished loading states.
+
+Proposed Changes
+Project Initialization & Config
+[NEW] 
+pubspec.yaml
+Define dependencies (provider, google_fonts, flutter_svg, font_awesome_flutter if needed).
+Enable uses-material-design: true.
+Core Layer (lib/core)
+[NEW] 
+app_colors.dart
+Curated Material 3 seed colors (Dairy/Milk theme aligned with primary color #1E88E5 / #0D47A1 primary blues and modern neutral surfaces).
+[NEW] 
+app_theme.dart
+Material 3 ThemeData configuration (useMaterial3: true).
+Custom InputDecorationTheme, ElevatedButtonThemeData, OutlinedButtonThemeData, and CardTheme.
+[NEW] 
+validators.dart
+Static methods: validateEmail(String?), validatePassword(String?), validateRequired(String?, String fieldName).
+[NEW] 
+responsive_layout.dart
+Utility widget & helpers (ResponsiveLayout, isMobile, isTablet, isDesktop) providing responsive maximum width constraints (BoxConstraints).
+[NEW] 
+custom_text_field.dart
+Reusable M3 TextFormField widget supporting label, prefix icon, suffix icon (password view toggle), error message, and validation callback.
+[NEW] 
+custom_button.dart
+Flexible filled & outlined buttons with support for loading state (CircularProgressIndicator), icon, and full-width/custom sizing.
+[NEW] 
+google_sign_in_button.dart
+Material 3 styled Google login button with official brand guidelines compliance, custom SVG/icon badge, and press state animation.
+Auth Feature (lib/features/auth)
+[NEW] 
+auth_repository.dart
+Interface & implementation for login(email, password), loginWithGoogle(), sendPasswordResetEmail(email). Includes realistic network delay and error scenarios for validation testing.
+[NEW] 
+auth_provider.dart
+ChangeNotifier managing state:
+Status enum (initial, loading, authenticated, unauthenticated, error)
+Current user profile data
+Exception/Error handling message strings
+Action methods with status notification and state resets.
+[NEW] 
+forgot_password_dialog.dart
+Dialog with email input form, validation, loading spinner, success state, and close actions.
+[NEW] 
+login_screen.dart
+Responsive page layout featuring background gradient, glassmorphic card on tablet/desktop, login form header, inputs, submit button, divider, Google login button, and forgot password trigger.
+[NEW] 
+home_screen.dart
+Dashboard screen displayed upon authentication success, presenting user details and a logout button.
+[NEW] 
+main.dart
+Entry point initializing MultiProvider, setting up Material 3 theme, and managing auth navigation flow.
+Verification Plan
+Automated Tests
+Run flutter create mobile to set up project scaffold.
+Run flutter analyze inside mobile/ to verify zero compilation errors or lint issues.
+Run flutter test if unit tests are added for validators.dart and AuthProvider.
+Manual Verification
+Run flutter run -d chrome or desktop device to verify responsive layout across screen resizes.
+Test Form Validation:
+Attempt submission with empty email/password.
+Enter invalid email format (e.g. test@com) -> verify error banner/text.
+Enter short password -> verify password validation rule.
+Test Auth Flows:
+Submit valid credentials -> verify loading spinner -> verify navigation to HomeScreen.
+Tap "Forgot Password?" -> enter email -> verify reset simulation and toast.
+Tap "Sign in with Google" -> verify social auth trigger & loading state -> navigate to HomeScreen.
+Tap "Logout" -> verify returning to LoginScreen.

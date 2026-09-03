@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
@@ -22,7 +22,6 @@ import { products as fallbackProducts } from "../data/products";
 
 export default function ProductDetailsPage() {
 
-    const navigate = useNavigate();
     const { productId } = useParams();
     const { theme } = useContext(ThemeContext);
     const { products, productLoading } = useContext(ProductContext);
@@ -138,16 +137,16 @@ export default function ProductDetailsPage() {
                             {currentItems.map((product, idx) => (
                                 <motion.div
                                     key={product?._id || idx}
-                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    initial={{ opacity: 0, scale: 0.96 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: idx * 0.05, duration: 0.4 }}
-                                    className="bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 transition-all duration-300 rounded-[20px] shadow-sm overflow-hidden hover:shadow-md hover:scale-102 flex flex-col justify-between"
+                                    transition={{ delay: idx * 0.02, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                                    className="bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 transition-all duration-200 rounded-[20px] shadow-sm overflow-hidden hover:shadow-md hover:scale-102 flex flex-col justify-between"
                                 >
                                     <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-40 overflow-hidden bg-gray-100 dark:bg-gray-700/50">
                                         <img
                                             src={getProductImage(product)}
                                             alt={product?.name}
-                                            className="w-full h-full object-cover hover:scale-108 transition-transform duration-500"
+                                            className="w-full h-full object-cover hover:scale-108 transition-transform duration-300 ease-out"
                                         />
                                     </Link>
 

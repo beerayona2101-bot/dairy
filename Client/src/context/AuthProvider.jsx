@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState, createContext, useCallback } from 
 import { getUserById } from "../services/userService";
 import { getAdminById } from "../services/adminService";
 import { socket } from "../socket/socket";
-import { getSavedAddresses } from "../services/userProfileService";
+import { getSavedAddresses, addToWishlist } from "../services/userProfileService";
+import { getGuestWishlist, clearGuestWishlist } from "../utils/guestWishlist";
 
 export const UserAuthContext = createContext();
 export const AdminAuthContext = createContext();
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, [authAdmin]);
 
-    const storedAddress = JSON.parse(localStorage.getItem("deliveryAddress"));
+    const storedAddress = initialUser?._id ? (() => { try { return JSON.parse(localStorage.getItem("deliveryAddress")); } catch { return null; } })() : null;
     const [deliveryAddress, setDeliveryAddressState] = useState(storedAddress || null);
 
     const setDeliveryAddress = useCallback((addr) => {
@@ -46,6 +47,19 @@ export const AuthProvider = ({ children }) => {
         try {
             setAuthUserLoading(true);
             if (userId) {
+                // Merge guest wishlist into user account if any guest items exist
+                const guestWishlist = getGuestWishlist();
+                if (guestWishlist.length > 0) {
+                    for (const prodId of guestWishlist) {
+                        try {
+                            await addToWishlist(userId, prodId);
+                        } catch (err) {
+                            console.warn("Failed to merge guest wishlist item:", prodId, err);
+                        }
+                    }
+                    clearGuestWishlist();
+                }
+
                 const userData = await getUserById(userId);
                 const user = userData?.user;
 
@@ -61,11 +75,15 @@ export const AuthProvider = ({ children }) => {
                     const chosen = matched || stored || addresses[0];
                     setDeliveryAddressState(chosen);
                     localStorage.setItem("deliveryAddress", JSON.stringify(chosen));
+                } else {
+                    setDeliveryAddressState(null);
+                    localStorage.removeItem("deliveryAddress");
                 }
             }
         } catch {
             setAuthUser(null);
             setDeliveryAddressState(null);
+            localStorage.removeItem("deliveryAddress");
         } finally {
             setAuthUserLoading(false);
         }
@@ -101,7 +119,9 @@ export const AuthProvider = ({ children }) => {
             socket.emit("client:logout", { userId: authUser._id });
         }
         setAuthUser(null);
+        setDeliveryAddressState(null);
         localStorage.removeItem("User");
+        localStorage.removeItem("deliveryAddress");
     }, [authUser?._id]);
 
     const handleAdminLogout = useCallback(() => {

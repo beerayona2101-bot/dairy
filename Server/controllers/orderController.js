@@ -7,7 +7,7 @@ import { sendOrderConfirmationEmail } from "../config/nodemailer.js";
 
 // CREATE: Place new order via REST API
 export const createOrder = async (req, res) => {
-  const { userId, address, productsData, paymentMode, totalAmount } = req.body;
+  const { userId, address, productsData, paymentMode, totalAmount, deliveryInstructions, precautions } = req.body;
 
   if (!userId || !address || !productsData || !paymentMode || !totalAmount) {
     return res.status(400).json({ success: false, message: "Missing required order fields." });
@@ -28,6 +28,7 @@ export const createOrder = async (req, res) => {
     productsData,
     paymentMode,
     totalAmount,
+    deliveryInstructions: deliveryInstructions || precautions || "",
     status: "Pending",
   });
 

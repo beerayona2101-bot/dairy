@@ -86,9 +86,9 @@ export default function ContactPage() {
         <div className="flex flex-col md:flex-row gap-8 pt-20 sm:pt-24 pb-12 px-4 sm:px-6 max-w-5xl mx-auto">
             {/* Contact Info Glass Card */}
             <motion.div
-                initial={{ opacity: 0, x: -40 }}
+                initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                 className="md:w-1/2 space-y-6 p-8 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
             >
                 <div className="space-y-5">
@@ -137,9 +137,9 @@ export default function ContactPage() {
 
             {/* Contact Form Glass Card */}
             <motion.form
-                initial={{ opacity: 0, x: 40 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.22, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
                 className="md:w-1/2 space-y-4 p-8 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)]"
                 onSubmit={handleSubmit}
             >
@@ -157,7 +157,7 @@ export default function ContactPage() {
                         value={formData.fullName}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-200 dark:border-gray-700 rounded-xl bg-white/80 dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]"
+                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
                     />
                 </div>
 
@@ -173,7 +173,7 @@ export default function ContactPage() {
                         value={formData.phone}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-200 dark:border-gray-700 rounded-xl bg-white/80 dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]"
+                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
                     />
                 </div>
 
@@ -189,7 +189,7 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-200 dark:border-gray-700 rounded-xl bg-white/80 dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]"
+                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
                     />
                     {formData.email && fixEmailTypo(formData.email) !== formData.email.trim() && fixEmailTypo(formData.email).includes("@") && (
                         <button
@@ -214,7 +214,7 @@ export default function ContactPage() {
                         value={formData.message}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-200 dark:border-gray-700 rounded-xl bg-white/80 dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]"
+                        className="w-full px-4 py-2.5 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
                     />
                 </div>
 

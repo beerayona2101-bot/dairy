@@ -1,32 +1,52 @@
-export const getCartProductDetails = (cartItems, products, removeFromCart) => {
+export const getCartProductDetails = (cartItems, products) => {
+  if (!cartItems?.length) return [];
+
   const productMap = new Map();
+  const allProducts = Array.isArray(products) ? products : [];
 
-  if (!cartItems?.length || !products?.length) return [];
-
-  for (const product of products) {
-    productMap.set(product._id?.toString(), {
-      ...product,
-    });
+  for (const product of allProducts) {
+    if (!product) continue;
+    const pId = (product._id || product.id)?.toString();
+    if (pId) {
+      productMap.set(pId, product);
+      productMap.set(pId.toLowerCase(), product);
+    }
   }
 
   return cartItems
     .map((item) => {
-      const product = productMap.get(item.productId);
-      if (!product) {
-        removeFromCart?.(item.productId);
-        return null;
+      if (!item) return null;
+      const rawId = typeof item.productId === "object" ? (item.productId?._id || item.productId?.id) : item.productId;
+      const itemPId = rawId ? String(rawId).trim() : null;
+
+      if (!itemPId) return null;
+
+      let product = productMap.get(itemPId) || productMap.get(itemPId.toLowerCase());
+
+      if (!product && allProducts.length > 0) {
+        product = allProducts.find(p => {
+          if (!p) return false;
+          const pIdStr = String(p._id || p.id || "").trim();
+          return pIdStr === itemPId || pIdStr.toLowerCase() === itemPId.toLowerCase();
+        });
       }
 
+      if (!product && typeof item.productId === "object" && item.productId?.name) {
+        product = item.productId;
+      }
+
+      const finalProduct = product || {};
+
       return {
-        id: product?._id,
-        name: product?.name || "N/A",
-        image: product?.image?.[0] || "",
-        price: product.price,
-        discount: product?.discount || 0,
-        selectedQuantity: item.quantity,
-        quantityUnit: product.quantityUnit,
-        type: product.type || "N/A",
-        stock: product.stock ?? 0,
+        id: finalProduct?._id || finalProduct?.id || itemPId,
+        name: finalProduct?.name || item?.name || "Dairy Product",
+        image: Array.isArray(finalProduct?.image) ? finalProduct.image[0] : (finalProduct?.image || finalProduct?.pngImage || item?.image || ""),
+        price: Number(finalProduct?.price ?? item?.price ?? 0),
+        discount: Number(finalProduct?.discount ?? item?.discount ?? 0),
+        selectedQuantity: Number(item?.quantity || 1),
+        quantityUnit: finalProduct?.quantityUnit || item?.quantityUnit || "Unit",
+        type: finalProduct?.type || finalProduct?.category || "Dairy",
+        stock: finalProduct?.stock ?? 100,
       };
     })
     .filter(Boolean);

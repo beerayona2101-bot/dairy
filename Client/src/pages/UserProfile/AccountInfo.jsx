@@ -34,9 +34,6 @@ export default function AccountInfo() {
   const [isLoading, setIsLoading] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -44,7 +41,6 @@ export default function AccountInfo() {
   const [pinStatusMsg, setPinStatusMsg] = useState("");
   const [localities, setLocalities] = useState([]);
 
-  const [userData, setUserData] = useState(null);
   const [editData, setEditData] = useState({
     _id: authUser?._id,
     firstName: "",

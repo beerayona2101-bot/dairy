@@ -207,24 +207,33 @@ export const faqs = [
 
 export const offerings = [
   {
-    image:
-      "https://res.cloudinary.com/dyahibuzy/image/upload/v1750157383/freshness_gmygrg.jpg",
-    title: "Crafted with Ultimate Freshness",
-    description:
-      "Freshly prepared and packed to deliver rich taste and real nutrition.",
+    image: "/assets/freshProducts.jpg",
+    title: "Fresh & Natural Products",
+    description: "We deliver milk and dairy products directly from local farms to your doorstep — fresh, pure, and free from harmful preservatives.",
   },
   {
-    image:
-      "https://res.cloudinary.com/dyahibuzy/image/upload/v1750157396/naturally_w4cqwy.jpg",
-    title: "Responsibly Sourced from Nature",
-    description:
-      "Sourced from trusted farms to ensure purity and natural goodness.",
+    image: "/assets/freshMilk.jpg",
+    title: "Ethically Sourced Milk",
+    description: "Our dairy farmers follow ethical practices in caring for the cows, ensuring they are healthy and well-fed, which results in high-quality milk.",
   },
   {
-    image:
-      "https://res.cloudinary.com/dyahibuzy/image/upload/v1750157430/pureIngredients_v9uxem.png",
-    title: "Made with 100% Pure Ingredients",
-    description:
-      "We use only pure, high-quality ingredients for unmatched flavor and quality.",
+    image: "/assets/hygienicProcessing.jpg",
+    title: "Hygienic Processing",
+    description: "All our products go through strict hygiene and quality control checks to ensure you receive clean and safe dairy every time.",
+  },
+  {
+    image: "/assets/productImage.jpg",
+    title: "Wide Range of Products",
+    description: "From fresh milk, curd, paneer, ghee to flavored products — we have something for every dairy lover.",
+  },
+  {
+    image: "/assets/lowPrice.jpg",
+    title: "Affordable Prices",
+    description: "Top-quality dairy products at prices that won't hurt your pocket.",
+  },
+  {
+    image: "/assets/deliveryTruck.jpg",
+    title: "Farm-to-Home Delivery",
+    description: "We eliminate middlemen to ensure our customers get fresh products at the right price, delivered within hours of milking.",
   },
 ];

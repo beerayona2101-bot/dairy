@@ -1,7 +1,10 @@
 export const getGuestWishlist = () => {
     try {
         const stored = localStorage.getItem("guestWishlist");
-        return stored ? JSON.parse(stored) : [];
+        if (!stored) return [];
+        const parsed = JSON.parse(stored);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(id => id && id !== "null" && id !== "undefined" && String(id).trim() !== "");
     } catch {
         return [];
     }

@@ -227,7 +227,12 @@ export default function Navbar() {
     } else {
         renderUserSection = (
             <button
-                onClick={() => navigate("/login")}
+                onClick={() => {
+                    if (location.pathname !== "/login" && location.pathname !== "/signup") {
+                        sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
+                    }
+                    navigate("/login", { state: { from: location.pathname + location.search } });
+                }}
                 className="btn-reflection flex items-center gap-1.5 text-[#6C5CE7] bg-white dark:bg-gray-800 hover:bg-purple-50 font-extrabold px-4 py-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-[0_0_18px_rgba(108,92,231,0.4)] hover:scale-105 cursor-pointer border border-white dark:border-gray-700 text-xs relative overflow-hidden"
             >
                 <LoginIcon sx={{ fontSize: "1.1rem" }} />
@@ -445,100 +450,102 @@ export default function Navbar() {
             </Menu>
 
             {/* Mobile Bottom Navigation Bar */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 bg-[#001f3f]/95 dark:bg-[#0f172a]/95 backdrop-blur-lg border-t border-blue-400/30 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] flex items-center justify-around px-2">
-                {/* 1. Products */}
-                <Link
-                    to="/products"
-                    className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
-                        location.pathname.startsWith('/products')
-                            ? "text-sky-300 font-bold scale-105"
-                            : "text-blue-100/70 hover:text-white"
-                    }`}
-                >
-                    <StorefrontIcon sx={{ fontSize: "1.35rem" }} />
-                    <span className="text-[10px] mt-0.5 font-bold">Products</span>
-                </Link>
+            {!location.pathname.startsWith('/product-details') && (
+                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 bg-[#001f3f]/95 dark:bg-[#0f172a]/95 backdrop-blur-lg border-t border-blue-400/30 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] flex items-center justify-around px-2">
+                    {/* 1. Products */}
+                    <Link
+                        to="/products"
+                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
+                            location.pathname.startsWith('/products')
+                                ? "text-sky-300 font-bold scale-105"
+                                : "text-blue-100/70 hover:text-white"
+                        }`}
+                    >
+                        <StorefrontIcon sx={{ fontSize: "1.35rem" }} />
+                        <span className="text-[10px] mt-0.5 font-bold">Products</span>
+                    </Link>
 
-                {/* 2. About Us */}
-                <Link
-                    to="/about"
-                    className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
-                        location.pathname.startsWith('/about')
-                            ? "text-sky-300 font-bold scale-105"
-                            : "text-blue-100/70 hover:text-white"
-                    }`}
-                >
-                    <Diversity3Icon sx={{ fontSize: "1.35rem" }} />
-                    <span className="text-[10px] mt-0.5 font-bold">About</span>
-                </Link>
+                    {/* 2. About Us */}
+                    <Link
+                        to="/about"
+                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
+                            location.pathname.startsWith('/about')
+                                ? "text-sky-300 font-bold scale-105"
+                                : "text-blue-100/70 hover:text-white"
+                        }`}
+                    >
+                        <Diversity3Icon sx={{ fontSize: "1.35rem" }} />
+                        <span className="text-[10px] mt-0.5 font-bold">About</span>
+                    </Link>
 
-                {/* 3. Centralized Home Button */}
-                <Link
-                    to="/home"
-                    className="flex flex-col items-center justify-center -mt-6 group cursor-pointer"
-                >
-                    <div className={`p-3 rounded-full border-4 border-[#001f3f] dark:border-[#0f172a] shadow-xl transition-all duration-300 ${
-                        location.pathname === '/home' || location.pathname === '/'
-                            ? "bg-gradient-to-tr from-[#1E88E5] to-[#00ACC1] text-white scale-110 shadow-blue-500/50"
-                            : "bg-[#1565C0] text-blue-100 group-hover:scale-105"
-                    }`}>
-                        <HomeIcon sx={{ fontSize: "1.6rem" }} />
-                    </div>
-                    <span className={`text-[10px] font-bold mt-0.5 ${
-                        location.pathname === '/home' || location.pathname === '/'
-                            ? "text-sky-300 font-black"
-                            : "text-blue-100/70"
-                    }`}>
-                        Home
-                    </span>
-                </Link>
+                    {/* 3. Centralized Home Button */}
+                    <Link
+                        to="/home"
+                        className="flex flex-col items-center justify-center -mt-6 group cursor-pointer"
+                    >
+                        <div className={`p-3 rounded-full border-4 border-[#001f3f] dark:border-[#0f172a] shadow-xl transition-all duration-300 ${
+                            location.pathname === '/home' || location.pathname === '/'
+                                ? "bg-gradient-to-tr from-[#1E88E5] to-[#00ACC1] text-white scale-110 shadow-blue-500/50"
+                                : "bg-[#1565C0] text-blue-100 group-hover:scale-105"
+                        }`}>
+                            <HomeIcon sx={{ fontSize: "1.6rem" }} />
+                        </div>
+                        <span className={`text-[10px] font-bold mt-0.5 ${
+                            location.pathname === '/home' || location.pathname === '/'
+                                ? "text-sky-300 font-black"
+                                : "text-blue-100/70"
+                        }`}>
+                            Home
+                        </span>
+                    </Link>
 
-                {/* 4. Contact Us */}
-                <Link
-                    to="/contact-us"
-                    className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
-                        location.pathname.startsWith('/contact-us')
-                            ? "text-sky-300 font-bold scale-105"
-                            : "text-blue-100/70 hover:text-white"
-                    }`}
-                >
-                    <CallIcon sx={{ fontSize: "1.35rem" }} />
-                    <span className="text-[10px] mt-0.5 font-bold">Contact</span>
-                </Link>
+                    {/* 4. Contact Us */}
+                    <Link
+                        to="/contact-us"
+                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
+                            location.pathname.startsWith('/contact-us')
+                                ? "text-sky-300 font-bold scale-105"
+                                : "text-blue-100/70 hover:text-white"
+                        }`}
+                    >
+                        <CallIcon sx={{ fontSize: "1.35rem" }} />
+                        <span className="text-[10px] mt-0.5 font-bold">Contact</span>
+                    </Link>
 
-                {/* 5. Profile (Right-most) */}
-                <button
-                    onClick={(e) => {
-                        if (authAdmin || authUser) {
-                            handleProfileMenuClick(e);
-                        } else {
-                            setOpenLoginDialog(true);
-                        }
-                    }}
-                    className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
-                        location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
-                            ? "text-sky-300 font-bold scale-105"
-                            : "text-blue-100/70 hover:text-white"
-                    }`}
-                >
-                    {authUser ? (
-                        <Avatar
-                            alt={authUser?.firstName}
-                            src={authUser?.photo}
-                            sx={{ width: 24, height: 24, border: "1.5px solid #00ACC1" }}
-                        />
-                    ) : authAdmin ? (
-                        <Avatar
-                            alt={authAdmin?.name || "Admin"}
-                            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                            sx={{ width: 24, height: 24, border: "1.5px solid #00ACC1" }}
-                        />
-                    ) : (
-                        <PersonIcon sx={{ fontSize: "1.35rem" }} />
-                    )}
-                    <span className="text-[10px] mt-0.5 font-bold">Profile</span>
-                </button>
-            </nav>
+                    {/* 5. Profile (Right-most) */}
+                    <button
+                        onClick={(e) => {
+                            if (authAdmin || authUser) {
+                                handleProfileMenuClick(e);
+                            } else {
+                                setOpenLoginDialog(true);
+                            }
+                        }}
+                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                            location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
+                                ? "text-sky-300 font-bold scale-105"
+                                : "text-blue-100/70 hover:text-white"
+                        }`}
+                    >
+                        {authUser ? (
+                            <Avatar
+                                alt={authUser?.firstName}
+                                src={authUser?.photo}
+                                sx={{ width: 24, height: 24, border: "1.5px solid #00ACC1" }}
+                            />
+                        ) : authAdmin ? (
+                            <Avatar
+                                alt={authAdmin?.name || "Admin"}
+                                src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                                sx={{ width: 24, height: 24, border: "1.5px solid #00ACC1" }}
+                            />
+                        ) : (
+                            <PersonIcon sx={{ fontSize: "1.35rem" }} />
+                        )}
+                        <span className="text-[10px] mt-0.5 font-bold">Profile</span>
+                    </button>
+                </nav>
+            )}
 
             <Dialog
                 open={notificationDialog}

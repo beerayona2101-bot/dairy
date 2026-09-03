@@ -171,51 +171,57 @@ export default function SavedAddressList({ open, handleDialogStatus }) {
     );
   } else {
     addressContent = (
-      <div className="grid gap-4 px-3 max-h-[60vh] overflow-y-auto">
+      <div className="grid gap-3.5 px-3 max-h-[60vh] overflow-y-auto">
         {addresses.map((addr) => {
           const isSelected = deliveryAddress?._id === addr._id;
+          const mainTitle = [addr.hno, addr.village || addr.streetAddress].filter(Boolean).join(", ") || addr.streetAddress || "Delivery Address";
+          const subText = [addr.streetAddress !== addr.village ? addr.streetAddress : null, addr.city || addr.district, `${addr.state || ""} - ${addr.pincode || ""}`].filter(Boolean).join(", ");
 
           return (
             <div
               key={addr._id}
-              className={`rounded-md shadow-md p-4 flex flex-col justify-between transition border ${
+              onClick={() => handleSelectAddress(addr)}
+              className={`rounded-2xl p-4 flex flex-col justify-between transition-all cursor-pointer border ${
                 isSelected
-                  ? "bg-blue-50/70 dark:bg-blue-900/20 border-blue-500 dark:border-blue-400"
-                  : "bg-gray-100 dark:bg-gray-500/20 border-transparent"
+                  ? "bg-purple-50/80 dark:bg-purple-950/40 border-[#6C5CE7] shadow-md ring-1 ring-[#6C5CE7]/30"
+                  : "bg-white dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 shadow-xs"
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <LocationOnIcon sx={{ fontSize: "1.2rem" }} className="text-[#1E88E5]" />
-                  <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">
-                    {addr.addressType}
-                  </p>
+                  <LocationOnIcon sx={{ fontSize: "1.1rem" }} className="text-[#6C5CE7]" />
+                  <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider px-2 py-0.5 rounded bg-purple-100/70 dark:bg-purple-900/50">
+                    {addr.addressType || "Home"}
+                  </span>
                 </div>
                 {isSelected && (
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#1E88E5] text-white">
-                    Selected
+                  <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500 text-white shadow-xs">
+                    ✓ Delivering Here
                   </span>
                 )}
               </div>
 
-              <div className="text-gray-700 dark:text-gray-300 text-sm space-y-1">
-                <p><span className="font-semibold">Name:</span> {addr.name}</p>
-                <p><span className="font-semibold">Phone:</span> {addr.phone}</p>
-                <p>
-                  <span className="font-semibold">Full Address:</span>{" "}
-                  {formatFullAddress(addr)}
+              <div className="space-y-1 my-1">
+                <h4 className="text-sm font-extrabold text-gray-900 dark:text-white leading-snug">
+                  {mainTitle}
+                </h4>
+                <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                  {subText}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 pt-0.5">
+                  <span className="font-bold text-gray-700 dark:text-gray-300">Recipient:</span> {addr.name} ({addr.phone})
                 </p>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-gray-200 dark:border-gray-700/60 pt-3">
-                <div className="flex items-center gap-2">
+              <div className="mt-3 flex items-center justify-between gap-2 border-t border-gray-100 dark:border-gray-700/60 pt-2.5">
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <button
                     type="button"
                     onClick={() => {
                       setSelectedAddress(addr);
                       setEditModal(true);
                     }}
-                    className="flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 px-2.5 py-1.5 rounded transition"
+                    className="flex items-center gap-1 text-xs font-bold text-[#6C5CE7] hover:bg-purple-100 dark:hover:bg-purple-950/40 px-2.5 py-1 rounded-full transition cursor-pointer"
                   >
                     <Edit2 size={13} /> Edit
                   </button>
@@ -226,7 +232,7 @@ export default function SavedAddressList({ open, handleDialogStatus }) {
                       setSelectedAddress(addr);
                       setRemoveModal(true);
                     }}
-                    className="flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 px-2.5 py-1.5 rounded transition"
+                    className="flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/40 px-2.5 py-1 rounded-full transition cursor-pointer"
                   >
                     <Trash2 size={13} /> Remove
                   </button>
@@ -234,14 +240,17 @@ export default function SavedAddressList({ open, handleDialogStatus }) {
 
                 <button
                   type="button"
-                  onClick={() => handleSelectAddress(addr)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelectAddress(addr);
+                  }}
+                  className={`px-4 py-1.5 rounded-full text-xs font-extrabold transition cursor-pointer ${
                     isSelected
-                      ? "bg-emerald-600 text-white cursor-default"
-                      : "bg-[#1E88E5] text-white hover:bg-[#1565C0]"
+                      ? "bg-emerald-600 text-white"
+                      : "bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white shadow-xs"
                   }`}
                 >
-                  {isSelected ? "Selected" : "Select Address"}
+                  {isSelected ? "Delivering Here" : "Select Address"}
                 </button>
               </div>
             </div>

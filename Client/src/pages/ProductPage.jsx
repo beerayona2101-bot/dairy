@@ -242,9 +242,9 @@ export default function ProductPage() {
                     {/* CATEGORY HERO BANNER CARD WITH "THIS IMAGE" */}
                     {categoryInfo ? (
                         <motion.div
-                            initial={{ opacity: 0, y: 15 }}
+                            initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
+                            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                             className="relative w-full h-[220px] sm:h-[290px] md:h-[340px] rounded-[24px] sm:rounded-[28px] overflow-hidden shadow-lg border border-white/40 dark:border-gray-700/60 group bg-gray-900"
                         >
                             {/* Back Arrow for Category view (Mobile only) */}
@@ -259,7 +259,7 @@ export default function ProductPage() {
                             <img
                                 src={categoryInfo.image}
                                 alt={categoryInfo.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-transparent flex flex-col justify-end p-6 sm:p-8 lg:p-10 text-white space-y-2">
                                 <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight drop-shadow-md text-white">

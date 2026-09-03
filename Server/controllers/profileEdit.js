@@ -49,8 +49,27 @@ export const getAddresses = async (req, res) => {
 
   if (!userAddresses || userAddresses.length === 0) {
     const user = await User.findById(userId).populate("savedAddresses");
-    if (user && user.savedAddresses) {
-      userAddresses = user.savedAddresses;
+    if (user && user.savedAddresses && user.savedAddresses.length > 0) {
+      userAddresses = user.savedAddresses.filter(Boolean);
+    } else if (user && user.address && (user.address.streetAddress || user.address.pincode)) {
+      const primaryName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "User";
+      const primaryPhone = user.mobileNo || "0000000000";
+      const primaryAddr = new Address({
+        owner: userId,
+        addressType: "Home",
+        name: primaryName,
+        phone: primaryPhone,
+        hno: user.address.hno || "",
+        streetAddress: user.address.streetAddress || user.address.village || "Main Road",
+        village: user.address.village || "",
+        city: user.address.city || user.address.district || "City",
+        district: user.address.district || "",
+        state: user.address.state || "State",
+        pincode: user.address.pincode || "000000",
+      });
+      await primaryAddr.save().catch(() => {});
+      await User.findByIdAndUpdate(userId, { $push: { savedAddresses: primaryAddr._id } }).catch(() => {});
+      userAddresses = [primaryAddr];
     }
   }
 
@@ -96,9 +115,18 @@ export const saveNewAddress = async (req, res) => {
     });
   }
 
+  const userDoc = await User.findById(userId).catch(() => null);
+
+  const addressToSave = {
+    ...address,
+    name: address.name?.trim() || `${userDoc?.firstName || ""} ${userDoc?.lastName || ""}`.trim() || userDoc?.username || "User",
+    phone: address.phone?.trim() || userDoc?.mobileNo || "0000000000",
+    addressType: address.addressType || "Home",
+  };
+
   const newAddress = new Address({
     owner: userId,
-    ...address,
+    ...addressToSave,
   });
 
   await newAddress.save();

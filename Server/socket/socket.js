@@ -104,8 +104,8 @@ export const connectToSocket = (server) => {
     );
 
     socket.on("place-new-order", async (data) => {
-      const { address, productsData, paymentMode, totalAmount, userId, date } =
-        data.orderData;
+      const { address, productsData, paymentMode, totalAmount, userId, date, deliveryInstructions } =
+        data.orderData || {};
 
       const { paymentInfo } = data;
 
@@ -168,6 +168,8 @@ export const connectToSocket = (server) => {
           });
         }
 
+        const instructionText = (deliveryInstructions || data?.orderData?.deliveryInstructions || data?.deliveryInstructions || "").trim();
+
         let savedOrder = null;
         if (data?.createdOrder?._id) {
           savedOrder = await Order.findById(data.createdOrder._id);
@@ -185,13 +187,19 @@ export const connectToSocket = (server) => {
           }
         }
 
-        if (!savedOrder) {
+        if (savedOrder) {
+          if (instructionText && !savedOrder.deliveryInstructions) {
+            savedOrder.deliveryInstructions = instructionText;
+            await savedOrder.save().catch(() => {});
+          }
+        } else {
           const newOrder = new Order({
             user: userId,
             address,
             productsData: validatedProducts,
             paymentMode,
             totalAmount: formattedServerTotal,
+            deliveryInstructions: instructionText,
             razorpay:
               paymentMode === "Online" && paymentInfo
                 ? {

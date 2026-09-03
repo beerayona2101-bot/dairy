@@ -142,6 +142,12 @@ export default function StoreOrdersHistory() {
                                         </span>
                                     </div>
 
+                                    {order?.deliveryInstructions && (
+                                        <div className="flex items-center gap-1.5 text-xs bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800 font-semibold">
+                                            <span>⚠️</span>
+                                            <span><strong>Delivery Precautions:</strong> &ldquo;{order.deliveryInstructions}&rdquo;</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="overflow-x-auto">

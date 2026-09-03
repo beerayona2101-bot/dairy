@@ -34,6 +34,12 @@
   --deep-navy: #2D3748;
   --farm-green: #00B894;
   --farm-green-hover: #008f72;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth !important;
 }
 
 body {
@@ -45,6 +51,23 @@ body {
   color: #2D3748;
   overflow-x: hidden;
 }
+
+/* Fast & Smooth Hardware Accelerated Global Transitions */
+.transition-all,
+.transition,
+.transition-colors,
+.transition-opacity,
+.transition-transform,
+.transition-shadow {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+a, button, input, select, textarea, [role="button"] {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 
 /* Global Form Input & Select Thin, Sleek Styling (No Double Borders) */
 input[type="text"],
@@ -71,10 +94,11 @@ textarea:focus {
   outline: none;
 }
 
-/* Disable inner border on nested inputs inside composite wrappers */
-div > input[type="text"],
-div > input[type="number"],
-div > input[type="email"] {
+/* Disable inner border only on explicitly designated borderless inputs */
+.no-border-input,
+.composite-input-wrapper > input,
+input.border-none,
+input.border-0 {
   border-style: none !important;
   border-width: 0 !important;
 }

@@ -4,7 +4,7 @@ import { CartContext } from "../../context/CartProvider";
 import { ProductContext } from "../../context/ProductProvider";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import { getWishlistedProducts, removeProductFromWishList, clearUserWishlist } from "../../services/userProfileService";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getDiscountedPrice, getProductImage } from "../../utils/helper";
 import { slugify } from "../../utils/slugify";
 import { useSnackbar } from "notistack";
@@ -15,6 +15,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { getGuestWishlist, toggleGuestWishlist, clearGuestWishlist } from "../../utils/guestWishlist";
 
 export default function MyWishlist() {
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { authUser, setAuthUser } = useContext(UserAuthContext);
   const { authAdmin, setAuthAdmin } = useContext(AdminAuthContext);
@@ -59,7 +60,23 @@ export default function MyWishlist() {
         setLoading(false);
       }
     };
+
     fetchWishlist();
+
+    const handleGuestUpdate = () => {
+      if (!activeUser?._id) {
+        const guestIds = getGuestWishlist().map(String);
+        if (Array.isArray(products) && products.length > 0) {
+          const matched = products.filter((p) => guestIds.includes(String(p._id)));
+          setWishlist(matched);
+        } else {
+          setWishlist([]);
+        }
+      }
+    };
+
+    window.addEventListener("guestWishlistUpdated", handleGuestUpdate);
+    return () => window.removeEventListener("guestWishlistUpdated", handleGuestUpdate);
   }, [activeUser?._id, authUser, authAdmin, setCurUser, products]);
 
   const handleRemove = async (productId) => {
@@ -128,24 +145,47 @@ export default function MyWishlist() {
     }
   };
 
-  const handleMoveToCart = async (product) => {
-    if (!product?._id) return;
-    const { discountedPrice } = getDiscountedPrice(product?.price, product?.discount);
+  const handleMoveToCart = (e, product) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const targetId = product?._id || product?.id || (typeof product === 'string' ? product : null);
+    if (!targetId) {
+      enqueueSnackbar("Invalid product details", { variant: "error" });
+      return;
+    }
+
+    const price = Number(product?.price) || 0;
+    const discount = Number(product?.discount) || 0;
+    const { discountedPrice } = getDiscountedPrice(price, discount);
+    const qty = Number(product?.minQuantity) || 1;
 
     try {
-      setMovingId(product._id);
-      addToCart(product._id, product?.minQuantity || 1, discountedPrice);
-      
+      setMovingId(targetId);
+
+      // 1. Add item to cart state immediately
+      addToCart(targetId, qty, discountedPrice);
+
+      // 2. Optimistically update local wishlist UI
+      setWishlist((prev) => prev.filter((item) => {
+        const itemId = item?._id || item?.id || item;
+        return String(itemId) !== String(targetId);
+      }));
+
+      // 3. Sync wishlist cleanup in background (non-blocking)
       if (!activeUser?._id) {
-        toggleGuestWishlist(product._id);
-        setWishlist((prev) => prev.filter((item) => String(item._id) !== String(product._id)));
+        toggleGuestWishlist(targetId);
       } else {
-        await removeProductFromWishList(activeUser._id, product._id);
-        setWishlist((prev) => prev.filter((item) => item._id !== product._id));
+        removeProductFromWishList(activeUser._id, targetId).catch((apiErr) => {
+          console.warn("API remove from wishlist error:", apiErr);
+        });
+
         setCurUser((prev) => {
           if (!prev) return prev;
           const newList = (prev?.wishlistedProducts || []).filter(
-            (id) => (typeof id === "string" ? id !== product._id : id?._id !== product._id)
+            (id) => (typeof id === "string" ? String(id) !== String(targetId) : String(id?._id || id?.id) !== String(targetId))
           );
           const updated = { ...prev, wishlistedProducts: newList };
           if (authUser) localStorage.setItem("User", JSON.stringify(updated));
@@ -155,36 +195,63 @@ export default function MyWishlist() {
       }
 
       enqueueSnackbar(`${product?.name || "Product"} moved to cart!`, { variant: "success" });
+
+      // 4. Always redirect immediately to /cart
+      navigate("/cart");
     } catch (error) {
-      enqueueSnackbar("Failed to move item to cart.", { variant: "error" });
+      enqueueSnackbar(error?.message || "Failed to move item to cart.", { variant: "error" });
     } finally {
       setMovingId(null);
     }
   };
 
-  const handleMoveAllToCart = async () => {
+  const handleMoveAllToCart = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (wishlist.length === 0) return;
 
     try {
       setClearLoading(true);
       let count = 0;
       for (const item of wishlist) {
-        const { discountedPrice } = getDiscountedPrice(item?.price, item?.discount);
-        addToCart(item._id, item?.minQuantity || 1, discountedPrice);
+        const targetId = item?._id || item?.id || (typeof item === 'string' ? item : null);
+        if (!targetId) continue;
+        const price = Number(item?.price) || 0;
+        const discount = Number(item?.discount) || 0;
+        const { discountedPrice } = getDiscountedPrice(price, discount);
+        const qty = Number(item?.minQuantity) || 1;
+        addToCart(targetId, qty, discountedPrice);
         count++;
       }
-      await clearUserWishlist(activeUser._id);
+
+      // Optimistically clear local wishlist
       setWishlist([]);
-      setCurUser((prev) => {
-        if (!prev) return prev;
-        const updated = { ...prev, wishlistedProducts: [] };
-        if (authUser) localStorage.setItem("User", JSON.stringify(updated));
-        if (authAdmin) localStorage.setItem("Admin", JSON.stringify(updated));
-        return updated;
-      });
+
+      // Sync background cleanup
+      if (!activeUser?._id) {
+        clearGuestWishlist();
+      } else {
+        clearUserWishlist(activeUser._id).catch((apiErr) => {
+          console.warn("API clear user wishlist error:", apiErr);
+        });
+
+        setCurUser((prev) => {
+          if (!prev) return prev;
+          const updated = { ...prev, wishlistedProducts: [] };
+          if (authUser) localStorage.setItem("User", JSON.stringify(updated));
+          if (authAdmin) localStorage.setItem("Admin", JSON.stringify(updated));
+          return updated;
+        });
+      }
+
       enqueueSnackbar(`Moved ${count} item(s) to your cart!`, { variant: "success" });
+
+      // Always redirect immediately to /cart
+      navigate("/cart");
     } catch (error) {
-      enqueueSnackbar("Error moving items to cart.", { variant: "error" });
+      enqueueSnackbar(error?.message || "Error moving items to cart.", { variant: "error" });
     } finally {
       setClearLoading(false);
     }
@@ -274,7 +341,7 @@ export default function MyWishlist() {
 
                     <div className="flex items-center gap-2 self-end sm:self-center">
                       <button
-                        onClick={() => handleMoveToCart(product)}
+                        onClick={(e) => handleMoveToCart(e, product)}
                         disabled={isMoving || (product?.stock ?? 1) <= 0}
                         className="flex items-center gap-1.5 bg-[#1E88E5] hover:bg-[#1565C0] text-white text-xs font-bold px-3.5 py-2 rounded-lg transition disabled:opacity-50 cursor-pointer shadow-xs"
                       >

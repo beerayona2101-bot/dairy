@@ -13,12 +13,12 @@ export default function OfferingProductCard({ image, title }) {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="relative h-72 sm:h-80 md:h-96 w-full shadow-[0_12px_35px_rgba(0,0,0,0.1)] rounded-[28px] overflow-hidden border border-white/20 dark:border-gray-700/50 transition-all duration-300 mb-6"
             >
-                {/* Full-bleed Product Category Image with Eager Uncompressed High Resolution */}
+                {/* Full-bleed Product Category Image with Lazy Loading */}
                 <img
                     src={image}
                     alt={title}
-                    loading="eager"
-                    decoding="sync"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
 

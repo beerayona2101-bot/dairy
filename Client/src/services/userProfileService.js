@@ -100,7 +100,7 @@ export const deleteUserAccount = async (userId, email) => {
       const fallbackRes = await api.post("/u/delete-account", { userId, email });
       return fallbackRes?.data;
     } catch (fallbackError) {
-      throw error;
+      throw fallbackError || error;
     }
   }
 };

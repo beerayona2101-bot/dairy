@@ -4,8 +4,7 @@ const AddressSchema = new mongoose.Schema({
   owner : {type : mongoose.Types.ObjectId , ref : "User"},
   addressType: {
     type: String,
-    required: true,
-    enum: ["Home", "Work", "Other"],
+    default: "Home",
   },
   name: { type: String, required: true },
   phone: { type: String, required: true },

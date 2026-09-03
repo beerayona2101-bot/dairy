@@ -45,6 +45,7 @@ export default function CartPage() {
 
     const handleProceedCheckout = () => {
         if (!currentUser) {
+            sessionStorage.setItem("redirectAfterLogin", "/order-checkout");
             enqueueSnackbar("Please log in to proceed to checkout.", { variant: "info" });
             setOpenLoginDialog(true);
             return;
@@ -97,55 +98,57 @@ export default function CartPage() {
 
     return (
         <>
-            {/* Delivery Address Glass Section */}
-            <section className="max-w-5xl mx-auto pt-20 sm:pt-24 pb-6 px-4 sm:px-6">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-colors duration-300"
-                >
-                    {deliveryAddress ? (
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">Deliver To</span>
-                                    <span className="text-xs px-3 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold">
-                                        {deliveryAddress?.addressType}
-                                    </span>
+            {/* Delivery Address Glass Section (Logged-in User Only) */}
+            {currentUser && (
+                <section className="max-w-5xl mx-auto pt-20 sm:pt-24 pb-6 px-4 sm:px-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                        className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-colors duration-300"
+                    >
+                        {deliveryAddress ? (
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">DELIVER TO</span>
+                                        <span className="text-xs px-3 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20 uppercase">
+                                            {deliveryAddress?.addressType || "Home"}
+                                        </span>
+                                    </div>
+                                    <h3 className="text-base font-black text-[#2D3748] dark:text-white">
+                                        {[deliveryAddress?.hno, deliveryAddress?.village || deliveryAddress?.streetAddress].filter(Boolean).join(", ") || deliveryAddress?.streetAddress || "Selected Delivery Location"}
+                                    </h3>
+                                    <p className="text-xs text-[#718096] dark:text-gray-300">
+                                        {[deliveryAddress?.city || deliveryAddress?.district, `${deliveryAddress?.state || ""} - ${deliveryAddress?.pincode || ""}`].filter(Boolean).join(", ")} &bull; <span className="font-semibold text-gray-500">{deliveryAddress?.name} ({deliveryAddress?.phone})</span>
+                                    </p>
                                 </div>
-                                <h3 className="text-lg font-black text-[#2D3748] dark:text-white">
-                                    {deliveryAddress?.name} <span className="text-xs font-normal text-gray-500">({deliveryAddress?.phone})</span>
-                                </h3>
-                                <p className="text-xs text-[#718096] dark:text-gray-300 mt-0.5">
-                                    {deliveryAddress?.streetAddress}, {deliveryAddress?.city}, {deliveryAddress?.state} - {deliveryAddress?.pincode}
-                                </p>
+                                <button
+                                    onClick={() => setOpen(true)}
+                                    className="px-5 py-2 text-xs font-bold text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/40 rounded-full border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer transition shrink-0 self-start sm:self-auto"
+                                >
+                                    Change Address
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setOpen(true)}
-                                className="px-5 py-2 text-xs font-bold text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/40 rounded-full border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer transition shrink-0 self-start sm:self-auto"
-                            >
-                                Change Address
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="text-center py-2">
-                            <h2 className="text-base font-extrabold text-[#2D3748] dark:text-white mb-2">
-                                No delivery address selected.
-                            </h2>
-                            <button
-                                onClick={() => setOpen(true)}
-                                className="bg-[#6C5CE7] text-white px-6 py-2.5 rounded-full font-bold text-xs hover:bg-[#5b4cc4] shadow-md transition cursor-pointer"
-                            >
-                                Add Address
-                            </button>
-                        </div>
-                    )}
-                </motion.div>
-            </section>
+                        ) : (
+                            <div className="text-center py-2">
+                                <h2 className="text-base font-extrabold text-[#2D3748] dark:text-white mb-2">
+                                    No delivery address selected.
+                                </h2>
+                                <button
+                                    onClick={() => setOpen(true)}
+                                    className="bg-[#6C5CE7] text-white px-6 py-2.5 rounded-full font-bold text-xs hover:bg-[#5b4cc4] shadow-md transition cursor-pointer"
+                                >
+                                    Add Address
+                                </button>
+                            </div>
+                        )}
+                    </motion.div>
+                </section>
+            )}
 
             {/* Cart Items & Summary Glass Grid */}
-            <section className="max-w-5xl mx-auto my-6 px-4 sm:px-6 flex flex-col md:flex-row gap-6">
+            <section className={`max-w-5xl mx-auto ${currentUser ? "my-6" : "pt-20 sm:pt-24 pb-6"} px-4 sm:px-6 flex flex-col md:flex-row gap-6`}>
                 <motion.div layout className="space-y-4 flex-1">
                     {cartDetails.map((item, idx) => (
                         <ProductCard
@@ -158,16 +161,16 @@ export default function CartPage() {
 
                 {/* Price Details Glass Summary Box */}
                 <motion.div
-                    initial={{ opacity: 0, x: 40 }}
+                    initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     className="w-full md:w-80 p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] h-fit space-y-4"
                 >
                     <h2 className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700">
                         Price Details
                     </h2>
 
-                    <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                    <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 scrollbar-hide">
                         {cartDetails.map((item, idx) => {
                             const { discountedPrice, saved } = getDiscountedPrice(item.price, item.discount);
                             const itemTotal = discountedPrice * item.selectedQuantity;
@@ -176,21 +179,41 @@ export default function CartPage() {
                             return (
                                 <div
                                     key={idx * 0.89}
-                                    className="pb-2 border-b border-dashed border-gray-200 dark:border-gray-700 text-xs space-y-0.5"
+                                    className="pb-2.5 border-b border-dashed border-gray-200 dark:border-gray-700 text-xs space-y-1"
                                 >
-                                    <p className="font-extrabold text-[#2D3748] dark:text-white">
-                                        {item.name}
-                                    </p>
-
-                                    <div className="flex justify-between items-center text-gray-500">
-                                        <span>{item.selectedQuantity} {item.quantityUnit} × &#8377;{formatNumberWithCommas(discountedPrice)}</span>
-                                        <span className="font-extrabold text-[#2D3748] dark:text-white">&#8377;{formatNumberWithCommas(itemTotal)}</span>
+                                    <div className="flex justify-between items-start gap-2">
+                                        <p className="font-extrabold text-[#2D3748] dark:text-white leading-tight">
+                                            {item.name}
+                                        </p>
+                                        <span className="font-extrabold text-[#2D3748] dark:text-white shrink-0">
+                                            &#8377;{formatNumberWithCommas(itemTotal)}
+                                        </span>
                                     </div>
 
-                                    {saved > 0 && (
-                                        <p className="text-[10px] text-[#00B894] font-bold">
-                                            Saved &#8377;{formatNumberWithCommas(itemSaved)}
-                                        </p>
+                                    <div className="flex justify-between items-center text-gray-500 dark:text-gray-400 text-[11px]">
+                                        <span>
+                                            {item.selectedQuantity} {item.quantityUnit} ×{" "}
+                                            {item.discount > 0 && (
+                                                <span className="line-through text-gray-400 mr-1">
+                                                    &#8377;{formatNumberWithCommas(item.price)}
+                                                </span>
+                                            )}
+                                            <span className="font-bold text-[#2D3748] dark:text-gray-200">
+                                                &#8377;{formatNumberWithCommas(discountedPrice)}
+                                            </span>
+                                        </span>
+                                        {item.discount > 0 && (
+                                            <span className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 px-1.5 py-0.5 rounded font-bold">
+                                                {item.discount}% OFF
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {itemSaved > 0 && (
+                                        <div className="flex justify-between items-center text-[11px] text-[#00B894] font-bold">
+                                            <span>Product Discount:</span>
+                                            <span>- &#8377;{formatNumberWithCommas(itemSaved)}</span>
+                                        </div>
                                     )}
                                 </div>
                             );
@@ -198,12 +221,24 @@ export default function CartPage() {
                     </div>
 
                     <div className="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-700 text-xs">
-                        <div className="flex justify-between font-bold text-gray-500">
+                        <div className="flex justify-between font-bold text-gray-600 dark:text-gray-400">
                             <span>Total MRP</span>
                             <span>&#8377;{formatNumberWithCommas(subtotal)}</span>
                         </div>
 
-                        <div className="flex justify-between text-base font-black text-[#6C5CE7] pt-1">
+                        {totalSaving > 0 && (
+                            <div className="flex justify-between font-bold text-[#00B894]">
+                                <span>Total Product Discount</span>
+                                <span>- &#8377;{formatNumberWithCommas(totalSaving)}</span>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between font-bold text-gray-600 dark:text-gray-400">
+                            <span>Delivery Charges</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase">FREE</span>
+                        </div>
+
+                        <div className="flex justify-between text-base font-black text-[#6C5CE7] dark:text-purple-400 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700">
                             <span>Final Total</span>
                             <span>&#8377;{formatNumberWithCommas(totalAmount)}</span>
                         </div>

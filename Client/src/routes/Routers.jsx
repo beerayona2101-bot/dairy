@@ -91,7 +91,7 @@ export default function Routers() {
                     <Route path="/user-profile/addresses" element={<UserProfileLayout><MyAddresses /></UserProfileLayout>} />
                     <Route path="/user-profile/orders" element={<UserProfileLayout><MyOrders /></UserProfileLayout>} />
                     <Route path="/user-profile/wishlist" element={<UserProfileLayout><MyWishlist /></UserProfileLayout>} />
-                    <Route path="/wishlist" element={<UserProfileLayout><MyWishlist /></UserProfileLayout>} />
+                    <Route path="/wishlist" element={<Layout><MyWishlist /></Layout>} />
                     <Route path="/user-profile/payments" element={<UserProfileLayout><Payments /></UserProfileLayout>} />
 
                     <Route path="/admin/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />

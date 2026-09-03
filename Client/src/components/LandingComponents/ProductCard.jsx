@@ -15,12 +15,22 @@ export function CowDecoration({ isReversed }) {
                     : '-bottom-1 sm:-bottom-2 -right-2 sm:-right-4 md:-right-5'
             }`}
         >
+            {/* Soft White Shade & Radial Glow Backdrop (Enhances cow visibility in dark mode) */}
+            <div 
+                className="absolute inset-0 m-auto w-[85%] h-[85%] rounded-full blur-xl dark:blur-2xl opacity-90 dark:opacity-95 pointer-events-none -z-10 transition-all duration-300 group-hover/card:scale-110"
+                style={{
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.65) 45%, rgba(255,255,255,0) 80%)'
+                }}
+            />
+            {/* Secondary soft white glow ring for extra depth */}
+            <div className="absolute inset-0 m-auto w-[70%] h-[70%] rounded-full bg-white/60 dark:bg-white/50 blur-md pointer-events-none -z-10" />
+
             <img
                 src={userPeekingCowImg}
                 alt="Peeking Cow Head"
-                loading="eager"
-                decoding="sync"
-                className={`w-24 sm:w-32 md:w-40 h-auto object-contain ${
+                loading="lazy"
+                decoding="async"
+                className={`w-24 sm:w-32 md:w-40 h-auto object-contain filter drop-shadow-[0_2px_10px_rgba(255,255,255,0.5)] dark:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] ${
                     isReversed ? 'transform -scale-x-100' : ''
                 }`}
             />
@@ -37,8 +47,8 @@ export function ProductImage({ image, title, targetPath }) {
             <img
                 src={image}
                 alt={title}
-                loading="eager"
-                decoding="sync"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
             />
             {/* Subtle glass reflection overlay */}

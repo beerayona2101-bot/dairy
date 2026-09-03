@@ -57,7 +57,22 @@ export default function LoginDialog() {
             localStorage.setItem("User", JSON.stringify(res?.user));
             await fetchUserData(res?.user?._id);
             enqueueSnackbar("Login Successful!", { variant: "success" });
-            navigate("/home");
+
+            const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+            sessionStorage.removeItem("redirectAfterLogin");
+
+            const currentPath = window.location.pathname;
+            let destPath = storedRedirect;
+
+            if (!destPath) {
+              if (currentPath && currentPath !== "/login" && currentPath !== "/signup") {
+                destPath = currentPath;
+              } else {
+                destPath = "/cart";
+              }
+            }
+
+            navigate(destPath);
           }
         }
         setEmail("");

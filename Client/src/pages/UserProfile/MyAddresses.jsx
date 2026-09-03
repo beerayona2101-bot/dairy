@@ -153,60 +153,93 @@ export default function MyAddresses() {
   } else {
     content = (
       <div className="space-y-4">
-        {addresses.map((item) => (
-          <div
-            key={item._id}
-            className="rounded-lg bg-gray-500/10 dark:bg-gray-500/20 p-4 shadow-sm hover:shadow-md dark:shadow-none transition-all duration-200 dark:hover:bg-gray-500/30"
-          >
-            <div className="w-full">
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold tracking-wide bg-gray-800 text-white dark:text-white`}>
-                {item.addressType}
-              </span>
-              <p className="font-semibold text-lg mt-3 text-gray-800 dark:text-gray-100">
-                {item.name} <span className="font-normal text-gray-600 dark:text-gray-300 ml-3">{item.phone}</span>
-              </p>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                {[
-                  item?.hno ? `House No. ${item.hno}` : null,
-                  item?.streetAddress,
-                  item?.village ? `Village: ${item.village}` : null,
-                  item?.landmark ? `Landmark: ${item.landmark}` : null,
-                  item?.city,
-                  item?.district ? `Dist: ${item.district}` : null,
-                  item?.state ? `${item.state}${item.pincode ? ` - ${item.pincode}` : ""}` : item?.pincode
-                ].filter(Boolean).join(", ")}
-              </p>
+        {addresses.map((item) => {
+          const isSelected = deliveryAddress?._id === item._id;
+
+          return (
+            <div
+              key={item._id}
+              className={`rounded-lg p-4 shadow-sm hover:shadow-md dark:shadow-none transition-all duration-200 border ${
+                isSelected
+                  ? "bg-blue-50/70 dark:bg-blue-900/20 border-blue-500 dark:border-blue-400"
+                  : "bg-gray-500/10 dark:bg-gray-500/20 border-transparent dark:hover:bg-gray-500/30"
+              }`}
+            >
+              <div className="w-full flex items-center justify-between">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-gray-800 text-white dark:text-white">
+                  {item.addressType || "Home"}
+                </span>
+                {isSelected && (
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#1E88E5] text-white shadow-xs">
+                    ✓ Selected Active Address
+                  </span>
+                )}
+              </div>
+
+              <div className="w-full">
+                <p className="font-semibold text-lg mt-3 text-gray-800 dark:text-gray-100">
+                  {item.name} <span className="font-normal text-gray-600 dark:text-gray-300 ml-3">{item.phone}</span>
+                </p>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {[
+                    item?.hno ? `House No. ${item.hno}` : null,
+                    item?.streetAddress,
+                    item?.village ? `Village: ${item.village}` : null,
+                    item?.landmark ? `Landmark: ${item.landmark}` : null,
+                    item?.city,
+                    item?.district ? `Dist: ${item.district}` : null,
+                    item?.state ? `${item.state}${item.pincode ? ` - ${item.pincode}` : ""}` : item?.pincode
+                  ].filter(Boolean).join(", ")}
+                </p>
+              </div>
+
+              <hr className="border-dashed border-gray-300 dark:border-gray-500 w-full my-3" />
+
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    className="flex items-center gap-2 py-2 px-3 text-sm bg-blue-100 text-blue-700 dark:bg-blue-600/20 dark:text-blue-300 rounded font-medium hover:bg-blue-200 dark:hover:bg-blue-600/40 transition-colors duration-200 cursor-pointer"
+                    onClick={() => {
+                      setEditModal(true);
+                      setSelectedAddress(item);
+                    }}
+                    aria-label={`Edit address for ${item.name}`}
+                  >
+                    <Edit2 size={14} /> Edit
+                  </button>
+
+                  <button
+                    className="flex items-center gap-2 py-2 px-3 text-sm bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300 rounded font-medium hover:bg-red-200 dark:hover:bg-red-600/40 transition-colors duration-200 cursor-pointer"
+                    onClick={() => {
+                      setRemoveModal(true);
+                      setSelectedAddress(item);
+                    }}
+                    aria-label={`Remove address for ${item.name}`}
+                  >
+                    <Trash2 size={14} /> Remove
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeliveryAddress(item);
+                    enqueueSnackbar("Selected as active delivery address", { variant: "success" });
+                  }}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    isSelected
+                      ? "bg-emerald-600 text-white cursor-default"
+                      : "bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-xs"
+                  }`}
+                >
+                  {isSelected ? "Selected" : "Set as Active Address"}
+                </button>
+              </div>
             </div>
-
-            <hr className="border-dashed border-gray-300 dark:border-gray-500 w-full my-3" />
-
-            <div className="flex w-full space-x-4">
-              <button
-                className="flex items-center gap-2 py-2 px-3 text-sm bg-blue-100 text-blue-700 dark:bg-blue-600/20 dark:text-blue-300 rounded font-medium hover:bg-blue-200 dark:hover:bg-blue-600/40 transition-colors duration-200"
-                onClick={() => {
-                  setEditModal(true);
-                  setSelectedAddress(item);
-                }}
-                aria-label={`Edit address for ${item.name}`}
-              >
-                <Edit2 size={14} /> Edit
-              </button>
-
-              <button
-                className="flex items-center gap-2 py-2 px-3 text-sm bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300 rounded font-medium hover:bg-red-200 dark:hover:bg-red-600/40 transition-colors duration-200"
-                onClick={() => {
-                  setRemoveModal(true);
-                  setSelectedAddress(item);
-                }}
-                aria-label={`Remove address for ${item.name}`}
-              >
-                <Trash2 size={14} /> Remove
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-    )
+    );
   }
 
   return (

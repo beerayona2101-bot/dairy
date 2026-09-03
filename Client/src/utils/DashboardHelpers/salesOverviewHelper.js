@@ -28,14 +28,15 @@ export const calculateTotalProfit = (orders) => {
     }
 
     const totalManufacturingCost = order?.productsData?.reduce((sum, item) => {
-      const cost = item?.unitManufacturingCost ?? item?.productPrice ?? 0;
+      const price = item?.productPrice ?? item?.productId?.price ?? 0;
+      const mfgCost = item?.manufacturingCost ?? item?.productId?.manufacturingCost ?? (price * 0.70);
       const qty = item?.productQuantity ?? 0;
-      return sum + cost * qty;
+      return sum + mfgCost * qty;
     }, 0);
 
-    const profit = order?.totalAmount - totalManufacturingCost;
+    const orderProfit = Math.max(0, (order?.totalAmount || 0) - totalManufacturingCost);
 
-    return totalProfit + profit;
+    return totalProfit + orderProfit;
   }, 0);
 
   return Number(profit.toFixed(2));

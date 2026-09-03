@@ -18,7 +18,6 @@ import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider";
 import { calculateCartTotals, getCartProductDetails } from "../utils/cartUtils";
 import { getDiscountedPrice } from "../utils/helper";
 import { formatNumberWithCommas } from "../utils/format";
-import { formatFullAddress } from "../utils/dateUtils";
 import { razorpayOrderPayment } from "../services/paymentService";
 import { createOrderApi } from "../services/orderService";
 import { updateAddress } from "../services/userProfileService";
@@ -40,12 +39,20 @@ export default function OrderCheckoutPage() {
   const { enqueueSnackbar } = useSnackbar();
   const { theme } = useContext(ThemeContext);
 
-  const { authUser, deliveryAddress, setDeliveryAddress } = useContext(UserAuthContext);
+  const { authUser, deliveryAddress, setDeliveryAddress, setOpenLoginDialog } = useContext(UserAuthContext);
   const { authAdmin } = useContext(AdminAuthContext);
   const currentUser = authUser || authAdmin;
   const { cartItems, clearCart } = useContext(CartContext);
   const { products, productLoading } = useContext(ProductContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!productLoading && !currentUser) {
+      enqueueSnackbar("Please log in to proceed to checkout and place your order.", { variant: "info" });
+      setOpenLoginDialog(true);
+      navigate("/cart");
+    }
+  }, [currentUser, productLoading, navigate, setOpenLoginDialog, enqueueSnackbar]);
 
   const [open, setOpen] = useState(false);
   const [addressListOpen, setAddressListOpen] = useState(false);
@@ -134,6 +141,17 @@ export default function OrderCheckoutPage() {
     return false;
   }
 
+  const [deliveryInstructions, setDeliveryInstructions] = useState("");
+
+  const instructionPresets = [
+    "🔔 Ring the doorbell",
+    "🚪 Leave at gate / door",
+    "📞 Call before delivery",
+    "❄️ Keep in shade / cool place",
+    "🥛 Handle with care (Fresh Dairy)",
+    "🤫 Do not ring bell / Silent delivery",
+  ];
+
   const handlePaymentMode = () => {
     if (!deliveryAddress) {
       enqueueSnackbar("Please select a delivery address before proceeding to checkout.", { variant: "error" });
@@ -181,6 +199,7 @@ export default function OrderCheckoutPage() {
       }),
       paymentMode: selectedMode,
       totalAmount: totalAmount,
+      deliveryInstructions: deliveryInstructions.trim(),
       userId: currentUser?._id || currentUser?.id,
       date: new Date().toISOString()
     };
@@ -328,68 +347,67 @@ export default function OrderCheckoutPage() {
     <>
       {/* Checkout Container */}
       <section className="max-w-5xl mx-auto pt-20 sm:pt-24 pb-12 px-4 sm:px-6">
-        <motion.h1
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 mb-6 tracking-tight"
-        >
-          Confirm Order & Delivery
-        </motion.h1>
+        {/* Header Bar with Title and Address Action Buttons */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <motion.h1
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 tracking-tight"
+          >
+            Confirm Order & Delivery
+          </motion.h1>
+
+          <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+            {deliveryAddress && (
+              <button
+                type="button"
+                onClick={handleOpenEditAddress}
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/40 rounded-full border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer transition shadow-xs"
+              >
+                <Edit2 size={13} />
+                <span>Edit Address</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setAddressListOpen(true)}
+              className="px-4 py-2 text-xs font-bold text-white bg-[#6C5CE7] hover:bg-[#5b4cc4] rounded-full shadow-md transition cursor-pointer"
+            >
+              {deliveryAddress ? "Change Address" : "Add / Select Address"}
+            </button>
+          </div>
+        </div>
 
         {/* Delivery Address Glass Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
           className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-6 transition-colors duration-300"
         >
           {deliveryAddress ? (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-2 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">Deliver To</span>
-                  <span className="text-xs px-3 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20">
-                    {deliveryAddress?.addressType || "Home"}
-                  </span>
-                </div>
-                <h3 className="text-base font-black text-[#2D3748] dark:text-white">
-                  {deliveryAddress?.name} <span className="text-xs font-semibold text-gray-500">📞 ({deliveryAddress?.phone || "N/A"})</span>
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-[#718096] dark:text-gray-300 pt-1">
-                  {deliveryAddress?.hno && (
-                    <p><strong className="text-gray-900 dark:text-white">House No:</strong> {deliveryAddress.hno}</p>
-                  )}
-                  {deliveryAddress?.village && (
-                    <p><strong className="text-gray-900 dark:text-white">Village / Locality:</strong> {deliveryAddress.village}</p>
-                  )}
-                  <p className="sm:col-span-2">
-                    <strong className="text-gray-900 dark:text-white">Street / Landmark:</strong> {deliveryAddress?.streetAddress || "-"}
-                  </p>
-                  <p>
-                    <strong className="text-gray-900 dark:text-white">City / District:</strong> {deliveryAddress?.city || deliveryAddress?.district || "-"}
-                  </p>
-                  <p>
-                    <strong className="text-gray-900 dark:text-white">State & Pincode:</strong> {deliveryAddress?.state || "-"} - <span className="font-bold text-gray-900 dark:text-white">{deliveryAddress?.pincode || "-"}</span>
-                  </p>
-                </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">DELIVER TO</span>
+                <span className="text-xs px-3 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20 uppercase">
+                  {deliveryAddress?.addressType || "Home"}
+                </span>
               </div>
-              <div className="flex items-center gap-2 self-start sm:self-auto">
-                <button
-                  type="button"
-                  onClick={handleOpenEditAddress}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/40 rounded-full border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer transition"
-                >
-                  <Edit2 size={13} />
-                  <span>Edit Address</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAddressListOpen(true)}
-                  className="px-4 py-2 text-xs font-bold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition cursor-pointer"
-                >
-                  Change Address
-                </button>
-              </div>
+
+              {/* Main Primary Address Line: Door No / PG Name / House Name & Village / Locality */}
+              <h3 className="text-lg font-black text-[#2D3748] dark:text-white tracking-tight">
+                {[deliveryAddress?.hno, deliveryAddress?.village || deliveryAddress?.streetAddress].filter(Boolean).join(", ") || deliveryAddress?.streetAddress || "Selected Delivery Location"}
+              </h3>
+
+              {/* Detailed Area & City / Pincode */}
+              <p className="text-xs font-medium text-[#718096] dark:text-gray-300">
+                {[deliveryAddress?.streetAddress !== deliveryAddress?.village ? deliveryAddress?.streetAddress : null, deliveryAddress?.city || deliveryAddress?.district, `${deliveryAddress?.state || ""} - ${deliveryAddress?.pincode || ""}`].filter(Boolean).join(", ")}
+              </p>
+
+              {/* Recipient Contact */}
+              <p className="text-xs text-gray-500 dark:text-gray-400 pt-1">
+                <span className="font-bold text-gray-800 dark:text-gray-200">Recipient:</span> {deliveryAddress?.name} <span className="font-semibold text-gray-500">📞 ({deliveryAddress?.phone || "N/A"})</span>
+              </p>
             </div>
           ) : (
             <div className="text-center py-4">
@@ -406,11 +424,65 @@ export default function OrderCheckoutPage() {
           )}
         </motion.div>
 
+        {/* Delivery Precautions & Special Instructions Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-6 space-y-3"
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-black text-[#2D3748] dark:text-white flex items-center gap-2">
+              <span className="text-amber-500 text-lg">⚠️</span> Delivery Precautions & Instructions
+            </h2>
+            <span className="text-xs font-bold text-gray-400">Optional</span>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Select quick delivery precautions or type specific instructions for your delivery partner:
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {instructionPresets.map((preset) => {
+              const isSelected = deliveryInstructions.includes(preset);
+              return (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      setDeliveryInstructions((prev) =>
+                        prev.replace(preset, "").replace(/,\s*,/g, ",").replace(/^,\s*|\s*,\s*$/g, "").trim()
+                      );
+                    } else {
+                      setDeliveryInstructions((prev) => (prev ? `${prev}, ${preset}` : preset));
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer border ${
+                    isSelected
+                      ? "bg-purple-100 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border-[#6C5CE7] shadow-xs"
+                      : "bg-gray-50 dark:bg-gray-700/40 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  {preset}
+                </button>
+              );
+            })}
+          </div>
+
+          <textarea
+            rows={2}
+            value={deliveryInstructions}
+            onChange={(e) => setDeliveryInstructions(e.target.value)}
+            placeholder="E.g., Leave at flat 402 door, call before arriving, handle milk packets carefully..."
+            className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]/50 transition mt-1"
+          />
+        </motion.div>
+
         {/* Order Summary & Price Details Glass Box */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
           className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-6 space-y-4"
         >
           <h2 className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700">
@@ -420,57 +492,73 @@ export default function OrderCheckoutPage() {
           <div className="space-y-3">
             {cartDetails.map((item, idx) => {
               const { discountedPrice, saved } = getDiscountedPrice(item.price, item.discount);
+              const itemTotal = discountedPrice * item.selectedQuantity;
+              const itemSaved = saved * item.selectedQuantity;
               const shouldAnimate = highlightedItems?.includes(item?.id);
 
               return (
                 <div
                   key={item.id || idx}
-                  className={`pb-3 border-b border-dashed border-gray-200 dark:border-gray-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition rounded-xl p-2 ${
+                  className={`pb-3 border-b border-dashed border-gray-200 dark:border-gray-700/80 space-y-1 transition rounded-xl p-2.5 ${
                     shouldAnimate ? "animate-pulse ring-2 ring-red-500 bg-red-500/10" : ""
                   }`}
                 >
-                  <div>
-                    <h4 className="font-extrabold text-sm text-[#2D3748] dark:text-white">
+                  <div className="flex justify-between items-start gap-2">
+                    <h4 className="font-extrabold text-sm text-[#2D3748] dark:text-white leading-tight">
                       {item.name}
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                      {item.selectedQuantity} {item.quantityUnit} ×{" "}
-                      <span className="line-through text-gray-400 mr-1">
-                        &#8377;{formatNumberWithCommas(item?.price)}
-                      </span>
-                      <span className="text-[#00B894] font-bold">
-                        &#8377;{formatNumberWithCommas(discountedPrice)}
-                      </span>
+                    <p className="font-black text-sm text-[#2D3748] dark:text-white shrink-0">
+                      &#8377;{formatNumberWithCommas(itemTotal)}
                     </p>
                   </div>
 
-                  <div className="text-left sm:text-right">
-                    <p className="font-black text-sm text-[#2D3748] dark:text-white">
-                      &#8377;{formatNumberWithCommas(discountedPrice * item.selectedQuantity)}
-                    </p>
-                    {saved > 0 && (
-                      <p className="text-[11px] text-[#00B894] font-bold">
-                        Saved &#8377;{formatNumberWithCommas(saved * item.selectedQuantity)}
-                      </p>
+                  <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+                    <span>
+                      {item.selectedQuantity} {item.quantityUnit} ×{" "}
+                      {item.discount > 0 && (
+                        <span className="line-through text-gray-400 mr-1">
+                          &#8377;{formatNumberWithCommas(item?.price)}
+                        </span>
+                      )}
+                      <span className="text-[#00B894] font-bold">
+                        &#8377;{formatNumberWithCommas(discountedPrice)}
+                      </span>
+                    </span>
+                    {item.discount > 0 && (
+                      <span className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 px-1.5 py-0.5 rounded font-bold">
+                        {item.discount}% OFF
+                      </span>
                     )}
                   </div>
+
+                  {itemSaved > 0 && (
+                    <div className="flex justify-between items-center text-[11px] text-[#00B894] font-bold pt-0.5">
+                      <span>Product Discount:</span>
+                      <span>- &#8377;{formatNumberWithCommas(itemSaved)}</span>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
           <div className="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2 text-xs">
-            <div className="flex justify-between font-bold text-gray-500 dark:text-gray-400">
+            <div className="flex justify-between font-bold text-gray-600 dark:text-gray-400">
               <span>Total MRP</span>
               <span>&#8377;{formatNumberWithCommas(subtotal)}</span>
             </div>
 
             {totalSaving > 0 && (
               <div className="flex justify-between font-bold text-[#00B894]">
-                <span>You Saved</span>
+                <span>Total Product Discount</span>
                 <span>- &#8377;{formatNumberWithCommas(totalSaving)}</span>
               </div>
             )}
+
+            <div className="flex justify-between font-bold text-gray-600 dark:text-gray-400">
+              <span>Delivery Charges</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase">FREE</span>
+            </div>
 
             <div className="flex justify-between text-lg font-black text-[#6C5CE7] dark:text-purple-400 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700">
               <span>Final Payable</span>
@@ -483,7 +571,7 @@ export default function OrderCheckoutPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ duration: 0.22, delay: 0.1 }}
           className="flex flex-col sm:flex-row items-center justify-between gap-4"
         >
           <Link

@@ -49,9 +49,9 @@ export default function AboutPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[480px] bg-blue-500/15 dark:bg-blue-600/20 blur-[130px] rounded-full pointer-events-none" />
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto"
         >
           {/* Highlight Badge */}
@@ -64,9 +64,9 @@ export default function AboutPage() {
 
           {/* Centralized Logo Display (Without Background Box) */}
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            transition={{ duration: 0.22, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
             className="mb-8 flex items-center justify-center w-full"
           >
             <img

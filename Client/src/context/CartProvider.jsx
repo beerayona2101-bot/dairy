@@ -14,6 +14,46 @@ export const CartProvider = ({ children }) => {
 
     useEffect(() => {
         const key = getCartKey();
+        
+        // Merge guest cart if user just logged in
+        if (authUser?._id) {
+            const guestCartRaw = localStorage.getItem("cart_guest");
+            if (guestCartRaw) {
+                try {
+                    const guestCart = JSON.parse(guestCartRaw);
+                    if (Array.isArray(guestCart) && guestCart.length > 0) {
+                        const userCartRaw = localStorage.getItem(key);
+                        let userCart = [];
+                        if (userCartRaw) {
+                            try { userCart = JSON.parse(userCartRaw); } catch {}
+                        }
+                        
+                        const mergedMap = new Map();
+                        (userCart || []).forEach(item => mergedMap.set(String(item.productId), item));
+                        
+                        guestCart.forEach(guestItem => {
+                            const pId = String(guestItem.productId);
+                            if (mergedMap.has(pId)) {
+                                const existing = mergedMap.get(pId);
+                                const newQty = Number((Number(existing.quantity) + Number(guestItem.quantity)).toFixed(3));
+                                mergedMap.set(pId, { ...existing, quantity: newQty });
+                            } else {
+                                mergedMap.set(pId, guestItem);
+                            }
+                        });
+                        
+                        const mergedCart = Array.from(mergedMap.values());
+                        localStorage.setItem(key, JSON.stringify(mergedCart));
+                        localStorage.removeItem("cart_guest");
+                        setCartItems(mergedCart);
+                        return;
+                    }
+                } catch (err) {
+                    console.warn("Failed to merge guest cart:", err);
+                }
+            }
+        }
+
         const stored = localStorage.getItem(key);
         if (stored) {
             try {
@@ -33,14 +73,17 @@ export const CartProvider = ({ children }) => {
     }, [cartItems, getCartKey]);
 
     const addToCart = (productId, quantity, price) => {
+        if (!productId) return;
         const formattedQuantity = Number(Number(quantity).toFixed(3));
         if (formattedQuantity <= 0) return;
 
+        const targetId = String(productId);
+
         setCartItems(prev => {
-            const existing = prev.find(item => item.productId === productId);
+            const existing = prev.find(item => String(item.productId) === targetId);
             if (existing) {
                 return prev.map(item =>
-                    item.productId === productId
+                    String(item.productId) === targetId
                         ? {
                             ...item,
                             quantity: Number((item.quantity + formattedQuantity).toFixed(3))

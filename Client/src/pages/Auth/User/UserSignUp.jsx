@@ -83,11 +83,11 @@ export default function UserSignUp() {
   return (
     <div className="relative flex min-h-screen h-screen w-full bg-white dark:bg-[#161B22] transition-colors duration-300 overflow-hidden">
       {/* Floating Top Nav Buttons */}
-      <div className="absolute top-6 left-6 right-6 sm:left-10 sm:right-10 flex items-center justify-between z-30">
+      <div className="absolute top-6 left-6 right-6 sm:left-10 sm:right-10 flex items-center justify-between z-30 pointer-events-none">
         <button
           type="button"
           onClick={handleGoBack}
-          className="flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-sm hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
+          className="pointer-events-auto flex items-center gap-2 px-4 py-2 bg-gray-100/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -95,7 +95,7 @@ export default function UserSignUp() {
 
         <Link
           to="/home"
-          className="flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-sm hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
+          className="pointer-events-auto flex items-center gap-2 px-4 py-2 bg-white/20 dark:bg-white/10 text-white border border-white/30 rounded-xl shadow-sm hover:bg-white/30 transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
         >
           <Home className="w-4 h-4" />
           <span>Home</span>
@@ -110,16 +110,16 @@ export default function UserSignUp() {
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full h-full flex flex-col md:flex-row overflow-hidden"
       >
-        {/* LEFT PANEL - Brand Color Banner with Centered Brand Logo */}
-        <div className="w-full md:w-1/2 h-full bg-gradient-to-br from-[#0F2742] via-[#1E88E5] to-[#1565C0] p-8 sm:p-12 lg:p-16 text-white relative flex flex-col justify-between items-center text-center overflow-hidden min-h-[320px] md:min-h-full">
+        {/* LEFT PANEL - White/Light Background Theme */}
+        <div className="w-full md:w-1/2 h-full bg-white dark:bg-[#161B22] p-8 sm:p-12 lg:p-16 text-gray-800 dark:text-white relative flex flex-col justify-between items-center text-center overflow-hidden min-h-[320px] md:min-h-full">
           {/* Vector Background Overlay */}
           <svg
-            className="absolute inset-0 w-full h-full pointer-events-none opacity-25"
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-20"
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
               <pattern
-                id="signup-full-grid"
+                id="signup-white-grid"
                 width="36"
                 height="36"
                 patternUnits="userSpaceOnUse"
@@ -127,19 +127,19 @@ export default function UserSignUp() {
                 <path
                   d="M 36 0 L 0 0 0 36"
                   fill="none"
-                  stroke="rgba(255, 255, 255, 0.18)"
+                  stroke="rgba(30, 136, 229, 0.2)"
                   strokeWidth="1"
                 />
               </pattern>
             </defs>
 
-            <rect width="100%" height="100%" fill="url(#signup-full-grid)" />
+            <rect width="100%" height="100%" fill="url(#signup-white-grid)" />
             <circle
               cx="80%"
               cy="20%"
               r="140"
               fill="none"
-              stroke="rgba(255, 255, 255, 0.2)"
+              stroke="rgba(30, 136, 229, 0.15)"
               strokeWidth="1.5"
             />
             <circle
@@ -147,7 +147,7 @@ export default function UserSignUp() {
               cy="80%"
               r="160"
               fill="none"
-              stroke="rgba(255, 255, 255, 0.15)"
+              stroke="rgba(30, 136, 229, 0.12)"
               strokeWidth="1.5"
             />
           </svg>
@@ -162,18 +162,18 @@ export default function UserSignUp() {
               <img
                 src={brandLogo}
                 alt={company?.name || "Brand Logo"}
-                className="h-24 sm:h-28 md:h-32 lg:h-36 w-auto object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:scale-105"
+                className="h-24 sm:h-28 md:h-32 lg:h-36 w-auto object-contain drop-shadow-[0_8px_20px_rgba(30,136,229,0.18)] transition-transform duration-300 hover:scale-105"
               />
             </div>
 
-            <p className="text-blue-100 font-medium text-sm sm:text-base mb-1 tracking-wide">
+            <p className="text-[#1E88E5] dark:text-blue-300 font-semibold text-sm sm:text-base mb-1 tracking-wide">
               Create Your Free Account
             </p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-white uppercase leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-[#1E88E5] dark:text-[#42A5F5] uppercase leading-tight">
               JOIN US TODAY
             </h1>
-            <div className="w-12 h-1 bg-white/90 rounded-full my-4 shadow-sm" />
-            <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed max-w-sm font-light">
+            <div className="w-12 h-1 bg-[#1E88E5] rounded-full my-4 shadow-sm" />
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 leading-relaxed max-w-sm font-normal">
               {company?.tagline ||
                 company?.description ||
                 "Bringing Nature's Best, Straight to Your Home"}
@@ -181,20 +181,44 @@ export default function UserSignUp() {
           </div>
 
           {/* Bottom Accent Note */}
-          <div className="relative z-10 text-xs text-blue-200/70 font-medium tracking-wide pb-4">
+          <div className="relative z-10 text-xs text-gray-400 dark:text-gray-500 font-medium tracking-wide pb-4">
             © {new Date().getFullYear()} {company?.name}. All rights reserved.
           </div>
         </div>
 
-        {/* RIGHT PANEL - Form (Full Height & Centered) */}
-        <div className="w-full md:w-1/2 h-full p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-white dark:bg-[#161B22] text-gray-800 dark:text-gray-100 relative overflow-y-auto">
-          <div className="max-w-md w-full mx-auto my-auto">
+        {/* RIGHT PANEL - Blue Gradient Background Theme with White Form Fields */}
+        <div className="w-full md:w-1/2 h-full p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-gradient-to-br from-[#0F2742] via-[#1E88E5] to-[#1565C0] text-white relative overflow-y-auto">
+          {/* Vector Background Overlay */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-25"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <pattern
+                id="signup-blue-grid"
+                width="36"
+                height="36"
+                patternUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M 36 0 L 0 0 0 36"
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.18)"
+                  strokeWidth="1"
+                />
+              </pattern>
+            </defs>
+
+            <rect width="100%" height="100%" fill="url(#signup-blue-grid)" />
+          </svg>
+
+          <div className="max-w-md w-full mx-auto my-auto relative z-10">
             {/* Title Section */}
             <div className="text-center md:text-left mb-6">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E88E5] dark:text-[#42A5F5] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                 Create Account
               </h2>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">
+              <p className="text-xs sm:text-sm text-blue-100 mt-2 font-medium">
                 Please enter your details to sign up
               </p>
             </div>
@@ -202,8 +226,8 @@ export default function UserSignUp() {
             {/* Sign Up Form */}
             <form onSubmit={handleFormSubmit} className="space-y-4">
               {/* Email Input Field */}
-              <div className="relative rounded-2xl overflow-hidden bg-[#F4F6F9] dark:bg-[#21262D] border border-gray-200/80 dark:border-gray-700/80 focus-within:border-[#1E88E5] focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition-all">
-                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1E88E5]" />
+              <div className="relative rounded-2xl overflow-hidden bg-white/95 dark:bg-gray-900/95 border border-white/50 focus-within:border-white focus-within:ring-2 focus-within:ring-white/40 shadow-md transition-all">
+                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1565C0]" />
                 <input
                   type="email"
                   id="email"
@@ -211,14 +235,14 @@ export default function UserSignUp() {
                   placeholder="Enter your email address"
                   value={formData?.email}
                   onChange={handleInputChange}
-                  className="w-full pl-5 pr-4 py-3.5 bg-transparent text-sm sm:text-base text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none font-medium"
+                  className="w-full pl-5 pr-4 py-3.5 bg-transparent text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
                   required
                 />
               </div>
 
               {/* Password Input Field */}
-              <div className="relative rounded-2xl overflow-hidden bg-[#F4F6F9] dark:bg-[#21262D] border border-gray-200/80 dark:border-gray-700/80 focus-within:border-[#1E88E5] focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition-all">
-                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1E88E5]" />
+              <div className="relative rounded-2xl overflow-hidden bg-white/95 dark:bg-gray-900/95 border border-white/50 focus-within:border-white focus-within:ring-2 focus-within:ring-white/40 shadow-md transition-all">
+                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1565C0]" />
                 <input
                   id="password"
                   name="password"
@@ -226,13 +250,13 @@ export default function UserSignUp() {
                   type={showPassword ? "text" : "password"}
                   value={formData?.password}
                   onChange={handleInputChange}
-                  className="w-full pl-5 pr-11 py-3.5 bg-transparent text-sm sm:text-base text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none font-medium"
+                  className="w-full pl-5 pr-11 py-3.5 bg-transparent text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer p-1 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer p-1 transition-colors"
                 >
                   {showPassword ? (
                     <Eye className="w-5 h-5" />
@@ -243,8 +267,8 @@ export default function UserSignUp() {
               </div>
 
               {/* Confirm Password Input Field */}
-              <div className="relative rounded-2xl overflow-hidden bg-[#F4F6F9] dark:bg-[#21262D] border border-gray-200/80 dark:border-gray-700/80 focus-within:border-[#1E88E5] focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition-all">
-                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1E88E5]" />
+              <div className="relative rounded-2xl overflow-hidden bg-white/95 dark:bg-gray-900/95 border border-white/50 focus-within:border-white focus-within:ring-2 focus-within:ring-white/40 shadow-md transition-all">
+                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1565C0]" />
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -252,13 +276,13 @@ export default function UserSignUp() {
                   type={showPassword ? "text" : "password"}
                   value={formData?.confirmPassword}
                   onChange={handleInputChange}
-                  className="w-full pl-5 pr-11 py-3.5 bg-transparent text-sm sm:text-base text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none font-medium"
+                  className="w-full pl-5 pr-11 py-3.5 bg-transparent text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer p-1 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer p-1 transition-colors"
                 >
                   {showPassword ? (
                     <Eye className="w-5 h-5" />
@@ -269,20 +293,20 @@ export default function UserSignUp() {
               </div>
 
               {/* Terms Checkbox */}
-              <div className="flex items-center gap-2 pt-1 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
+              <div className="flex items-center gap-2 pt-1 text-xs sm:text-sm font-medium text-white">
                 <input
                   id="terms"
                   type="checkbox"
                   required
-                  className="w-4 h-4 rounded border-gray-300 text-[#1E88E5] focus:ring-[#1E88E5] accent-[#1E88E5] cursor-pointer"
+                  className="w-4 h-4 rounded border-white/50 text-[#1E88E5] focus:ring-white accent-white cursor-pointer"
                 />
-                <label htmlFor="terms" className="cursor-pointer">
+                <label htmlFor="terms" className="cursor-pointer text-blue-50">
                   I agree to the{" "}
-                  <span className="text-[#1E88E5] dark:text-[#42A5F5] font-semibold hover:underline">
+                  <span className="text-white font-bold underline underline-offset-2 hover:text-blue-100">
                     Terms
                   </span>{" "}
                   and{" "}
-                  <span className="text-[#1E88E5] dark:text-[#42A5F5] font-semibold hover:underline">
+                  <span className="text-white font-bold underline underline-offset-2 hover:text-blue-100">
                     Privacy Policy
                   </span>
                 </label>
@@ -292,7 +316,7 @@ export default function UserSignUp() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 px-6 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] active:scale-[0.99] text-white font-bold text-sm tracking-widest uppercase shadow-lg shadow-blue-500/30 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-5"
+                className="w-full py-4 px-6 rounded-full bg-white hover:bg-blue-50 active:scale-[0.99] text-[#1E88E5] font-extrabold text-sm tracking-widest uppercase shadow-xl shadow-black/15 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-5"
               >
                 {isLoading ? (
                   <BuffaloLoader variant="button" text="Signing up..." />
@@ -304,11 +328,11 @@ export default function UserSignUp() {
 
             {/* Already have an account link */}
             <div className="mt-6 text-center">
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
+              <p className="text-xs sm:text-sm text-blue-100 font-medium">
                 Already have an account?{" "}
                 <Link
                   to="/login"
-                  className="text-[#1E88E5] dark:text-[#42A5F5] font-semibold hover:underline cursor-pointer ml-1"
+                  className="text-white font-extrabold hover:underline cursor-pointer ml-1"
                 >
                   Login
                 </Link>

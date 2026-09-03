@@ -136,6 +136,8 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
             <img
                 src={transparentUrl || image || "/assets/showcase/milk_hd.png"}
                 alt={title}
+                loading="lazy"
+                decoding="async"
                 className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );
@@ -146,6 +148,8 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
             <img
                 src={transparentUrl || image || "/assets/showcase/lassi_hd.png"}
                 alt={title}
+                loading="lazy"
+                decoding="async"
                 className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );
@@ -156,6 +160,8 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
             <img
                 src={transparentUrl || image || "/assets/showcase/buttermilk_hd.png"}
                 alt={title}
+                loading="lazy"
+                decoding="async"
                 className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );
@@ -166,6 +172,8 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
             <img
                 src={transparentUrl || image || "/assets/showcase/ghee_hd.png"}
                 alt={title}
+                loading="lazy"
+                decoding="async"
                 className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );

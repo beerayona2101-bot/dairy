@@ -8,6 +8,8 @@ import { AdminAuthContext } from "../context/AuthProvider";
 import AdminOrderProvider from "../context/AdminOrderProvider";
 import BuffaloLoader from "../components/BuffaloLoader";
 
+import PageTransition from "../components/PageTransition";
+
 export default function AdminLayout({ children }) {
 
     const scrollRef = useRef(null);
@@ -36,9 +38,11 @@ export default function AdminLayout({ children }) {
             <SidebarProvider>
                 <div ref={scrollRef} className="h-screen scroll-smooth flex overflow-hidden bg-[#EFF1F5] dark:bg-gray-900 text-[#2D3748] dark:text-white transition-colors duration-300">
                     <Sidebar />
-                    <main className="flex-1 h-full overflow-y-auto overflow-x-hidden">
+                    <main className="flex-1 h-full overflow-y-auto overflow-x-hidden flex flex-col">
                         <AdminNavbar />
-                        {children}
+                        <PageTransition key={location.pathname}>
+                            {children}
+                        </PageTransition>
                     </main>
                 </div>
             </SidebarProvider>

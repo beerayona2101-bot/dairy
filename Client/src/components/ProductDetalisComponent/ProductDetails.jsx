@@ -309,6 +309,8 @@ export default function ProductDetails({ productId: propProductId }) {
                             <img
                                 src={selectedImage}
                                 alt={selectedProduct?.name || "Main product"}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover rounded-none md:rounded-2xl"
                             />
                         )}

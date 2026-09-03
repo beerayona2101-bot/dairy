@@ -69,6 +69,11 @@ const OrderSchema = new Schema(
       required: true,
       min: 0,
     },
+
+    deliveryInstructions: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

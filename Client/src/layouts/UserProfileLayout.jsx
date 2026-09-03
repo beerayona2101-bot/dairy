@@ -7,6 +7,8 @@ import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider";
 import PropTypes from "prop-types";
 import BuffaloLoader from "../components/BuffaloLoader";
 
+import PageTransition from "../components/PageTransition";
+
 export default function UserProfileLayout({ children }) {
     const scrollRef = useRef(null);
     const location = useLocation();
@@ -43,7 +45,9 @@ export default function UserProfileLayout({ children }) {
                 </div>
 
                 <div className="flex-1 w-full min-w-0 h-full rounded-[24px] shadow-sm bg-white dark:bg-gray-800/85 backdrop-blur-[16px] dark:text-white p-4 sm:p-6 transition-all duration-300 border border-white/90 dark:border-gray-700/80 flex flex-col overflow-hidden">
-                    {children}
+                    <PageTransition key={location.pathname} className="h-full flex flex-col">
+                        {children}
+                    </PageTransition>
                 </div>
             </main>
         </div>

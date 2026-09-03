@@ -109,10 +109,10 @@ export default function LandingPage() {
                     {shuffledCategories.map((product, index) => (
                         <motion.div
                             key={`shuffled-cat-${index}-${product.title || product.name}`}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: 0.05 * index }}
+                            transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.15), ease: [0.16, 1, 0.3, 1] }}
                         >
                             <ProductCard
                                 title={product.title || product.name}

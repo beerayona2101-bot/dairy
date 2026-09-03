@@ -14,6 +14,7 @@ import {
 } from "react-icons/md";
 import { UserAuthContext } from "../../context/AuthProvider";
 import { UserOrderContext } from "../../context/UserOrderProvider";
+import { getUserOrders } from "../../services/orderService";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import { formatNumberWithCommas } from "../../utils/format";
 import { useSnackbar } from "notistack";
@@ -125,9 +126,9 @@ export default function UserDashboard() {
         {statCards.map((card, idx) => (
           <motion.div
             key={card.title}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.08 }}
+            transition={{ delay: idx * 0.03, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             onClick={() => navigate(card.link)}
             className={`p-4 sm:p-5 rounded-xl border ${card.bg} shadow-sm hover:shadow-md transition-all cursor-pointer transform hover:-translate-y-1 flex flex-col justify-between group`}
           >

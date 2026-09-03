@@ -67,10 +67,15 @@ export default function UserLogin() {
             await fetchUserData(res?.user?._id);
 
             enqueueSnackbar("Login Successful!", { variant: "success" });
+
+            const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+            sessionStorage.removeItem("redirectAfterLogin");
+
             const userDest =
-              targetPath && !targetPath.startsWith("/admin")
+              storedRedirect ||
+              (targetPath && !targetPath.startsWith("/admin")
                 ? targetPath
-                : "/home";
+                : "/cart");
             navigate(userDest);
           }
         }

@@ -12,28 +12,26 @@ export const getDiscountedPrice = (price, discountPercent) => {
 };
 
 const UNIQUE_PRODUCT_IMAGES = {
-  "Madhur Fresh Whole Cow Milk": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969530/madhur_dairy_products/ftq2d0zfpaw96wiu0cvv.jpg",
-  "Madhur Buffalo Toned Milk": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969528/madhur_dairy_products/m1andk2jgffuklldfaw5.jpg",
-  "Madhur Fresh Malai Paneer": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969545/madhur_dairy_products/fjzgvoiujr6wco1s8frv.jpg",
-  "Madhur Organic Desi Cow Ghee": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969537/madhur_dairy_products/eg07fuoa6yyz16kp2duy.jpg",
-  "Madhur Natural Thick Curd": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969548/madhur_dairy_products/tpk19n9emretjunded8t.jpg",
-  "Madhur Salted Cooking Butter": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969529/madhur_dairy_products/uftolohqiilawevlbgmu.jpg",
-  "Madhur Shredded Mozzarella Cheese": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969547/madhur_dairy_products/chq0qfbl2ttirwsb74zv.jpg",
-  "Madhur Sweet Punjabi Malai Lassi": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969544/madhur_dairy_products/umhuttcbgjekli62ibjr.jpg",
-  "Madhur Spiced Masala Chaas": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969546/madhur_dairy_products/kkludx8awoi1fca0fd5b.jpg",
-  "Madhur Pure Fresh Khoya (Mawa)": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969543/madhur_dairy_products/sihobwplxrwso3zfbtkd.jpg",
-  "Madhur Creamy Kesar Basundi": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969540/madhur_dairy_products/u64iwoyr5mlfcwmync6c.jpg",
-  "Madhur Kesar Shrikhand": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969542/madhur_dairy_products/tae6as2rrwwcfeudvcwd.jpg",
-  "Madhur Fresh Dairy Cream": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969531/madhur_dairy_products/w5qjc7dlwh80lzgvfdj3.jpg",
-  "Madhur Premium Dairy Milk Powder": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969547/madhur_dairy_products/kfdrncte8psxmqrryiyz.jpg",
-  "Madhur Soft Gulab Jamun": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969538/madhur_dairy_products/ib5rbqpl14iwzsn8ye50.jpg",
-  "Madhur Classic Bengali Rasgulla": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969527/madhur_dairy_products/a5fyz1ce2lxul5uz5wx0.jpg",
-  "Madhur Mathura Kesar Peda": "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969541/madhur_dairy_products/shjs3gz3eblnlg7kvsc7.jpg",
+  "Madhur Fresh Whole Cow Milk": "/images/madhur_cow_milk.png",
+  "Madhur Buffalo Toned Milk": "/images/madhur_buffalo_milk.png",
+  "Madhur Fresh Malai Paneer": "/images/madhur_malai_paneer.png",
+  "Madhur Organic Desi Cow Ghee": "/images/madhur_desi_ghee.png",
+  "Madhur Natural Thick Curd": "/images/madhur_thick_curd.png",
+  "Madhur Salted Cooking Butter": "/images/madhur_cooking_butter.png",
+  "Madhur Shredded Mozzarella Cheese": "/images/madhur_mozzarella_cheese.png",
+  "Madhur Sweet Punjabi Malai Lassi": "/images/madhur_malai_lassi.png",
+  "Madhur Spiced Masala Chaas": "/images/madhur_masala_chaas.png",
+  "Madhur Pure Fresh Khoya (Mawa)": "/images/madhur_khoya_mawa.png",
+  "Madhur Creamy Kesar Basundi": "/images/madhur_kesar_basundi.png",
+  "Madhur Kesar Shrikhand": "/images/madhur_kesar_shrikhand.png",
+  "Madhur Fresh Dairy Cream": "/images/madhur_dairy_cream.png",
+  "Madhur Premium Dairy Milk Powder": "/images/madhur_milk_powder.png",
+  "Madhur Soft Gulab Jamun": "/images/madhur_gulab_jamun.png",
+  "Madhur Classic Bengali Rasgulla": "/images/madhur_bengali_rasgulla.png",
+  "Madhur Mathura Kesar Peda": "/images/madhur_kesar_peda.png",
 };
 
 export const getProductImage = (item, fallbackName = "") => {
-  if (!item) return UNIQUE_PRODUCT_IMAGES[fallbackName] || "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969530/madhur_dairy_products/ftq2d0zfpaw96wiu0cvv.jpg";
-
   let name = "";
   let imageProp = null;
 
@@ -41,9 +39,9 @@ export const getProductImage = (item, fallbackName = "") => {
     if (UNIQUE_PRODUCT_IMAGES[item]) return UNIQUE_PRODUCT_IMAGES[item];
     imageProp = item;
     name = fallbackName;
-  } else if (typeof item === "object") {
+  } else if (typeof item === "object" && item !== null) {
     name = item.name || item.title || item.productName || fallbackName || "";
-    imageProp = item.image || item.photo || item.imageURL;
+    imageProp = Array.isArray(item.image) ? item.image[0] : (item.image || item.photo || item.imageURL);
   }
 
   // 1. Check exact product name match
@@ -65,7 +63,7 @@ export const getProductImage = (item, fallbackName = "") => {
   if (name) {
     const n = name.toLowerCase();
     if (n.includes("milk powder") || n.includes("powder")) return UNIQUE_PRODUCT_IMAGES["Madhur Premium Dairy Milk Powder"];
-    if (n.includes("cow milk")) return UNIQUE_PRODUCT_IMAGES["Madhur Fresh Whole Cow Milk"];
+    if (n.includes("cow milk") || n.includes("whole milk")) return UNIQUE_PRODUCT_IMAGES["Madhur Fresh Whole Cow Milk"];
     if (n.includes("toned milk") || n.includes("buffalo")) return UNIQUE_PRODUCT_IMAGES["Madhur Buffalo Toned Milk"];
     if (n.includes("paneer")) return UNIQUE_PRODUCT_IMAGES["Madhur Fresh Malai Paneer"];
     if (n.includes("ghee")) return UNIQUE_PRODUCT_IMAGES["Madhur Organic Desi Cow Ghee"];
@@ -81,21 +79,19 @@ export const getProductImage = (item, fallbackName = "") => {
     if (n.includes("gulab") || n.includes("jamun")) return UNIQUE_PRODUCT_IMAGES["Madhur Soft Gulab Jamun"];
     if (n.includes("rasgulla") || n.includes("rosogolla")) return UNIQUE_PRODUCT_IMAGES["Madhur Classic Bengali Rasgulla"];
     if (n.includes("peda")) return UNIQUE_PRODUCT_IMAGES["Madhur Mathura Kesar Peda"];
+    if (n.includes("milk")) return UNIQUE_PRODUCT_IMAGES["Madhur Fresh Whole Cow Milk"];
   }
 
-  // 4. Valid image string check (ignore legacy shared defaults)
+  // 4. Valid image string check (exclude unsplash random cat photos)
   if (typeof imageProp === "string" && imageProp.trim()) {
-    if (!imageProp.includes("madhur_dairy_milk.png") && !imageProp.includes("madhur_dairy_paneer.png") && !imageProp.includes("madhur_dairy_ghee.png")) {
+    if (
+      !imageProp.includes("unsplash.com") &&
+      !imageProp.includes("madhur_dairy_milk.png") &&
+      !imageProp.includes("madhur_dairy_paneer.png") &&
+      !imageProp.includes("madhur_dairy_ghee.png")
+    ) {
       return imageProp;
     }
-  }
-
-  if (Array.isArray(imageProp) && imageProp.length > 0) {
-    const first = imageProp[0];
-    if (typeof first === "string" && first.trim() && !first.includes("madhur_dairy_milk.png") && !first.includes("madhur_dairy_paneer.png") && !first.includes("madhur_dairy_ghee.png")) {
-      return first;
-    }
-    if (first && typeof first === "object" && typeof first.url === "string" && first.url.trim()) return first.url;
   }
 
   return "/images/madhur_cow_milk.png";
