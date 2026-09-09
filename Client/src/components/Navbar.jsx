@@ -241,9 +241,7 @@ export default function Navbar() {
         }
     };
 
-    const displayLogo = theme === "dark"
-        ? (company?.logoDaraTheme || logoDarkMode)
-        : (company?.logoLightTheme || logoLightMode);
+    const displayLogo = theme === "dark" ? logoDarkMode : logoLightMode;
 
     const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
     const openProfileMenu = Boolean(profileMenuAnchor);
@@ -326,36 +324,17 @@ export default function Navbar() {
                 isScrolling ? "-translate-y-full lg:translate-y-0" : "translate-y-0"
             }`}>
                 <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
-                    {/* Left Brand Container: Cow icon on mobile, full logo on desktop */}
+                    {/* Left Brand Logo Container */}
                     <Link to="/" className="flex items-center hover:scale-105 transition-transform py-0.5 z-10">
                         <img
                             src={displayLogo}
-                            alt={company?.name || "Madhur Dairy"}
+                            alt={company?.name || "Madhu Dairy & Daily Needs"}
                             loading="eager"
                             decoding="sync"
-                            className="hidden md:block h-7 sm:h-8 md:h-8.5 w-auto object-contain drop-shadow-sm"
-                        />
-                        <img
-                            src={cowLogoImg}
-                            alt="Madhur Dairy Cow Logo"
-                            loading="eager"
-                            decoding="sync"
-                            className="block md:hidden h-8 sm:h-9 w-auto object-contain drop-shadow-xs"
+                            className="h-8 sm:h-9 md:h-10 lg:h-10.5 w-auto object-contain drop-shadow-sm transition-all duration-300"
                         />
                     </Link>
 
-                    {/* Mobile Center Brand Name Text Image (Visible ONLY on mobile) */}
-                    <div className="md:hidden absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <Link to="/" className="pointer-events-auto flex items-center justify-center">
-                            <img
-                                src={brandNameTxtImg}
-                                alt={company?.name || "Madhur Dairy"}
-                                loading="eager"
-                                decoding="sync"
-                                className="h-6.5 sm:h-7.5 max-h-8 w-auto object-contain drop-shadow-xs"
-                            />
-                        </Link>
-                    </div>
 
                     {/* Center Navigation Links: Default Black Text, Active Violet with Light Glow */}
                     {!hideNavItems && (
@@ -468,10 +447,10 @@ export default function Navbar() {
                     <Box key="admin-menu-container">
                         <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
                             <p className="text-xs font-black text-gray-800 dark:text-gray-100">
-                                {authAdmin?.name || "Madhur Admin"}
+                                {authAdmin?.name || "MADHU Admin"}
                             </p>
                             <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                                {authAdmin?.email || "admin@madhurdairy.com"}
+                                {authAdmin?.email || "admin@MADHUdairy.com"}
                             </p>
                             <span className="inline-block mt-1 px-2.5 py-0.5 text-[10px] font-extrabold bg-blue-100 text-[#6C5CE7] rounded-full">
                                 Administrator & Shopper
@@ -530,12 +509,34 @@ export default function Navbar() {
                         <MenuItem
                             onClick={() => {
                                 handleProfileMenuClose();
+                                navigate("/user-profile/dashboard");
+                            }}
+                            className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
+                        >
+                            <DashboardIcon fontSize="small" className="text-[#6C5CE7]" />
+                            <span>Dashboard</span>
+                        </MenuItem>
+
+                        <MenuItem
+                            onClick={() => {
+                                handleProfileMenuClose();
                                 navigate("/user-profile");
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
                         >
                             <PersonIcon fontSize="small" className="text-[#6C5CE7]" />
                             <span>My Profile</span>
+                        </MenuItem>
+
+                        <MenuItem
+                            onClick={() => {
+                                handleProfileMenuClose();
+                                navigate("/user-profile/orders");
+                            }}
+                            className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
+                        >
+                            <ShoppingCartIcon fontSize="small" className="text-[#6C5CE7]" />
+                            <span>My Orders</span>
                         </MenuItem>
 
                         <MenuItem

@@ -7,7 +7,7 @@ import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider";
 import PropTypes from "prop-types";
 import BuffaloLoader from "../components/BuffaloLoader";
 import PageTransition from "../components/PageTransition";
-import { Menu, X, User, ShoppingBag, MapPin, Heart, CreditCard, ChevronRight, Info, Headphones } from "lucide-react";
+import { Menu, X, User, ShoppingBag, MapPin, Heart, CreditCard, ChevronRight, Info, Headphones, LayoutDashboard } from "lucide-react";
 import { Drawer } from "@mui/material";
 
 export default function UserProfileLayout({ children }) {
@@ -28,6 +28,7 @@ export default function UserProfileLayout({ children }) {
     const userRole = sessionStorage.getItem("userRole");
 
     const mobileNavTabs = [
+        { key: "/user-profile/dashboard", label: "Dashboard", icon: <LayoutDashboard size={14} /> },
         { key: "/user-profile", label: "My Profile", icon: <User size={14} /> },
         { key: "/user-profile/orders", label: "My Orders", icon: <ShoppingBag size={14} /> },
         { key: "/user-profile/addresses", label: "Saved Addresses", icon: <MapPin size={14} /> },

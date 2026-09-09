@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa";
 import { Close } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard } from "lucide-react";
+import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard, LayoutDashboard } from "lucide-react";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import { UserAuthContext } from "../../context/AuthProvider";
 import { getUserProfile, updateUserProfile, deleteUserAccount, updateUserProfilePhoto } from "../../services/userProfileService";
@@ -391,6 +391,27 @@ export default function AccountInfo() {
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Dashboard Overview Menu Option */}
+                <div
+                  onClick={() => navigate("/user-profile/dashboard")}
+                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-indigo-100 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <LayoutDashboard size={22} />
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
+                        Dashboard Overview
+                      </h5>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        View account stats & activity summary
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight size={20} className="text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+                </div>
+
                 {/* My Orders Menu Option */}
                 <div
                   onClick={() => navigate("/user-profile/orders")}
@@ -489,7 +510,7 @@ export default function AccountInfo() {
                         About Us
                       </h5>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Learn about Madhur Dairy & quality
+                        Learn about MADHU Dairy & quality
                       </p>
                     </div>
                   </div>
@@ -732,7 +753,7 @@ export default function AccountInfo() {
               <Sparkles size={14} className="text-[#6C5CE7] animate-pulse" />
               Quick Support & Information
             </h4>
-            <span className="text-[10px] font-bold text-gray-400">Madhur Care</span>
+            <span className="text-[10px] font-bold text-gray-400">Madhu Care</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -1049,7 +1070,7 @@ export default function AccountInfo() {
               Are you sure you want to permanently delete your account (<span className="font-bold">{dbData?.email}</span>)?
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-              This action cannot be undone. All your profile data, saved delivery addresses, and account details will be permanently removed from Madhur Dairy.
+              This action cannot be undone. All your profile data, saved delivery addresses, and account details will be permanently removed from Madhu Dairy.
             </p>
           </DialogContent>
           <DialogActions className="p-3 border-t border-red-100 dark:border-red-900/50">

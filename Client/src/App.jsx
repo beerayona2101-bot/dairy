@@ -1,4 +1,4 @@
-// Madhur Dairy - Palette & UI Modernization Enforced
+// MADHU Dairy - Palette & UI Modernization Enforced
 import Routers from "./routes/Routers";
 import "./index.css";
 import { SnackbarProvider } from "notistack";

@@ -117,7 +117,7 @@ export default function CategoryCardsGrid({
       const repImage = getProductImage(items[0]);
       const defaultCard = {
         title: categoryName,
-        image: repImage || "/images/madhur_milk.png",
+        image: repImage || "/images/MADHU_milk.png",
         description: `Pure, fresh, high-quality ${categoryName} products delivered daily.`,
         features: ["100% Pure & Fresh", "Quality Guaranteed"],
       };
@@ -392,6 +392,10 @@ export default function CategoryCardsGrid({
                         <img
                           src={getProductImage(product)}
                           alt={product.name}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/images/madhu_cow_milk.png";
+                          }}
                           className="w-10 h-10 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shrink-0"
                         />
                         <span className="line-clamp-1 font-bold text-gray-900 dark:text-white">
@@ -536,7 +540,7 @@ export default function CategoryCardsGrid({
                 {/* Category Image Header Only */}
                 <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
                   <img
-                    src={showcaseCard?.image || repImage || "/images/madhur_milk.png"}
+                    src={showcaseCard?.image || repImage || "/images/MADHU_milk.png"}
                     alt={category}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

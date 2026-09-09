@@ -698,7 +698,7 @@ export const connectToSocket = (server) => {
             ?.replace(/\s+/g, " ")
             ?.toLowerCase()
             ?.replace(/\b\w/g, (char) => char.toUpperCase()),
-          image: [imageUrl || "/images/madhur_dairy_milk.png"],
+          image: [imageUrl || "/images/madhu_dairy_milk.png"],
           pngImage: pngImageUrl || productDetails?.pngImage || "",
         });
 

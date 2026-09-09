@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import BuffaloLoader from "./BuffaloLoader";
 
-export default function MadhurLoader({ fullScreen = false, text }) {
+export default function MadhuLoader({ fullScreen = false, text }) {
   return (
     <BuffaloLoader
       variant={fullScreen ? "full" : "inline"}
@@ -11,7 +11,7 @@ export default function MadhurLoader({ fullScreen = false, text }) {
   );
 }
 
-MadhurLoader.propTypes = {
+MadhuLoader.propTypes = {
   fullScreen: PropTypes.bool,
   text: PropTypes.string,
 };

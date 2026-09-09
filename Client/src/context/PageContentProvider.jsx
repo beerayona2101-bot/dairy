@@ -6,10 +6,10 @@ export const PageContentContext = createContext();
 
 export const PageContentProvider = ({ children }) => {
   const [pageContent, setPageContent] = useState({
-    companyName: "Madhur Dairy And Daily Needs",
+    companyName: "MADHU Dairy And Daily Needs",
     companyTagline: "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep",
     companyDescription:
-      "Madhur Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
+      "MADHU Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
     heroBannerImage: "/assets/home_welcome_hero_bg.png",
     landingHeroImage: "/assets/landing_hero_bg_hd.png",
     goodnessOfferings: [],

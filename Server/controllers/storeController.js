@@ -30,7 +30,7 @@ export const createCustomer = async (req, res) => {
 
   const effectivePassword = (password && password.trim())
     ? password.trim()
-    : `Madhur@${Math.floor(1000 + Math.random() * 9000)}`;
+    : `MADHU@${Math.floor(1000 + Math.random() * 9000)}`;
 
   const hashedPassword = await bcryptjs.hash(effectivePassword, 10);
   const photo = gender === "Female"

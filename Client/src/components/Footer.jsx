@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import company from "../data/company.json";
 import { Twitter, YouTube } from "@mui/icons-material";
+import logoDarkMode from "../assets/logoDarkMode.png";
+import logoLightMode from "../assets/logoLightMode.png";
 
 const containerVariants = {
   hidden: {},
@@ -31,9 +33,7 @@ const itemVariants = {
 function Footer() {
   const { theme } = useContext(ThemeContext);
 
-  const currentLogo = theme === "dark"
-    ? (company?.logoDaraTheme || logoDarkMode)
-    : (company?.logoLightTheme || logoLightMode);
+  const currentLogo = theme === "dark" ? logoDarkMode : logoLightMode;
 
   const socialIcons = [
     { key: "facebook", Icon: FacebookIcon, className: "hover:text-blue-600" },
@@ -58,7 +58,7 @@ function Footer() {
             <Link to="/" className="inline-block hover:scale-105 transition-transform">
               <img
                 src={currentLogo}
-                alt={company?.name || "Madhur Dairy"}
+                alt={company?.name || "MADHU Dairy"}
                 loading="eager"
                 decoding="sync"
                 className="h-10 sm:h-12 w-auto object-contain"
@@ -141,7 +141,7 @@ function Footer() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <p>© {new Date().getFullYear()} {company?.name || "Madhur Dairy"}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {company?.name || "MADHU Dairy"}. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span>Crafted with</span>
             <span className="text-red-400">❤️</span>

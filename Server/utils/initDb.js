@@ -6,7 +6,7 @@ import Review from "../models/ReviewSchema.js";
 import Admin from "../models/AdminSchema.js";
 
 const dbUrl =
-  "mongodb+srv://ujjwalAndNitinDb:Tn99S9ZWR6oZjJOE@madhurdairy.5kjnxzp.mongodb.net/?retryWrites=true&w=majority&appName=MadhurDairy";
+  "mongodb+srv://ujjwalAndNitinDb:Tn99S9ZWR6oZjJOE@MADHUdairy.5kjnxzp.mongodb.net/?retryWrites=true&w=majority&appName=MADHUDairy";
 
 mongoose
   .connect(dbUrl)

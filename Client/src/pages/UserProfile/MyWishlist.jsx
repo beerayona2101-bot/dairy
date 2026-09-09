@@ -284,6 +284,10 @@ export default function MyWishlist() {
                     <img
                       src={getProductImage(product)}
                       alt={product?.name || "Product"}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/images/madhu_cow_milk.png";
+                      }}
                       className="w-full h-full object-cover"
                     />
                     {product?.discount > 0 && (

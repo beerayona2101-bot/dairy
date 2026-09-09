@@ -8,7 +8,9 @@ import { loginUser } from "../../../services/userService";
 import company from "../../../data/company.json";
 import { Eye, EyeOff, X } from "lucide-react";
 import BuffaloLoader from "../../../components/BuffaloLoader";
+import { ThemeContext } from "../../../context/ThemeProvider";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
+import logoLightMode from "../../../assets/logoLightMode.png";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -17,6 +19,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function LoginDialog() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const { theme } = useContext(ThemeContext) || {};
 
   const {
     openLoginDialog,
@@ -31,7 +34,7 @@ export default function LoginDialog() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const brandLogo = logoDarkMode;
+  const brandLogo = theme === "dark" ? logoDarkMode : logoLightMode;
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();

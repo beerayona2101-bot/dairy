@@ -8,7 +8,7 @@ import { features } from "../data/productGoodness ";
 import { UserAuthContext } from "../context/AuthProvider";
 import { PageContentContext } from "../context/PageContentProvider";
 import company from "../data/company.json";
-import MadhurLoader from "../components/MadhurLoader";
+import MadhuLoader from "../components/MadhuLoader";
 import { MilkHealthBenefitsHero, DairyPromiseCardsSection } from "../components/HomeComponents/MilkHealthBenefitsSection";
 import ProductShowcase3D from "../components/HomeComponents/ProductShowcase3D";
 
@@ -83,7 +83,7 @@ export default function LandingPage() {
     }, [shuffledCategories.length]);
 
     if (pageLoading) {
-        return <MadhurLoader message="Fresh Dairy Goods Loading..." />;
+        return <MadhuLoader text="Fresh Dairy Goods Loading..." />;
     }
 
     return (

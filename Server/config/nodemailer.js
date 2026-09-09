@@ -116,15 +116,15 @@ export const sendWelcomeCredentialsEmail = async ({ toEmail, name, email, rawPas
 
   // 1. Send Welcome Email to Customer
   const customerMailOptions = {
-    from: `"Madhur Dairy & Daily Needs" <${adminEmail}>`,
+    from: `"MADHU Dairy & Daily Needs" <${adminEmail}>`,
     to: recipient,
-    subject: "🥛 Welcome to Madhur Dairy! Your Account & Credentials",
+    subject: "🥛 Welcome to MADHU Dairy! Your Account & Credentials",
     html: `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
         
         <!-- Header Banner -->
         <div style="background: linear-gradient(135deg, #00509E 0%, #003366 100%); color: #ffffff; padding: 32px 24px; text-align: center;">
-          <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 0.5px;">🥛 Madhur Dairy & Daily Needs</h1>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 0.5px;">🥛 MADHU Dairy & Daily Needs</h1>
           <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.95;">Pure, Fresh & Natural Dairy Delivered Daily</p>
         </div>
 
@@ -132,10 +132,10 @@ export const sendWelcomeCredentialsEmail = async ({ toEmail, name, email, rawPas
         <div style="padding: 32px 28px; color: #2d3748; line-height: 1.6;">
           
           <!-- Welcome Note -->
-          <h2 style="color: #00509E; margin-top: 0; font-size: 22px; font-weight: 700;">Welcome to Madhur Dairy, ${name || "Valued Customer"}! 🎉</h2>
+          <h2 style="color: #00509E; margin-top: 0; font-size: 22px; font-weight: 700;">Welcome to MADHU Dairy, ${name || "Valued Customer"}! 🎉</h2>
           
           <p style="font-size: 15px; color: #4a5568; margin-bottom: 20px;">
-            We are thrilled to welcome you to <strong>Madhur Dairy & Daily Needs</strong>! Your customer account has been set up successfully.
+            We are thrilled to welcome you to <strong>MADHU Dairy & Daily Needs</strong>! Your customer account has been set up successfully.
           </p>
 
           <div style="background-color: #f7fafc; border-left: 4px solid #00509E; border-radius: 8px; padding: 18px 20px; margin-bottom: 24px;">
@@ -195,7 +195,7 @@ export const sendWelcomeCredentialsEmail = async ({ toEmail, name, email, rawPas
 
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 28px 0;" />
           <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
-            Sent by Madhur Dairy & Daily Needs (${adminEmail}). Keep your account credentials safe and secure.
+            Sent by MADHU Dairy & Daily Needs (${adminEmail}). Keep your account credentials safe and secure.
           </p>
         </div>
       </div>
@@ -204,13 +204,13 @@ export const sendWelcomeCredentialsEmail = async ({ toEmail, name, email, rawPas
 
   // 2. Send Admin Alert Email to Admin Email (beerayona143@gmail.com)
   const adminMailOptions = {
-    from: `"Madhur Dairy System Alert" <${adminEmail}>`,
+    from: `"MADHU Dairy System Alert" <${adminEmail}>`,
     to: adminEmail,
     subject: `🔔 New User Registered: ${name || recipient}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 24px; background-color: #ffffff;">
         <h2 style="color: #00509E; margin-top: 0;">🎉 New User Registration Alert</h2>
-        <p style="font-size: 14px; color: #333;">A new customer account has just been created on Madhur Dairy & Daily Needs.</p>
+        <p style="font-size: 14px; color: #333;">A new customer account has just been created on MADHU Dairy & Daily Needs.</p>
         
         <div style="background: #f0f7ff; border-left: 4px solid #00509E; padding: 16px; border-radius: 6px; margin: 20px 0;">
           <h3 style="margin: 0 0 10px 0; color: #00509E;">📋 Account Credentials & Details</h3>
@@ -245,13 +245,13 @@ export const sendOtpEmail = async (toEmail, otp) => {
   console.log("==========================================\n");
 
   const mailOptions = {
-    from: `"Madhur Dairy" <${process.env.EMAIL_USER || "beerayona143@gmail.com"}>`,
+    from: `"MADHU Dairy" <${process.env.EMAIL_USER || "beerayona143@gmail.com"}>`,
     to: toEmail,
-    subject: "Your Madhur Dairy Verification Code (OTP)",
+    subject: "Your MADHU Dairy Verification Code (OTP)",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #843E71; color: #ffffff; padding: 20px; text-align: center;">
-          <h2 style="margin: 0;">Madhur Dairy & Daily Needs</h2>
+          <h2 style="margin: 0;">MADHU Dairy & Daily Needs</h2>
         </div>
         <div style="padding: 24px;">
           <p style="font-size: 16px; color: #333;">Hello,</p>
@@ -273,13 +273,13 @@ export const sendOtpEmail = async (toEmail, otp) => {
  */
 export const sendOrderConfirmationEmail = async ({ toEmail, orderId, totalAmount, paymentMode }) => {
   const mailOptions = {
-    from: `"Madhur Dairy Orders" <${process.env.EMAIL_USER || "beerayona143@gmail.com"}>`,
+    from: `"MADHU Dairy Orders" <${process.env.EMAIL_USER || "beerayona143@gmail.com"}>`,
     to: toEmail,
     subject: `Order Confirmation #${orderId}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 550px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #843E71; color: #ffffff; padding: 20px; text-align: center;">
-          <h2 style="margin: 0;">Madhur Dairy & Daily Needs</h2>
+          <h2 style="margin: 0;">MADHU Dairy & Daily Needs</h2>
           <p style="margin: 5px 0 0 0; font-size: 14px;">Order Placed Successfully!</p>
         </div>
         <div style="padding: 24px; color: #333;">
@@ -307,19 +307,19 @@ export const sendEnquiryAcknowledgementEmail = async ({ toEmail, name, phone, me
 
   // 1. User Acknowledgement Mail
   const userMailOptions = {
-    from: `"Madhur Dairy Support" <${adminEmail}>`,
+    from: `"MADHU Dairy Support" <${adminEmail}>`,
     to: toEmail,
-    subject: "🥛 We received your enquiry - Madhur Dairy & Daily Needs",
+    subject: "🥛 We received your enquiry - MADHU Dairy & Daily Needs",
     html: `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 580px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
         <div style="background: linear-gradient(135deg, #6C5CE7 0%, #4834D4 100%); color: #ffffff; padding: 28px 24px; text-align: center;">
-          <h2 style="margin: 0; font-size: 24px; font-weight: 800;">Madhur Dairy & Daily Needs</h2>
+          <h2 style="margin: 0; font-size: 24px; font-weight: 800;">MADHU Dairy & Daily Needs</h2>
           <p style="margin: 6px 0 0 0; font-size: 14px; opacity: 0.9;">Customer Care & Support</p>
         </div>
         <div style="padding: 28px 24px; color: #2d3748; line-height: 1.6;">
           <h3 style="color: #4834D4; margin-top: 0;">Hello ${name || "Valued Customer"},</h3>
           <p style="font-size: 15px; color: #4a5568;">
-            Thank you for reaching out to Madhur Dairy & Daily Needs! We have successfully received your enquiry. Our team is reviewing your message and will respond shortly.
+            Thank you for reaching out to MADHU Dairy & Daily Needs! We have successfully received your enquiry. Our team is reviewing your message and will respond shortly.
           </p>
           
           <div style="background-color: #f7fafc; border-left: 4px solid #6C5CE7; padding: 16px; border-radius: 8px; margin: 20px 0;">
@@ -337,7 +337,7 @@ export const sendEnquiryAcknowledgementEmail = async ({ toEmail, name, phone, me
           </p>
           <hr style="border: none; border-top: 1px solid #edf2f7; margin: 24px 0;" />
           <p style="font-size: 12px; color: #a0aec0; text-align: center; margin: 0;">
-            Sent by Madhur Dairy & Daily Needs (${adminEmail}).
+            Sent by MADHU Dairy & Daily Needs (${adminEmail}).
           </p>
         </div>
       </div>
@@ -346,7 +346,7 @@ export const sendEnquiryAcknowledgementEmail = async ({ toEmail, name, phone, me
 
   // 2. Admin Alert Mail
   const adminMailOptions = {
-    from: `"Madhur Enquiry System" <${adminEmail}>`,
+    from: `"MADHU Enquiry System" <${adminEmail}>`,
     to: adminEmail,
     subject: `📩 New Enquiry Received from ${name || toEmail}`,
     html: `
@@ -381,15 +381,15 @@ export const sendAdminEnquiryReplyEmail = async ({ toEmail, recipientName, enqui
   const senderEmail = adminEmail || process.env.EMAIL_USER || "beerayona143@gmail.com";
 
   const mailOptions = {
-    from: `"Madhur Dairy Admin Support" <${senderEmail}>`,
+    from: `"MADHU Dairy Admin Support" <${senderEmail}>`,
     to: toEmail,
-    subject: `💬 Response to your Enquiry - Madhur Dairy & Daily Needs`,
+    subject: `💬 Response to your Enquiry - MADHU Dairy & Daily Needs`,
     html: `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
         
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #00509E 0%, #6C5CE7 100%); color: #ffffff; padding: 30px 24px; text-align: center;">
-          <h2 style="margin: 0; font-size: 24px; font-weight: 800;">Madhur Dairy & Daily Needs</h2>
+          <h2 style="margin: 0; font-size: 24px; font-weight: 800;">MADHU Dairy & Daily Needs</h2>
           <p style="margin: 6px 0 0 0; font-size: 14px; opacity: 0.95;">Official Response from Admin</p>
         </div>
 
@@ -423,7 +423,7 @@ ${replyMessage}
 
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 26px 0;" />
           <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
-            Sent by Madhur Dairy Admin Team (${senderEmail}). Pure, Fresh & Natural Dairy Delivered Daily.
+            Sent by MADHU Dairy Admin Team (${senderEmail}). Pure, Fresh & Natural Dairy Delivered Daily.
           </p>
         </div>
       </div>
@@ -440,15 +440,15 @@ export const sendPasswordResetSuccessEmail = async ({ toEmail, name }) => {
   const adminEmail = process.env.EMAIL_USER || "beerayona143@gmail.com";
 
   const mailOptions = {
-    from: `"Madhur Dairy Security" <${adminEmail}>`,
+    from: `"MADHU Dairy Security" <${adminEmail}>`,
     to: toEmail,
-    subject: "🔒 Password Changed Successfully - Madhur Dairy",
+    subject: "🔒 Password Changed Successfully - MADHU Dairy",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; background: #ffffff;">
         <h2 style="color: #00509E; margin-top: 0;">Security Alert: Password Updated</h2>
         <p style="font-size: 14px; color: #334155;">Hello ${name || "User"},</p>
         <p style="font-size: 14px; color: #334155;">
-          Your password for your <strong>Madhur Dairy & Daily Needs</strong> account was successfully updated.
+          Your password for your <strong>MADHU Dairy & Daily Needs</strong> account was successfully updated.
         </p>
         <div style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 14px; border-radius: 6px; margin: 18px 0;">
           <p style="margin: 0; font-size: 13px; color: #15803d; font-weight: 600;">

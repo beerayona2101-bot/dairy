@@ -22,7 +22,7 @@ import { useSnackbar } from "notistack";
 import { getGuestWishlist, toggleGuestWishlist } from "../../utils/guestWishlist";
 
 // High quality transparent cow cutout illustration fallback
-const COW_ILLUSTRATION = "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969548/madhur_dairy_products/tpk19n9emretjunded8t.jpg";
+const COW_ILLUSTRATION = "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969548/MADHU_dairy_products/tpk19n9emretjunded8t.jpg";
 
 // Smart AI Nutritional & Health Profile Generator
 export const generateAiNutritionalProfile = (title) => {
@@ -127,7 +127,7 @@ export const getNormalizedNutritionMetrics = (item, title) => {
 };
 
 // 3D Studio Product Bottle Render with Custom Labels & Liquid Themes
-const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
+const MADHUStudioProductRender = ({ title, image, transparentUrl }) => {
     const lower = (title || "").toLowerCase();
 
     // Use user's exact uploaded studio image for Milk
@@ -293,9 +293,9 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
                     {/* Blue Arch */}
                     <path d="M 52,205 Q 100,185 148,205" fill="none" stroke="#1E88E5" strokeWidth="2.5" />
 
-                    {/* MADHUR Header */}
+                    {/* MADHU Header */}
                     <text x="100" y="222" textAnchor="middle" fill="#0F2742" fontFamily="serif" fontSize="18" fontWeight="900" letterSpacing="1">
-                        MADHUR
+                        MADHU
                     </text>
 
                     {/* Dynamic Product Name */}
@@ -333,7 +333,7 @@ export default function ProductShowcase3D() {
     const realProducts = productCtx?.products && productCtx.products.length > 0 ? productCtx.products : [];
     const rawItems = realProducts.length > 0 ? realProducts : fallbackProducts;
 
-    // Helper to return ultra HD 4K background-free Madhur brand studio cutouts
+    // Helper to return ultra HD 4K background-free MADHU brand studio cutouts
     const getIsolatedProductCutout = (title, originalImage) => {
         const lower = (title || "").toLowerCase();
         if (lower.includes("milk") && !lower.includes("powder") && !lower.includes("flavor") && !lower.includes("badam") && !lower.includes("badham")) return "/assets/showcase/milk_hd.png";
@@ -377,7 +377,7 @@ export default function ProductShowcase3D() {
             priceInr: `₹${formatNumberWithCommas(discountedPrice > 0 ? discountedPrice : rawPrice)}`,
             originalPrice: rawPrice,
             discount: rawDiscount,
-            discountCode: idx % 2 === 0 ? "ORGANIC15" : "MADHUR20",
+            discountCode: idx % 2 === 0 ? "ORGANIC15" : "MADHU20",
             image: image,
             rating: item.rating || (4.7 + (idx % 3) * 0.1).toFixed(1),
             reviewsCount: 120 + idx * 25,
@@ -627,7 +627,7 @@ export default function ProductShowcase3D() {
     const handleShare = () => {
         const shareData = {
             title: currentSlide.title,
-            text: `Check out ${currentSlide.title} on Madhur Dairy!`,
+            text: `Check out ${currentSlide.title} on MADHU Dairy!`,
             url: window.location.href,
         };
 
@@ -732,7 +732,7 @@ export default function ProductShowcase3D() {
                                         style={{ transformStyle: "preserve-3d" }}
                                         className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 z-10"
                                     >
-                                        <MadhurStudioProductRender
+                                        <MADHUStudioProductRender
                                             title={currentSlide.title}
                                             image={currentSlide.image}
                                             transparentUrl={transparentImgMap[currentSlide.image]}

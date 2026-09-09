@@ -4,6 +4,7 @@ import { Dialog, useMediaQuery, useTheme } from "@mui/material";
 import { FaHourglassHalf, FaBoxOpen, FaShippingFast, FaCheckCircle, FaTimesCircle, FaMoneyBillWave, FaShoppingCart } from "react-icons/fa";
 import CloseIcon from '@mui/icons-material/Close';
 import { UserOrderContext } from "../../context/UserOrderProvider";
+import { CartContext } from "../../context/CartProvider";
 import { enqueueSnackbar } from "notistack";
 import BuffaloLoader from "../../components/BuffaloLoader";
 
@@ -30,6 +31,7 @@ export default function MyOrders() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { userOrders, orderLoading } = useContext(UserOrderContext);
+  const { addToCart } = useContext(CartContext);
   const { authUser } = useContext(UserAuthContext);
   const { authAdmin } = useContext(AdminAuthContext);
   const currentUser = authUser || authAdmin;
@@ -38,6 +40,38 @@ export default function MyOrders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const activeSelectedOrder = userOrders?.find((o) => String(o?._id) === String(selectedOrder?._id)) || selectedOrder;
+
+  const handleOrderAgain = (targetOrder, e) => {
+    if (e) e.stopPropagation();
+
+    if (!targetOrder || !Array.isArray(targetOrder.productsData) || targetOrder.productsData.length === 0) {
+      enqueueSnackbar("Order details not available to re-order.", { variant: "error" });
+      return;
+    }
+
+    let addedCount = 0;
+    targetOrder.productsData.forEach((item) => {
+      const pId = typeof item.productId === "object"
+        ? (item.productId?._id || item.productId?.id)
+        : item.productId;
+
+      const qty = item.productQuantity || 1;
+      const price = item.productPrice || (typeof item.productId === "object" ? item.productId?.price : 0);
+
+      if (pId) {
+        addToCart(pId, qty, price);
+        addedCount++;
+      }
+    });
+
+    if (addedCount > 0) {
+      enqueueSnackbar("Items added to cart! Redirecting to cart...", { variant: "success" });
+      setSelectedOrder(null);
+      navigate("/cart");
+    } else {
+      enqueueSnackbar("Could not add items to cart.", { variant: "error" });
+    }
+  };
 
   const handleStatusTypeUpdate = ({ success, message }) => {
     if (success) {
@@ -151,7 +185,6 @@ export default function MyOrders() {
               onClick={() => setSelectedOrder(order)}
               className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200/90 dark:border-gray-800 hover:border-[#6C5CE7] dark:hover:border-purple-500 transition-all cursor-pointer space-y-3 group"
             >
-              {/* Top Row: Status Title & Price with Chevron */}
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-1.5 font-extrabold text-sm sm:text-base text-gray-900 dark:text-white">
@@ -175,7 +208,6 @@ export default function MyOrders() {
                 </div>
               </div>
 
-              {/* Product Thumbnails Row */}
               <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide py-1">
                 {order?.productsData?.slice(0, 6).map((item, idx) => (
                   <div key={idx} className="relative shrink-0">
@@ -184,6 +216,10 @@ export default function MyOrders() {
                       alt={item?.productId?.name || item?.productName || "Product"}
                       loading="lazy"
                       decoding="async"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/images/madhu_cow_milk.png";
+                      }}
                       className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-gray-200/80 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shadow-2xs"
                     />
                     {item?.productQuantity > 1 && (
@@ -200,17 +236,24 @@ export default function MyOrders() {
                 )}
               </div>
 
-              {/* Bottom Action Divider & Button */}
-              <div className="pt-2.5 border-t border-gray-100 dark:border-gray-800 text-center">
+              <div className="pt-3 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-between gap-2">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedOrder(order);
                   }}
-                  className="text-xs sm:text-sm font-extrabold text-[#FF2E63] hover:text-[#e02654] dark:text-pink-400 transition cursor-pointer"
+                  className="text-xs sm:text-sm font-extrabold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition cursor-pointer flex items-center gap-1 group-hover:text-[#6C5CE7]"
                 >
-                  Order Again
+                  View Details <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#6C5CE7] transition" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => handleOrderAgain(order, e)}
+                  className="text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 px-4.5 py-1.5 rounded-full transition cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
+                >
+                  <FaShoppingCart className="text-xs" /> Order Again
                 </button>
               </div>
             </div>
@@ -307,11 +350,15 @@ export default function MyOrders() {
                         <img
                           src={getProductImage(item?.productId || { name: item?.productName })}
                           alt={item?.productId?.name || item?.productName || "Product"}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/images/madhu_cow_milk.png";
+                          }}
                           className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shrink-0 bg-gray-50 dark:bg-gray-800"
                         />
                         <div className="min-w-0">
                           <h5 className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white truncate">
-                            {item?.productId?.name || item?.productName || "Madhur Dairy Product"}
+                            {item?.productId?.name || item?.productName || "MADHU Dairy Product"}
                           </h5>
                           <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">
                             {item?.productQuantity}x &bull; {item?.productId?.quantityUnit || "1 unit"}
@@ -428,7 +475,7 @@ export default function MyOrders() {
             </div>
 
             {/* Bottom Action Footer */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 flex items-center justify-between gap-3 sticky bottom-0 z-20 shrink-0">
+            <div className="p-4 border-t border-gray-100 dark:border-gray-800/80 bg-gray-50/80 dark:bg-gray-900/90 backdrop-blur-md flex items-center justify-between gap-3 sticky bottom-0 z-20 shrink-0 rounded-b-[24px]">
               {(activeSelectedOrder?.status === "Pending" || activeSelectedOrder?.status === "Confirmed") && (
                 <button
                   disabled={loading}
@@ -436,9 +483,9 @@ export default function MyOrders() {
                     handleUserCancelOrder(activeSelectedOrder?._id);
                     setSelectedOrder(null);
                   }}
-                  className="flex-1 py-3 text-xs sm:text-sm font-black rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition cursor-pointer text-center"
+                  className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-rose-50 text-rose-600 border border-rose-200/80 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60 dark:hover:bg-rose-900/60 transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap shadow-2xs"
                 >
-                  Cancel Order
+                  <FaTimesCircle className="text-sm shrink-0" /> Cancel Order
                 </button>
               )}
 
@@ -446,21 +493,19 @@ export default function MyOrders() {
                 <button
                   disabled={loading}
                   onClick={handleOrderReceived}
-                  className="flex-1 py-3 text-xs sm:text-sm font-black rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer text-center shadow-md"
+                  className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm whitespace-nowrap"
                 >
-                  {loading ? "Updating..." : "✓ Mark Order Received"}
+                  <FaCheckCircle className="text-sm shrink-0" /> Mark Received
                 </button>
               )}
 
-              {activeSelectedOrder?.status === "Delivered" && (
-                <button
-                  type="button"
-                  onClick={() => setSelectedOrder(null)}
-                  className="w-full py-3.5 text-xs sm:text-sm font-black rounded-xl bg-[#FF2E63] hover:bg-[#e02654] text-white transition cursor-pointer text-center shadow-md active:scale-98"
-                >
-                  Order Again
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={(e) => handleOrderAgain(activeSelectedOrder, e)}
+                className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 text-white transition cursor-pointer flex items-center justify-center gap-2 shadow-md active:scale-98 whitespace-nowrap"
+              >
+                <FaShoppingCart className="text-sm shrink-0" /> Order Again
+              </button>
             </div>
           </div>
         )}

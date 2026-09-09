@@ -59,7 +59,7 @@ export default function PageContentManager() {
   useEffect(() => {
     if (pageContent) {
       setFormData({
-        companyName: pageContent.companyName || "Madhur Dairy And Daily Needs",
+        companyName: pageContent.companyName || "Madhu Dairy And Daily Needs",
         companyTagline: pageContent.companyTagline || "",
         companyDescription: pageContent.companyDescription || "",
         heroBannerImage: pageContent.heroBannerImage || "",

@@ -35,7 +35,7 @@ export const sendSMS = async ({ mobileNo, otp, message }) => {
       };
     } else {
       bodyPayload = {
-        message: message || "Madhur Dairy notification",
+        message: message || "MADHU Dairy notification",
         language: "english",
         route: "q",
         numbers: cleanMobile,

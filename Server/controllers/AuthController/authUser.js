@@ -108,13 +108,13 @@ export const loginUser = async (req, res) => {
 
   // 1. Check if login credentials belong to an Admin account
   let admin = await Admin.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
-  if (!admin && (cleanEmail === "admin@madhurdairy.com" || cleanEmail.startsWith("admin"))) {
+  if (!admin && (cleanEmail === "admin@MADHUdairy.com" || cleanEmail.startsWith("admin"))) {
     try {
       const defaultHashedPassword = await bcryptjs.hash("Admin@12345", 10);
       admin = await Admin.create({
-        name: "Madhur Admin",
-        username: "admin_madhur",
-        email: cleanEmail === "admin@madhurdairy.com" ? "admin@madhurdairy.com" : cleanEmail,
+        name: "MADHU Admin",
+        username: "admin_MADHU",
+        email: cleanEmail === "admin@MADHUdairy.com" ? "admin@MADHUdairy.com" : cleanEmail,
         password: defaultHashedPassword,
         mobileNo: "9876543210",
         factoryAddress: {
@@ -429,7 +429,7 @@ export const getUser = async (req, res) => {
         _id: _id || "demo_user_id",
         firstName: "Valued",
         lastName: "Customer",
-        email: "user@madhurdairy.com",
+        email: "user@MADHUdairy.com",
         mobileNo: "9876543210",
         wishlistedProducts: [],
       },

@@ -216,7 +216,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
     };
 
     try {
-      const overrides = JSON.parse(localStorage.getItem("madhur_showcase_custom_overrides")) || {};
+      const overrides = JSON.parse(localStorage.getItem("MADHU_showcase_custom_overrides")) || {};
       overrides[selectedProduct?._id || selectedProduct?.id || productDetails.name] = {
         title: productDetails.name,
         description: productDetails.description,
@@ -224,7 +224,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
         priceInr: `₹${productDetails.price}`,
         nutritionMetrics: productDetails.nutritionMetrics,
       };
-      localStorage.setItem("madhur_showcase_custom_overrides", JSON.stringify(overrides));
+      localStorage.setItem("MADHU_showcase_custom_overrides", JSON.stringify(overrides));
     } catch (err) {}
 
     socket.emit("update-product", payload);

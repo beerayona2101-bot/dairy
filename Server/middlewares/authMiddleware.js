@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import Admin from "../models/AdminSchema.js";
 import User from "../models/UserSchema.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "madhur_dairy_jwt_secret_key_2026";
+const JWT_SECRET = process.env.JWT_SECRET || "MADHU_dairy_jwt_secret_key_2026";
 
 export const verifyAdminAuth = async (req, res, next) => {
   try {

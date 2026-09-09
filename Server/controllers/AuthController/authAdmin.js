@@ -17,13 +17,13 @@ export const loginAdmin = async (req, res) => {
   let admin = await Admin.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
 
   // Auto-seed admin if account doesn't exist in DB yet
-  if (!admin && cleanEmail === "admin@madhurdairy.com") {
+  if (!admin && cleanEmail === "admin@MADHUdairy.com") {
     try {
       const defaultHashedPassword = await bcryptjs.hash("Admin@12345", 10);
       admin = await Admin.create({
-        name: "Madhur Admin",
-        username: "admin_madhur",
-        email: "admin@madhurdairy.com",
+        name: "MADHU Admin",
+        username: "admin_MADHU",
+        email: "admin@MADHUdairy.com",
         password: defaultHashedPassword,
         mobileNo: "9876543210",
         factoryAddress: {

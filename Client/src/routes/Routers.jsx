@@ -53,7 +53,7 @@ const AdminProfile = lazy(() => import("../pages/Admin/AdminProfile"));
 const PageContentManager = lazy(() => import("../pages/Admin/PageContentManager"));
 
 const PageLoader = () => (
-  <BuffaloLoader variant="full" text="Loading Madhur Dairy..." />
+  <BuffaloLoader variant="full" text="Loading Madhu Dairy..." />
 );
 
 export default function Routers() {

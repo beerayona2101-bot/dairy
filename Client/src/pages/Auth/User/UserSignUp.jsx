@@ -6,11 +6,14 @@ import { motion } from "framer-motion";
 import company from "../../../data/company.json";
 import BuffaloLoader from "../../../components/BuffaloLoader";
 import { Eye, EyeOff, ArrowLeft, Home } from "lucide-react";
+import { ThemeContext } from "../../../context/ThemeProvider";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
+import logoLightMode from "../../../assets/logoLightMode.png";
 
 export default function UserSignUp() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const { theme } = React.useContext(ThemeContext) || {};
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +24,7 @@ export default function UserSignUp() {
     confirmPassword: "",
   });
 
-  const brandLogo = logoDarkMode;
+  const brandLogo = theme === "dark" ? logoDarkMode : logoLightMode;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -348,4 +351,4 @@ export default function UserSignUp() {
   );
 }
 
-
+

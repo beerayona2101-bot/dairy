@@ -34,7 +34,7 @@ export const generateOrderBillPDF = async (req, res) => {
       margin: 36,
       info: {
         Title: `Tax Invoice - INV-MD-${order._id.toString().slice(-6).toUpperCase()}`,
-        Author: "Madhur Dairy & Daily Needs",
+        Author: "MADHU Dairy & Daily Needs",
         Subject: "Official Tax Invoice",
       },
     });
@@ -84,7 +84,7 @@ export const generateOrderBillPDF = async (req, res) => {
         .font("Helvetica-Bold")
         .fontSize(22)
         .fillColor(primaryBlue)
-        .text("Madhur Dairy", 36, 32);
+        .text("MADHU Dairy", 36, 32);
     }
 
     // TAX INVOICE BADGE (RIGHT ALIGNED)
@@ -102,14 +102,14 @@ export const generateOrderBillPDF = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(9.5)
       .fillColor(darkTextColor)
-      .text("Madhur Dairy & Daily Needs", 36, 90);
+      .text("MADHU Dairy & Daily Needs", 36, 90);
 
     doc
       .font("Helvetica")
       .fontSize(8.5)
       .fillColor(lightTextColor)
       .text("Shed no. A-31, Datri Mala, Ambad, MIDC Ambad, Nashik, MH 422010", 36, 102)
-      .text("Phone: +91 92091 43657 | Email: contact@madhurdairy.com", 36, 114)
+      .text("Phone: +91 92091 43657 | Email: contact@MADHUdairy.com", 36, 114)
       .text("FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB", 36, 126);
 
     // Top Divider Line
@@ -290,7 +290,7 @@ export const generateOrderBillPDF = async (req, res) => {
       const itemSubtotal = price * quantity;
       grandTotal += itemSubtotal;
 
-      const productName = p?.name || item?.productName || "Madhur Dairy Product";
+      const productName = p?.name || item?.productName || "MADHU Dairy Product";
       const unit = p?.quantityUnit || "Pack";
 
       // Cell border
@@ -372,7 +372,7 @@ export const generateOrderBillPDF = async (req, res) => {
       .font("Helvetica-BoldOblique")
       .fontSize(20)
       .fillColor("#0F2742")
-      .text("Madhur Dairy", 36, signY, { align: "left", width: 170 });
+      .text("MADHU Dairy", 36, signY, { align: "left", width: 170 });
 
     // Circular Stamp Vector Graphics (Left Aligned)
     const stampCx = 90;
@@ -395,7 +395,7 @@ export const generateOrderBillPDF = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(5.5)
       .fillColor(primaryBlue)
-      .text("★ MADHUR DAIRY ★", stampCx - 25, stampCy - 20, { width: 50, align: "center" })
+      .text("★ MADHU DAIRY ★", stampCx - 25, stampCy - 20, { width: 50, align: "center" })
       .text("& DAILY NEEDS", stampCx - 25, stampCy + 14, { width: 50, align: "center" });
 
     // 6. TERMS & CONDITIONS SINGLE LINE
@@ -437,7 +437,7 @@ export const generateOrderBillPDF = async (req, res) => {
       .fontSize(9)
       .fillColor(lightTextColor)
       .text(
-        "Thank you for choosing Madhur Dairy & Daily Needs for your family's health!",
+        "Thank you for choosing MADHU Dairy & Daily Needs for your family's health!",
         36,
         decY + 16,
         { align: "center" }
@@ -511,7 +511,7 @@ export const printOrderBillHTML = async (req, res) => {
       const price = item.productPrice || p?.price || 0;
       const itemSubtotal = price * quantity;
       grandTotal += itemSubtotal;
-      const productName = p?.name || item?.productName || "Madhur Dairy Product";
+      const productName = p?.name || item?.productName || "MADHU Dairy Product";
       const unit = p?.quantityUnit || "Pack";
 
       return `
@@ -654,8 +654,8 @@ export const printOrderBillHTML = async (req, res) => {
       <div>
         ${
           logoBase64
-            ? `<img src="${logoBase64}" alt="Madhur Dairy Logo" style="height: 64px; width: auto; object-fit: contain; display: block; margin-bottom: 2px;" />`
-            : `<div style="font-size: 24px; font-weight: 900; color: #0F172A;">Madhur Dairy & Daily Needs</div>`
+            ? `<img src="${logoBase64}" alt="MADHU Dairy Logo" style="height: 64px; width: auto; object-fit: contain; display: block; margin-bottom: 2px;" />`
+            : `<div style="font-size: 24px; font-weight: 900; color: #0F172A;">MADHU Dairy & Daily Needs</div>`
         }
       </div>
       <div class="badge-tax">OFFICIAL TAX INVOICE</div>
@@ -663,7 +663,7 @@ export const printOrderBillHTML = async (req, res) => {
 
     <div class="company-info">
       Shed no. A-31, Datri Mala, Ambad, MIDC Ambad, Nashik, MH 422010<br>
-      Phone: +91 92091 43657 | Email: contact@madhurdairy.com<br>
+      Phone: +91 92091 43657 | Email: contact@MADHUdairy.com<br>
       FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB
     </div>
 
@@ -719,14 +719,14 @@ export const printOrderBillHTML = async (req, res) => {
 
     <div class="signature-area">
       <div style="text-align: left; display: flex; flex-direction: column; align-items: flex-start;">
-        <div class="signature-text">Madhur Dairy</div>
+        <div class="signature-text">MADHU Dairy</div>
         <div style="position: relative; width: 68px; height: 68px; display: flex; align-items: center; justify-content: center; margin-top: 4px;">
           <svg width="68" height="68" viewBox="0 0 100 100" style="position: absolute; inset: 0;">
             <circle cx="50" cy="50" r="46" fill="none" stroke="#1084F6" stroke-width="2.5"/>
             <circle cx="50" cy="50" r="40" fill="none" stroke="#1084F6" stroke-width="1.2"/>
             <path id="stampTextTop" d="M 12 50 A 38 38 0 0 1 88 50" fill="none" />
             <text font-size="7.5" font-weight="900" fill="#1084F6">
-              <textPath href="#stampTextTop" startOffset="50%" text-anchor="middle">★ MADHUR DAIRY ★</textPath>
+              <textPath href="#stampTextTop" startOffset="50%" text-anchor="middle">★ MADHU DAIRY ★</textPath>
             </text>
             <path id="stampTextBot" d="M 88 50 A 38 38 0 0 1 12 50" fill="none" />
             <text font-size="7" font-weight="800" fill="#1084F6">
@@ -749,7 +749,7 @@ export const printOrderBillHTML = async (req, res) => {
     </div>
 
     <div class="notice-text">
-      Thank you for choosing Madhur Dairy & Daily Needs for your family's health!<br>
+      Thank you for choosing MADHU Dairy & Daily Needs for your family's health!<br>
       <span style="font-size: 10px; font-weight: 500;">This is a computer-generated tax invoice. No physical signature is required.</span>
     </div>
   </div>

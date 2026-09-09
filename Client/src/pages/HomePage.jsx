@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import heroImage from "../assets/heroImage.png";
 import { faqs, products } from "../data/products";
-import MadhurLoader from "../components/MadhurLoader";
+import MadhuLoader from "../components/MadhuLoader";
 import { UserAuthContext } from "../context/AuthProvider";
 import { PageContentContext } from "../context/PageContentProvider";
 import OfferingProductCard from "../components/HomeComponents/OfferingProductCard";
@@ -174,7 +174,7 @@ export default function HomePage() {
     if (pageLoading) {
         return (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-black">
-                <MadhurLoader message="Fresh Dairy Goods Loading..." />
+                <MadhuLoader text="Fresh Dairy Goods Loading..." />
             </div>
         );
     }

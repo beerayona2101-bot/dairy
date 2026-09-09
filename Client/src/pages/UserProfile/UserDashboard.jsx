@@ -11,6 +11,7 @@ import {
   MdFavorite,
   MdOutlineAccountCircle,
   MdLocalShipping,
+  MdPayment,
 } from "react-icons/md";
 import { UserAuthContext } from "../../context/AuthProvider";
 import { UserOrderContext } from "../../context/UserOrderProvider";
@@ -252,6 +253,22 @@ export default function UserDashboard() {
                 </div>
               </div>
               <MdArrowForward className="text-gray-400 group-hover:text-[#00ACC1] group-hover:translate-x-1 transition" />
+            </Link>
+
+            <Link
+              to="/user-profile/payments"
+              className="flex items-center justify-between p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 hover:bg-purple-100/80 dark:hover:bg-purple-900/50 transition border border-purple-100 dark:border-purple-900/40 group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-purple-100 text-[#6C5CE7] dark:bg-purple-900/60 dark:text-purple-300 shrink-0">
+                  <MdPayment className="text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-[#0F2742] dark:text-white">Payments & Billing</p>
+                  <p className="text-xs text-[#64748B] dark:text-gray-400">Transaction history & invoices</p>
+                </div>
+              </div>
+              <MdArrowForward className="text-gray-400 group-hover:text-[#6C5CE7] group-hover:translate-x-1 transition" />
             </Link>
           </div>
         </div>

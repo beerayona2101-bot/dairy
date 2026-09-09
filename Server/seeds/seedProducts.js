@@ -21,10 +21,10 @@ try {
 const sampleProducts = [
   // 1. Milk
   {
-    name: "Madhur Fresh Whole Cow Milk",
+    name: "Madhu Fresh Whole Cow Milk",
     category: "Milk",
-    description: "Pure, farm-fresh whole cow milk from Madhur Dairy—rich in calcium and essential nutrients.",
-    image: ["/images/madhur_cow_milk.png"],
+    description: "Pure, farm-fresh whole cow milk from Madhu Dairy—rich in calcium and essential nutrients.",
+    image: ["/images/Madhu_cow_milk.png"],
     minQuantity: 1,
     quantityUnit: "Litre",
     stock: 120,
@@ -39,10 +39,10 @@ const sampleProducts = [
     discount: 10
   },
   {
-    name: "Madhur Buffalo Toned Milk",
+    name: "Madhu Buffalo Toned Milk",
     category: "Milk",
-    description: "Rich and thick buffalo milk by Madhur Dairy, ideal for making curd, tea, and coffee.",
-    image: ["/images/madhur_buffalo_milk.png"],
+    description: "Rich and thick buffalo milk by Madhu Dairy, ideal for making curd, tea, and coffee.",
+    image: ["/images/Madhu_buffalo_milk.png"],
     minQuantity: 1,
     quantityUnit: "Litre",
     stock: 90,
@@ -59,10 +59,10 @@ const sampleProducts = [
 
   // 2. Paneer
   {
-    name: "Madhur Fresh Malai Paneer",
+    name: "Madhu Fresh Malai Paneer",
     category: "Paneer",
-    description: "Soft, velvety and fresh cottage cheese by Madhur Dairy. High in protein for delicious cooking.",
-    image: ["/images/madhur_malai_paneer.png"],
+    description: "Soft, velvety and fresh cottage cheese by Madhu Dairy. High in protein for delicious cooking.",
+    image: ["/images/Madhu_malai_paneer.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 80,
@@ -79,10 +79,10 @@ const sampleProducts = [
 
   // 3. Ghee
   {
-    name: "Madhur Organic Desi Cow Ghee",
+    name: "Madhu Organic Desi Cow Ghee",
     category: "Ghee",
-    description: "Traditional Bilona A2 Desi Cow Ghee by Madhur Dairy with rich granular aroma and health benefits.",
-    image: ["/images/madhur_desi_ghee.png"],
+    description: "Traditional Bilona A2 Desi Cow Ghee by Madhu Dairy with rich granular aroma and health benefits.",
+    image: ["/images/Madhu_desi_ghee.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 50,
@@ -99,10 +99,10 @@ const sampleProducts = [
 
   // 4. Curd
   {
-    name: "Madhur Natural Thick Curd",
+    name: "Madhu Natural Thick Curd",
     category: "Curd",
-    description: "Creamy set dahi by Madhur Dairy made with active probiotic cultures for gut health.",
-    image: ["/images/madhur_thick_curd.png"],
+    description: "Creamy set dahi by Madhu Dairy made with active probiotic cultures for gut health.",
+    image: ["/images/Madhu_thick_curd.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 100,
@@ -119,10 +119,10 @@ const sampleProducts = [
 
   // 5. Butter
   {
-    name: "Madhur Salted Cooking Butter",
+    name: "Madhu Salted Cooking Butter",
     category: "Butter",
-    description: "Pure pasteurized yellow butter by Madhur Dairy with a pinch of salt. Great for spreading and cooking.",
-    image: ["/images/madhur_cooking_butter.png"],
+    description: "Pure pasteurized yellow butter by Madhu Dairy with a pinch of salt. Great for spreading and cooking.",
+    image: ["/images/Madhu_cooking_butter.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 60,
@@ -139,10 +139,10 @@ const sampleProducts = [
 
   // 6. Cheese
   {
-    name: "Madhur Shredded Mozzarella Cheese",
+    name: "Madhu Shredded Mozzarella Cheese",
     category: "Cheese",
-    description: "100% pure cow milk mozzarella cheese by Madhur Dairy with ideal stretchiness and melt for pizza.",
-    image: ["/images/madhur_mozzarella_cheese.png"],
+    description: "100% pure cow milk mozzarella cheese by Madhu Dairy with ideal stretchiness and melt for pizza.",
+    image: ["/images/Madhu_mozzarella_cheese.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 55,
@@ -159,10 +159,10 @@ const sampleProducts = [
 
   // 7. Lassi
   {
-    name: "Madhur Sweet Punjabi Malai Lassi",
+    name: "Madhu Sweet Punjabi Malai Lassi",
     category: "Lassi",
-    description: "Thick, creamy chilled Punjabi lassi by Madhur Dairy topped with rich malai.",
-    image: ["/images/madhur_malai_lassi.png"],
+    description: "Thick, creamy chilled Punjabi lassi by Madhu Dairy topped with rich malai.",
+    image: ["/images/Madhu_malai_lassi.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 75,
@@ -179,10 +179,10 @@ const sampleProducts = [
 
   // 8. Chaas / Buttermilk
   {
-    name: "Madhur Spiced Masala Chaas",
+    name: "Madhu Spiced Masala Chaas",
     category: "Chaas",
-    description: "Refreshing traditional chaas by Madhur Dairy blended with roasted cumin, mint, and rock salt.",
-    image: ["/images/madhur_masala_chaas.png"],
+    description: "Refreshing traditional chaas by Madhu Dairy blended with roasted cumin, mint, and rock salt.",
+    image: ["/images/Madhu_masala_chaas.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 150,
@@ -199,10 +199,10 @@ const sampleProducts = [
 
   // 9. Khoya
   {
-    name: "Madhur Pure Fresh Khoya (Mawa)",
+    name: "Madhu Pure Fresh Khoya (Mawa)",
     category: "Khoya",
-    description: "Rich traditional milk solids by Madhur Dairy, slowly reduced to perfection for festive sweet making.",
-    image: ["/images/madhur_khoya_mawa.png"],
+    description: "Rich traditional milk solids by Madhu Dairy, slowly reduced to perfection for festive sweet making.",
+    image: ["/images/Madhu_khoya_mawa.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 40,
@@ -219,10 +219,10 @@ const sampleProducts = [
 
   // 10. Basundi
   {
-    name: "Madhur Creamy Kesar Basundi",
+    name: "Madhu Creamy Kesar Basundi",
     category: "Basundi",
-    description: "Rich reduced milk dessert by Madhur Dairy infused with Kashmiri saffron, cardamom, and chopped almonds.",
-    image: ["/images/madhur_kesar_basundi.png"],
+    description: "Rich reduced milk dessert by Madhu Dairy infused with Kashmiri saffron, cardamom, and chopped almonds.",
+    image: ["/images/Madhu_kesar_basundi.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 35,
@@ -239,10 +239,10 @@ const sampleProducts = [
 
   // 11. Shrikhand
   {
-    name: "Madhur Kesar Shrikhand",
+    name: "Madhu Kesar Shrikhand",
     category: "Shrikhand",
-    description: "Authentic sweet shrikhand by Madhur Dairy prepared from strained yoghurt with pure Kashmiri saffron.",
-    image: ["/images/madhur_kesar_shrikhand.png"],
+    description: "Authentic sweet shrikhand by Madhu Dairy prepared from strained yoghurt with pure Kashmiri saffron.",
+    image: ["/images/Madhu_kesar_shrikhand.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 45,
@@ -259,9 +259,9 @@ const sampleProducts = [
 
   // 12. Cream
   {
-    name: "Madhur Fresh Dairy Cream",
+    name: "Madhu Fresh Dairy Cream",
     category: "Cream",
-    description: "Rich fresh dairy cream by Madhur Dairy, perfect for whipping, baking, and gourmet gravy preparations.",
+    description: "Rich fresh dairy cream by Madhu Dairy, perfect for whipping, baking, and gourmet gravy preparations.",
     image: ["https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80"],
     minQuantity: 1,
     quantityUnit: "Pack",
@@ -279,9 +279,9 @@ const sampleProducts = [
 
   // 13. Milk Powder
   {
-    name: "Madhur Premium Dairy Milk Powder",
+    name: "Madhu Premium Dairy Milk Powder",
     category: "Milk Powder",
-    description: "Instant solubility whole milk powder by Madhur Dairy. Packed with calcium and essential vitamins.",
+    description: "Instant solubility whole milk powder by Madhu Dairy. Packed with calcium and essential vitamins.",
     image: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80"],
     minQuantity: 1,
     quantityUnit: "Pack",
@@ -299,9 +299,9 @@ const sampleProducts = [
 
   // 14. Gulab Jamun
   {
-    name: "Madhur Soft Gulab Jamun",
+    name: "Madhu Soft Gulab Jamun",
     category: "Gulab Jamun",
-    description: "Mouth-melting soft khoa gulab jamun by Madhur Dairy soaked in aromatic rose sugar syrup.",
+    description: "Mouth-melting soft khoa gulab jamun by Madhu Dairy soaked in aromatic rose sugar syrup.",
     image: ["https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80"],
     minQuantity: 1,
     quantityUnit: "Pack",
@@ -319,9 +319,9 @@ const sampleProducts = [
 
   // 15. Rasgulla
   {
-    name: "Madhur Classic Bengali Rasgulla",
+    name: "Madhu Classic Bengali Rasgulla",
     category: "Rasgulla",
-    description: "Soft, spongy chhena balls by Madhur Dairy soaked in light sugar syrup.",
+    description: "Soft, spongy chhena balls by Madhu Dairy soaked in light sugar syrup.",
     image: ["https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80"],
     minQuantity: 1,
     quantityUnit: "Pack",
@@ -339,9 +339,9 @@ const sampleProducts = [
 
   // 16. Peda
   {
-    name: "Madhur Mathura Kesar Peda",
+    name: "Madhu Mathura Kesar Peda",
     category: "Peda",
-    description: "Authentic Mathura style khoa peda by Madhur Dairy garnished with cardamom and pistachio.",
+    description: "Authentic Mathura style khoa peda by Madhu Dairy garnished with cardamom and pistachio.",
     image: ["https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80"],
     minQuantity: 1,
     quantityUnit: "Pack",
@@ -372,10 +372,10 @@ const seedDB = async () => {
     await Product.deleteMany({});
     console.log("Cleared old product data.");
 
-    console.log("Seeding all 16 Madhur Dairy categories & products with unique branded images...");
+    console.log("Seeding all 16 Madhu Dairy categories & products with unique branded images...");
     await Product.insertMany(sampleProducts);
 
-    console.log(`Successfully seeded ${sampleProducts.length} Madhur Dairy products covering all 16 categories!`);
+    console.log(`Successfully seeded ${sampleProducts.length} Madhu Dairy products covering all 16 categories!`);
   } catch (err) {
     console.error("Error during seeding:", err);
   } finally {

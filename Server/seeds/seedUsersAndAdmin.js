@@ -34,15 +34,15 @@ const seedCredentials = async () => {
     await mongoose.connect(dbUrl);
 
     // 1. Seed Admin
-    const adminEmail = "admin@madhurdairy.com";
+    const adminEmail = "admin@madhudairy.com";
     const adminPassword = "Admin@12345";
     const hashedAdminPassword = await bcryptjs.hash(adminPassword, 10);
 
     await Admin.findOneAndUpdate(
       { email: adminEmail },
       {
-        name: "Madhur Admin",
-        username: "admin_madhur",
+        name: "Madhu Admin",
+        username: "admin_madhu",
         email: adminEmail,
         password: hashedAdminPassword,
         mobileNo: "9876543210",
@@ -58,7 +58,7 @@ const seedCredentials = async () => {
     console.log("Admin account created/updated successfully.");
 
     // 2. Seed Customer User
-    const userEmail = "user@madhurdairy.com";
+    const userEmail = "user@madhudairy.com";
     const userPassword = "User@12345";
     const hashedUserPassword = await bcryptjs.hash(userPassword, 10);
 

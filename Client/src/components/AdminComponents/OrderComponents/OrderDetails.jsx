@@ -336,6 +336,10 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                           key={idx}
                           src={getProductImage(prod)}
                           alt={prod?.name}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/images/madhu_cow_milk.png";
+                          }}
                           className="w-10 h-10 object-cover rounded-lg border-2 border-white dark:border-gray-800 shadow-xs"
                         />
                       );
@@ -616,6 +620,10 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                               <img
                                 src={getProductImage(prod)}
                                 alt={prod?.name}
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "/images/madhu_cow_milk.png";
+                                }}
                                 className="w-7 h-7 sm:w-9 sm:h-9 object-cover rounded-lg border shrink-0"
                               />
                               <span className="font-bold text-gray-900 dark:text-white line-clamp-1">{prod?.name || item?.productName || "Dairy Product"}</span>

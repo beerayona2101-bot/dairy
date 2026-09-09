@@ -58,6 +58,10 @@ export default function ProductCard({ item, highlightOutOfStock }) {
                     <img
                         src={getProductImage({ name, image })}
                         alt={name}
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/images/madhu_cow_milk.png";
+                        }}
                         className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                     />
                 </div>

@@ -16,7 +16,7 @@ import { unslugify } from "../utils/unslugify";
 import { ProductContext } from "../context/ProductProvider";
 import { PageContentContext } from "../context/PageContentProvider";
 import { CartContext } from "../context/CartProvider";
-import MadhurLoader from "../components/MadhurLoader";
+import MadhuLoader from "../components/MadhuLoader";
 import { getProductImage } from "../utils/helper";
 import { products as baseCategories } from "../data/products";
 
@@ -152,7 +152,7 @@ export default function ProductPage() {
 
         return {
             title: unslugify(productId),
-            image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969530/madhur_dairy_products/ftq2d0zfpaw96wiu0cvv.jpg",
+            image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969530/MADHU_dairy_products/ftq2d0zfpaw96wiu0cvv.jpg",
             description: `Pure, unadulterated farm-fresh ${unslugify(productId)} products delivered daily to your doorstep.`,
             features: []
         };
@@ -197,7 +197,7 @@ export default function ProductPage() {
     if (pageLoading) {
         return (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-black">
-                <MadhurLoader />
+                <MadhuLoader />
             </div>
         );
     }
@@ -266,7 +266,7 @@ export default function ProductPage() {
                         <div className="hidden md:flex relative w-full overflow-hidden bg-gradient-to-r from-[#0F2742] via-[#1E88E5] to-[#1565C0] px-4 sm:px-10 py-3.5 items-center gap-3 sm:gap-4 text-white m-0 border-0 rounded-none sm:rounded-2xl flex-shrink-0">
                             <div className="w-full flex flex-col justify-center space-y-0.5 overflow-hidden px-1 sm:px-0">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">🥛 Madhur Dairy Collection</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">🥛 Madhu Dairy Collection</span>
                                 </div>
                                 <h1 className="text-base sm:text-xl font-black leading-tight truncate">All Farm-Fresh Products</h1>
                                 <p className="text-[11px] sm:text-xs text-blue-100 max-w-xl font-medium line-clamp-1">
@@ -318,7 +318,7 @@ export default function ProductPage() {
                                 </div>
 
                                 {productLoading ? (
-                                    <MadhurLoader />
+                                    <MadhuLoader />
                                 ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 pb-6 pt-1 md:pt-0">
                                         {allCategoryCards.map((cat, index) => (
@@ -371,7 +371,7 @@ export default function ProductPage() {
                                 </div>
 
                                 {productLoading ? (
-                                    <MadhurLoader />
+                                    <MadhuLoader />
                                 ) : (
                                     <section className="w-full flex flex-col">
                                         {(sortedFilteredProducts?.length ?? 0) === 0 ? (

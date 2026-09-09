@@ -11,7 +11,7 @@ export default function HomeWelcomeHero() {
     const { authAdmin } = useContext(AdminAuthContext);
     const { pageContent } = useContext(PageContentContext);
 
-    const displayCompanyName = pageContent?.companyName || company?.name || "Madhur Dairy & Daily Needs";
+    const displayCompanyName = pageContent?.companyName || company?.name || "MADHU Dairy & Daily Needs";
     const loggedInName = authUser?.firstName || authUser?.name || authAdmin?.name || null;
 
     return (
@@ -19,7 +19,7 @@ export default function HomeWelcomeHero() {
             {/* 1. Full-Width Background Image */}
             <img
                 src={homeHeroBg}
-                alt="Madhur Dairy Home Welcome Hero"
+                alt="MADHU Dairy Home Welcome Hero"
                 className="absolute inset-0 w-full h-full object-cover object-[center_25%] md:object-right z-0 brightness-105 contrast-105 saturate-105"
             />
 
@@ -55,7 +55,7 @@ export default function HomeWelcomeHero() {
                             </div>
                         ) : (
                             <span className="block text-lg sm:text-4xl lg:text-5xl font-[900] text-white leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.95)]">
-                                Welcome to <span className="text-purple-300 drop-shadow-md">Madhur</span> Dairy & Daily Needs
+                                Welcome to <span className="text-purple-300 drop-shadow-md">MADHU</span> Dairy & Daily Needs
                             </span>
                         )}
                     </motion.h1>

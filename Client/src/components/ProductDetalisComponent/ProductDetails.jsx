@@ -335,7 +335,7 @@ export default function ProductDetails({ productId: propProductId }) {
                                 decoding="async"
                                 onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = "/images/madhur_cow_milk.png";
+                                    e.target.src = "/images/MADHU_cow_milk.png";
                                 }}
                                 className="w-full h-full object-cover rounded-none sm:rounded-2xl group-hover:scale-105 transition-transform duration-500 ease-out block p-0 m-0 border-0"
                             />
@@ -383,7 +383,7 @@ export default function ProductDetails({ productId: propProductId }) {
                                         alt={`${selectedProduct?.name || 'Product'} thumbnail ${idx + 1}`}
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = "/images/madhur_cow_milk.png";
+                                            e.target.src = "/images/MADHU_cow_milk.png";
                                         }}
                                         className="w-full h-full object-contain rounded-lg"
                                     />

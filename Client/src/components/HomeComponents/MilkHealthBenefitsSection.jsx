@@ -15,7 +15,7 @@ const FARM_HERO_BG = landingHeroBgHD;
 export function MilkHealthBenefitsHero() {
     const { pageContent } = useContext(PageContentContext);
 
-    const displayCompanyName = pageContent?.companyName || company?.name || "Madhur Dairy & Daily Needs";
+    const displayCompanyName = pageContent?.companyName || company?.name || "MADHU Dairy & Daily Needs";
     const displayTagline = pageContent?.companyTagline || company?.tagline || "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep";
 
     let mainTitle = displayCompanyName;
@@ -38,7 +38,7 @@ export function MilkHealthBenefitsHero() {
                 {/* 4K Hero Background Image with Subtle Hover Zoom */}
                 <img
                     src={FARM_HERO_BG}
-                    alt="Madhur Dairy Pasture Milk Splash 16:9"
+                    alt="MADHU Dairy Pasture Milk Splash 16:9"
                     className="absolute inset-0 w-full h-full object-cover object-center z-0 group-hover:scale-105 transition-transform duration-1000 ease-out"
                 />
 
@@ -103,7 +103,7 @@ export function DairyPromiseCardsSection() {
     const [scrollProgress, setScrollProgress] = useState(0);
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const displayCompanyName = pageContent?.companyName || company?.name || "Madhur Dairy & Daily Needs";
+    const displayCompanyName = pageContent?.companyName || company?.name || "MADHU Dairy & Daily Needs";
     const displayGoodness = (pageContent?.goodnessOfferings && pageContent.goodnessOfferings.length > 0)
         ? pageContent.goodnessOfferings
         : defaultFeatures;

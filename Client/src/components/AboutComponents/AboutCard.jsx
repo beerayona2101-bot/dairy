@@ -23,7 +23,7 @@ export default function AboutCard({ title, description, image, reverse }) {
 
             <div className="w-full md:w-1/2 flex flex-col justify-center">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-full w-fit mb-3 border border-blue-100 dark:border-blue-900/40">
-                    Madhur Dairy Standard
+                    MADHU Dairy Standard
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-snug mb-4">
                     {title}

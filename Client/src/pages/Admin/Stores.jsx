@@ -38,7 +38,7 @@ export default function Stores() {
 
     const filteredStores = filterStoresByInput(totalStores, debouncedInput);
 
-    const companyName = "Madhur Dairy & Daily Needs";
+    const companyName = "MADHU Dairy & Daily Needs";
     const appLink = "http://localhost:5173";
 
     if (loading) {

@@ -54,7 +54,7 @@ export const uploadToCloudinary = async (imageData, folderName = DEFAULT_FOLDER)
   // If Base64 Data URL, attempt Cloudinary upload then disk fallback
   if (imageData.startsWith("data:image")) {
     const presetEnv = (process.env.CLOUDINARY_UPLOAD_PRESET || "ml_default").trim();
-    const presetsToTry = Array.from(new Set(["ml_default", presetEnv, "madhur_dairy"]));
+    const presetsToTry = Array.from(new Set(["ml_default", presetEnv, "MADHU_dairy"]));
 
     // 1. Try Cloudinary unsigned upload
     for (const p of presetsToTry) {

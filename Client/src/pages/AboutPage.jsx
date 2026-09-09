@@ -7,13 +7,11 @@ import company from "../data/company.json";
 import AboutCard from "../components/AboutComponents/AboutCard";
 import aboutData from "../data/about.json";
 import { ThemeContext } from "../context/ThemeProvider";
-import MadhurLoader from "../components/MadhurLoader";
+import MadhuLoader from "../components/MadhuLoader";
 
 export default function AboutPage() {
   const { theme } = useContext(ThemeContext) || { theme: "light" };
-  const logoSrc = theme === "dark"
-    ? (company?.logoDaraTheme || logoDarkMode)
-    : (company?.logoLightTheme || logoLightMode);
+  const logoSrc = theme === "dark" ? logoDarkMode : logoLightMode;
 
   const [pageLoading, setPageLoading] = useState(true);
 
@@ -36,7 +34,7 @@ export default function AboutPage() {
   if (pageLoading) {
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-black">
-        <MadhurLoader />
+        <MadhuLoader />
       </div>
     );
   }
@@ -71,14 +69,14 @@ export default function AboutPage() {
           >
             <img
               src={logoSrc}
-              alt="Madhur Dairy Logo"
+              alt="Madhu Dairy Logo"
               className="h-20 sm:h-28 md:h-32 w-auto object-contain drop-shadow-[0_8px_24px_rgba(71,122,80,0.25)] transition-transform duration-500 hover:scale-105"
             />
           </motion.div>
 
           {/* Main Headline */}
           <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2">
-            About <span className="text-[#477A50] dark:text-emerald-400">Madhur Dairy</span> & Daily Needs
+            About <span className="text-[#477A50] dark:text-emerald-400">Madhu Dairy</span> & Daily Needs
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-700 dark:text-gray-200 max-w-xl leading-relaxed font-semibold mb-6">

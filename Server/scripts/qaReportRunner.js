@@ -3,7 +3,7 @@ import path from "path";
 import http from "http";
 
 console.log("\n==========================================================================");
-console.log("  🥛 MADHUR DAIRY & DAILY NEEDS - FULL QA & AUTOMATED API TEST RUNNER  ");
+console.log("  🥛 MADHU DAIRY & DAILY NEEDS - FULL QA & AUTOMATED API TEST RUNNER  ");
 console.log("==========================================================================\n");
 
 const testResults = [];
@@ -109,7 +109,7 @@ console.log("===================================================================
 
 const reportPath = path.join(process.cwd(), "scratch", "qa_test_report.json");
 const reportData = {
-  appName: "Madhur Dairy & Daily Needs",
+  appName: "MADHU Dairy & Daily Needs",
   timestamp: new Date().toISOString(),
   totalTests: total,
   passed,

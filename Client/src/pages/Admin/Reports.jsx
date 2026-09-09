@@ -65,7 +65,7 @@ export default function Reports() {
     let csvContent = "";
 
     // Section 1: Header & Metadata
-    csvContent += `MADHUR DAIRY & DAILY NEEDS - COMPREHENSIVE SALES & ORDERS REPORT\n`;
+    csvContent += `MADHU DAIRY & DAILY NEEDS - COMPREHENSIVE SALES & ORDERS REPORT\n`;
     csvContent += `Report Generated On,${sanitize(new Date().toLocaleString("en-IN"))}\n`;
     csvContent += `Selected Period Filter,${sanitize(timeRange.toUpperCase())}\n`;
     if (timeRange === "custom") {
@@ -136,8 +136,8 @@ export default function Reports() {
 
     const fileName =
       timeRange === "custom"
-        ? `Madhur_Dairy_Report_${startDate}_to_${endDate}.csv`
-        : `Madhur_Dairy_Report_${timeRange.toUpperCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
+        ? `Madhu_Dairy_Report_${startDate}_to_${endDate}.csv`
+        : `Madhu_Dairy_Report_${timeRange.toUpperCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = window.URL.createObjectURL(blob);

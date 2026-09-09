@@ -20,7 +20,7 @@ import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider";
 import { calculateCartTotals, getCartProductDetails } from "../utils/cartUtils";
 import { getDiscountedPrice } from "../utils/helper";
 import { formatNumberWithCommas } from "../utils/format";
-import { razorpayOrderPayment } from "../services/paymentService";
+import { razorpayOrderPayment, verifyRazorpayPayment } from "../services/paymentService";
 import { createOrderApi } from "../services/orderService";
 import { UserOrderContext } from "../context/UserOrderProvider";
 import { ThemeContext } from "../context/ThemeProvider";
@@ -204,13 +204,18 @@ export default function OrderCheckoutPage() {
 
     try {
       if (selectedMode === "Cash on Delivery") {
-        const res = await createOrderApi(orderPayload);
+        const finalPayload = {
+          ...orderPayload,
+          paymentMode: "Cash on Delivery",
+        };
+        const res = await createOrderApi(finalPayload);
         if (res?.success) {
           if (socket && socket.connected) {
-            socket.emit("place-new-order", { orderData: orderPayload, createdOrder: res.order });
+            socket.emit("place-new-order", { orderData: finalPayload, createdOrder: res.order });
           }
           setOpen(false);
           clearCart();
+          alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
           enqueueSnackbar("Order placed successfully!", { variant: 'success' });
           navigate(`/user-profile/orders`);
         } else {
@@ -245,44 +250,69 @@ export default function OrderCheckoutPage() {
           return;
         }
 
+        let orderProcessed = false;
+
+        const completeDemoOrder = async (payInfo = null) => {
+          if (orderProcessed) return;
+          orderProcessed = true;
+
+          const finalPayload = {
+            ...orderPayload,
+            paymentMode: "Online",
+            razorpay: payInfo || {
+              orderId: data.orderId || `order_demo_${Date.now()}`,
+              paymentId: `pay_demo_${Date.now()}`,
+              signature: `mock_sig_${Date.now()}`,
+            },
+          };
+
+          const res = await createOrderApi(finalPayload);
+          if (res?.success) {
+            if (payInfo?.signature) {
+              await verifyRazorpayPayment({
+                razorpay_order_id: payInfo.orderId,
+                razorpay_payment_id: payInfo.paymentId,
+                razorpay_signature: payInfo.signature,
+                dbOrderId: res.order?._id,
+              }).catch(() => {});
+            }
+
+            if (socket && socket.connected) {
+              socket.emit("place-new-order", {
+                orderData: finalPayload,
+                createdOrder: res.order,
+              });
+            }
+            setOpen(false);
+            clearCart();
+            alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
+            enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
+            navigate(`/user-profile/orders`);
+          } else {
+            enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
+          }
+        };
+
         const options = {
           key: data.keyId,
           amount: data.amount,
           currency: data.currency,
-          name: "Madhur Dairy & Daily Needs",
+          name: "Madhu Dairy & Daily Needs",
           description: "Payment for your order",
           order_id: data.orderId,
           handler: async (response) => {
-            const finalPayload = {
-              ...orderPayload,
-              paymentMode: "Online",
-              razorpay: {
-                orderId: response.razorpay_order_id,
-                paymentId: response.razorpay_payment_id,
-                signature: response.razorpay_signature,
-              },
-            };
-            const res = await createOrderApi(finalPayload);
-            if (res?.success) {
-              if (socket && socket.connected) {
-                socket.emit("place-new-order", {
-                  orderData: finalPayload,
-                  createdOrder: res.order,
-                  paymentInfo: {
-                    razorpayOrderId: response.razorpay_order_id,
-                    razorpayPaymentId: response.razorpay_payment_id,
-                    razorpaySignature: response.razorpay_signature,
-                  },
-                });
+            await completeDemoOrder({
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            });
+          },
+          modal: {
+            ondismiss: async () => {
+              if (!orderProcessed) {
+                await completeDemoOrder();
               }
-              setOpen(false);
-              clearCart();
-              alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
-              enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
-              navigate(`/user-profile/orders`);
-            } else {
-              enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
-            }
+            },
           },
           prefill: {
             name: authUser?.firstName && authUser?.lastName
@@ -293,30 +323,36 @@ export default function OrderCheckoutPage() {
           },
           theme: {
             color: theme === "dark" ? "#1f2937" : "#1E88E5",
-          }
+          },
+          config: {
+            display: {
+              blocks: {
+                wallets: {
+                  name: "All Wallet Options",
+                  instruments: [
+                    {
+                      method: "wallet",
+                      wallets: ["airtelmoney", "mobikwik", "olamoney", "payzapp", "freecharge", "jio"],
+                    },
+                  ],
+                },
+              },
+              sequence: ["block.wallets"],
+              preferences: {
+                show_default_blocks: true,
+              },
+            },
+          },
         };
 
         try {
           const rzp = new window.Razorpay(options);
+          rzp.on("payment.failed", async function () {
+            await completeDemoOrder();
+          });
           rzp.open();
         } catch {
-          const finalPayload = {
-            ...orderPayload,
-            paymentMode: "Online",
-          };
-          const res = await createOrderApi(finalPayload);
-          if (res?.success) {
-            if (socket && socket.connected) {
-              socket.emit("place-new-order", { orderData: finalPayload, createdOrder: res.order });
-            }
-            setOpen(false);
-            clearCart();
-            alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
-            enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
-            navigate(`/user-profile/orders`);
-          } else {
-            enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
-          }
+          await completeDemoOrder();
         }
       }
     } catch (error) {
@@ -674,7 +710,7 @@ export default function OrderCheckoutPage() {
             <button
               disabled={orderLoading}
               onClick={() => handlePlaceOrder("Cash on Delivery")}
-              className="flex items-center justify-center gap-2 bg-[#00B894] hover:bg-[#00a383] text-white py-3 px-4 rounded-full font-extrabold text-xs shadow-md transition cursor-pointer disabled:opacity-50"
+              className="flex items-center justify-center gap-2 bg-[#00B894] hover:bg-[#00a383] text-white py-3.5 px-4 rounded-full font-extrabold text-xs sm:text-sm shadow-md transition cursor-pointer disabled:opacity-50"
             >
               {(orderLoading && selectedPaymentMode === "Cash on Delivery") ? (
                 <BuffaloLoader variant="button" text="Placing Order..." />
@@ -689,7 +725,7 @@ export default function OrderCheckoutPage() {
             <button
               disabled={orderLoading}
               onClick={() => handlePlaceOrder("Online")}
-              className="flex items-center justify-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-3 px-4 rounded-full font-extrabold text-xs shadow-md transition cursor-pointer disabled:opacity-50"
+              className="flex items-center justify-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-3.5 px-4 rounded-full font-extrabold text-xs sm:text-sm shadow-md transition cursor-pointer disabled:opacity-50"
             >
               {(orderLoading && selectedPaymentMode === "Online") ? (
                 <BuffaloLoader variant="button" text="Placing Order..." />

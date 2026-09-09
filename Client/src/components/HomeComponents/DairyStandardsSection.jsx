@@ -19,7 +19,7 @@ export default function DairyStandardsSection({ image }) {
                     <div className="relative rounded-[28px] overflow-hidden h-[340px] sm:h-[400px] bg-gray-100 dark:bg-gray-700 group shadow-sm">
                         <img
                             src={displayImg}
-                            alt="Madhur Dairy Happy Family Quality Purity"
+                            alt="MADHU Dairy Happy Family Quality Purity"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                         
@@ -41,7 +41,7 @@ export default function DairyStandardsSection({ image }) {
                         {/* Tagline */}
                         <div>
                             <span className="text-[12px] font-extrabold uppercase tracking-widest text-[#0284C7] dark:text-[#6C5CE7]">
-                                MADHUR DAIRY STANDARDS
+                                MADHU DAIRY STANDARDS
                             </span>
                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#2D3748] dark:text-white leading-tight mt-1">
                                 Secret Dairy Technologies & Quality Purity

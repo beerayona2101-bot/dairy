@@ -94,13 +94,22 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
     }
 
     const navigationLinks = [
+        { key: "/user-profile/dashboard", icon: <MdDashboard />, label: "Dashboard" },
         { key: "/user-profile", icon: <MdOutlineAccountCircle />, label: "My Profile" },
         { key: "/user-profile/orders", icon: <MdShoppingCart />, label: "My Orders" },
         { key: "/user-profile/addresses", icon: <MdLocationOn />, label: "Saved Addresses" },
         { key: "/user-profile/wishlist", icon: <MdFavorite />, label: "My Wishlist" },
+        { key: "/user-profile/payments", icon: <MdPayment />, label: "Payments" },
         { key: "/about", icon: <MdInfo />, label: "About Us" },
         { key: "/contact-us", icon: <MdHeadphones />, label: "Contact Us" },
     ];
+
+    const isLinkActive = (key) => {
+        if (key === "/user-profile") {
+            return location?.pathname === "/user-profile" || location?.pathname === "/user-profile/";
+        }
+        return location?.pathname === key;
+    };
 
     return (
         <aside className={`scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 ${userProfileDrawer ? "rounded-l-none rounded-r-[24px] border-y border-r border-l-0 border-gray-200 dark:border-gray-700/80" : "rounded-[24px] border border-gray-200/90 dark:border-gray-700/80"}`}>
@@ -161,21 +170,24 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
                     )}
 
                     <h2 className="text-base font-extrabold mt-2 text-[#2D3748] dark:text-white tracking-tight text-center">
-                        {authAdmin ? (authAdmin?.name || "Madhur Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}
+                        {authAdmin ? (authAdmin?.name || "Madhu Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}
                     </h2>
                 </div>
 
                 <nav className="mt-4 space-y-1.5">
-                    {navigationLinks.map((item) => (
-                        <Link
-                            key={item.key}
-                            to={item.key}
-                            onClick={userProfileDrawer ? () => setUserProfileDrawer(false) : null}
-                            className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl text-xs font-bold transition-all duration-200 ${location?.pathname === item.key ? "bg-[#6C5CE7] text-white shadow-md shadow-purple-500/20" : "hover:bg-purple-50 dark:hover:bg-purple-950/40 text-[#4A5568] dark:text-gray-300"}`}
-                        >
-                            <span className="text-base">{item.icon}</span> {item.label}
-                        </Link>
-                    ))}
+                    {navigationLinks.map((item) => {
+                        const active = isLinkActive(item.key);
+                        return (
+                            <Link
+                                key={item.key}
+                                to={item.key}
+                                onClick={userProfileDrawer ? () => setUserProfileDrawer(false) : null}
+                                className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl text-xs font-bold transition-all duration-200 ${active ? "bg-[#6C5CE7] text-white shadow-md shadow-purple-500/20" : "hover:bg-purple-50 dark:hover:bg-purple-950/40 text-[#4A5568] dark:text-gray-300"}`}
+                            >
+                                <span className="text-base">{item.icon}</span> {item.label}
+                            </Link>
+                        );
+                    })}
                 </nav>
             </div>
 

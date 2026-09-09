@@ -7,7 +7,9 @@ import { AdminAuthContext, UserAuthContext } from "../../../context/AuthProvider
 import company from "../../../data/company.json";
 import BuffaloLoader from "../../../components/BuffaloLoader";
 import { Eye, EyeOff, ArrowLeft, Home } from "lucide-react";
+import { ThemeContext } from "../../../context/ThemeProvider";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
+import logoLightMode from "../../../assets/logoLightMode.png";
 
 export default function UserLogin() {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ export default function UserLogin() {
   const { enqueueSnackbar } = useSnackbar();
   const { fetchUserData, handleUserLogout } = useContext(UserAuthContext);
   const { fetchAdminData, handleAdminLogout } = useContext(AdminAuthContext);
+  const { theme } = useContext(ThemeContext) || {};
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +27,7 @@ export default function UserLogin() {
     password: "",
   });
 
-  const brandLogo = logoDarkMode;
+  const brandLogo = theme === "dark" ? logoDarkMode : logoLightMode;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -338,4 +341,4 @@ export default function UserLogin() {
 
 
 
-
+

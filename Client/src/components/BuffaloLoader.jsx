@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
+import { ThemeContext } from "../context/ThemeProvider";
+import logoDarkMode from "../assets/logoDarkMode.png";
+import logoLightMode from "../assets/logoLightMode.png";
 
 /**
  * Animated Walking Buffalo SVG + CSS Loader Component
@@ -12,6 +15,9 @@ export default function BuffaloLoader({
   text,
   className = "",
 }) {
+  const { theme } = useContext(ThemeContext) || {};
+  const logoSrc = theme === "dark" ? logoDarkMode : logoLightMode;
+
   // Mini button loader variant
   if (variant === "button") {
     return (
@@ -26,6 +32,11 @@ export default function BuffaloLoader({
   if (variant === "inline") {
     return (
       <div className={`flex flex-col items-center justify-center p-6 text-center space-y-3 ${className}`}>
+        <img
+          src={logoSrc}
+          alt="Madhu Dairy"
+          className="h-8 sm:h-9 w-auto object-contain drop-shadow-xs"
+        />
         <div className="relative flex flex-col items-center">
           <WalkingBuffaloSVG size={size === "sm" ? "sm" : size === "lg" ? "lg" : "md"} />
           <div className="w-32 h-1 bg-gradient-to-r from-transparent via-[#1E88E5]/30 dark:via-blue-400/30 to-transparent rounded-full mt-1 animate-pulse" />
@@ -43,6 +54,13 @@ export default function BuffaloLoader({
       className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-md transition-all duration-300 ${className}`}
     >
       <div className="flex flex-col items-center justify-center space-y-4 p-8 rounded-3xl bg-white/80 dark:bg-gray-900/80 border border-gray-100 dark:border-gray-800 shadow-2xl max-w-sm w-full mx-4 text-center">
+        {/* Brand Logo Header */}
+        <img
+          src={logoSrc}
+          alt="Madhu Dairy & Daily Needs"
+          className="h-10 sm:h-12 w-auto object-contain drop-shadow-sm"
+        />
+
         {/* Walking Buffalo SVG Scene */}
         <div className="relative flex flex-col items-center py-2">
           {/* Milk Drop Bouncing */}
@@ -65,7 +83,7 @@ export default function BuffaloLoader({
         {/* Text Details */}
         <div>
           <h3 className="text-base sm:text-lg font-extrabold bg-gradient-to-r from-[#1E88E5] via-blue-600 to-[#1E88E5] dark:from-blue-400 dark:via-pink-400 dark:to-yellow-300 bg-clip-text text-transparent">
-            Madhur Dairy & Daily Needs
+            Madhu Dairy & Daily Needs
           </h3>
           <p className="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium animate-pulse">
             {text || "Connecting to fresh dairy server..."}

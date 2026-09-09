@@ -75,7 +75,7 @@ export default function Revenue() {
     }
 
     // 1. Financial KPI Summary Section
-    let csvContent = "MADHUR DAIRY & DAILY NEEDS - FINANCIAL SUMMARY REPORT\n";
+    let csvContent = "MADHU DAIRY & DAILY NEEDS - FINANCIAL SUMMARY REPORT\n";
     csvContent += `Generated Date,${new Date().toLocaleString()}\n`;
     csvContent += `Time Range Filter,${timeRange.toUpperCase()}\n\n`;
 
@@ -110,7 +110,7 @@ export default function Revenue() {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `Madhur_Dairy_Financial_Summary_${timeRange}_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `Madhu_Dairy_Financial_Summary_${timeRange}_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

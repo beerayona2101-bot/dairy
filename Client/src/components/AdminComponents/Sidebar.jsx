@@ -113,7 +113,7 @@ export default function Sidebar() {
                 <Link to="/home" onClick={closeSidebar} className="flex items-center hover:scale-105 transition-transform">
                     <img
                         src={theme === "dark" ? logoDarkMode : logoLightMode}
-                        alt="Madhur Admin Logo"
+                        alt="MADHU Admin Logo"
                         loading="eager"
                         decoding="sync"
                         className="h-8 w-auto object-contain"

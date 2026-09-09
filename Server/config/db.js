@@ -25,7 +25,7 @@ let mongoMemoryInstance = null;
 
 const initialProducts = [
   {
-    name: "Madhur Cow Milk (Full Cream)",
+    name: "MADHU Cow Milk (Full Cream)",
     category: "Milk",
     description: "Pure, unadulterated fresh cow milk rich in calcium, protein, and natural vitamins.",
     image: ["https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600&q=80"],
@@ -39,7 +39,7 @@ const initialProducts = [
     shelfLife: "7 Days"
   },
   {
-    name: "Madhur Buffalo Toned Milk",
+    name: "MADHU Buffalo Toned Milk",
     category: "Milk",
     description: "Rich, thick, and creamy buffalo milk—ideal for tea, coffee, curd, and sweets.",
     image: ["https://images.unsplash.com/photo-1563636619-e9143da7973b?w=600&q=80"],
@@ -53,7 +53,7 @@ const initialProducts = [
     shelfLife: "7 Days"
   },
   {
-    name: "Madhur Toned Cow Milk",
+    name: "MADHU Toned Cow Milk",
     category: "Milk",
     description: "Low-fat pasteurized cow milk packed with calcium for daily balanced fitness.",
     image: ["https://images.unsplash.com/photo-1528750997573-59b89d66f4f7?w=600&q=80"],
@@ -67,7 +67,7 @@ const initialProducts = [
     shelfLife: "7 Days"
   },
   {
-    name: "Madhur Fresh Malai Paneer",
+    name: "MADHU Fresh Malai Paneer",
     category: "Paneer",
     description: "Soft, velvety fresh cottage cheese made using traditional slow curdling.",
     image: ["https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&q=80"],
@@ -81,7 +81,7 @@ const initialProducts = [
     shelfLife: "10 Days"
   },
   {
-    name: "Madhur Organic Desi Cow Ghee",
+    name: "MADHU Organic Desi Cow Ghee",
     category: "Ghee",
     description: "Authentic bilona method pure cow ghee with rich granular aroma and texture.",
     image: ["https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&q=80"],
@@ -95,7 +95,7 @@ const initialProducts = [
     shelfLife: "180 Days"
   },
   {
-    name: "Madhur Buffalo Desi Ghee",
+    name: "MADHU Buffalo Desi Ghee",
     category: "Ghee",
     description: "Pure white buffalo ghee cooked traditionally for high smoke point cooking.",
     image: ["https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=600&q=80"],
@@ -109,7 +109,7 @@ const initialProducts = [
     shelfLife: "180 Days"
   },
   {
-    name: "Madhur Natural Thick Curd (Dahi)",
+    name: "MADHU Natural Thick Curd (Dahi)",
     category: "Curd",
     description: "Creamy set curd naturally fermented with active probiotics for digestion.",
     image: ["https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80"],
@@ -123,7 +123,7 @@ const initialProducts = [
     shelfLife: "10 Days"
   },
   {
-    name: "Madhur Cooking Butter",
+    name: "MADHU Cooking Butter",
     category: "Butter",
     description: "Unsalted pure cream butter perfect for baking, parathas, and gourmet dishes.",
     image: ["https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&q=80"],
@@ -137,7 +137,7 @@ const initialProducts = [
     shelfLife: "30 Days"
   },
   {
-    name: "Madhur Sweet Malai Lassi",
+    name: "MADHU Sweet Malai Lassi",
     category: "Lassi",
     description: "Chilled, thick sweet lassi blended with cardamom and topped with fresh malai.",
     image: ["https://images.unsplash.com/photo-1571006682858-a457224f984f?w=600&q=80"],
@@ -151,7 +151,7 @@ const initialProducts = [
     shelfLife: "7 Days"
   },
   {
-    name: "Madhur Spiced Masala Chaas",
+    name: "MADHU Spiced Masala Chaas",
     category: "Chaas",
     description: "Refreshing digestive buttermilk with roasted cumin, rock salt, coriander, and mint.",
     image: ["https://images.unsplash.com/photo-1626078436894-39945037d45e?w=600&q=80"],
@@ -165,7 +165,7 @@ const initialProducts = [
     shelfLife: "7 Days"
   },
   {
-    name: "Madhur Kesar Shrikhand",
+    name: "MADHU Kesar Shrikhand",
     category: "Shrikhand",
     description: "Traditional strained yoghurt sweet infused with pure saffron and green cardamom.",
     image: ["https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=80"],
@@ -179,7 +179,7 @@ const initialProducts = [
     shelfLife: "20 Days"
   },
   {
-    name: "Madhur Kesar Basundi",
+    name: "MADHU Kesar Basundi",
     category: "Basundi",
     description: "Rich condensed sweet milk cooked with saffron strands, almonds, and pistachios.",
     image: ["https://images.unsplash.com/photo-1579372786545-d24232daf58c?w=600&q=80"],
@@ -193,7 +193,7 @@ const initialProducts = [
     shelfLife: "15 Days"
   },
   {
-    name: "Madhur Khoya (Mawa)",
+    name: "MADHU Khoya (Mawa)",
     category: "Khoya",
     description: "Pure evaporated solid milk dough for authentic sweet making at home.",
     image: ["https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&q=80"],
@@ -207,7 +207,7 @@ const initialProducts = [
     shelfLife: "15 Days"
   },
   {
-    name: "Madhur Mozzarella Cheese",
+    name: "MADHU Mozzarella Cheese",
     category: "Cheese",
     description: "Stretchable, high-melt fresh mozzarella cheese block for pizzas and pasta.",
     image: ["https://images.unsplash.com/photo-1552767059-ce182ead8c1b?w=600&q=80"],
@@ -221,7 +221,7 @@ const initialProducts = [
     shelfLife: "30 Days"
   },
   {
-    name: "Madhur Elaichi Shrikhand",
+    name: "MADHU Elaichi Shrikhand",
     category: "Shrikhand",
     description: "Creamy strained yogurt dessert flavored with freshly ground aromatic cardamom.",
     image: ["https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=80"],
@@ -235,7 +235,7 @@ const initialProducts = [
     shelfLife: "20 Days"
   },
   {
-    name: "Madhur Mango Malai Lassi",
+    name: "MADHU Mango Malai Lassi",
     category: "Lassi",
     description: "Rich blended yogurt drink infused with Alphonso mango pulp and cream.",
     image: ["https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80"],
@@ -249,7 +249,7 @@ const initialProducts = [
     shelfLife: "7 Days"
   },
   {
-    name: "Madhur Badam Flavored Milk",
+    name: "MADHU Badam Flavored Milk",
     category: "Flavored Milk",
     description: "Sterilized almond milk beverage with saffron bits and real crushed almonds.",
     image: ["https://images.unsplash.com/photo-1528750997573-59b89d66f4f7?w=600&q=80"],
@@ -263,7 +263,7 @@ const initialProducts = [
     shelfLife: "30 Days"
   },
   {
-    name: "Madhur Chocolate Flavored Milk",
+    name: "MADHU Chocolate Flavored Milk",
     category: "Flavored Milk",
     description: "Delicious cocoa flavored milk treat beloved by kids and adults alike.",
     image: ["https://images.unsplash.com/photo-1556881286-fc6915169721?w=600&q=80"],
@@ -277,7 +277,7 @@ const initialProducts = [
     shelfLife: "30 Days"
   },
   {
-    name: "Madhur Creamy Malai Rabri",
+    name: "MADHU Creamy Malai Rabri",
     category: "Dairy Sweets",
     description: "Rich thickened sweetened milk layered with malai, pistachios, and saffron.",
     image: ["https://images.unsplash.com/photo-1579372786545-d24232daf58c?w=600&q=80"],
@@ -291,7 +291,7 @@ const initialProducts = [
     shelfLife: "10 Days"
   },
   {
-    name: "Madhur Milk Powder (Premium)",
+    name: "MADHU Milk Powder (Premium)",
     category: "Milk Powder",
     description: "Spray dried instant whole milk powder for tea, coffee, and bakery recipes.",
     image: ["https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&q=80"],
@@ -305,7 +305,7 @@ const initialProducts = [
     shelfLife: "180 Days"
   },
   {
-    name: "Madhur Mishti Doi",
+    name: "MADHU Mishti Doi",
     category: "Curd",
     description: "Traditional Bengali caramel sweetened thick fermented yogurt dessert.",
     image: ["https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80"],
@@ -319,7 +319,7 @@ const initialProducts = [
     shelfLife: "10 Days"
   },
   {
-    name: "Madhur Fresh Cream (Heavy)",
+    name: "MADHU Fresh Cream (Heavy)",
     category: "Cream",
     description: "Rich whipping cream with 40% fat content for desserts, soups, and gravies.",
     image: ["https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600&q=80"],
@@ -340,7 +340,7 @@ const defaultCustomers = [
     firstName: "Rahul",
     lastName: "Sharma",
     username: "rahul_s",
-    email: "user@madhurdairy.com",
+    email: "user@MADHUdairy.com",
     mobileNo: "9876543211",
     gender: "Male"
   },
@@ -385,13 +385,13 @@ const defaultCustomers = [
 const seedDefaultData = async () => {
   try {
     // 1. Seed Admin
-    const adminEmail = "admin@madhurdairy.com";
+    const adminEmail = "admin@MADHUdairy.com";
     const existingAdmin = await Admin.findOne({ email: adminEmail });
     if (!existingAdmin) {
       const hashedAdminPassword = await bcryptjs.hash("Admin@12345", 10);
       await Admin.create({
-        name: "Madhur Admin",
-        username: "admin_madhur",
+        name: "MADHU Admin",
+        username: "admin_MADHU",
         email: adminEmail,
         password: hashedAdminPassword,
         mobileNo: "9876543210",
@@ -402,7 +402,7 @@ const seedDefaultData = async () => {
           pincode: "400001",
         },
       });
-      console.log("✅ Admin Account Ready: admin@madhurdairy.com / Admin@12345");
+      console.log("✅ Admin Account Ready: admin@MADHUdairy.com / Admin@12345");
     }
 
     // 2. Seed Customers
