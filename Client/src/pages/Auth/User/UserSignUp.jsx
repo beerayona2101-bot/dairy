@@ -55,7 +55,10 @@ export default function UserSignUp() {
           "Account created successfully! Credentials sent to your email.",
           { variant: "success" }
         );
-        localStorage.setItem("User", JSON.stringify(res.user));
+        if (res?.userToken) {
+          sessionStorage.setItem("userToken", res.userToken);
+          sessionStorage.setItem("userRole", "user");
+        }
         navigate("/signup/info-input", { state: { formData: res.user } });
         setFormData({ email: "", password: "", confirmPassword: "" });
       } else {
@@ -316,7 +319,7 @@ export default function UserSignUp() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 px-6 rounded-full bg-white hover:bg-blue-50 active:scale-[0.99] text-[#1E88E5] font-extrabold text-sm tracking-widest uppercase shadow-xl shadow-black/15 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-5"
+                className="w-full py-4 px-6 rounded-full bg-white hover:bg-blue-50 active:scale-[0.99] text-[#1E88E5] font-extrabold text-sm tracking-widest uppercase shadow-xl shadow-black/15 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-5 periodic-glass-shine"
               >
                 {isLoading ? (
                   <BuffaloLoader variant="button" text="Signing up..." />

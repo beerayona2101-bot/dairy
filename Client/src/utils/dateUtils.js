@@ -56,7 +56,13 @@ export const formatRelativeTime = (dateInput) => {
  */
 export const formatFullAddress = (addr) => {
   if (!addr) return "Address details not available";
-  if (typeof addr === "string") return addr;
+  if (typeof addr === "string") {
+    // If it's a 24-character hex ObjectId string that was not populated
+    if (/^[0-9a-fA-F]{24}$/.test(addr)) {
+      return "Address details not available";
+    }
+    return addr;
+  }
 
   const parts = [
     addr.hno ? `House No. ${addr.hno}` : null,

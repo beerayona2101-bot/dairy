@@ -32,9 +32,9 @@ const containerVariants = {
 
 export default function Orders() {
 
-  const { adminOrders, orderLoading, allOrders } = useContext(AdminOrderContext);
+  const { orderLoading, allOrders, allOrdersLoading } = useContext(AdminOrderContext);
 
-  const [statusFilter, setStatusFilter] = useState("Pending");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -49,16 +49,21 @@ export default function Orders() {
     >
       <motion.div variants={fadeUpVariants}>
         <OrdersSummary
-          orders={adminOrders}
-          totalOrders={totalActiveOrders(adminOrders)}
+          orders={allOrders}
+          totalOrders={totalActiveOrders(allOrders)}
           totalRecievedOrders={totalOrdersCount(allOrders)}
           totalCanceledOrders={totalCanceledOrders(allOrders)}
           handleStatusFilter={handleStatusFilter}
         />
       </motion.div>
 
-      <motion.div variants={fadeUpVariants} className="mt-6">
-        <OrderDetails orders={adminOrders} allOrders={allOrders} loading={orderLoading} statusFilter={statusFilter} handleStatusFilter={handleStatusFilter} />
+      <motion.div variants={fadeUpVariants} className="mt-2 md:mt-6">
+        <OrderDetails
+          allOrders={allOrders}
+          loading={orderLoading || allOrdersLoading}
+          statusFilter={statusFilter}
+          handleStatusFilter={handleStatusFilter}
+        />
       </motion.div>
     </motion.div>
   );

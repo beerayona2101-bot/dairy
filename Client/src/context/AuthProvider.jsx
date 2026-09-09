@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, createContext, useCallback } from "react";
-import { getUserById } from "../services/userService";
-import { getAdminById } from "../services/adminService";
-import { socket } from "../socket/socket";
+import { getUserById, verifyUserSessionApi } from "../services/userService";
+import { getAdminById, verifyAdminSessionApi } from "../services/adminService";
+import wsManager from "../socket/WebSocketManager";
 import { getSavedAddresses, addToWishlist } from "../services/userProfileService";
 import { getGuestWishlist, clearGuestWishlist } from "../utils/guestWishlist";
 
@@ -9,50 +9,57 @@ export const UserAuthContext = createContext();
 export const AdminAuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    // Purge legacy persistent localStorage authentication keys to ensure tab-close reset behavior
+    useEffect(() => {
+        try {
+            localStorage.removeItem("User");
+            localStorage.removeItem("Admin");
+        } catch {}
+    }, []);
 
-    const initialUser = (() => { try { return JSON.parse(localStorage.getItem("User")); } catch { return null; } })();
-    const initialAdmin = (() => { try { return JSON.parse(localStorage.getItem("Admin")); } catch { return null; } })();
-
-    const [authUser, setAuthUser] = useState(initialUser || null);
-    const [authAdmin, setAuthAdmin] = useState(initialAdmin || null);
-    const [authUserLoading, setAuthUserLoading] = useState(false);
-    const [authAdminLoading, setAuthAdminLoading] = useState(false);
+    const [authUser, setAuthUser] = useState(null);
+    const [authAdmin, setAuthAdmin] = useState(null);
+    const [authUserLoading, setAuthUserLoading] = useState(true);
+    const [authAdminLoading, setAuthAdminLoading] = useState(true);
     const [openLoginDialog, setOpenLoginDialog] = useState(false);
 
-    useEffect(() => {
-        if (authUser) {
-            localStorage.setItem("User", JSON.stringify(authUser));
-        }
-    }, [authUser]);
-
-    useEffect(() => {
-        if (authAdmin) {
-            localStorage.setItem("Admin", JSON.stringify(authAdmin));
-        }
-    }, [authAdmin]);
-
-    const storedAddress = initialUser?._id ? (() => { try { return JSON.parse(localStorage.getItem("deliveryAddress")); } catch { return null; } })() : null;
-    const [deliveryAddress, setDeliveryAddressState] = useState(storedAddress || null);
+    const [deliveryAddress, setDeliveryAddressState] = useState(null);
 
     const setDeliveryAddress = useCallback((addr) => {
         setDeliveryAddressState(addr);
         if (addr) {
-            localStorage.setItem("deliveryAddress", JSON.stringify(addr));
+            sessionStorage.setItem("deliveryAddress", JSON.stringify(addr));
         } else {
-            localStorage.removeItem("deliveryAddress");
+            sessionStorage.removeItem("deliveryAddress");
         }
     }, []);
 
-    const fetchUserData = useCallback(async (userId) => {
+    const fetchUserData = useCallback(async (initialUserData = null) => {
+        const token = sessionStorage.getItem("userToken");
+        if (!token) {
+            setAuthUser(null);
+            setAuthUserLoading(false);
+            return;
+        }
+
+        if (initialUserData) {
+            setAuthUser(initialUserData);
+            setAuthUserLoading(false);
+        }
+
         try {
-            setAuthUserLoading(true);
-            if (userId) {
+            if (!initialUserData) setAuthUserLoading(true);
+            const sessionData = await verifyUserSessionApi();
+            if (sessionData?.success && sessionData?.user) {
+                const user = sessionData.user;
+                setAuthUser(user);
+
                 // Merge guest wishlist into user account if any guest items exist
                 const guestWishlist = getGuestWishlist();
-                if (guestWishlist.length > 0) {
+                if (guestWishlist.length > 0 && user._id) {
                     for (const prodId of guestWishlist) {
                         try {
-                            await addToWishlist(userId, prodId);
+                            await addToWishlist(user._id, prodId);
                         } catch (err) {
                             console.warn("Failed to merge guest wishlist item:", prodId, err);
                         }
@@ -60,77 +67,108 @@ export const AuthProvider = ({ children }) => {
                     clearGuestWishlist();
                 }
 
-                const userData = await getUserById(userId);
-                const user = userData?.user;
-
-                if (user) {
-                    setAuthUser(user);
+                if (user._id) {
+                    const addressData = await getSavedAddresses(user._id).catch(() => null);
+                    const addresses = addressData?.userAddresses || [];
+                    if (addresses.length > 0) {
+                        let stored = null;
+                        try { stored = JSON.parse(sessionStorage.getItem("deliveryAddress")); } catch {}
+                        const matched = stored ? addresses.find(a => a._id === stored._id) : null;
+                        const chosen = matched || stored || addresses[0];
+                        setDeliveryAddressState(chosen);
+                    } else {
+                        setDeliveryAddressState(null);
+                    }
                 }
-
-                const addressData = await getSavedAddresses(userId);
-                const addresses = addressData?.userAddresses || [];
-                if (addresses.length > 0) {
-                    const stored = JSON.parse(localStorage.getItem("deliveryAddress"));
-                    const matched = stored ? addresses.find(a => a._id === stored._id) : null;
-                    const chosen = matched || stored || addresses[0];
-                    setDeliveryAddressState(chosen);
-                    localStorage.setItem("deliveryAddress", JSON.stringify(chosen));
-                } else {
-                    setDeliveryAddressState(null);
-                    localStorage.removeItem("deliveryAddress");
-                }
+            } else if (!initialUserData) {
+                sessionStorage.removeItem("userToken");
+                sessionStorage.removeItem("userRole");
+                setAuthUser(null);
             }
-        } catch {
-            setAuthUser(null);
-            setDeliveryAddressState(null);
-            localStorage.removeItem("deliveryAddress");
+        } catch (err) {
+            console.warn("Could not sync user session from server:", err?.message);
+            if (!initialUserData) {
+                sessionStorage.removeItem("userToken");
+                sessionStorage.removeItem("userRole");
+                setAuthUser(null);
+            }
         } finally {
             setAuthUserLoading(false);
         }
     }, []);
 
-    useEffect(() => {
-        const localUser = JSON.parse(localStorage.getItem("User"));
-        if (localUser?._id) fetchUserData(localUser?._id);
-    }, [fetchUserData]);
+    const fetchAdminData = useCallback(async (initialAdminData = null) => {
+        const token = sessionStorage.getItem("adminToken");
+        if (!token) {
+            setAuthAdmin(null);
+            setAuthAdminLoading(false);
+            return;
+        }
 
-    const fetchAdminData = useCallback(async (adminId) => {
+        if (initialAdminData) {
+            setAuthAdmin(initialAdminData);
+            setAuthAdminLoading(false);
+        }
+
         try {
-            setAuthAdminLoading(true);
-            if (adminId) {
-                const data = await getAdminById(adminId);
-                setAuthAdmin(data?.admin);
+            if (!initialAdminData) setAuthAdminLoading(true);
+            const sessionData = await verifyAdminSessionApi();
+            if (sessionData?.success && sessionData?.admin) {
+                setAuthAdmin(sessionData.admin);
+            } else if (!initialAdminData) {
+                sessionStorage.removeItem("adminToken");
+                sessionStorage.removeItem("adminRole");
+                setAuthAdmin(null);
             }
         } catch {
-            setAuthAdmin(null);
+            if (!initialAdminData) {
+                sessionStorage.removeItem("adminToken");
+                sessionStorage.removeItem("adminRole");
+                setAuthAdmin(null);
+            }
         } finally {
             setAuthAdminLoading(false);
         }
     }, []);
 
+    // Session validation on mount
     useEffect(() => {
-        const localAdmin = JSON.parse(localStorage.getItem("Admin"));
-        if (localAdmin?._id) fetchAdminData(localAdmin?._id);
-    }, [fetchAdminData]);
+        const userToken = sessionStorage.getItem("userToken");
+        const adminToken = sessionStorage.getItem("adminToken");
+
+        if (userToken) {
+            fetchUserData();
+        } else {
+            setAuthUser(null);
+            setAuthUserLoading(false);
+        }
+
+        if (adminToken) {
+            fetchAdminData();
+        } else {
+            setAuthAdmin(null);
+            setAuthAdminLoading(false);
+        }
+    }, [fetchUserData, fetchAdminData]);
 
     const handleUserLogout = useCallback(() => {
-
-        if (socket && authUser?._id) {
-            socket.emit("client:logout", { userId: authUser._id });
+        if (wsManager && authUser?._id) {
+            wsManager.emit("client:logout", { userId: authUser._id });
         }
         setAuthUser(null);
         setDeliveryAddressState(null);
-        localStorage.removeItem("User");
-        localStorage.removeItem("deliveryAddress");
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("userRole");
+        sessionStorage.removeItem("deliveryAddress");
     }, [authUser?._id]);
 
     const handleAdminLogout = useCallback(() => {
-
-        if (socket && authAdmin?._id) {
-            socket.emit("client:logout", { adminId: authAdmin._id });
+        if (wsManager && authAdmin?._id) {
+            wsManager.emit("client:logout", { adminId: authAdmin._id });
         }
         setAuthAdmin(null);
-        localStorage.removeItem("Admin");
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminRole");
     }, [authAdmin?._id]);
 
     const value1 = useMemo(() => ({
@@ -162,4 +200,4 @@ export const AuthProvider = ({ children }) => {
             </UserAuthContext.Provider>
         </AdminAuthContext.Provider>
     );
-}
+};

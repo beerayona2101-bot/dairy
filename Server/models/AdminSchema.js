@@ -62,9 +62,12 @@ const AdminSchema = new mongoose.Schema(
 
     notifications: [
       {
-        title: { type: String },
-        description: { type: String },
+        title: { type: String, required: true },
+        description: { type: String, required: true },
         date: { type: Date, default: Date.now },
+        isRead: { type: Boolean, default: false },
+        orderId: { type: Schema.Types.ObjectId, ref: "Order" },
+        type: { type: String, default: "order" },
       },
     ],
 

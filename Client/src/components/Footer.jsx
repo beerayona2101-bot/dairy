@@ -45,7 +45,7 @@ function Footer() {
 
 
   return (
-    <footer className="mt-12 bg-white/90 dark:bg-gray-900/90 text-[#2D3748] dark:text-white backdrop-blur-md border-t border-white/80 dark:border-gray-800/80 rounded-t-[36px] shadow-[0_-15px_40px_rgba(0,0,0,0.03)] transition-colors duration-300">
+    <footer className="mt-12 bg-[#848484] text-white backdrop-blur-md border-t border-gray-400 rounded-t-[36px] shadow-[0_-15px_40px_rgba(0,0,0,0.08)] transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <motion.div
           className="grid grid-cols-1 md:grid-cols-4 gap-10"
@@ -64,7 +64,7 @@ function Footer() {
                 className="h-10 sm:h-12 w-auto object-contain"
               />
             </Link>
-            <p className="text-xs text-[#718096] dark:text-gray-400 leading-relaxed max-w-xs">
+            <p className="text-xs text-gray-100 leading-relaxed max-w-xs">
               Farm-fresh, 100% pure & nutritious A2 dairy delivered daily to your doorstep.
             </p>
             <div className="flex gap-4 text-xl pt-2">
@@ -76,7 +76,7 @@ function Footer() {
                     aria-label={key}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-9 h-9 rounded-full bg-[#EFF1F5] dark:bg-gray-800 flex items-center justify-center shadow-xs border border-white dark:border-gray-700 hover:scale-110 transition cursor-pointer"
+                    className="w-9 h-9 rounded-full bg-[#6E6E6E] text-white flex items-center justify-center shadow-xs border border-gray-400 hover:scale-110 transition cursor-pointer"
                   >
                     <Icon className={`${className} transition-colors text-xs`} />
                   </a>
@@ -112,18 +112,18 @@ function Footer() {
             },
           ].map((section) => (
             <motion.div key={section.heading} variants={itemVariants} className="space-y-4">
-              <h3 className="text-sm font-black uppercase tracking-wider text-[#6C5CE7]">{section.heading}</h3>
+              <h3 className="text-sm font-black uppercase tracking-wider text-white drop-shadow-xs">{section.heading}</h3>
               <ul className="space-y-2.5 text-xs font-semibold">
                 {section.links.map((link) =>
                   link.to ? (
                     <li key={link.label}>
-                      <Link to={link.to} className="text-[#718096] dark:text-gray-300 hover:text-[#6C5CE7] transition-colors duration-200">
+                      <Link to={link.to} className="text-gray-200 hover:text-white transition-colors duration-200">
                         {link.label}
                       </Link>
                     </li>
                   ) : (
                     <li key={link.label}>
-                      <Link to={link.href} className="text-[#718096] dark:text-gray-300 hover:text-[#6C5CE7] transition-colors duration-200">
+                      <Link to={link.href} className="text-gray-200 hover:text-white transition-colors duration-200">
                         {link.label}
                       </Link>
                     </li>
@@ -136,7 +136,7 @@ function Footer() {
 
         {/* Footer Bottom */}
         <motion.div
-          className="mt-12 border-t border-gray-200/60 dark:border-gray-800 pt-6 text-xs text-center font-bold text-[#718096] dark:text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-4"
+          className="mt-12 border-t border-gray-400/60 pt-6 text-xs text-center font-bold text-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -144,7 +144,7 @@ function Footer() {
           <p>© {new Date().getFullYear()} {company?.name || "Madhur Dairy"}. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span>Crafted with</span>
-            <span className="text-red-500">❤️</span>
+            <span className="text-red-400">❤️</span>
             <span>for pure healthy living.</span>
           </p>
         </motion.div>

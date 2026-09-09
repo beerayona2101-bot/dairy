@@ -299,7 +299,7 @@ export default function PageContentManager() {
           <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-2 text-[#1E88E5] dark:text-blue-400">
             <LayoutIcon className="w-6 h-6" /> Landing & Home Page Content Manager
           </h1>
-          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
             Customize Home Page category cards, Landing Page showcase cards, hero banners, and images.
           </p>
         </div>
@@ -415,11 +415,11 @@ export default function PageContentManager() {
 
           <AdminAccordion
             title="Hero Banners & Background Images"
-            subtitle="Manage Home Page and Landing Page background graphics"
+            subtitle="Manage Home Page hero background graphic"
             icon={<ImageIcon className="w-5 h-5 text-amber-500" />}
             defaultExpanded={true}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="max-w-2xl">
               {/* Home Hero Banner */}
               <div className="bg-gray-50/50 dark:bg-gray-900/40 p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
                 <h3 className="text-sm font-bold flex items-center gap-2">
@@ -448,39 +448,6 @@ export default function PageContentManager() {
                     <label className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-[#1E88E5] dark:text-blue-300 font-bold text-xs cursor-pointer hover:bg-blue-100 flex items-center gap-1">
                       <Upload className="w-3.5 h-3.5" /> Upload File
                       <input type="file" accept="image/*" className="hidden" onChange={handleHeroBannerUpload} />
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Landing Hero Background */}
-              <div className="bg-gray-50/50 dark:bg-gray-900/40 p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
-                <h3 className="text-sm font-bold flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-purple-500" /> Landing Page Hero Background Image
-                </h3>
-                <div className="relative h-44 w-full rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
-                  <img
-                    src={formData.landingHeroImage || landingHeroBgHDDefault}
-                    alt="Landing Hero"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 block">
-                    Image Source (URL or File Upload)
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder="Paste landing image URL"
-                      value={formData.landingHeroImage}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, landingHeroImage: e.target.value }))}
-                      className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
-                    />
-                    <label className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 font-bold text-xs cursor-pointer hover:bg-purple-100 flex items-center gap-1">
-                      <Upload className="w-3.5 h-3.5" /> Upload File
-                      <input type="file" accept="image/*" className="hidden" onChange={handleLandingHeroUpload} />
                     </label>
                   </div>
                 </div>

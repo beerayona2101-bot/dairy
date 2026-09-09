@@ -67,8 +67,8 @@ export const getAddresses = async (req, res) => {
         state: user.address.state || "State",
         pincode: user.address.pincode || "000000",
       });
-      await primaryAddr.save().catch(() => {});
-      await User.findByIdAndUpdate(userId, { $push: { savedAddresses: primaryAddr._id } }).catch(() => {});
+      await primaryAddr.save().catch(() => { });
+      await User.findByIdAndUpdate(userId, { $push: { savedAddresses: primaryAddr._id } }).catch(() => { });
       userAddresses = [primaryAddr];
     }
   }
@@ -135,7 +135,7 @@ export const saveNewAddress = async (req, res) => {
     $push: {
       savedAddresses: newAddress._id,
     },
-  }).catch(() => {});
+  }).catch(() => { });
 
   res.status(200).json({
     success: true,
@@ -260,8 +260,8 @@ export const getUserWishlistedProducts = async (req, res) => {
     const cleanWishlist = (user.wishlistedProducts || []).filter((p) => p && p._id);
     if (cleanWishlist.length !== rawCount && user._id) {
       const cleanIds = cleanWishlist.map((p) => p._id);
-      await User.findByIdAndUpdate(userId, { wishlistedProducts: cleanIds }).catch(() => {});
-      await Admin.findByIdAndUpdate(userId, { wishlistedProducts: cleanIds }).catch(() => {});
+      await User.findByIdAndUpdate(userId, { wishlistedProducts: cleanIds }).catch(() => { });
+      await Admin.findByIdAndUpdate(userId, { wishlistedProducts: cleanIds }).catch(() => { });
     }
 
     return res
@@ -331,9 +331,9 @@ export const deleteUserProfile = async (req, res) => {
     }
 
     if (deletedUser) {
-      await Address.deleteMany({ owner: deletedUser._id }).catch(() => {});
+      await Address.deleteMany({ owner: deletedUser._id }).catch(() => { });
       if (deletedUser.email) {
-        await User.deleteMany({ email: { $regex: new RegExp(`^${deletedUser.email.trim()}$`, 'i') } }).catch(() => {});
+        await User.deleteMany({ email: { $regex: new RegExp(`^${deletedUser.email.trim()}$`, 'i') } }).catch(() => { });
       }
     }
 
@@ -382,4 +382,3 @@ export const clearUserWishlist = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message || "Failed to clear wishlist." });
   }
 };
-

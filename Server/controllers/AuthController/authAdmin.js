@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Admin from "../../models/AdminSchema.js";
 import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../../middlewares/authMiddleware.js";
 
 export const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
@@ -57,9 +59,25 @@ export const loginAdmin = async (req, res) => {
     return res.status(400).json({ message: "Wrong Password" });
   }
 
+  const adminToken = jwt.sign(
+    { id: admin._id, role: "admin", email: admin.email },
+    JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+
   return res.status(200).json({
+    success: true,
     message: "Login Successful",
-    admin: { _id: admin?._id, email: admin.email, name: admin.name },
+    adminToken,
+    admin: { _id: admin?._id, email: admin.email, name: admin.name, username: admin.username },
+  });
+};
+
+export const verifyAdminSession = async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    admin: req.admin,
+    role: "admin",
   });
 };
 

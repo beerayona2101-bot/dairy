@@ -62,22 +62,27 @@ export default function OrdersOverview({ totalOrdersRecieved, totalPendingOrders
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-500/20 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50"
+      className="bg-white dark:bg-gray-500/20 rounded-xl p-3.5 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700/50"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Orders Overview</h2>
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">Orders Overview</h2>
+        <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 hidden sm:inline-block">
+          Click card to manage
+        </span>
+      </div>
 
       <motion.div
-        className="flex flex-wrap sm:grid sm:grid-cols-2 gap-3 overflow-x-auto scrollbar-hide pb-2"
+        className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-3"
         variants={containerVariants}
       >
         {loading
           ? Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="w-full sm:min-w-[220px] lg:min-w-0 flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-gray-500/10 animate-pulse"
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-gray-500/10 animate-pulse"
             >
               <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600"></div>
               <div className="flex flex-col gap-2 w-full">
@@ -94,22 +99,22 @@ export default function OrdersOverview({ totalOrdersRecieved, totalPendingOrders
               variants={cardVariants}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className={`w-full sm:min-w-[220px] lg:min-w-0 flex items-center justify-between p-3 rounded-xl border ${item.bg} cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md text-left group`}
+              className={`w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl border ${item.bg} cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md text-left group`}
             >
-              <div className="flex items-center gap-3 truncate">
-                <div className="text-2xl shrink-0 p-2 rounded-lg bg-white/70 dark:bg-black/20 backdrop-blur-xs">
+              <div className="flex items-center gap-2 truncate">
+                <div className="text-sm sm:text-2xl shrink-0 p-1.5 sm:p-2 rounded-lg bg-white/70 dark:bg-black/20 backdrop-blur-xs">
                   {item.icon}
                 </div>
                 <div className="truncate">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 truncate">
-                    {item.name}
+                  <div className="text-[9px] sm:text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 truncate">
+                    {item.name.replace("Total ", "")}
                   </div>
-                  <div className="text-lg font-bold whitespace-nowrap text-gray-900 dark:text-white">
+                  <div className="text-sm sm:text-lg font-bold whitespace-nowrap text-gray-900 dark:text-white">
                     {item.value}
                   </div>
                 </div>
               </div>
-              <ArrowForwardIcon className="text-gray-400 dark:text-gray-300 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 !text-lg shrink-0 ms-1" />
+              <ArrowForwardIcon className="text-gray-400 dark:text-gray-300 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 !text-xs sm:!text-lg shrink-0 ms-0.5" />
             </motion.button>
           ))}
       </motion.div>

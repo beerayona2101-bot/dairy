@@ -23,20 +23,21 @@ export default function AdminLayout({ children }) {
         }
     }, [location.pathname]);
 
-    const isAdminInStorage = localStorage.getItem("Admin");
+    const adminToken = sessionStorage.getItem("adminToken");
+    const adminRole = sessionStorage.getItem("adminRole");
 
     if (authAdminLoading) {
         return <BuffaloLoader variant="full" text="Loading admin details..." />;
     }
 
-    if (!isAdminInStorage && !authAdmin) {
+    if (!authAdmin || !adminToken || adminRole !== "admin") {
         return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
     }
 
     return (
         <AdminOrderProvider>
             <SidebarProvider>
-                <div ref={scrollRef} className="h-screen scroll-smooth flex overflow-hidden bg-[#EFF1F5] dark:bg-gray-900 text-[#2D3748] dark:text-white transition-colors duration-300">
+                <div ref={scrollRef} className="h-screen scroll-smooth flex overflow-hidden bg-fixed bg-cover bg-center text-[#2D3748] dark:text-white transition-colors duration-300 relative">
                     <Sidebar />
                     <main className="flex-1 h-full overflow-y-auto overflow-x-hidden flex flex-col">
                         <AdminNavbar />

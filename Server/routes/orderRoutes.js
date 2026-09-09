@@ -9,22 +9,23 @@ import {
   updateOrderStatus,
   cancelOrder
 } from "../controllers/orderController.js";
+import { verifyAdminAuth, verifyUserAuth } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// CREATE
-router.post("/create-order", wrapAsync(createOrder));
+// CREATE (User only)
+router.post("/create-order", verifyUserAuth, wrapAsync(createOrder));
 
 // READ
-router.post("/get-user-orders", wrapAsync(getAllUserOrders));
-router.post("/get-all-orders", wrapAsync(getAllOrders));
-router.post("/get-admin-orders", wrapAsync(getAdminOrders));
-router.get("/recent-20", wrapAsync(getRecentOrders));
+router.post("/get-user-orders", verifyUserAuth, wrapAsync(getAllUserOrders));
+router.post("/get-all-orders", verifyAdminAuth, wrapAsync(getAllOrders));
+router.post("/get-admin-orders", verifyAdminAuth, wrapAsync(getAdminOrders));
+router.get("/recent-20", verifyAdminAuth, wrapAsync(getRecentOrders));
 
-// UPDATE
-router.put("/update-status", wrapAsync(updateOrderStatus));
+// UPDATE (Admin only)
+router.put("/update-status", verifyAdminAuth, wrapAsync(updateOrderStatus));
 
-// DELETE / CANCEL
-router.post("/cancel-order", wrapAsync(cancelOrder));
+// DELETE / CANCEL (User only)
+router.post("/cancel-order", verifyUserAuth, wrapAsync(cancelOrder));
 
 export default router;

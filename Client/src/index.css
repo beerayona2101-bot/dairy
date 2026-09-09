@@ -43,13 +43,33 @@ html {
 }
 
 body {
-  font-family: "Inter", "Nunito", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-  top: 0px !important;
-  background-color: #EFF1F5;
-  color: #2D3748;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #FFFFFF;
+  color: #1E293B;
   overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-color: #FFFFFF;
+  pointer-events: none;
+}
+
+.dark body {
+  background-color: #0F172A;
+  color: #F8FAFC;
+}
+
+.dark body::before {
+  background-color: #0F172A;
 }
 
 /* Fast & Smooth Hardware Accelerated Global Transitions */
@@ -123,46 +143,70 @@ input.border-0 {
 
 /* Glassmorphism System Utility Classes */
 .glass-card {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
-  border-radius: 24px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(36px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
 
 .dark .glass-card {
-  background: rgba(30, 41, 59, 0.85) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(15, 23, 42, 0.7) !important;
+  backdrop-filter: blur(36px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 .glass-panel {
-  background: #EFF1F5 !important;
+  background: rgba(255, 255, 255, 0.58) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
   border: 1px solid rgba(255, 255, 255, 0.8) !important;
   border-radius: 36px !important;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1) !important;
 }
 
 .dark .glass-panel {
-  background: rgba(15, 23, 42, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4) !important;
+}
+
+.glass-navbar {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+.dark .glass-navbar {
+  background: rgba(15, 23, 42, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Global Dialog & Modal Glassmorphism Overrides */
 .MuiDialog-paper,
 .MuiPaper-elevation {
-  background: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
   border-radius: 28px !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
 }
 
 .dark .MuiDialog-paper,
 .dark .MuiPaper-elevation {
-  background: rgba(30, 41, 59, 0.92) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 /* Soft Light Palette Utility Classes to Differentiate Cards */
@@ -323,4 +367,159 @@ body,
 
 .btn-reflection:hover::before {
   animation: reflectionSweep 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Premium Floating Perimeter Border Light Effect */
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes spinBorderLight {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
+}
+
+.floating-border-light {
+  position: relative !important;
+  isolation: isolate;
+  will-change: transform;
+}
+
+.floating-border-light::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -1.5px !important;
+  border-radius: inherit !important;
+  padding: 2px !important;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0deg,
+    transparent 260deg,
+    rgba(108, 92, 231, 0.5) 300deg,
+    rgba(167, 139, 250, 0.95) 340deg,
+    #ffffff 355deg,
+    transparent 360deg
+  ) !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  opacity: 0.65 !important;
+  animation: spinBorderLight 3.2s linear infinite !important;
+  transition: opacity 0.35s ease-in-out !important;
+  pointer-events: none !important;
+  z-index: 30 !important;
+}
+
+.floating-border-light:hover::before,
+.floating-border-light:active::before,
+.floating-border-light.active-touch::before {
+  opacity: 1 !important;
+  animation: spinBorderLight 2.2s linear infinite !important;
+}
+
+/* Always vibrant light traveling on mobile touch screens */
+@media (max-width: 768px), (pointer: coarse) {
+  .floating-border-light::before {
+    opacity: 0.85 !important;
+    animation: spinBorderLight 2.8s linear infinite !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-border-light::before {
+    animation: none !important;
+  }
+}
+
+/* One-Shot Diagonal Glass Sheen Sweep Effect on Hover */
+@keyframes glassSheenSweep {
+  0% {
+    transform: translate(-140%, -140%) rotate(30deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(220%, 220%) rotate(30deg);
+    opacity: 0;
+  }
+}
+
+.animate-glassSheenSweep {
+  animation: glassSheenSweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) 1 forwards !important;
+}
+
+/* 30-Second Periodic Diagonal Glass Shine Sweep Animation */
+@keyframes periodicGlassShineSweep {
+  0% {
+    transform: translate(-140%, -140%) rotate(30deg);
+    opacity: 0;
+  }
+  0.5% {
+    opacity: 1;
+  }
+  4.5% {
+    opacity: 1;
+  }
+  5% {
+    transform: translate(220%, 220%) rotate(30deg);
+    opacity: 0;
+  }
+  5.1%, 100% {
+    transform: translate(220%, 220%) rotate(30deg);
+    opacity: 0;
+  }
+}
+
+.periodic-glass-shine {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.periodic-glass-shine::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -50% !important;
+  left: -50% !important;
+  width: 200% !important;
+  height: 200% !important;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 35%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.2) 65%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  transform: translate(-140%, -140%) rotate(30deg) !important;
+  animation: periodicGlassShineSweep 30s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  pointer-events: none !important;
+  z-index: 25 !important;
+}
+
+.dark .periodic-glass-shine::before {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 35%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.15) 65%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .periodic-glass-shine::before {
+    animation: none !important;
+  }
 }

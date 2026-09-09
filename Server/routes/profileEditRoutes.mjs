@@ -15,31 +15,32 @@ import {
   deleteUserProfile,
 } from "../controllers/profileEdit.js";
 import { upload } from "../config/cloudinary.js";
+import { verifyUserAuth } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.put("/profile-edit", wrapAsync(editProfile));
+router.put("/profile-edit", verifyUserAuth, wrapAsync(editProfile));
 
-router.post("/get-addresses", wrapAsync(getAddresses));
+router.post("/get-addresses", verifyUserAuth, wrapAsync(getAddresses));
 
-router.post("/profile", wrapAsync(getProfileData));
+router.post("/profile", verifyUserAuth, wrapAsync(getProfileData));
 
-router.post("/add-address", wrapAsync(saveNewAddress));
+router.post("/add-address", verifyUserAuth, wrapAsync(saveNewAddress));
 
-router.post("/remove-address", wrapAsync(deleteAddress));
+router.post("/remove-address", verifyUserAuth, wrapAsync(deleteAddress));
 
-router.put("/edit-address", wrapAsync(editAddress));
+router.put("/edit-address", verifyUserAuth, wrapAsync(editAddress));
 
-router.post("/edit-profilePhoto", upload.single("photo"), wrapAsync(editProfilePhoto));
+router.post("/edit-profilePhoto", verifyUserAuth, upload.single("photo"), wrapAsync(editProfilePhoto));
 
-router.put("/add-to-wishlist", wrapAsync(addToWishlistedProducts));
+router.put("/add-to-wishlist", verifyUserAuth, wrapAsync(addToWishlistedProducts));
 
-router.post("/get-wishlisted", wrapAsync(getUserWishlistedProducts));
+router.post("/get-wishlisted", verifyUserAuth, wrapAsync(getUserWishlistedProducts));
 
-router.post("/remove-from-wishlist", wrapAsync(removeFromWishlistedProducts));
+router.post("/remove-from-wishlist", verifyUserAuth, wrapAsync(removeFromWishlistedProducts));
 
-router.post("/clear-wishlist", wrapAsync(clearUserWishlist));
+router.post("/clear-wishlist", verifyUserAuth, wrapAsync(clearUserWishlist));
 
-router.post("/delete-account", wrapAsync(deleteUserProfile));
+router.post("/delete-account", verifyUserAuth, wrapAsync(deleteUserProfile));
 
 export default router;

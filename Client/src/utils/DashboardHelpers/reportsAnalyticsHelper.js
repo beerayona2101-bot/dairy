@@ -199,7 +199,7 @@ export const getReportAnalyticsData = (
   // 5. Order Status Percentages for Circular Rings
   const totalOrdersCount = timeFilteredOrders.length || 120;
   const deliveredCount = timeFilteredOrders.filter((o) => o.status === "Delivered").length || 108;
-  const pendingCount = timeFilteredOrders.filter((o) => ["Pending", "Confirmed", "Shipped"].includes(o.status)).length || 9;
+  const pendingCount = timeFilteredOrders.filter((o) => ["Pending", "Confirmed", "Processing", "Shipped", "Ready to Deliver"].includes(o.status)).length || 9;
   const cancelledCount = timeFilteredOrders.filter((o) => o.status === "Cancelled").length || 3;
 
   const deliveredPct = Math.round((deliveredCount / totalOrdersCount) * 100);
@@ -208,6 +208,7 @@ export const getReportAnalyticsData = (
 
   return {
     timeRange,
+    timeFilteredOrders,
     summaryMetrics: {
       revenue: displayRevenue,
       revenueGrowth: 22.4,

@@ -99,6 +99,13 @@ export default function OrdersPreview() {
             {orders.map((order) => {
               const statusClass = getStatusClass(order?.status);
               const address = order?.address;
+              const userObj = order?.user;
+              const customerName =
+                (userObj?.firstName ? `${userObj.firstName} ${userObj.lastName || ""}`.trim() : null) ||
+                address?.name ||
+                address?.fullName ||
+                (address?.owner?.firstName ? `${address.owner.firstName} ${address.owner.lastName || ""}`.trim() : null) ||
+                "N/A";
 
               const paymentIcon =
                 order.paymentMode === "Online" ? (
@@ -112,7 +119,7 @@ export default function OrdersPreview() {
                   key={order?._id}
                   className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500/10"
                 >
-                  <td className="p-3">{address?.name || "N/A"}</td>
+                  <td className="p-3 font-semibold text-gray-800 dark:text-white">{customerName}</td>
                   <td className="p-3">
                     {order?.createdAt
                       ? new Date(order.createdAt).toLocaleDateString("en-IN", {

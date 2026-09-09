@@ -26,15 +26,18 @@ import { ThemeContext } from '../context/ThemeProvider';
 import { AdminAuthContext, UserAuthContext } from "../context/AuthProvider"
 import { CartContext } from '../context/CartProvider';
 import { UserOrderContext } from '../context/UserOrderProvider';
-import { Bell, X } from 'lucide-react';
+import { Bell, X, ShoppingBag, Info, Home, Headphones, User, Heart, ShoppingCart } from 'lucide-react';
 import Slide from '@mui/material/Slide';
 import { removeUserNotification } from '../services/userProfileService';
 import { removeAdminNotification } from '../services/adminService';
+import { markNotificationAsRead } from '../services/notificationService';
 import { useSnackbar } from 'notistack';
 import UserProfileSidebar from './UserProfileSidebar';
 import company from "../data/company.json";
 import logoDarkMode from "../assets/logoDarkMode.png";
 import logoLightMode from "../assets/logoLightMode.png";
+import cowLogoImg from "../assets/cow.png";
+import brandNameTxtImg from "../assets/brand name txt.png";
 
 import { getGuestWishlist } from '../utils/guestWishlist';
 
@@ -47,13 +50,16 @@ export default function Navbar() {
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
     const location = useLocation();
-    const loginUser = localStorage.getItem("User");
+    const isCheckoutPage = location.pathname.includes("checkout");
+    const isCartPage = location.pathname.includes("cart");
+    const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
+    const hideNavItems = isCheckoutPage || isCartPage;
 
     const { theme, toggleTheme } = useContext(ThemeContext);
     const { authUser, setAuthUser, authUserLoading, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
     const { authAdmin, setAuthAdmin, authAdminLoading, handleAdminLogout } = useContext(AdminAuthContext);
     const { cartItems } = useContext(CartContext);
-    const { notification, setNotification } = useContext(UserOrderContext);
+    const { notification, setNotification, unreadCount } = useContext(UserOrderContext);
 
     const [guestWishlistCount, setGuestWishlistCount] = useState(() => getGuestWishlist().length);
 
@@ -74,6 +80,36 @@ export default function Navbar() {
               }).length
             : 0)
         : guestWishlistCount;
+
+    const [isScrolling, setIsScrolling] = useState(false);
+    const scrollTimeoutRef = useRef(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.innerWidth >= 1024) {
+                setIsScrolling(false);
+                return;
+            }
+
+            setIsScrolling(true);
+
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current);
+            }
+
+            scrollTimeoutRef.current = setTimeout(() => {
+                setIsScrolling(false);
+            }, 250);
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const [open, setOpen] = useState(false);
     const [userProfileDrawer, setUserProfileDrawer] = useState(false);
@@ -174,18 +210,58 @@ export default function Navbar() {
         }
     };
 
+    const handleMarkAllAsRead = async () => {
+        const userId = authUser?._id;
+        const adminId = authAdmin?._id;
+        const targetId = userId || adminId;
+        if (!targetId) return;
+
+        try {
+            await markNotificationAsRead(targetId, null, "all");
+            setNotification((prev) => prev.map((n) => ({ ...n, isRead: true })));
+            if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: (prev.notifications || []).map(n => ({ ...n, isRead: true })) } : null);
+            if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: (prev.notifications || []).map(n => ({ ...n, isRead: true })) } : null);
+            enqueueSnackbar("All notifications marked as read.", { variant: "success" });
+        } catch (err) {
+            console.error("handleMarkAllAsRead error:", err);
+        }
+    };
+
+    const handleNotificationClick = async (item, idx) => {
+        const userId = authUser?._id || authAdmin?._id;
+        if (userId && item?._id) {
+            markNotificationAsRead(userId, item._id, "single").catch(() => {});
+            setNotification((prev) => prev.map((n, i) => i === idx || n._id === item._id ? { ...n, isRead: true } : n));
+        }
+        setNotificationDialog(false);
+        if (authAdmin) {
+            navigate("/admin/orders");
+        } else {
+            navigate("/user-profile/orders");
+        }
+    };
+
     const displayLogo = theme === "dark"
         ? (company?.logoDaraTheme || logoDarkMode)
         : (company?.logoLightTheme || logoLightMode);
 
     const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
     const openProfileMenu = Boolean(profileMenuAnchor);
-
-    const handleProfileMenuClick = (event) => {
-        setProfileMenuAnchor(event.currentTarget);
-    };
     const handleProfileMenuClose = () => {
         setProfileMenuAnchor(null);
+    };
+
+    const handleProfileClick = () => {
+        if (authAdmin) {
+            navigate("/admin/dashboard");
+        } else if (authUser) {
+            navigate("/user-profile");
+        } else {
+            if (location.pathname !== "/login" && location.pathname !== "/signup") {
+                sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
+            }
+            navigate("/login", { state: { from: location.pathname + location.search } });
+        }
     };
 
     let renderUserSection;
@@ -200,9 +276,9 @@ export default function Navbar() {
     } else if (authAdmin) {
         renderUserSection = (
             <button
-                onClick={handleProfileMenuClick}
+                onClick={handleProfileClick}
                 className="flex items-center gap-2 bg-white dark:bg-gray-800 shadow-sm border border-white dark:border-gray-700 rounded-full px-3.5 py-1.5 transition hover:scale-105 cursor-pointer text-[#2D3748] dark:text-white"
-                title="Admin Profile Menu"
+                title="Admin Dashboard"
             >
                 <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#6C5CE7]" />
                 <span className="text-xs font-extrabold">
@@ -214,9 +290,9 @@ export default function Navbar() {
     } else if (authUser) {
         renderUserSection = (
             <button
-                onClick={handleProfileMenuClick}
+                onClick={handleProfileClick}
                 className="flex items-center gap-2 bg-white dark:bg-gray-800 shadow-sm border border-white dark:border-gray-700 rounded-full px-3.5 py-1.5 transition hover:scale-105 cursor-pointer text-[#2D3748] dark:text-white"
-                title="User Profile Menu"
+                title="My Profile"
             >
                 <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#6C5CE7]" />
                 <span className="text-xs font-extrabold">
@@ -233,7 +309,7 @@ export default function Navbar() {
                     }
                     navigate("/login", { state: { from: location.pathname + location.search } });
                 }}
-                className="btn-reflection flex items-center gap-1.5 text-[#6C5CE7] bg-white dark:bg-gray-800 hover:bg-purple-50 font-extrabold px-4 py-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-[0_0_18px_rgba(108,92,231,0.4)] hover:scale-105 cursor-pointer border border-white dark:border-gray-700 text-xs relative overflow-hidden"
+                className="btn-reflection flex items-center gap-1.5 text-[#6C5CE7] bg-white dark:bg-gray-800 hover:bg-purple-50 font-extrabold px-4 py-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-[0_0_18px_rgba(108,92,231,0.4)] hover:scale-105 cursor-pointer border border-white dark:border-gray-700 text-xs relative overflow-hidden periodic-glass-shine"
             >
                 <LoginIcon sx={{ fontSize: "1.1rem" }} />
                 <span>Login</span>
@@ -244,46 +320,72 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 left-0 right-0 z-50 w-full py-2 sm:py-2.5 px-4 sm:px-8 lg:px-12 transition-all duration-300 bg-white/20 dark:bg-black/30 backdrop-blur-md border-b border-white/30 dark:border-white/10 shadow-none flex items-center justify-between ${location.pathname.startsWith('/product-details') ? 'hidden md:flex' : 'flex'}`}>
-                
-                {/* Left Brand Container: Official Madhur Dairy Logo */}
-                <Link to="/" className="flex items-center hover:scale-105 transition-transform py-0.5">
-                    <img
-                        src={displayLogo}
-                        alt={company?.name || "Madhur Dairy"}
-                        loading="eager"
-                        decoding="sync"
-                        className="h-8 sm:h-9 md:h-10 w-auto object-contain drop-shadow-sm"
-                    />
-                </Link>
+            <nav className={`fixed top-0 left-0 w-full z-50 py-1.5 sm:py-2 px-4 sm:px-8 lg:px-12 transition-transform duration-300 ease-in-out glass-navbar rounded-none border-none shadow-none ${
+                (isProductsPage || isCartPage || isCheckoutPage) ? "hidden md:block" : ""
+            } ${
+                isScrolling ? "-translate-y-full lg:translate-y-0" : "translate-y-0"
+            }`}>
+                <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
+                    {/* Left Brand Container: Cow icon on mobile, full logo on desktop */}
+                    <Link to="/" className="flex items-center hover:scale-105 transition-transform py-0.5 z-10">
+                        <img
+                            src={displayLogo}
+                            alt={company?.name || "Madhur Dairy"}
+                            loading="eager"
+                            decoding="sync"
+                            className="hidden md:block h-7 sm:h-8 md:h-8.5 w-auto object-contain drop-shadow-sm"
+                        />
+                        <img
+                            src={cowLogoImg}
+                            alt="Madhur Dairy Cow Logo"
+                            loading="eager"
+                            decoding="sync"
+                            className="block md:hidden h-8 sm:h-9 w-auto object-contain drop-shadow-xs"
+                        />
+                    </Link>
 
-                    {/* Center Navigation Links: Default Black Text, Active Violet with Light Glow */}
-                    <div className="hidden md:flex items-center gap-5 sm:gap-8">
-                        {navItems.map((item, idx) => {
-                            const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
-                            return (
-                                <Link
-                                    key={item.path || idx}
-                                    to={item.path}
-                                    className={`relative py-1 text-sm font-extrabold no-underline transition-all duration-300 cursor-pointer ${
-                                        isActive
-                                            ? "text-[#6C5CE7] dark:text-[#A78BFA] drop-shadow-[0_0_12px_rgba(108,92,231,0.75)] scale-105"
-                                            : "text-black dark:text-white hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:drop-shadow-[0_0_8px_rgba(108,92,231,0.5)]"
-                                    }`}
-                                >
-                                    {item.label}
-                                </Link>
-                            );
-                        })}
+                    {/* Mobile Center Brand Name Text Image (Visible ONLY on mobile) */}
+                    <div className="md:hidden absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <Link to="/" className="pointer-events-auto flex items-center justify-center">
+                            <img
+                                src={brandNameTxtImg}
+                                alt={company?.name || "Madhur Dairy"}
+                                loading="eager"
+                                decoding="sync"
+                                className="h-6.5 sm:h-7.5 max-h-8 w-auto object-contain drop-shadow-xs"
+                            />
+                        </Link>
                     </div>
 
+                    {/* Center Navigation Links: Default Black Text, Active Violet with Light Glow */}
+                    {!hideNavItems && (
+                        <div className="hidden md:flex items-center gap-5 sm:gap-8">
+                            {navItems.map((item, idx) => {
+                                const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
+                                return (
+                                    <Link
+                                        key={item.path || idx}
+                                        to={item.path}
+                                        className={`relative py-1 text-sm font-extrabold no-underline transition-all duration-300 cursor-pointer ${
+                                            isActive
+                                                ? "text-[#6C5CE7] dark:text-[#A78BFA] drop-shadow-[0_0_12px_rgba(108,92,231,0.75)] scale-105"
+                                                : "text-black dark:text-white hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:drop-shadow-[0_0_8px_rgba(108,92,231,0.5)]"
+                                        }`}
+                                    >
+                                        {item.label}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    )}
+
                     {/* Right Action Icons: ♡, 🛍️, 🔔 */}
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        {/* Wishlist Pill */}
+                    <div className="flex items-center gap-2 sm:gap-3 z-10">
+                        {/* Wishlist Pill (Hidden on mobile response) */}
                         <Tooltip title="Wishlist">
                             <button
                                 onClick={handleUserWishlist}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
+                                className={`hidden md:flex w-9 h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
                                     location.pathname.includes('/wishlist')
                                         ? "bg-rose-100/80 dark:bg-rose-950/60 text-[#FF385C] shadow-[0_0_12px_rgba(255,56,92,0.3)]"
                                         : "text-gray-700 dark:text-gray-200 hover:text-[#FF385C] dark:hover:text-[#FF385C] hover:bg-rose-50 dark:hover:bg-rose-950/40"
@@ -298,11 +400,11 @@ export default function Navbar() {
                             </button>
                         </Tooltip>
 
-                        {/* Cart Pill */}
+                        {/* Cart Pill (Hidden on mobile response) */}
                         <Tooltip title="Cart">
                             <button
                                 onClick={handleUserCart}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
+                                className={`hidden md:flex w-9 h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
                                     location.pathname === '/cart'
                                         ? "bg-purple-100/80 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-[#A78BFA] shadow-[0_0_12px_rgba(108,92,231,0.3)]"
                                         : "text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:bg-purple-50 dark:hover:bg-purple-950/40"
@@ -317,30 +419,33 @@ export default function Navbar() {
                             </button>
                         </Tooltip>
 
-                        {/* Notifications Pill */}
-                        {(authUser || authAdmin) && (
+                        {/* Notifications Pill (Hidden on mobile response) */}
+                        {(authUser || authAdmin) && !isCheckoutPage && (
                             <Tooltip title="Notifications">
                                 <button
                                     onClick={() => setNotificationDialog(true)}
-                                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
+                                    className={`hidden md:flex w-9 h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
                                         notificationDialog
                                             ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.3)]"
                                             : "text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
                                     }`}
                                 >
                                     <Bell className="w-4 h-4 transition-colors duration-300" />
-                                    {notification?.length > 0 && (
+                                    {(unreadCount > 0 || notification?.length > 0) && (
                                         <span className="absolute -top-1 -right-1 font-bold px-1.5 py-0.2 bg-amber-500 text-white rounded-full text-[10px] shadow-[0_0_8px_rgba(245,158,11,0.6)]">
-                                            {notification.length}
+                                            {unreadCount > 0 ? unreadCount : notification.length}
                                         </span>
                                     )}
                                 </button>
                             </Tooltip>
                         )}
 
-                        {/* User Badge Pill [👤 Super / User] */}
-                        {renderUserSection}
+                        {/* User Badge Pill [👤 Super / User] (Hidden on mobile responsive, visible on desktop) */}
+                        <div className="hidden md:flex items-center">
+                            {renderUserSection}
+                        </div>
                     </div>
+                </div>
             </nav>
 
             {/* Universal Profile Dropdown Menu for Desktop & Mobile */}
@@ -387,12 +492,12 @@ export default function Navbar() {
                         <MenuItem
                             onClick={() => {
                                 handleProfileMenuClose();
-                                navigate("/user-profile");
+                                navigate("/admin/profile");
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
                         >
                             <PersonIcon fontSize="small" className="text-[#6C5CE7]" />
-                            <span>My Profile</span>
+                            <span>Admin Profile</span>
                         </MenuItem>
 
                         <MenuItem
@@ -450,99 +555,111 @@ export default function Navbar() {
             </Menu>
 
             {/* Mobile Bottom Navigation Bar */}
-            {!location.pathname.startsWith('/product-details') && (
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 bg-[#001f3f]/95 dark:bg-[#0f172a]/95 backdrop-blur-lg border-t border-blue-400/30 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] flex items-center justify-around px-2">
+            {!location.pathname.startsWith('/product-details') && !isProductsPage && !hideNavItems && (
+                <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-2 transition-transform duration-300 ease-in-out ${
+                    isScrolling ? "translate-y-full" : "translate-y-0"
+                }`}>
                     {/* 1. Products */}
                     <Link
                         to="/products"
                         className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
                             location.pathname.startsWith('/products')
-                                ? "text-sky-300 font-bold scale-105"
-                                : "text-blue-100/70 hover:text-white"
+                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
+                                : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
                         }`}
                     >
-                        <StorefrontIcon sx={{ fontSize: "1.35rem" }} />
-                        <span className="text-[10px] mt-0.5 font-bold">Products</span>
+                        <ShoppingBag className={`w-5 h-5 transition-all duration-200 ${
+                            location.pathname.startsWith('/products') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
+                        }`} />
+                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Products</span>
                     </Link>
 
-                    {/* 2. About Us */}
-                    <Link
-                        to="/about"
-                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
-                            location.pathname.startsWith('/about')
-                                ? "text-sky-300 font-bold scale-105"
-                                : "text-blue-100/70 hover:text-white"
+                    {/* 2. Wishlist */}
+                    <button
+                        onClick={handleUserWishlist}
+                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                            location.pathname.includes('/wishlist')
+                                ? "text-[#FF385C] font-black scale-105"
+                                : "text-slate-700 dark:text-slate-300 hover:text-[#FF385C]"
                         }`}
                     >
-                        <Diversity3Icon sx={{ fontSize: "1.35rem" }} />
-                        <span className="text-[10px] mt-0.5 font-bold">About</span>
-                    </Link>
+                        <div className="relative">
+                            <Heart className={`w-5 h-5 transition-all duration-200 ${
+                                location.pathname.includes('/wishlist') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(255,56,92,0.4)] fill-[#FF385C]' : 'stroke-[1.8]'
+                            }`} />
+                            {wishlistCount > 0 && (
+                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#FF385C] text-white rounded-full text-[9px] shadow-[0_0_6px_rgba(255,56,92,0.6)]">
+                                    {wishlistCount}
+                                </span>
+                            )}
+                        </div>
+                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Wishlist</span>
+                    </button>
 
                     {/* 3. Centralized Home Button */}
                     <Link
                         to="/home"
                         className="flex flex-col items-center justify-center -mt-6 group cursor-pointer"
                     >
-                        <div className={`p-3 rounded-full border-4 border-[#001f3f] dark:border-[#0f172a] shadow-xl transition-all duration-300 ${
+                        <div className={`p-3 rounded-full border-4 border-white dark:border-slate-900 shadow-xl transition-all duration-300 ${
                             location.pathname === '/home' || location.pathname === '/'
-                                ? "bg-gradient-to-tr from-[#1E88E5] to-[#00ACC1] text-white scale-110 shadow-blue-500/50"
-                                : "bg-[#1565C0] text-blue-100 group-hover:scale-105"
+                                ? "bg-gradient-to-tr from-[#6C5CE7] to-[#805AD5] text-white scale-110 shadow-[0_4px_20px_rgba(108,92,231,0.5)] ring-2 ring-[#6C5CE7]/30"
+                                : "bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-[#A78BFA] border border-purple-200/80 dark:border-purple-800/80 group-hover:scale-105"
                         }`}>
-                            <HomeIcon sx={{ fontSize: "1.6rem" }} />
+                            <Home className="w-6 h-6 stroke-[2.2]" />
                         </div>
-                        <span className={`text-[10px] font-bold mt-0.5 ${
+                        <span className={`text-[11px] font-extrabold mt-0.5 ${
                             location.pathname === '/home' || location.pathname === '/'
-                                ? "text-sky-300 font-black"
-                                : "text-blue-100/70"
+                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black"
+                                : "text-slate-800 dark:text-slate-200"
                         }`}>
                             Home
                         </span>
                     </Link>
 
-                    {/* 4. Contact Us */}
-                    <Link
-                        to="/contact-us"
-                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
-                            location.pathname.startsWith('/contact-us')
-                                ? "text-sky-300 font-bold scale-105"
-                                : "text-blue-100/70 hover:text-white"
+                    {/* 4. Cart */}
+                    <button
+                        onClick={handleUserCart}
+                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                            location.pathname === '/cart'
+                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
+                                : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
                         }`}
                     >
-                        <CallIcon sx={{ fontSize: "1.35rem" }} />
-                        <span className="text-[10px] mt-0.5 font-bold">Contact</span>
-                    </Link>
+                        <div className="relative">
+                            <ShoppingCart className={`w-5 h-5 transition-all duration-200 ${
+                                location.pathname === '/cart' ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
+                            }`} />
+                            {(cartItems?.length || 0) > 0 && (
+                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#6C5CE7] text-white rounded-full text-[9px] shadow-[0_0_6px_rgba(108,92,231,0.6)]">
+                                    {cartItems?.length}
+                                </span>
+                            )}
+                        </div>
+                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Cart</span>
+                    </button>
 
                     {/* 5. Profile (Right-most) */}
                     <button
-                        onClick={(e) => {
-                            if (authAdmin || authUser) {
-                                handleProfileMenuClick(e);
-                            } else {
-                                setOpenLoginDialog(true);
-                            }
-                        }}
+                        onClick={handleProfileClick}
                         className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
-                                ? "text-sky-300 font-bold scale-105"
-                                : "text-blue-100/70 hover:text-white"
+                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
+                                : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
                         }`}
                     >
-                        {authUser ? (
+                        {authUser?.photo ? (
                             <Avatar
                                 alt={authUser?.firstName}
                                 src={authUser?.photo}
-                                sx={{ width: 24, height: 24, border: "1.5px solid #00ACC1" }}
-                            />
-                        ) : authAdmin ? (
-                            <Avatar
-                                alt={authAdmin?.name || "Admin"}
-                                src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                                sx={{ width: 24, height: 24, border: "1.5px solid #00ACC1" }}
+                                sx={{ width: 22, height: 22, border: "1.5px solid #6C5CE7" }}
                             />
                         ) : (
-                            <PersonIcon sx={{ fontSize: "1.35rem" }} />
+                            <User className={`w-5 h-5 transition-all duration-200 ${
+                                location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
+                            }`} />
                         )}
-                        <span className="text-[10px] mt-0.5 font-bold">Profile</span>
+                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Profile</span>
                     </button>
                 </nav>
             )}
@@ -580,58 +697,96 @@ export default function Navbar() {
             >
 
                 <div className="text-black dark:text-white">
-                    <div className="sticky top-0 z-10 backdrop-blur bg-white/30 dark:bg-[#2f2f2f]/30 px-3 py-2 flex items-center justify-between rounded-t">
-                        <h2 className="text-lg font-semibold">Notifications</h2>
-                        {notification.length > 0 && (
-                            <button
-                                disabled={notificationLoadingIndex}
-                                onClick={() => handleRemoveNotification(-1, "all")}
-                                className="text-xs text-red-500 hover:underline disabled:cursor-not-allowed"
-                            >
-                                {
-                                    notificationLoadingIndex === "all" ? <div className="w-3 h-3 border-[2px] border-t-transparent border-gray-500 rounded-full animate-spin" /> : "Clear All"
-                                }
-                            </button>
-                        )}
+                    <div className="sticky top-0 z-10 backdrop-blur bg-white/80 dark:bg-[#2f2f2f]/80 px-3.5 py-2.5 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 rounded-t">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-base font-bold">Notifications</h2>
+                            {unreadCount > 0 && (
+                                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                    {unreadCount} new
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={handleMarkAllAsRead}
+                                    className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                >
+                                    Mark read
+                                </button>
+                            )}
+                            {notification.length > 0 && (
+                                <button
+                                    disabled={notificationLoadingIndex !== null}
+                                    onClick={() => handleRemoveNotification(-1, "all")}
+                                    className="text-[11px] font-bold text-red-500 hover:underline cursor-pointer disabled:cursor-not-allowed"
+                                >
+                                    {notificationLoadingIndex === "all" ? (
+                                        <div className="w-3 h-3 border-[2px] border-t-transparent border-gray-500 rounded-full animate-spin" />
+                                    ) : (
+                                        "Clear All"
+                                    )}
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {notification.length === 0 ? (
-                        <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-6 px-3">
-                            🎉 You're all caught up! No new notifications.
+                        <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-8 px-4 space-y-1">
+                            <p className="font-bold text-base">🎉 All caught up!</p>
+                            <p className="text-xs">No active notifications at the moment.</p>
                         </div>
                     ) : (
-                        <ul className="space-y-3 px-3 py-3">
-                            {notification.map((item, idx) => (
-                                <li
-                                    key={item?._id || item?.id || `notif-${idx}-${item?.title || ""}`}
-                                    className="bg-gray-100 dark:bg-gray-500/20 p-3 rounded-md shadow-sm relative"
-                                >
+                        <ul className="space-y-2.5 px-3 py-3 max-h-[380px] overflow-y-auto">
+                            {notification.map((item, idx) => {
+                                const isUnread = !item?.isRead;
+                                return (
+                                    <li
+                                        key={item?._id || item?.id || `notif-${idx}-${item?.title || ""}`}
+                                        onClick={() => handleNotificationClick(item, idx)}
+                                        className={`p-3 rounded-xl shadow-xs relative transition cursor-pointer border ${
+                                            isUnread
+                                                ? "bg-blue-50/80 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/60"
+                                                : "bg-gray-50 dark:bg-gray-800/50 border-gray-200/80 dark:border-gray-700/60 hover:bg-gray-100"
+                                        }`}
+                                    >
+                                        <div className="flex justify-between items-start gap-2">
+                                            <div className="flex items-center gap-1.5 min-w-0">
+                                                {isUnread && (
+                                                    <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0" />
+                                                )}
+                                                <p className="font-extrabold text-xs text-gray-900 dark:text-white truncate">
+                                                    {item?.title}
+                                                </p>
+                                            </div>
 
-                                    <div className='flex justify-between items-center'>
-                                        <p className="font-medium text-sm pr-5">{item?.title}</p>
+                                            <button
+                                                disabled={notificationLoadingIndex !== null}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleRemoveNotification(idx, "index");
+                                                }}
+                                                className="text-gray-400 hover:text-red-500 p-0.5 rounded cursor-pointer disabled:cursor-not-allowed shrink-0"
+                                                title="Clear"
+                                            >
+                                                {notificationLoadingIndex === idx ? (
+                                                    <div className="w-3 h-3 border-[2px] border-t-transparent border-gray-500 rounded-full animate-spin" />
+                                                ) : (
+                                                    <X size={13} />
+                                                )}
+                                            </button>
+                                        </div>
 
-                                        <button
-                                            disabled={notificationLoadingIndex !== null}
-                                            onClick={() => handleRemoveNotification(idx, "index")}
-                                            className="text-gray-400 hover:text-red-500 text-sm disabled:cursor-not-allowed"
-                                            title="Clear"
-                                        >
-                                            {notificationLoadingIndex === idx ? (
-                                                <div className="w-3 h-3 border-[2px] border-t-transparent border-gray-500 rounded-full animate-spin" />
-                                            ) : (
-                                                <X size={14} />
-                                            )}
-                                        </button>
+                                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 leading-relaxed font-medium">
+                                            {item?.description}
+                                        </p>
 
-                                    </div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-300">
-                                        {item?.description}
-                                    </p>
-                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 text-right">
-                                        {formatDistanceToNow(new Date(item?.date), { addSuffix: true })}
-                                    </p>
-                                </li>
-                            ))}
+                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 text-right font-semibold">
+                                            {item?.date ? formatDistanceToNow(new Date(item.date), { addSuffix: true }) : "Just now"}
+                                        </p>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
                 </div>

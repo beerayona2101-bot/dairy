@@ -45,38 +45,56 @@ export default function UserLogin() {
       if (res?.success) {
         const targetPath = location.state?.from;
 
+        const isAuthPath = (path) => {
+          if (!path || typeof path !== "string") return true;
+          const clean = path.toLowerCase();
+          return (
+            clean === "/login" ||
+            clean === "/signup" ||
+            clean === "/admin/login" ||
+            clean.startsWith("/login/") ||
+            clean.startsWith("/signup/")
+          );
+        };
+
         if (res?.isAdmin || res?.admin) {
           handleUserLogout();
-          localStorage.setItem("Admin", JSON.stringify(res?.admin));
-          if (fetchAdminData) await fetchAdminData();
+          if (res?.adminToken) {
+            sessionStorage.setItem("adminToken", res.adminToken);
+            sessionStorage.setItem("adminRole", "admin");
+          }
+          if (fetchAdminData) await fetchAdminData(res?.admin);
 
           enqueueSnackbar("Admin Login Successful!", { variant: "success" });
           const adminDest =
-            targetPath && targetPath.startsWith("/admin")
+            targetPath && targetPath.startsWith("/admin") && !isAuthPath(targetPath)
               ? targetPath
               : "/admin/dashboard";
-          navigate(adminDest);
+          navigate(adminDest, { replace: true });
         } else {
           handleAdminLogout();
+          if (res?.userToken) {
+            sessionStorage.setItem("userToken", res.userToken);
+            sessionStorage.setItem("userRole", "user");
+          }
           if (!res?.filledBasicInfo) {
             navigate("/signup/info-input", {
               state: { user: res?.user, viaLogin: !res?.filledBasicInfo },
             });
           } else {
-            localStorage.setItem("User", JSON.stringify(res?.user));
-            await fetchUserData(res?.user?._id);
+            await fetchUserData(res?.user);
 
             enqueueSnackbar("Login Successful!", { variant: "success" });
 
             const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
             sessionStorage.removeItem("redirectAfterLogin");
 
-            const userDest =
-              storedRedirect ||
-              (targetPath && !targetPath.startsWith("/admin")
-                ? targetPath
-                : "/cart");
-            navigate(userDest);
+            const validUserTarget =
+              (!isAuthPath(storedRedirect) && storedRedirect) ||
+              (!isAuthPath(targetPath) && !targetPath.startsWith("/admin") && targetPath) ||
+              "/user-profile/dashboard";
+
+            navigate(validUserTarget, { replace: true });
           }
         }
       } else {
@@ -287,7 +305,7 @@ export default function UserLogin() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 px-6 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] active:scale-[0.99] text-white font-bold text-sm tracking-widest uppercase shadow-lg shadow-blue-500/30 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-6"
+                className="w-full py-4 px-6 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] active:scale-[0.99] text-white font-bold text-sm tracking-widest uppercase shadow-lg shadow-blue-500/30 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-6 periodic-glass-shine"
               >
                 {isLoading ? (
                   <BuffaloLoader variant="button" text="Logging in..." />

@@ -19,6 +19,7 @@ import bcryptjs from "bcryptjs";
 import Admin from "../models/AdminSchema.js";
 import User from "../models/UserSchema.js";
 import Product from "../models/ProductSchema.js";
+import Order from "../models/OrderSchema.js";
 
 let mongoMemoryInstance = null;
 
@@ -424,8 +425,56 @@ const seedDefaultData = async () => {
       await Product.insertMany(initialProducts);
       console.log(`✅ Seeded ${initialProducts.length} dairy products into database`);
     }
+
+    // 4. Migrate existing Order IDs to MD-ORD-YYMMDD-XXXX format
+    await migrateExistingOrderIds();
   } catch (seedErr) {
     console.warn("Data seed notice:", seedErr.message);
+  }
+};
+
+const migrateExistingOrderIds = async () => {
+  try {
+    const orders = await Order.find({}).sort({ createdAt: 1 });
+    if (!orders || orders.length === 0) return;
+
+    const dateCounts = {};
+    const validPattern = /^MD-ORD-\d{6}-\d{4}$/;
+
+    // Pass 1: record max sequence numbers for existing valid MD-ORD-YYMMDD-XXXX IDs
+    for (const order of orders) {
+      if (order.orderId && validPattern.test(order.orderId)) {
+        const parts = order.orderId.split("-");
+        const dKey = parts[2];
+        const seq = parseInt(parts[3], 10);
+        if (dKey && !isNaN(seq)) {
+          dateCounts[dKey] = Math.max(dateCounts[dKey] || 0, seq);
+        }
+      }
+    }
+
+    // Pass 2: assign unique MD-ORD-YYMMDD-XXXX IDs to all orders missing valid formatting
+    for (const order of orders) {
+      if (!order.orderId || !validPattern.test(order.orderId)) {
+        const d = order.createdAt ? new Date(order.createdAt) : new Date();
+        const yy = String(d.getFullYear()).slice(-2);
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        const dateKey = `${yy}${mm}${dd}`;
+
+        dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
+        const seq = String(dateCounts[dateKey]).padStart(4, "0");
+        const newOrderId = `MD-ORD-${dateKey}-${seq}`;
+
+        await Order.updateOne(
+          { _id: order._id },
+          { $set: { orderId: newOrderId } }
+        );
+      }
+    }
+    console.log("✅ Migrated all existing order IDs to MD-ORD-YYMMDD-XXXX format");
+  } catch (err) {
+    console.warn("Order ID migration notice:", err.message);
   }
 };
 

@@ -144,6 +144,10 @@ export default function RecommendedCard({ product }) {
               alt={name}
               loading="lazy"
               decoding="async"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/images/madhur_cow_milk.png";
+              }}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             />
           </Link>

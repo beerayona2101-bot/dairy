@@ -22,12 +22,16 @@ export default function Layout({ children }) {
 
 
 
-    const hideFooter = location.pathname.startsWith("/products") || location.pathname.startsWith("/product-details") || location.pathname.includes("product-details");
+    const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
+    const isCartPage = location.pathname.includes("cart");
+    const isCheckoutPage = location.pathname.includes("checkout");
+    const hideFooter = isProductsPage || location.pathname.startsWith("/product-details") || location.pathname.includes("product-details") || location.pathname.includes("checkout") || location.pathname.includes("cart");
+    const hideNavbar = (location.pathname.startsWith("/products/") && location.pathname !== "/products") || location.pathname.startsWith("/product-details");
 
     return (
-        <div ref={scrollRef} className="h-screen scroll-smooth flex flex-col overflow-y-auto overflow-x-hidden bg-[#F0F1F3] dark:bg-[#121212] text-black dark:text-white transition-colors duration-300">
-            <Navbar />
-            <main className={`flex-1 flex flex-col ${hideFooter ? 'pb-0' : 'pb-16 lg:pb-0'}`}>
+        <div ref={scrollRef} className="h-screen scroll-smooth flex flex-col overflow-y-auto overflow-x-hidden bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">
+            {!hideNavbar && <Navbar />}
+            <main className={`flex-1 flex flex-col ${(isProductsPage || isCartPage || isCheckoutPage) ? 'pt-0 md:pt-[54px]' : hideNavbar ? 'pt-0' : 'pt-[48px] sm:pt-[52px] md:pt-[54px]'} ${hideFooter ? 'pb-0' : 'pb-16 lg:pb-0'}`}>
                 <PageTransition key={location.pathname}>
                     {children}
                 </PageTransition>

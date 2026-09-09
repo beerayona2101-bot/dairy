@@ -33,8 +33,6 @@ export default function AdminNavbar() {
 
     const prevCountRef = useRef(notification.length);
 
-    const loginAdmin = localStorage.getItem("Admin");
-
     // Sidebar toggle handler: toggle drawer on both desktop and mobile
     const handleSidebarToggle = () => {
         setIsSidebarOpen((prev) => !prev);
@@ -124,7 +122,7 @@ export default function AdminNavbar() {
                             className="w-9 h-9 rounded-full hover:bg-purple-50/60 dark:hover:bg-gray-700 flex items-center justify-center transition cursor-pointer relative text-gray-700 dark:text-gray-200"
                         >
                             <Bell className="w-4.5 h-4.5" />
-                            {(notification?.length > 0 && loginAdmin) && (
+                            {(notification?.length > 0 && authAdmin) && (
                                 <span
                                     className={`absolute -top-1 -right-1 font-bold px-1.5 py-0.2 bg-red-500 text-white rounded-full text-[10px] ${animate ? "animate-bounce" : ""}`}
                                 >

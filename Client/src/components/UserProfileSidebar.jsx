@@ -7,6 +7,8 @@ import {
     MdFavorite,
     MdPayment,
     MdArrowForward,
+    MdInfo,
+    MdHeadphones,
 } from "react-icons/md";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -96,17 +98,19 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
         { key: "/user-profile/orders", icon: <MdShoppingCart />, label: "My Orders" },
         { key: "/user-profile/addresses", icon: <MdLocationOn />, label: "Saved Addresses" },
         { key: "/user-profile/wishlist", icon: <MdFavorite />, label: "My Wishlist" },
+        { key: "/about", icon: <MdInfo />, label: "About Us" },
+        { key: "/contact-us", icon: <MdHeadphones />, label: "Contact Us" },
     ];
 
     return (
-        <aside className="scrollbar-hide border-none w-full h-full bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 p-4 sm:p-5 shadow-sm rounded-[24px] flex flex-col justify-between overflow-y-auto transition-all duration-300">
+        <aside className={`scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 ${userProfileDrawer ? "rounded-l-none rounded-r-[24px] border-y border-r border-l-0 border-gray-200 dark:border-gray-700/80" : "rounded-[24px] border border-gray-200/90 dark:border-gray-700/80"}`}>
             <div>
                 <div className="flex flex-col items-center mb-4 relative group">
                     <div className="relative w-20 h-20">
                         <img
                             src={photoUrl || null}
                             alt={photoUrl}
-                            className="rounded-full w-20 h-20 object-cover border-2 border-white dark:border-gray-700 shadow-sm"
+                            className="rounded-full w-20 h-20 object-cover border-2 border-purple-100 dark:border-gray-700 shadow-sm"
                         />
 
                         {uploadProgress > 0 && uploadProgress < 100 && (
@@ -167,7 +171,7 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
                             key={item.key}
                             to={item.key}
                             onClick={userProfileDrawer ? () => setUserProfileDrawer(false) : null}
-                            className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl text-xs font-bold transition-all duration-200 ${location?.pathname === item.key ? "bg-[#6C5CE7] text-white shadow-xs" : "hover:bg-purple-50 dark:hover:bg-purple-950/40 text-[#718096] dark:text-gray-300"}`}
+                            className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl text-xs font-bold transition-all duration-200 ${location?.pathname === item.key ? "bg-[#6C5CE7] text-white shadow-md shadow-purple-500/20" : "hover:bg-purple-50 dark:hover:bg-purple-950/40 text-[#4A5568] dark:text-gray-300"}`}
                         >
                             <span className="text-base">{item.icon}</span> {item.label}
                         </Link>

@@ -1,4 +1,4 @@
-import { useContext, lazy, Suspense, useState, useEffect } from "react";
+import { useContext, lazy, Suspense, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ThemeContext } from "../context/ThemeProvider";
@@ -49,6 +49,9 @@ export default function LandingPage() {
         };
     }, []);
 
+    const categoriesSectionRef = useRef(null);
+    const [catScrollProgress, setCatScrollProgress] = useState(0);
+
     useEffect(() => {
         if (displayCategories && displayCategories.length > 0) {
             const arrayToShuffle = [...displayCategories];
@@ -61,6 +64,24 @@ export default function LandingPage() {
         }
     }, [displayCategories]);
 
+    useEffect(() => {
+        const handleCatScroll = () => {
+            if (!categoriesSectionRef.current) return;
+            const rect = categoriesSectionRef.current.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            const totalScrollable = rect.height - windowHeight;
+            if (totalScrollable <= 0) return;
+
+            const scrolled = -rect.top;
+            const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
+            setCatScrollProgress(progress);
+        };
+
+        window.addEventListener("scroll", handleCatScroll, { passive: true });
+        handleCatScroll();
+        return () => window.removeEventListener("scroll", handleCatScroll);
+    }, [shuffledCategories.length]);
+
     if (pageLoading) {
         return <MadhurLoader message="Fresh Dairy Goods Loading..." />;
     }
@@ -71,9 +92,9 @@ export default function LandingPage() {
             <ProductShowcase3D />
 
             {/* Discover Our Delicious Dairy Range Carousel Section */}
-            <section className="px-3 py-6 sm:px-6 md:py-10 max-w-7xl mx-auto">
+            <section className="px-4 py-8 sm:px-8 md:py-10 max-w-7xl mx-auto my-8 glass-panel rounded-[36px] bg-white/60 dark:bg-slate-900/65 backdrop-blur-2xl border border-white/80 dark:border-white/15 shadow-xl">
                 <h2
-                    className="text-3xl sm:text-4xl lg:text-5xl font-black text-center mb-6 text-[#2D3748] dark:text-white tracking-tight leading-tight"
+                    className="text-3xl sm:text-4xl lg:text-5xl font-black text-center mb-6 text-slate-900 dark:text-white tracking-tight leading-tight drop-shadow-xs"
                 >
                     Discover Our Delicious Dairy Range
                 </h2>
@@ -91,41 +112,75 @@ export default function LandingPage() {
                 </Suspense>
             </section>
 
-            {/* SECTION 2: MIDDLE - Our Product Categories */}
-            <section className="py-10 md:py-16 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
-                <div className="text-center space-y-3 max-w-3xl mx-auto">
+            {/* SECTION 2: MIDDLE - Our Product Categories STICKY STACKING CARDS DECK */}
+            <section
+                ref={categoriesSectionRef}
+                className="relative w-full min-h-[240vh] sm:min-h-[280vh] py-8 px-3 sm:px-6 lg:px-8 transition-colors duration-300 max-w-7xl mx-auto"
+            >
+                {/* Clean Centralized Heading */}
+                <div className="text-center space-y-3 max-w-3xl mx-auto px-4 pt-4 pb-8">
                     <div className="inline-flex items-center gap-2 bg-[#6C5CE7]/10 dark:bg-purple-900/30 text-[#6C5CE7] dark:text-purple-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-[#6C5CE7]/20">
                         🥛 Farm Fresh Selections
                     </div>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight">
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                         Our Product Categories
                     </h2>
-                    <p className="text-sm sm:text-base text-[#718096] dark:text-gray-300 font-medium">
+                    <p className="text-sm sm:text-base text-slate-700 dark:text-gray-200 font-semibold max-w-2xl mx-auto">
                         Explore our wide range of 100% pure, farm-fresh A2 dairy products delivered daily to your doorstep.
                     </p>
                 </div>
 
-                <div className="space-y-10 max-w-7xl mx-auto">
-                    {shuffledCategories.map((product, index) => (
-                        <motion.div
-                            key={`shuffled-cat-${index}-${product.title || product.name}`}
-                            initial={{ opacity: 0, y: 15 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.15), ease: [0.16, 1, 0.3, 1] }}
-                        >
-                            <ProductCard
-                                title={product.title || product.name}
-                                description={product.description}
-                                image={product.image}
-                                features={product?.features}
-                                isReversed={index % 2 === 0}
-                            />
-                        </motion.div>
-                    ))}
+                {/* Sticky Stacking Cards Deck Container */}
+                <div className="max-w-6xl mx-auto relative w-full pt-1">
+                    {shuffledCategories.map((product, index) => {
+                        const totalCards = shuffledCategories.length || 4;
+                        const cardStep = 1 / totalCards;
+                        const cardNext = (index + 1) * cardStep;
+
+                        let depth = 0;
+                        if (catScrollProgress > cardNext) {
+                            depth = Math.min(3, (catScrollProgress - cardNext) / cardStep);
+                        }
+
+                        const scale = Math.max(0.93, 1 - depth * 0.035);
+                        const opacity = Math.max(0.78, 1 - depth * 0.08);
+                        const brightness = Math.max(0.85, 1 - depth * 0.05);
+
+                        // Sticky top offset below fixed navbar (~74px height)
+                        const topOffsetDesktop = 96 + index * 12;
+
+                        return (
+                            <div
+                                key={`shuffled-cat-${index}-${product.title || product.name}`}
+                                style={{
+                                    top: `${topOffsetDesktop}px`,
+                                    zIndex: (index + 1) * 10,
+                                }}
+                                className="sticky transition-all duration-200 ease-out mb-8 sm:mb-12"
+                            >
+                                <motion.div
+                                    style={{
+                                        transform: `scale(${scale})`,
+                                        opacity: opacity,
+                                        filter: `brightness(${brightness})`,
+                                    }}
+                                    className="w-full transition-transform duration-300"
+                                >
+                                    <ProductCard
+                                        title={product.title || product.name}
+                                        description={product.description}
+                                        image={product.image}
+                                        features={product?.features}
+                                        isReversed={index % 2 === 0}
+                                        isStacked={true}
+                                    />
+                                </motion.div>
+                            </div>
+                        );
+                    })}
                 </div>
 
-                <div className="flex justify-center pt-6">
+                <div className="flex justify-center pt-8 pb-4">
                     <Link
                         to="/products"
                         className="flex items-center gap-3 px-8 py-3.5 rounded-full font-black text-sm sm:text-base bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition-all duration-300 shadow-[0_12px_25px_rgba(108,92,231,0.4)] hover:scale-105 border border-purple-300/30 cursor-pointer"
@@ -140,12 +195,12 @@ export default function LandingPage() {
             <DairyPromiseCardsSection />
 
             {/* SECTION 4: BOTTOM PAGE - Frequently Asked Questions */}
-            <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+            <section className="max-w-5xl mx-auto px-4 sm:px-8 py-10 my-8 glass-panel rounded-[36px] bg-white/60 dark:bg-slate-900/65 backdrop-blur-2xl border border-white/80 dark:border-white/15 shadow-xl">
                 <div className="flex flex-col items-center text-center mb-8">
                     <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
                         GOT QUESTIONS? WE'VE GOT ANSWERS
                     </span>
-                    <h2 className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                    <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
                         Frequently Asked Questions
                     </h2>
                     <div className="w-12 h-1 bg-[#1E88E5] rounded-full mt-3"></div>

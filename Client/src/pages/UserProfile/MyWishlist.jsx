@@ -40,10 +40,7 @@ export default function MyWishlist() {
           const cleanIds = validItems.map((item) => item._id || item);
           setCurUser((prev) => {
             if (!prev) return prev;
-            const updated = { ...prev, wishlistedProducts: cleanIds };
-            if (authUser) localStorage.setItem("User", JSON.stringify(updated));
-            if (authAdmin) localStorage.setItem("Admin", JSON.stringify(updated));
-            return updated;
+            return { ...prev, wishlistedProducts: cleanIds };
           });
         } else {
           const guestIds = getGuestWishlist().map(String);
@@ -100,10 +97,7 @@ export default function MyWishlist() {
           const newList = (prev?.wishlistedProducts || []).filter(
             (id) => (typeof id === "string" ? id !== productId : id?._id !== productId)
           );
-          const updated = { ...prev, wishlistedProducts: newList };
-          if (authUser) localStorage.setItem("User", JSON.stringify(updated));
-          if (authAdmin) localStorage.setItem("Admin", JSON.stringify(updated));
-          return updated;
+          return { ...prev, wishlistedProducts: newList };
         });
       }
     } catch {
@@ -131,10 +125,7 @@ export default function MyWishlist() {
         setWishlist([]);
         setCurUser((prev) => {
           if (!prev) return prev;
-          const updated = { ...prev, wishlistedProducts: [] };
-          if (authUser) localStorage.setItem("User", JSON.stringify(updated));
-          if (authAdmin) localStorage.setItem("Admin", JSON.stringify(updated));
-          return updated;
+          return { ...prev, wishlistedProducts: [] };
         });
         enqueueSnackbar("Wishlist cleared!", { variant: "success" });
       }
@@ -187,10 +178,7 @@ export default function MyWishlist() {
           const newList = (prev?.wishlistedProducts || []).filter(
             (id) => (typeof id === "string" ? String(id) !== String(targetId) : String(id?._id || id?.id) !== String(targetId))
           );
-          const updated = { ...prev, wishlistedProducts: newList };
-          if (authUser) localStorage.setItem("User", JSON.stringify(updated));
-          if (authAdmin) localStorage.setItem("Admin", JSON.stringify(updated));
-          return updated;
+          return { ...prev, wishlistedProducts: newList };
         });
       }
 
@@ -239,10 +227,7 @@ export default function MyWishlist() {
 
         setCurUser((prev) => {
           if (!prev) return prev;
-          const updated = { ...prev, wishlistedProducts: [] };
-          if (authUser) localStorage.setItem("User", JSON.stringify(updated));
-          if (authAdmin) localStorage.setItem("Admin", JSON.stringify(updated));
-          return updated;
+          return { ...prev, wishlistedProducts: [] };
         });
       }
 

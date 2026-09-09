@@ -138,7 +138,7 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
                 alt={title}
                 loading="lazy"
                 decoding="async"
-                className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
+                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );
     }
@@ -150,7 +150,7 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
                 alt={title}
                 loading="lazy"
                 decoding="async"
-                className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
+                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );
     }
@@ -162,7 +162,7 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
                 alt={title}
                 loading="lazy"
                 decoding="async"
-                className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
+                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );
     }
@@ -174,7 +174,7 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
                 alt={title}
                 loading="lazy"
                 decoding="async"
-                className="max-h-[270px] w-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.25)] transition-transform duration-200"
+                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
             />
         );
     }
@@ -215,7 +215,7 @@ const MadhurStudioProductRender = ({ title, image, transparentUrl }) => {
     const displayLabel = title || subTitle;
 
     return (
-        <div className="relative flex items-center justify-center max-h-[270px] h-[270px] w-auto">
+        <div className="relative flex items-center justify-center max-h-[110px] sm:max-h-[270px] h-[110px] sm:h-[270px] w-auto">
             <svg
                 viewBox="0 0 200 420"
                 className="h-full w-auto max-h-[260px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.3)] filter"
@@ -646,14 +646,14 @@ export default function ProductShowcase3D() {
     const translateY = isHoveringCard ? mousePos.y * 12 : 0;
 
     return (
-        <section className="w-full py-6 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
+        <section className="w-full pt-1 sm:pt-3 pb-3 sm:pb-6 px-2 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
             {/* Outer Showcase Container */}
-            <div className="relative rounded-[36px] bg-[#EFF1F5] dark:bg-gray-900/90 border border-white/80 dark:border-gray-700/60 shadow-[0_25px_60px_rgba(0,0,0,0.06)] p-4 sm:p-6 lg:p-8 transition-colors duration-300">
+            <div className="relative rounded-[16px] sm:rounded-[36px] bg-white/50 dark:bg-slate-900/65 backdrop-blur-2xl border border-white/80 dark:border-white/15 shadow-[0_15px_35px_rgba(0,0,0,0.06)] p-2.5 sm:p-6 lg:p-8 transition-all duration-300">
                 {/* 2-Column Asymmetric Split Layout: 380px | 1fr */}
-                <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 lg:gap-8 items-stretch">
+                <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-2.5 lg:gap-8 items-stretch">
                     
                     {/* COLUMN 1 — Left 3D Visual Card Panel with Action Buttons Below */}
-                    <div className="flex flex-col justify-between gap-4">
+                    <div className="flex flex-col justify-between gap-2 sm:gap-3">
                         <div
                             ref={cardRef}
                             onMouseMove={handleMouseMove}
@@ -663,24 +663,24 @@ export default function ProductShowcase3D() {
                             onTouchMove={handleTouchMove}
                             onTouchEnd={handleTouchEnd}
                             style={{ perspective: "1200px" }}
-                            className="w-full relative bg-white dark:bg-gray-800 rounded-[28px] p-6 shadow-[0_15px_35px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between min-h-[380px] sm:min-h-[420px] transition-all duration-300 cursor-grab active:cursor-grabbing overflow-hidden border border-gray-100 dark:border-gray-700 group/card"
+                            className="w-full relative bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[16px] sm:rounded-[28px] p-2 sm:p-6 shadow-xs flex flex-col items-center justify-between min-h-[140px] sm:min-h-[380px] md:min-h-[420px] transition-all duration-300 cursor-grab active:cursor-grabbing overflow-hidden border border-white/80 dark:border-white/10 group/card"
                         >
                             {/* Previous Arrow Control (←) */}
                             <button
                                 onClick={handlePrev}
                                 title="Previous Item"
-                                className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#6C5CE7] hover:scale-110 hover:bg-[#6C5CE7] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
+                                className="absolute left-1.5 sm:left-3 top-1/2 -translate-y-1/2 z-30 w-6 h-6 sm:w-9 sm:h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#6C5CE7] hover:scale-110 hover:bg-[#6C5CE7] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
                             >
-                                <ArrowBackIosNewIcon sx={{ fontSize: "0.9rem" }} />
+                                <ArrowBackIosNewIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
                             </button>
 
                             {/* Next Arrow Control (→) */}
                             <button
                                 onClick={handleNext}
                                 title="Next Item"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#6C5CE7] hover:scale-110 hover:bg-[#6C5CE7] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
+                                className="absolute right-1.5 sm:right-3 top-1/2 -translate-y-1/2 z-30 w-6 h-6 sm:w-9 sm:h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#6C5CE7] hover:scale-110 hover:bg-[#6C5CE7] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
                             >
-                                <ArrowForwardIosIcon sx={{ fontSize: "0.9rem" }} />
+                                <ArrowForwardIosIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
                             </button>
 
                             {/* Floating Wishlist Button [❤️] */}
@@ -688,24 +688,24 @@ export default function ProductShowcase3D() {
                                 onClick={handleToggleWishlist}
                                 disabled={wishlistLoading}
                                 title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
-                                className={`absolute top-4 right-4 z-20 w-9 h-9 rounded-full shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer border ${
+                                className={`absolute top-2 right-2 sm:top-4 sm:right-4 z-20 w-6 h-6 sm:w-9 sm:h-9 rounded-full shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer border ${
                                     isWishlisted
                                         ? "bg-rose-50 dark:bg-rose-950/80 border-rose-300 dark:border-rose-800 text-[#FF385C] shadow-rose-500/20"
                                         : "bg-white dark:bg-gray-700 border-pink-100 text-gray-400 hover:text-[#FF385C]"
                                 }`}
                             >
                                 {wishlistLoading ? (
-                                    <div className="w-4 h-4 border-2 border-t-transparent border-[#FF385C] rounded-full animate-spin"></div>
+                                    <div className="w-3 h-3 border-2 border-t-transparent border-[#FF385C] rounded-full animate-spin"></div>
                                 ) : isWishlisted ? (
-                                    <FavoriteIcon className="text-[#FF385C] fill-current drop-shadow-[0_0_8px_rgba(255,56,92,0.7)] animate-pulse" sx={{ fontSize: "1.25rem" }} />
+                                    <FavoriteIcon className="text-[#FF385C] fill-current drop-shadow-[0_0_8px_rgba(255,56,92,0.7)] animate-pulse" sx={{ fontSize: { xs: "0.85rem", sm: "1rem" } }} />
                                 ) : (
-                                    <FavoriteBorderIcon className="text-gray-400 hover:text-[#FF385C] transition-colors" sx={{ fontSize: "1.25rem" }} />
+                                    <FavoriteBorderIcon className="text-gray-400 hover:text-[#FF385C] transition-colors" sx={{ fontSize: { xs: "0.85rem", sm: "1rem" } }} />
                                 )}
                             </button>
 
                             {/* Center Stage 3D Circle & Floating Product Cutout */}
-                            <div className="relative w-full flex-1 flex items-center justify-center py-6">
-                                <div className="w-[230px] h-[230px] sm:w-[250px] sm:h-[250px] rounded-full bg-[#6C5CE7] shadow-lg flex items-center justify-center transition-transform duration-500 opacity-95">
+                            <div className="relative w-full flex-1 flex items-center justify-center py-1 sm:py-6">
+                                <div className="w-[85px] h-[85px] sm:w-[250px] sm:h-[250px] rounded-full bg-[#6C5CE7] shadow-md flex items-center justify-center transition-transform duration-500 opacity-95">
                                     <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#6C5CE7] to-[#8075e5] opacity-80" />
                                 </div>
 
@@ -730,7 +730,7 @@ export default function ProductShowcase3D() {
                                             ease: [0.22, 1, 0.36, 1]
                                         }}
                                         style={{ transformStyle: "preserve-3d" }}
-                                        className="absolute inset-0 flex items-center justify-center p-4 z-10"
+                                        className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 z-10"
                                     >
                                         <MadhurStudioProductRender
                                             title={currentSlide.title}
@@ -743,49 +743,49 @@ export default function ProductShowcase3D() {
                         </div>
 
                         {/* Action Buttons Row BELOW Image Card (Wishlist, Share, Add to Cart) */}
-                        <div className="grid grid-cols-3 gap-3 w-full">
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-3 w-full">
                             {/* 1. Wishlist Button */}
                             <button
                                 onClick={handleToggleWishlist}
                                 disabled={wishlistLoading}
-                                className={`py-3 px-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer shadow-xs border hover:scale-[1.02] active:scale-95 ${
+                                className={`py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-xs border hover:scale-[1.02] active:scale-95 ${
                                     isWishlisted
                                         ? "bg-rose-50 dark:bg-rose-950/80 border-[#FF385C] text-[#FF385C] shadow-rose-500/20"
                                         : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-[#718096] hover:bg-rose-50/50 hover:text-[#FF385C]"
                                 }`}
                             >
                                 {wishlistLoading ? (
-                                    <div className="w-4 h-4 border-2 border-t-transparent border-[#FF385C] rounded-full animate-spin"></div>
+                                    <div className="w-3.5 h-3.5 border-2 border-t-transparent border-[#FF385C] rounded-full animate-spin"></div>
                                 ) : isWishlisted ? (
-                                    <FavoriteIcon className="text-[#FF385C] fill-current drop-shadow-[0_0_8px_rgba(255,56,92,0.75)] animate-pulse" sx={{ fontSize: "1.25rem" }} />
+                                    <FavoriteIcon className="text-[#FF385C] fill-current drop-shadow-[0_0_8px_rgba(255,56,92,0.75)] animate-pulse" sx={{ fontSize: { xs: "0.95rem", sm: "1.25rem" } }} />
                                 ) : (
-                                    <FavoriteBorderIcon sx={{ fontSize: "1.25rem" }} />
+                                    <FavoriteBorderIcon sx={{ fontSize: { xs: "0.95rem", sm: "1.25rem" } }} />
                                 )}
-                                <span className={`text-xs font-extrabold ${isWishlisted ? "text-[#FF385C]" : "text-[#718096]"}`}>Wishlist</span>
+                                <span className={`text-[10px] sm:text-xs font-extrabold ${isWishlisted ? "text-[#FF385C]" : "text-[#718096]"}`}>Wishlist</span>
                             </button>
 
                             {/* 2. Share Button */}
                             <button
                                 onClick={handleShare}
-                                className="py-3 px-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-[#718096] flex flex-col sm:flex-row items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer shadow-xs hover:bg-gray-50 hover:text-[#6C5CE7] hover:scale-[1.02]"
+                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-[#718096] flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-xs hover:bg-gray-50 hover:text-[#6C5CE7] hover:scale-[1.02]"
                             >
-                                <ShareIcon sx={{ fontSize: "1.2rem" }} />
-                                <span className="text-xs font-bold">Share</span>
+                                <ShareIcon sx={{ fontSize: { xs: "0.95rem", sm: "1.2rem" } }} />
+                                <span className="text-[10px] sm:text-xs font-bold">Share</span>
                             </button>
 
                             {/* 3. Add to Cart Button */}
                             <button
                                 onClick={handlePurchase}
-                                className="py-3 px-3 rounded-2xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white flex flex-col sm:flex-row items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer shadow-[0_8px_20px_rgba(108,92,231,0.35)] hover:scale-[1.02] active:scale-95"
+                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-[0_8px_20px_rgba(108,92,231,0.35)] hover:scale-[1.02] active:scale-95"
                             >
-                                <AddIcon sx={{ fontSize: "1.3rem" }} />
-                                <span className="text-xs font-extrabold tracking-tight text-center leading-tight">Add to Cart</span>
+                                <AddIcon sx={{ fontSize: { xs: "1rem", sm: "1.3rem" } }} />
+                                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-center leading-tight">Add to Cart</span>
                             </button>
                         </div>
                     </div>
 
                     {/* COLUMN 2 — Center Information & Specifications Section */}
-                    <div className="flex flex-col justify-between py-2 px-1 sm:px-3">
+                    <div className="flex flex-col justify-between py-0 sm:py-2 px-0.5 sm:px-3">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentSlide.id}
@@ -793,24 +793,24 @@ export default function ProductShowcase3D() {
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.18 }}
-                                className="space-y-4"
+                                className="space-y-1.5 sm:space-y-4"
                             >
-                                {/* Heading: Large bold title in Vibrant Purple (#6C5CE7, 44px, bold 900) */}
+                                {/* Heading: Large bold title in Vibrant Purple (#6C5CE7) */}
                                 <motion.h1
                                     initial={{ opacity: 0, y: 15 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.2, delay: 0, ease: [0.22, 1, 0.36, 1] }}
-                                    className="text-[32px] sm:text-[40px] lg:text-[44px] font-[900] text-[#6C5CE7] leading-tight tracking-[-1px]"
+                                    className="text-xl sm:text-[40px] lg:text-[44px] font-[900] text-[#6C5CE7] leading-tight tracking-tight"
                                 >
                                     {currentSlide.title}
                                 </motion.h1>
 
-                                {/* Description: Subtitle paragraph in muted grey (#718096, 13px) */}
+                                {/* Description: Subtitle paragraph in muted grey */}
                                 <motion.p
                                     initial={{ opacity: 0, y: 15 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.2, delay: 0.03, ease: [0.22, 1, 0.36, 1] }}
-                                    className="text-[#718096] dark:text-gray-300 text-[13px] leading-[1.6] max-w-xl"
+                                    className="text-[#718096] dark:text-gray-300 text-[11px] sm:text-[13px] leading-snug sm:leading-[1.6] max-w-xl line-clamp-2 sm:line-clamp-none"
                                 >
                                     {currentSlide.description}
                                 </motion.p>
@@ -820,9 +820,9 @@ export default function ProductShowcase3D() {
                                     initial={{ opacity: 0, y: 15 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.2, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-                                    className="flex items-center gap-4 pt-1"
+                                    className="flex items-center gap-2 sm:gap-4 pt-0.5"
                                 >
-                                    <span className="text-[28px] sm:text-[32px] font-[900] text-[#6C5CE7] tracking-tight">
+                                    <span className="text-xl sm:text-[32px] font-[900] text-[#6C5CE7] tracking-tight">
                                         {currentSlide.priceInr}
                                     </span>
                                 </motion.div>
@@ -832,28 +832,28 @@ export default function ProductShowcase3D() {
                                     initial={{ opacity: 0, y: 15 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.4, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                                    className="pt-3 border-t border-gray-200/60 dark:border-gray-700/60 space-y-2.5"
+                                    className="pt-2 sm:pt-3 border-t border-gray-200/60 dark:border-gray-700/60 space-y-1.5 sm:space-y-2.5"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-xs font-black uppercase tracking-wider text-[#2D3748] dark:text-white flex items-center gap-1.5">
-                                            <span className="w-2 h-2 rounded-full bg-[#6C5CE7]" />
+                                        <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#2D3748] dark:text-white flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#6C5CE7]" />
                                             Nutritional & Health Profile
                                         </h3>
-                                        <span className="text-[11px] font-bold text-[#718096] dark:text-gray-400">100% Organic A2 Dairy</span>
+                                        <span className="text-[9px] sm:text-[11px] font-bold text-[#718096] dark:text-gray-400">100% Organic A2 Dairy</span>
                                     </div>
 
                                     {/* 5 Nutritional Progress Bars */}
-                                    <div className="space-y-2">
+                                    <div className="space-y-1 sm:space-y-2">
                                         {currentSlide.nutritionMetrics?.map((metric, idx) => (
-                                            <div key={idx} className="space-y-1">
-                                                <div className="flex items-center justify-between text-[11px] font-extrabold">
+                                            <div key={idx} className="space-y-0.5 sm:space-y-1">
+                                                <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-extrabold">
                                                     <span className="text-[#2D3748] dark:text-gray-200">{metric.label}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] font-mono font-bold text-gray-500 dark:text-gray-400">({metric.val})</span>
+                                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                                        <span className="text-[9px] sm:text-[10px] font-mono font-bold text-gray-500 dark:text-gray-400">({metric.val})</span>
                                                         <span style={{ color: metric.color }}>{metric.percent}%</span>
                                                     </div>
                                                 </div>
-                                                <div className="w-full bg-gray-200/80 dark:bg-gray-700/80 h-[5px] rounded-full overflow-hidden">
+                                                <div className="w-full bg-gray-200/80 dark:bg-gray-700/80 h-1 sm:h-[5px] rounded-full overflow-hidden">
                                                     <motion.div
                                                         initial={{ width: "0%" }}
                                                         animate={{ width: `${metric.percent}%` }}

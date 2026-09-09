@@ -40,30 +40,27 @@ export default function DairyProductsCarousel({ half }) {
                     <Link
                         key={`carousel-${half}-${index}-${slugify(title)}`}
                         to={`/products/${slugify(title)}`}
-                        className="mx-3 sm:mx-6 text-center min-w-[120px] sm:min-w-[150px] group/item py-2"
+                        className="mx-3 sm:mx-5 text-center group/item py-2 shrink-0"
                     >
-                        {/* 3D Glass Sphere Orb Container */}
-                        <div className="h-20 w-20 sm:h-28 sm:w-28 mx-auto rounded-full overflow-hidden relative shadow-[0_14px_30px_rgba(0,0,0,0.18),inset_0_-6px_12px_rgba(0,0,0,0.35),inset_0_3px_8px_rgba(255,255,255,0.7)] group-hover/item:shadow-[0_22px_45px_rgba(30,136,229,0.38),inset_0_-6px_14px_rgba(0,0,0,0.4),inset_0_4px_10px_rgba(255,255,255,0.9)] group-hover/item:scale-105 transition-all duration-300 flex-shrink-0 border border-white/30 dark:border-white/10">
-                            {/* Image with 3D Depth Zoom */}
+                        {/* Pristine Circular Category Orb Container */}
+                        <div className="h-24 w-24 sm:h-32 sm:w-32 mx-auto rounded-full overflow-hidden relative shadow-md hover:shadow-xl hover:shadow-[#6C5CE7]/30 group-hover/item:scale-105 transition-all duration-300 border-2 sm:border-3 border-white dark:border-gray-700/90 ring-1 ring-black/5 dark:ring-white/10 bg-gray-100 dark:bg-gray-800">
+                            {/* 4K Vivid Image with High Clarity & Contrast */}
                             <img
                                 src={imgUrl}
                                 alt={title}
-                                className="w-full h-full object-cover group-hover/item:scale-110 group-hover/item:brightness-105 transition-transform duration-500 transform-gpu"
+                                className="w-full h-full object-cover rounded-full brightness-105 contrast-105 saturate-105 group-hover/item:scale-110 group-hover/item:brightness-110 transition-all duration-500 transform-gpu"
                             />
 
-                            {/* 1. Curved Top Glass Dome Highlight */}
-                            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/60 via-white/20 to-transparent rounded-t-full pointer-events-none" />
+                            {/* Minimal Bottom Shadow Overlay covering ONLY text area */}
+                            <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent pointer-events-none rounded-b-full" />
 
-                            {/* 2. Diagonally Sweeping Glass Reflection Lens Flare */}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-white/40 pointer-events-none rounded-full" />
-
-                            {/* 3. Outer Glass Rim Ring Glow */}
-                            <div className="absolute inset-0 rounded-full border-2 border-white/20 dark:border-white/10 pointer-events-none" />
+                            {/* Category Name INSIDE Circle at Bottom */}
+                            <div className="absolute bottom-2 sm:bottom-3 inset-x-0 px-1.5 flex items-center justify-center pointer-events-none z-10">
+                                <span className="text-xs sm:text-sm font-extrabold text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.95)] tracking-wide group-hover/item:text-purple-200 transition-colors duration-300 truncate max-w-full">
+                                    {title}
+                                </span>
+                            </div>
                         </div>
-
-                        <p className="mt-2.5 text-xs sm:text-sm font-bold text-gray-800 dark:text-white group-hover/item:text-[#1E88E5] dark:group-hover/item:text-blue-300 transition-colors">
-                            {title}
-                        </p>
                     </Link>
                 );
             })}

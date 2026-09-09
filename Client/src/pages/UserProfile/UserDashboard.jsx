@@ -21,37 +21,15 @@ import { useSnackbar } from "notistack";
 
 export default function UserDashboard() {
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
   const { authUser } = useContext(UserAuthContext);
-
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchOrders = useCallback(async () => {
-    if (!authUser?._id) return;
-    try {
-      setLoading(true);
-      const res = await getUserOrders(authUser._id);
-      if (res?.success) {
-        setOrders(res.orders || []);
-      }
-    } catch (err) {
-      enqueueSnackbar(err?.message || "Failed to load dashboard data", { variant: "error" });
-    } finally {
-      setLoading(false);
-    }
-  }, [authUser?._id, enqueueSnackbar]);
-
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+  const { userOrders: orders = [], orderLoading: loading } = useContext(UserOrderContext);
 
   const totalReceived = orders.length;
   const totalDelivered = orders.filter(
     (o) => o.status?.toLowerCase() === "delivered"
   ).length;
   const totalPending = orders.filter((o) =>
-    ["pending", "confirmed", "shipped", "processing"].includes(o.status?.toLowerCase())
+    ["pending", "confirmed", "shipped", "processing", "ready to deliver"].includes(o.status?.toLowerCase())
   ).length;
 
   const totalRevenue = orders

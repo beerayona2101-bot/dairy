@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Dialog } from "@mui/material";
-import { FaHourglassHalf, FaBoxOpen, FaShippingFast, FaCheckCircle, FaTimesCircle, FaMoneyBillWave, FaGlassWhiskey, FaShoppingCart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { Dialog, useMediaQuery, useTheme } from "@mui/material";
+import { FaHourglassHalf, FaBoxOpen, FaShippingFast, FaCheckCircle, FaTimesCircle, FaMoneyBillWave, FaShoppingCart } from "react-icons/fa";
 import CloseIcon from '@mui/icons-material/Close';
 import { UserOrderContext } from "../../context/UserOrderProvider";
 import { enqueueSnackbar } from "notistack";
@@ -14,46 +15,29 @@ import { cancelOrderApi } from "../../services/orderService";
 
 import api from "../../services/api";
 import { formatOrderDate, formatFullAddress } from "../../utils/dateUtils";
+import OrderStatusTracker from "../../components/OrderStatusTracker";
+import { ChevronRight, Headphones } from "lucide-react";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function MyOrders() {
+  const navigate = useNavigate();
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { userOrders, orderLoading } = useContext(UserOrderContext);
   const { authUser } = useContext(UserAuthContext);
   const { authAdmin } = useContext(AdminAuthContext);
   const currentUser = authUser || authAdmin;
 
-  const orderStats = {
-    Pending: 0,
-    Processing: 0,
-    Shipped: 0,
-    Delivered: 0,
-    Cancelled: 0,
-    Confirmed: 0,
-  };
-
-  userOrders?.forEach(order => {
-    if (orderStats[order?.status] !== undefined) {
-      orderStats[order?.status]++;
-    }
-  });
-
-  const statCards = [
-    { title: "All", count: userOrders?.length, color: "bg-gray-600/30 text-gray-300", icon: <FaGlassWhiskey /> },
-    { title: "Confirmed", count: orderStats.Confirmed, color: "bg-blue-600/30 text-blue-600", icon: <FaCheckCircle /> },
-    { title: "Pending", count: orderStats.Pending, color: "bg-yellow-500/30 text-yellow-500", icon: <FaHourglassHalf /> },
-    { title: "Processing", count: orderStats.Processing, color: "bg-blue-400/30 text-blue-400", icon: <FaBoxOpen /> },
-    { title: "Shipped", count: orderStats.Shipped, color: "bg-purple-500/30 text-purple-500", icon: <FaShippingFast /> },
-    { title: "Delivered", count: orderStats.Delivered, color: "bg-green-600/30 text-green-600", icon: <FaCheckCircle /> },
-    { title: "Cancelled", count: orderStats.Cancelled, color: "bg-red-500/30 text-red-500", icon: <FaTimesCircle /> },
-  ];
-
   const [loading, setLoading] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState(statCards[0]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const activeSelectedOrder = userOrders?.find((o) => String(o?._id) === String(selectedOrder?._id)) || selectedOrder;
 
   const handleStatusTypeUpdate = ({ success, message }) => {
     if (success) {
@@ -75,7 +59,7 @@ export default function MyOrders() {
 
   const handleOrderReceived = () => {
 
-    if (!selectedOrder) {
+    if (!activeSelectedOrder) {
       enqueueSnackbar("No order selected!", { variant: "error" });
       return;
     }
@@ -87,7 +71,7 @@ export default function MyOrders() {
 
     setLoading(true);
     socket.emit("order:delivered", {
-      orderId: selectedOrder?._id,
+      orderId: activeSelectedOrder?._id,
       status: "Delivered",
       userId: currentUser?._id,
     });
@@ -101,9 +85,9 @@ export default function MyOrders() {
       if (res?.success) {
         enqueueSnackbar("Order cancelled successfully!", { variant: "info" });
         if (socket && socket.connected) {
-          socket.emit("user:cancel-order", { orderId, userId: currentUser?._id });
+          socket.emit("order:reject", { orderId, status: "Cancelled", userId: currentUser?._id });
         }
-        window.location.reload();
+        setSelectedOrder(null);
       } else {
         enqueueSnackbar(res?.message || "Failed to cancel order.", { variant: "error" });
       }
@@ -122,6 +106,8 @@ export default function MyOrders() {
         return <FaBoxOpen className="text-blue-500" />;
       case "Shipped":
         return <FaShippingFast className="text-purple-500" />;
+      case "Ready to Deliver":
+        return <FaShippingFast className="text-teal-500" />;
       case "Delivered":
         return <FaCheckCircle className="text-green-600" />;
       case "Cancelled":
@@ -133,129 +119,110 @@ export default function MyOrders() {
     }
   };
 
-  const filteredOrders = (selectedStatus?.title === "All")
-    ? userOrders
-    : userOrders.filter((order) => order?.status === selectedStatus?.title);
+  const filteredOrders = userOrders;
 
   let content;
   if (orderLoading) {
     content = <BuffaloLoader variant="inline" text="Loading orders..." />;
   } else if (!filteredOrders || filteredOrders?.length === 0) {
     content = (
-      <div className="text-center text-gray-600 dark:text-gray-300 py-16 w-full">
-        {selectedStatus.title === "All"
-          ? "You haven't placed any orders yet."
-          : `No ${selectedStatus?.title.toLowerCase()} orders found.`}
+      <div className="text-center text-gray-600 dark:text-gray-300 py-16 w-full font-medium">
+        You haven't placed any orders yet.
       </div>
     );
   } else {
     content = (
-      <div className="space-y-4 pt-1">
-        {filteredOrders?.map((order) => (
-          <div
-            key={order?._id}
-            onClick={() => setSelectedOrder(order)}
-            className="bg-white dark:bg-gray-800/90 rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200/80 dark:border-gray-700/80 hover:border-[#6C5CE7] dark:hover:border-purple-500 transition-all cursor-pointer space-y-3 group"
-          >
-            {/* Top Bar: Order ID, Date, Status Badge */}
-            <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-gray-100 dark:border-gray-700/60">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-black text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/60 dark:text-purple-300 px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800">
-                  #{order?.orderId || `MD-${order?._id?.slice(-6).toUpperCase()}`}
-                </span>
-                <span className="text-xs text-gray-400 font-medium">
-                  {formatOrderDate(order?.createdAt)}
-                </span>
+      <div className="space-y-4 pt-1 pb-20 sm:pb-4">
+        {filteredOrders?.map((order) => {
+          const statusText =
+            order?.status === "Delivered"
+              ? "Order delivered"
+              : order?.status === "Cancelled"
+              ? "Order cancelled"
+              : order?.status === "Pending"
+              ? "Order placed"
+              : order?.status === "Processing" || order?.status === "Confirmed"
+              ? "Order confirmed"
+              : `Order ${order?.status?.toLowerCase() || ""}`;
+
+          return (
+            <div
+              key={order?._id}
+              onClick={() => setSelectedOrder(order)}
+              className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200/90 dark:border-gray-800 hover:border-[#6C5CE7] dark:hover:border-purple-500 transition-all cursor-pointer space-y-3 group"
+            >
+              {/* Top Row: Status Title & Price with Chevron */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-1.5 font-extrabold text-sm sm:text-base text-gray-900 dark:text-white">
+                    <span>{statusText}</span>
+                    {order?.status === "Delivered" ? (
+                      <FaCheckCircle className="text-emerald-500 text-sm sm:text-base shrink-0" />
+                    ) : order?.status === "Cancelled" ? (
+                      <FaTimesCircle className="text-red-500 text-sm sm:text-base shrink-0" />
+                    ) : (
+                      <FaCheckCircle className="text-blue-500 text-sm sm:text-base shrink-0" />
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-gray-400 mt-0.5 font-medium">
+                    Placed at {formatOrderDate(order?.createdAt)}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-1 font-extrabold text-base sm:text-lg text-gray-900 dark:text-white shrink-0">
+                  <span>&#8377;{(order?.totalAmount || 0).toFixed(2)}</span>
+                  <ChevronRight size={18} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-800 dark:group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                {getStatusIcon(order?.status)}
-                <span className="text-xs font-extrabold text-gray-800 dark:text-gray-100">
-                  {order?.status}
-                </span>
-              </div>
-            </div>
-
-            {/* Middle Section: Item Preview & Short Address */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-              {/* Product Thumbnail Preview */}
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2 shrink-0 overflow-hidden">
-                  {order?.productsData?.slice(0, 3).map((item, idx) => (
+              {/* Product Thumbnails Row */}
+              <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide py-1">
+                {order?.productsData?.slice(0, 6).map((item, idx) => (
+                  <div key={idx} className="relative shrink-0">
                     <img
-                      key={idx}
                       src={getProductImage(item?.productId || { name: item?.productName })}
                       alt={item?.productId?.name || item?.productName || "Product"}
                       loading="lazy"
                       decoding="async"
-                      className="w-10 h-10 object-cover rounded-xl border-2 border-white dark:border-gray-800 shadow-xs"
+                      className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-gray-200/80 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shadow-2xs"
                     />
-                  ))}
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 truncate">
-                    {order?.productsData?.[0]?.productId?.name || order?.productsData?.[0]?.productName || "Dairy Products"}
-                    {order?.productsData?.length > 1 && (
-                      <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">
-                        +{order?.productsData?.length - 1} more
+                    {item?.productQuantity > 1 && (
+                      <span className="absolute -top-1.5 -right-1.5 bg-gray-900 dark:bg-purple-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded-full shadow-xs">
+                        x{item?.productQuantity}
                       </span>
                     )}
-                  </p>
-                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                    Total Items: <span className="font-extrabold text-gray-700 dark:text-gray-200">{order?.productsData?.reduce((acc, p) => acc + (p?.productQuantity || 1), 0)}</span>
-                  </p>
-                </div>
+                  </div>
+                ))}
+                {order?.productsData?.length > 6 && (
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-xs font-extrabold text-gray-500 dark:text-gray-400 shrink-0">
+                    +{order?.productsData?.length - 6}
+                  </div>
+                )}
               </div>
 
-              {/* Delivery Location Summary */}
-              <div className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700/50 space-y-0.5">
-                <div className="flex items-center gap-1 font-bold text-gray-800 dark:text-gray-200">
-                  <span>Deliver to:</span>
-                  <span className="truncate">{order?.address?.name || "Customer"}</span>
-                  {order?.address?.addressType && (
-                    <span className="text-[10px] uppercase font-black px-1.5 py-0.2 rounded bg-purple-100 text-[#6C5CE7] dark:bg-purple-900/40 dark:text-purple-300">
-                      {order?.address?.addressType}
-                    </span>
-                  )}
-                </div>
-                <p className="truncate text-[11px] text-gray-500 dark:text-gray-400">
-                  {[order?.address?.hno, order?.address?.village || order?.address?.streetAddress, order?.address?.city].filter(Boolean).join(", ") || formatFullAddress(order?.address)}
-                </p>
-              </div>
-            </div>
-
-            {/* Bottom Row: Total Price & View Details Button */}
-            <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60">
-              <div>
-                <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider block">Total Amount</span>
-                <span className="text-base font-black text-emerald-600 dark:text-emerald-400">
-                  &#8377;{(order?.totalAmount || 0).toFixed(2)}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
+              {/* Bottom Action Divider & Button */}
+              <div className="pt-2.5 border-t border-gray-100 dark:border-gray-800 text-center">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedOrder(order);
                   }}
-                  className="px-4 py-2 rounded-full text-xs font-extrabold text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
+                  className="text-xs sm:text-sm font-extrabold text-[#FF2E63] hover:text-[#e02654] dark:text-pink-400 transition cursor-pointer"
                 >
-                  View Details &rarr;
+                  Order Again
                 </button>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+      <div className="shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-extrabold text-gray-900 dark:text-white whitespace-nowrap">
             My Orders
@@ -263,39 +230,6 @@ export default function MyOrders() {
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
             View and manage your recent order history and status.
           </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5 py-1 max-w-full">
-          {statCards?.map((card, idx) => {
-            const isSelected = selectedStatus?.title === card?.title;
-            return (
-              <button
-                key={card?.title || idx}
-                onClick={() => setSelectedStatus(card)}
-                className={`
-                  flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shrink-0
-                  transition-all duration-200 border cursor-pointer
-                  ${
-                    isSelected
-                      ? "bg-[#6C5CE7] text-white border-[#6C5CE7] shadow-xs"
-                      : "bg-gray-100/90 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-200/90 dark:border-gray-600/80"
-                  }
-                `}
-              >
-                {card.icon}
-                <span>{card.title}</span>
-                <span
-                  className={`px-1.5 py-0.1 text-[10px] rounded-full font-extrabold ${
-                    isSelected
-                      ? "bg-white/25 text-white"
-                      : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200"
-                  }`}
-                >
-                  {card.count}
-                </span>
-              </button>
-            );
-          })}
         </div>
       </div>
 
@@ -307,194 +241,226 @@ export default function MyOrders() {
         open={!!selectedOrder}
         onClose={() => setSelectedOrder(null)}
         TransitionComponent={Transition}
+        fullScreen={isMobile}
         fullWidth
         maxWidth="md"
         slotProps={{
           paper: {
-            className: "!bg-white dark:!bg-gray-900 !rounded-3xl !shadow-2xl !p-0 !overflow-hidden",
+            className: "!bg-gray-50 dark:!bg-gray-900 sm:!rounded-3xl !rounded-none !shadow-2xl !p-0 !overflow-hidden flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh]",
           },
           backdrop: {
-            className: "!bg-black/50 !backdrop-blur-xs",
+            className: "!bg-black/60 !backdrop-blur-md",
           },
         }}
       >
-        {selectedOrder && (
-          <div className="flex flex-col max-h-[90vh]">
-            {/* Modal Header */}
-            <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/80 dark:bg-gray-800/80">
+        {activeSelectedOrder && (
+          <div className="flex flex-col h-full sm:max-h-[92vh] overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+            {/* Header Bar */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3 bg-white dark:bg-gray-800 sticky top-0 z-20 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-[#6C5CE7] dark:text-purple-300">
-                  <FaShoppingCart size={20} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-extrabold text-base text-gray-900 dark:text-white">
-                      Order Details
-                    </h3>
-                    <span className="text-xs font-mono font-black text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/60 dark:text-purple-300 px-2.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">
-                      #{selectedOrder?.orderId || `MD-${selectedOrder?._id?.slice(-6).toUpperCase()}`}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    Ordered on: {formatOrderDate(selectedOrder?.createdAt)}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold border bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                  {getStatusIcon(selectedOrder?.status)}
-                  <span>{selectedOrder?.status}</span>
-                </div>
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
+                  className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer text-gray-700 dark:text-gray-200"
+                  aria-label="Back"
                 >
                   <CloseIcon fontSize="small" />
                 </button>
+                <div>
+                  <h3 className="font-extrabold text-base sm:text-lg text-gray-900 dark:text-white leading-tight">
+                    Order #{activeSelectedOrder?.orderId || activeSelectedOrder?._id?.slice(-8)?.toUpperCase() || `ORD-1234`}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                    {activeSelectedOrder?.productsData?.length || 0} Items
+                  </p>
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedOrder(null);
+                  navigate("/contact-us");
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/50 text-[#FF2E63] dark:text-pink-300 font-extrabold text-xs hover:bg-pink-100 transition cursor-pointer"
+              >
+                <Headphones size={14} />
+                <span>Get Help</span>
+              </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 overflow-y-auto space-y-4">
-              {/* Delivery Address & Recipient */}
-              <div className="text-xs text-gray-700 dark:text-gray-300 bg-purple-50/50 dark:bg-gray-800/60 p-4 rounded-2xl border border-purple-100 dark:border-gray-700 space-y-1.5">
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <p className="text-sm">
-                    <strong className="text-gray-900 dark:text-white">Recipient:</strong> {selectedOrder?.address?.name || "Customer"}{" "}
-                    <span className="text-gray-500 font-medium ml-1">📞 ({selectedOrder?.address?.phone || "N/A"})</span>
-                  </p>
-                  {selectedOrder?.address?.addressType && (
-                    <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase bg-purple-100 text-[#6C5CE7] dark:bg-purple-900/40 dark:text-purple-300 rounded border border-purple-200">
-                      {selectedOrder?.address?.addressType}
-                    </span>
-                  )}
-                </div>
-                <p className="leading-relaxed">
-                  <strong className="text-gray-900 dark:text-white">Delivery Address:</strong>{" "}
-                  {formatFullAddress(selectedOrder?.address)}
-                </p>
-              </div>
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
+              {/* Live Order Progress Status Tracking Timeline */}
+              <OrderStatusTracker status={activeSelectedOrder?.status} />
 
-              {/* Delivery Precautions Banner */}
-              {selectedOrder?.deliveryInstructions && (
-                <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs space-y-0.5">
-                  <div className="flex items-center gap-1 font-extrabold uppercase text-amber-800 dark:text-amber-300 text-[11px] tracking-wider">
-                    <span>⚠️</span>
-                    <span>Delivery Precautions & Instructions:</span>
-                  </div>
-                  <p className="font-semibold leading-relaxed text-amber-950 dark:text-amber-100">
-                    &ldquo;{selectedOrder.deliveryInstructions}&rdquo;
-                  </p>
-                </div>
-              )}
+              {/* Items in Order Section */}
+              <div className="bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-2xl border border-gray-200/80 dark:border-gray-700/80 space-y-3 shadow-2xs">
+                <h4 className="text-sm font-extrabold text-gray-900 dark:text-white">
+                  {activeSelectedOrder?.productsData?.length || 0} items in order
+                </h4>
 
-              {/* Itemized Table */}
-              <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold border-b border-gray-200 dark:border-gray-700 uppercase">
-                      <th className="py-3 px-4">Product</th>
-                      <th className="py-3 px-4 text-center">Qty</th>
-                      <th className="py-3 px-4 text-right">Price</th>
-                      <th className="py-3 px-4 text-right">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700/60">
-                    {selectedOrder?.productsData?.map((item, idx) => (
-                      <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
-                        <td className="py-3 px-4 flex items-center gap-3">
-                          <img
-                            src={getProductImage(item?.productId || { name: item?.productName })}
-                            alt={item?.productId?.name || item?.productName || "Product"}
-                            className="w-10 h-10 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shrink-0"
-                          />
-                          <div>
-                            <p className="font-bold text-gray-900 dark:text-white text-sm">
-                              {item?.productId?.name || item?.productName || "Madhur Dairy Product"}
-                            </p>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                              Unit: {item?.productId?.quantityUnit || "Pack"}
-                            </p>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-center font-bold text-gray-800 dark:text-gray-200">
-                          {item?.productQuantity}
-                        </td>
-                        <td className="py-3 px-4 text-right font-medium text-gray-600 dark:text-gray-300">
-                          &#8377;{(item?.productPrice || 0).toFixed(2)}
-                        </td>
-                        <td className="py-3 px-4 text-right font-extrabold text-gray-900 dark:text-white">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700/60">
+                  {activeSelectedOrder?.productsData?.map((item, idx) => (
+                    <div key={idx} className="py-3 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <img
+                          src={getProductImage(item?.productId || { name: item?.productName })}
+                          alt={item?.productId?.name || item?.productName || "Product"}
+                          className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shrink-0 bg-gray-50 dark:bg-gray-800"
+                        />
+                        <div className="min-w-0">
+                          <h5 className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white truncate">
+                            {item?.productId?.name || item?.productName || "Madhur Dairy Product"}
+                          </h5>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                            {item?.productQuantity}x &bull; {item?.productId?.quantityUnit || "1 unit"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <span className="font-black text-xs sm:text-sm text-gray-900 dark:text-white">
                           &#8377;{((item?.productPrice || 0) * (item?.productQuantity || 1)).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Payment Summary */}
-              <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 p-4 rounded-2xl border border-gray-200/80 dark:border-gray-700/80">
-                <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-                  <FaMoneyBillWave className="text-emerald-500 text-base" />
-                  <span>Payment Mode: <strong className="text-gray-900 dark:text-white">{selectedOrder?.paymentMode}</strong></span>
+              {/* Bill Summary Card */}
+              <div className="bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-2xl border border-gray-200/80 dark:border-gray-700/80 space-y-3 shadow-2xs">
+                <h4 className="text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+                  📄 Bill Summary
+                </h4>
+
+                <div className="space-y-2 text-xs sm:text-sm pt-1">
+                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-300">
+                    <span>Item Total</span>
+                    <span className="font-semibold">&#8377;{(activeSelectedOrder?.totalAmount || 0).toFixed(2)}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-300">
+                    <span>Delivery Fee</span>
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">FREE</span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-300">
+                    <span>Payment Mode</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{activeSelectedOrder?.paymentMode || "COD"}</span>
+                  </div>
+
+                  <div className="pt-2.5 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between font-black text-sm sm:text-base text-gray-900 dark:text-white">
+                    <span>Total Bill</span>
+                    <span className="text-emerald-600 dark:text-emerald-400">&#8377;{(activeSelectedOrder?.totalAmount || 0).toFixed(2)}</span>
+                  </div>
                 </div>
 
-                <div className="text-right">
-                  <span className="text-xs text-gray-400 font-medium block">Total Paid / Payable</span>
-                  <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
-                    &#8377;{(selectedOrder?.totalAmount || 0).toFixed(2)}
-                  </span>
+                {activeSelectedOrder?.status === "Delivered" && (
+                  <div className="pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+                    <a
+                      href={`${api.defaults.baseURL || 'http://localhost:9000'}/pdf/generate-bill/${activeSelectedOrder?._id}?print=true`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded-xl text-xs font-extrabold bg-purple-100 text-[#6C5CE7] hover:bg-purple-200 dark:bg-purple-950/80 dark:text-purple-300 transition shadow-2xs cursor-pointer"
+                    >
+                      Download Invoice / Credit Note
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Order Details Card */}
+              <div className="bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-2xl border border-gray-200/80 dark:border-gray-700/80 space-y-3 text-xs sm:text-sm shadow-2xs">
+                <h4 className="text-sm font-extrabold text-gray-900 dark:text-white mb-2">
+                  Order Details
+                </h4>
+
+                <div>
+                  <span className="text-gray-400 dark:text-gray-500 font-semibold block text-[11px]">Order ID</span>
+                  <div className="flex items-center gap-1.5 font-mono font-bold text-gray-800 dark:text-gray-200">
+                    <span>#{activeSelectedOrder?.orderId || activeSelectedOrder?._id}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(activeSelectedOrder?.orderId || activeSelectedOrder?._id);
+                        enqueueSnackbar("Order ID copied to clipboard!", { variant: "success" });
+                      }}
+                      className="text-gray-400 hover:text-purple-600 transition cursor-pointer"
+                      title="Copy Order ID"
+                    >
+                      📋
+                    </button>
+                  </div>
                 </div>
+
+                <div>
+                  <span className="text-gray-400 dark:text-gray-500 font-semibold block text-[11px]">Receiver Details</span>
+                  <p className="font-bold text-gray-800 dark:text-gray-200">
+                    {activeSelectedOrder?.address?.name || "Customer"}, {activeSelectedOrder?.address?.phone || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-gray-400 dark:text-gray-500 font-semibold block text-[11px]">Delivery Address</span>
+                  <p className="font-bold text-gray-800 dark:text-gray-200 leading-relaxed">
+                    {formatFullAddress(activeSelectedOrder?.address)}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-gray-400 dark:text-gray-500 font-semibold block text-[11px]">Order Placed at</span>
+                  <p className="font-bold text-gray-800 dark:text-gray-200">
+                    {formatOrderDate(activeSelectedOrder?.createdAt)}
+                  </p>
+                </div>
+
+                {activeSelectedOrder?.status === "Delivered" && (
+                  <div>
+                    <span className="text-gray-400 dark:text-gray-500 font-semibold block text-[11px]">Order Arrived at</span>
+                    <p className="font-bold text-gray-800 dark:text-gray-200">
+                      {formatOrderDate(activeSelectedOrder?.updatedAt || activeSelectedOrder?.createdAt)}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Modal Footer Actions */}
-            <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/80 flex items-center justify-between flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition cursor-pointer"
-              >
-                Close
-              </button>
+            {/* Bottom Action Footer */}
+            <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 flex items-center justify-between gap-3 sticky bottom-0 z-20 shrink-0">
+              {(activeSelectedOrder?.status === "Pending" || activeSelectedOrder?.status === "Confirmed") && (
+                <button
+                  disabled={loading}
+                  onClick={() => {
+                    handleUserCancelOrder(activeSelectedOrder?._id);
+                    setSelectedOrder(null);
+                  }}
+                  className="flex-1 py-3 text-xs sm:text-sm font-black rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition cursor-pointer text-center"
+                >
+                  Cancel Order
+                </button>
+              )}
 
-              <div className="flex items-center gap-2">
-                {(selectedOrder?.status === "Pending" || selectedOrder?.status === "Confirmed") && (
-                  <button
-                    disabled={loading}
-                    onClick={() => {
-                      handleUserCancelOrder(selectedOrder?._id);
-                      setSelectedOrder(null);
-                    }}
-                    className="px-4 py-2 text-xs font-extrabold rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800 transition cursor-pointer"
-                  >
-                    Cancel Order
-                  </button>
-                )}
+              {activeSelectedOrder?.status === "Confirmed" && (
+                <button
+                  disabled={loading}
+                  onClick={handleOrderReceived}
+                  className="flex-1 py-3 text-xs sm:text-sm font-black rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer text-center shadow-md"
+                >
+                  {loading ? "Updating..." : "✓ Mark Order Received"}
+                </button>
+              )}
 
-                {selectedOrder?.status === "Confirmed" && (
-                  <button
-                    disabled={loading}
-                    onClick={handleOrderReceived}
-                    className="px-4 py-2 text-xs font-extrabold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition cursor-pointer"
-                  >
-                    {loading ? "Updating..." : "✓ Mark Order Received"}
-                  </button>
-                )}
-
-                {selectedOrder?.status === "Delivered" && (
-                  <a
-                    href={`${api.defaults.baseURL || 'http://localhost:9000'}/pdf/generate-bill/${selectedOrder?._id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-xs transition"
-                  >
-                    <FaShoppingCart /> Download Official Invoice
-                  </a>
-                )}
-              </div>
+              {activeSelectedOrder?.status === "Delivered" && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className="w-full py-3.5 text-xs sm:text-sm font-black rounded-xl bg-[#FF2E63] hover:bg-[#e02654] text-white transition cursor-pointer text-center shadow-md active:scale-98"
+                >
+                  Order Again
+                </button>
+              )}
             </div>
           </div>
         )}

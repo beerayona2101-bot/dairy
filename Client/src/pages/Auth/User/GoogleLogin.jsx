@@ -22,19 +22,37 @@ export default function GoogleLoginComponent( {setOpenLoginDialog, setGoogleLogi
           const res = await loginWithGoogle(credentialResponse.credential);
           if (res?.success) {
 
+            if (res?.userToken) {
+              sessionStorage.setItem("userToken", res.userToken);
+              sessionStorage.setItem("userRole", "user");
+            }
             if (!res?.filledBasicInfo) {
               navigate("/signup/info-input", {
                 state: { user: res?.user, viaLogin: true },
               });
               
             } else {
-              localStorage.setItem("User", JSON.stringify({
-                email: res?.user?.email,
-                _id: res?.user?._id
-              }));
-              await fetchUserData(res?.user?._id);
+              await fetchUserData(res?.user);
               handleAdminLogout();
               enqueueSnackbar("Login Successful!", { variant: "success" });
+              
+              const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+              sessionStorage.removeItem("redirectAfterLogin");
+
+              const isAuthPath = (path) => {
+                if (!path || typeof path !== "string") return true;
+                const clean = path.toLowerCase();
+                return (
+                  clean === "/login" ||
+                  clean === "/signup" ||
+                  clean === "/admin/login" ||
+                  clean.startsWith("/login/") ||
+                  clean.startsWith("/signup/")
+                );
+              };
+
+              const userDest = (!isAuthPath(storedRedirect) && storedRedirect) || "/user-profile/dashboard";
+              navigate(userDest, { replace: true });
             }
             
           } else {

@@ -112,7 +112,7 @@ export default function Payments() {
                 {userOrders.map((order) => (
                   <tr key={order._id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition">
                     <td className="p-3.5 font-mono font-bold text-[#6C5CE7] dark:text-purple-300">
-                      #{order.orderId || `MD-${order._id.slice(-6).toUpperCase()}`}
+                      {order.orderId || `MD-ORD-260907-0001`}
                     </td>
                     <td className="p-3.5 text-gray-600 dark:text-gray-300">
                       {formatOrderDate(order.createdAt)}
@@ -141,12 +141,12 @@ export default function Payments() {
                     </td>
                     <td className="p-3.5 text-center">
                       <a
-                        href={`${baseUrl}/pdf/generate-bill/${order._id}`}
+                        href={`${baseUrl}/pdf/generate-bill/${order._id}?print=true`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6C5CE7]/10 hover:bg-[#6C5CE7]/20 text-[#6C5CE7] dark:text-purple-300 border border-[#6C5CE7]/20 font-bold text-xs transition cursor-pointer"
                       >
-                        <MdReceipt /> PDF Invoice
+                        <MdReceipt /> Print Invoice
                       </a>
                     </td>
                   </tr>

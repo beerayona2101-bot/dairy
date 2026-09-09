@@ -152,17 +152,17 @@ export default function MyAddresses() {
     )
   } else {
     content = (
-      <div className="space-y-4">
+      <div className="space-y-4 pb-20 sm:pb-4">
         {addresses.map((item) => {
           const isSelected = deliveryAddress?._id === item._id;
 
           return (
             <div
               key={item._id}
-              className={`rounded-lg p-4 shadow-sm hover:shadow-md dark:shadow-none transition-all duration-200 border ${
+              className={`rounded-2xl p-4 sm:p-5 shadow-xs backdrop-blur-xl transition-all duration-200 border ${
                 isSelected
-                  ? "bg-blue-50/70 dark:bg-blue-900/20 border-blue-500 dark:border-blue-400"
-                  : "bg-gray-500/10 dark:bg-gray-500/20 border-transparent dark:hover:bg-gray-500/30"
+                  ? "bg-[#6C5CE7]/10 dark:bg-purple-900/30 border-[#6C5CE7] dark:border-purple-400"
+                  : "bg-white/40 dark:bg-slate-900/40 border-white/60 dark:border-gray-700/60"
               }`}
             >
               <div className="w-full flex items-center justify-between">

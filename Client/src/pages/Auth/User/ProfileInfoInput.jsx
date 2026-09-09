@@ -678,7 +678,6 @@ export default function ProfileInfoInput() {
       const data = await submitSignupForm(formData);
 
       if (data?.success) {
-        localStorage.setItem("User", JSON.stringify(data?.user));
         localStorage.removeItem("otp-status");
         localStorage.removeItem("tempUserData");
         await fetchUserData(data?.user?._id);

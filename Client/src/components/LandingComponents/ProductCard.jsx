@@ -107,17 +107,66 @@ export function ProductInfo({ title, description, targetPath, features }) {
     );
 }
 
-export default function ProductCard({ title, description, image, features, isReversed = false }) {
+export default function ProductCard({ title, description, image, features, isReversed = false, isStacked = false }) {
     const targetPath = `/products/${slugify(title)}`;
+    const cardRef = React.useRef(null);
+    const [transformStyle, setTransformStyle] = React.useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+    const [spotlightPos, setSpotlightPos] = React.useState({ x: 50, y: 50 });
+    const [isHovered, setIsHovered] = React.useState(false);
+
+    const handlePointerMove = (e) => {
+        if (!cardRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const x = (clientX - rect.left) / rect.width;
+        const y = (clientY - rect.top) / rect.height;
+
+        const rotateX = ((y - 0.5) * -12).toFixed(2);
+        const rotateY = ((x - 0.5) * 12).toFixed(2);
+
+        setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
+        setSpotlightPos({ x: (x * 100).toFixed(1), y: (y * 100).toFixed(1) });
+        setIsHovered(true);
+    };
+
+    const handlePointerLeave = () => {
+        setTransformStyle("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+        setIsHovered(false);
+    };
 
     return (
         <motion.div
+            ref={cardRef}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className={`relative w-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl p-5 sm:p-7 lg:p-8 rounded-[28px] shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_45px_rgba(30,136,229,0.18)] hover:-translate-y-2 hover:border-blue-400/50 hover:bg-white/85 dark:hover:bg-slate-900/85 transition-all duration-200 ease-out flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-6 md:gap-10 border border-white/80 dark:border-white/10 overflow-hidden cursor-pointer`}
+            onMouseMove={handlePointerMove}
+            onMouseLeave={handlePointerLeave}
+            onTouchMove={handlePointerMove}
+            onTouchStart={handlePointerMove}
+            onTouchEnd={handlePointerLeave}
+            style={{
+                transform: transformStyle,
+                transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+                transformStyle: "preserve-3d",
+            }}
+            className={`relative w-full ${
+                isStacked
+                    ? "bg-[#FFFDF7] dark:bg-slate-900 border-2 border-[#477A50]/25 dark:border-slate-800 shadow-[0_15px_45px_rgba(23,63,42,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                    : "bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_45px_rgba(30,136,229,0.18)] hover:border-blue-400/50 hover:bg-white/85 dark:hover:bg-slate-900/85"
+            } p-5 sm:p-7 lg:p-8 rounded-[28px] sm:rounded-[36px] transition-all duration-200 ease-out flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-6 md:gap-10 overflow-hidden cursor-pointer floating-border-light ${isHovered ? 'active-touch' : ''}`}
         >
+            {/* Dynamic Mouse & Touch Cursor Spotlight Glow */}
+            <div
+                className="absolute inset-0 pointer-events-none z-20 transition-opacity duration-300"
+                style={{
+                    opacity: isHovered ? 1 : 0,
+                    background: `radial-gradient(450px circle at ${spotlightPos.x}% ${spotlightPos.y}%, rgba(108, 92, 231, 0.15), transparent 80%)`,
+                }}
+            />
+
             {/* Glass Ambient Glow backdrop */}
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-emerald-500/5 rounded-[30px] blur-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -140,6 +189,7 @@ ProductCard.propTypes = {
     image: PropTypes.string.isRequired,
     features: PropTypes.arrayOf(PropTypes.string),
     isReversed: PropTypes.bool,
+    isStacked: PropTypes.bool,
 };
 
 CowDecoration.propTypes = {

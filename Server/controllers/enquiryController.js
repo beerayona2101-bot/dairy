@@ -1,4 +1,5 @@
 import Enquiry from "../models/enquiryModel.js";
+import { publishEvent } from "../socket/eventPublisher.js";
 import {
   sendEnquiryAcknowledgementEmail,
   sendAdminEnquiryReplyEmail,
@@ -24,6 +25,11 @@ export const submitEnquiry = async (req, res) => {
     message,
     status: "Pending",
   });
+
+  const io = req.app.get("io");
+  if (io) {
+    publishEvent(io, "enquiry.created", enquiry, { rooms: ["admin_room"] });
+  }
 
   // Dispatch acknowledgement email asynchronously
   sendEnquiryAcknowledgementEmail({

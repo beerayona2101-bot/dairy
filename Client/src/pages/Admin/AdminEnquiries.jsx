@@ -154,7 +154,7 @@ export default function AdminEnquiries() {
             <Mail className="w-7 h-7 text-[#6C5CE7]" />
             <span>Customer Enquiries & SMTP Mail</span>
           </h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
             Send 1-click emails to users from official admin mail (
             <code className="text-[#6C5CE7] font-bold">beerayona143@gmail.com</code>)
           </p>

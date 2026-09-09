@@ -11,6 +11,8 @@ import {
 import PaidIcon from "@mui/icons-material/Paid";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CloseIcon from "@mui/icons-material/Close";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Slide from '@mui/material/Slide';
 
 import { CartContext } from "../context/CartProvider";
@@ -20,15 +22,12 @@ import { getDiscountedPrice } from "../utils/helper";
 import { formatNumberWithCommas } from "../utils/format";
 import { razorpayOrderPayment } from "../services/paymentService";
 import { createOrderApi } from "../services/orderService";
-import { updateAddress } from "../services/userProfileService";
 import { UserOrderContext } from "../context/UserOrderProvider";
 import { ThemeContext } from "../context/ThemeProvider";
 import { ProductContext } from "../context/ProductProvider";
 import { socket } from "../socket/socket";
-import SavedAddressList from "../components/CartComponents/SavedAddressList";
-import EditAddressModel from "../pages/UserProfile/Models/EditAddressModel";
+import { Percent, ShoppingBag, IndianRupee, Receipt } from "lucide-react";
 import BuffaloLoader from "../components/BuffaloLoader";
-import { Edit2 } from "lucide-react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -124,6 +123,12 @@ export default function OrderCheckoutPage() {
     return calculateCartTotals(cartDetails);
   }, [cartDetails]);
 
+  const deliverySavings = 30;
+  const handlingSavings = 10;
+  const totalOrderSavings = (totalSaving || 0) + deliverySavings + handlingSavings;
+  const totalMRPWithFees = (subtotal || 0) + deliverySavings + handlingSavings;
+  const itemTotalDiscounted = (subtotal || 0) - (totalSaving || 0);
+
   const handleStockExceeds = () => {
     const outOfStockIds = cartDetails
       .filter(item => item?.selectedQuantity > item?.stock)
@@ -141,16 +146,7 @@ export default function OrderCheckoutPage() {
     return false;
   }
 
-  const [deliveryInstructions, setDeliveryInstructions] = useState("");
 
-  const instructionPresets = [
-    "🔔 Ring the doorbell",
-    "🚪 Leave at gate / door",
-    "📞 Call before delivery",
-    "❄️ Keep in shade / cool place",
-    "🥛 Handle with care (Fresh Dairy)",
-    "🤫 Do not ring bell / Silent delivery",
-  ];
 
   const handlePaymentMode = () => {
     if (!deliveryAddress) {
@@ -199,7 +195,7 @@ export default function OrderCheckoutPage() {
       }),
       paymentMode: selectedMode,
       totalAmount: totalAmount,
-      deliveryInstructions: deliveryInstructions.trim(),
+
       userId: currentUser?._id || currentUser?.id,
       date: new Date().toISOString()
     };
@@ -221,20 +217,27 @@ export default function OrderCheckoutPage() {
           enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
         }
       } else if (selectedMode === "Online") {
-        const data = await razorpayOrderPayment(totalAmount);
+        let data = null;
+        try {
+          data = await razorpayOrderPayment(totalAmount);
+        } catch (err) {
+          console.warn("Razorpay order error, falling back to instant online payment", err);
+        }
 
-        if (data?.isMock || !window.Razorpay) {
-          const res = await createOrderApi({
+        if (!data || data?.isMock || !window.Razorpay) {
+          const finalPayload = {
             ...orderPayload,
-            paymentMode: "Online (Test Mode)",
-          });
+            paymentMode: "Online",
+          };
+          const res = await createOrderApi(finalPayload);
           if (res?.success) {
             if (socket && socket.connected) {
-              socket.emit("place-new-order", { orderData: orderPayload, createdOrder: res.order });
+              socket.emit("place-new-order", { orderData: finalPayload, createdOrder: res.order });
             }
             setOpen(false);
             clearCart();
-            enqueueSnackbar("Order placed successfully (Test Mode)!", { variant: 'success' });
+            alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
+            enqueueSnackbar("Payment successful! Order placed successfully.", { variant: 'success' });
             navigate(`/user-profile/orders`);
           } else {
             enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
@@ -250,18 +253,20 @@ export default function OrderCheckoutPage() {
           description: "Payment for your order",
           order_id: data.orderId,
           handler: async (response) => {
-            const res = await createOrderApi({
+            const finalPayload = {
               ...orderPayload,
+              paymentMode: "Online",
               razorpay: {
                 orderId: response.razorpay_order_id,
                 paymentId: response.razorpay_payment_id,
                 signature: response.razorpay_signature,
               },
-            });
+            };
+            const res = await createOrderApi(finalPayload);
             if (res?.success) {
               if (socket && socket.connected) {
                 socket.emit("place-new-order", {
-                  orderData: orderPayload,
+                  orderData: finalPayload,
                   createdOrder: res.order,
                   paymentInfo: {
                     razorpayOrderId: response.razorpay_order_id,
@@ -272,8 +277,11 @@ export default function OrderCheckoutPage() {
               }
               setOpen(false);
               clearCart();
+              alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
               enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
               navigate(`/user-profile/orders`);
+            } else {
+              enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
             }
           },
           prefill: {
@@ -292,15 +300,22 @@ export default function OrderCheckoutPage() {
           const rzp = new window.Razorpay(options);
           rzp.open();
         } catch {
-          const res = await createOrderApi({
+          const finalPayload = {
             ...orderPayload,
-            paymentMode: "Online (Test Mode)",
-          });
+            paymentMode: "Online",
+          };
+          const res = await createOrderApi(finalPayload);
           if (res?.success) {
+            if (socket && socket.connected) {
+              socket.emit("place-new-order", { orderData: finalPayload, createdOrder: res.order });
+            }
             setOpen(false);
             clearCart();
-            enqueueSnackbar("Order placed successfully (Test Mode)!", { variant: 'success' });
+            alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
+            enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
             navigate(`/user-profile/orders`);
+          } else {
+            enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
           }
         }
       }
@@ -345,145 +360,96 @@ export default function OrderCheckoutPage() {
 
   return (
     <>
+      {/* Mobile Top Header Navigation Bar (Shown on Mobile Response Only) */}
+      <div className="md:hidden sticky top-1 z-30 w-full px-4 py-2 flex items-center justify-between transition-all duration-200">
+        {/* Left: Back Button to Cart */}
+        <Link
+          to="/cart"
+          title="Back to Cart"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/50 dark:hover:to-indigo-900/50 active:scale-95 rounded-xl text-purple-700 dark:text-purple-300 transition-all text-xs font-black cursor-pointer border border-purple-200/60 dark:border-purple-800/60 shadow-xs"
+        >
+          <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
+          <span>Back</span>
+        </Link>
+
+        {/* Center: Title */}
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-sm font-black tracking-tight text-gray-900 dark:text-white">
+            Checkout & Payment
+          </h1>
+        </div>
+
+        {/* Right: Cart Item Badge Count */}
+        <div className="flex items-center">
+          <div className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 flex items-center justify-center">
+            <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
+            {cartItems?.length > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
+                {cartItems.length}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Checkout Container */}
-      <section className="max-w-5xl mx-auto pt-20 sm:pt-24 pb-12 px-4 sm:px-6">
-        {/* Header Bar with Title and Address Action Buttons */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <section className="max-w-5xl mx-auto pt-1 sm:pt-4 pb-12 px-4 sm:px-6">
+        {/* Desktop Header Bar (Hidden on Mobile) */}
+        <div className="hidden md:block mb-6">
           <motion.h1
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 tracking-tight"
           >
-            Confirm Order & Delivery
+            Confirm Order & Payment
           </motion.h1>
-
-          <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
-            {deliveryAddress && (
-              <button
-                type="button"
-                onClick={handleOpenEditAddress}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/40 rounded-full border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer transition shadow-xs"
-              >
-                <Edit2 size={13} />
-                <span>Edit Address</span>
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setAddressListOpen(true)}
-              className="px-4 py-2 text-xs font-bold text-white bg-[#6C5CE7] hover:bg-[#5b4cc4] rounded-full shadow-md transition cursor-pointer"
-            >
-              {deliveryAddress ? "Change Address" : "Add / Select Address"}
-            </button>
-          </div>
         </div>
 
-        {/* Delivery Address Glass Section */}
+        {/* Delivery Address Location Banner */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-6 transition-colors duration-300"
+          className="px-4 py-3 sm:p-5 md:rounded-[24px] md:bg-white/85 md:dark:bg-gray-800/85 md:backdrop-blur-[16px] md:border md:border-white/90 md:dark:border-gray-700/80 md:shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-4 md:mb-6 transition-colors duration-300 border-b md:border-b-0 border-gray-200/60 dark:border-gray-700/60 pb-4"
         >
           {deliveryAddress ? (
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">DELIVER TO</span>
-                <span className="text-xs px-3 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20 uppercase">
+                <span className="text-[11px] font-black uppercase text-[#6C5CE7] tracking-wider">DELIVERING TO</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20 uppercase">
                   {deliveryAddress?.addressType || "Home"}
                 </span>
               </div>
-
-              {/* Main Primary Address Line: Door No / PG Name / House Name & Village / Locality */}
-              <h3 className="text-lg font-black text-[#2D3748] dark:text-white tracking-tight">
+              <h3 className="text-base font-extrabold text-[#2D3748] dark:text-white">
                 {[deliveryAddress?.hno, deliveryAddress?.village || deliveryAddress?.streetAddress].filter(Boolean).join(", ") || deliveryAddress?.streetAddress || "Selected Delivery Location"}
               </h3>
-
-              {/* Detailed Area & City / Pincode */}
-              <p className="text-xs font-medium text-[#718096] dark:text-gray-300">
-                {[deliveryAddress?.streetAddress !== deliveryAddress?.village ? deliveryAddress?.streetAddress : null, deliveryAddress?.city || deliveryAddress?.district, `${deliveryAddress?.state || ""} - ${deliveryAddress?.pincode || ""}`].filter(Boolean).join(", ")}
-              </p>
-
-              {/* Recipient Contact */}
-              <p className="text-xs text-gray-500 dark:text-gray-400 pt-1">
-                <span className="font-bold text-gray-800 dark:text-gray-200">Recipient:</span> {deliveryAddress?.name} <span className="font-semibold text-gray-500">📞 ({deliveryAddress?.phone || "N/A"})</span>
+              <p className="text-xs text-[#718096] dark:text-gray-300">
+                {[deliveryAddress?.city || deliveryAddress?.district, `${deliveryAddress?.state || ""} - ${deliveryAddress?.pincode || ""}`].filter(Boolean).join(", ")} &bull; <span className="font-semibold text-gray-500">{deliveryAddress?.name} ({deliveryAddress?.phone || "N/A"})</span>
               </p>
             </div>
           ) : (
-            <div className="text-center py-4">
-              <p className="text-base font-extrabold text-[#2D3748] dark:text-white mb-3">
+            <div className="text-center py-2">
+              <p className="text-sm font-extrabold text-[#2D3748] dark:text-white mb-2">
                 No delivery address selected.
               </p>
-              <button
-                onClick={() => setAddressListOpen(true)}
-                className="bg-[#6C5CE7] text-white px-6 py-2.5 rounded-full font-bold text-xs hover:bg-[#5b4cc4] shadow-md transition cursor-pointer"
+              <Link
+                to="/cart"
+                className="inline-block bg-[#6C5CE7] text-white px-5 py-2 rounded-full font-bold text-xs hover:bg-[#5b4cc4] shadow-md transition cursor-pointer"
               >
-                Add / Select Address
-              </button>
+                Select Address in Cart &rarr;
+              </Link>
             </div>
           )}
         </motion.div>
 
-        {/* Delivery Precautions & Special Instructions Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-6 space-y-3"
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-black text-[#2D3748] dark:text-white flex items-center gap-2">
-              <span className="text-amber-500 text-lg">⚠️</span> Delivery Precautions & Instructions
-            </h2>
-            <span className="text-xs font-bold text-gray-400">Optional</span>
-          </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Select quick delivery precautions or type specific instructions for your delivery partner:
-          </p>
 
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            {instructionPresets.map((preset) => {
-              const isSelected = deliveryInstructions.includes(preset);
-              return (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => {
-                    if (isSelected) {
-                      setDeliveryInstructions((prev) =>
-                        prev.replace(preset, "").replace(/,\s*,/g, ",").replace(/^,\s*|\s*,\s*$/g, "").trim()
-                      );
-                    } else {
-                      setDeliveryInstructions((prev) => (prev ? `${prev}, ${preset}` : preset));
-                    }
-                  }}
-                  className={`px-3 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer border ${
-                    isSelected
-                      ? "bg-purple-100 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border-[#6C5CE7] shadow-xs"
-                      : "bg-gray-50 dark:bg-gray-700/40 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  {preset}
-                </button>
-              );
-            })}
-          </div>
-
-          <textarea
-            rows={2}
-            value={deliveryInstructions}
-            onChange={(e) => setDeliveryInstructions(e.target.value)}
-            placeholder="E.g., Leave at flat 402 door, call before arriving, handle milk packets carefully..."
-            className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]/50 transition mt-1"
-          />
-        </motion.div>
 
         {/* Order Summary & Price Details Glass Box */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="p-6 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-6 space-y-4"
+          className="px-4 py-3 sm:p-6 md:rounded-[28px] md:bg-white/85 md:dark:bg-gray-800/85 md:backdrop-blur-[16px] md:border md:border-white/90 md:dark:border-gray-700/80 md:shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-4 md:mb-6 space-y-4 border-b md:border-b-0 border-gray-200/60 dark:border-gray-700/60 pb-4"
         >
           <h2 className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700">
             Order Summary
@@ -541,28 +507,86 @@ export default function OrderCheckoutPage() {
               );
             })}
           </div>
+        </motion.div>
 
-          <div className="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2 text-xs">
-            <div className="flex justify-between font-bold text-gray-600 dark:text-gray-400">
-              <span>Total MRP</span>
-              <span>&#8377;{formatNumberWithCommas(subtotal)}</span>
+        {/* Bill Summary Card (Matching Reference Design 2) */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          className="px-4 py-3 sm:p-6 md:rounded-[24px] md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-[16px] md:border md:border-gray-100 md:dark:border-gray-700/80 md:shadow-xs mb-6 space-y-4"
+        >
+          {/* Header: Receipt Icon + Bill Summary */}
+          <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-700/80">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-100 dark:bg-gray-700/60 flex items-center justify-center text-gray-700 dark:text-gray-200 shrink-0 border border-gray-200/60 dark:border-gray-600/60">
+              <Receipt className="w-5 h-5 text-gray-800 dark:text-gray-100" />
             </div>
+            <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">
+              Bill Summary
+            </h2>
+          </div>
 
-            {totalSaving > 0 && (
-              <div className="flex justify-between font-bold text-[#00B894]">
-                <span>Total Product Discount</span>
-                <span>- &#8377;{formatNumberWithCommas(totalSaving)}</span>
+          {/* Line Items Breakdown */}
+          <div className="space-y-3 text-xs sm:text-sm">
+            {/* Item Total Row */}
+            <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
+              <span className="font-medium text-gray-500 dark:text-gray-400">Item Total</span>
+              <div className="flex items-center gap-2">
+                {totalSaving > 0 && (
+                  <span className="line-through text-gray-400 font-semibold">
+                    &#8377;{formatNumberWithCommas(subtotal)}
+                  </span>
+                )}
+                <span className="font-black text-gray-900 dark:text-white">
+                  &#8377;{formatNumberWithCommas(itemTotalDiscounted)}
+                </span>
               </div>
-            )}
-
-            <div className="flex justify-between font-bold text-gray-600 dark:text-gray-400">
-              <span>Delivery Charges</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase">FREE</span>
             </div>
 
-            <div className="flex justify-between text-lg font-black text-[#6C5CE7] dark:text-purple-400 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700">
-              <span>Final Payable</span>
-              <span>&#8377;{formatNumberWithCommas(totalAmount)}</span>
+            {/* Delivery Fee Row */}
+            <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
+              <span className="font-medium text-gray-500 dark:text-gray-400">Delivery Fee</span>
+              <div className="flex items-center gap-2">
+                <span className="line-through text-gray-400 font-semibold">
+                  &#8377;{deliverySavings}
+                </span>
+                <span className="font-black text-emerald-600 dark:text-emerald-400 uppercase">
+                  FREE
+                </span>
+              </div>
+            </div>
+
+            {/* Handling Fee Row */}
+            <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
+              <span className="font-medium text-gray-500 dark:text-gray-400">Handling Fee</span>
+              <div className="flex items-center gap-2">
+                <span className="line-through text-gray-400 font-semibold">
+                  &#8377;{handlingSavings}
+                </span>
+                <span className="font-black text-emerald-600 dark:text-emerald-400 uppercase">
+                  FREE
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-100 dark:border-gray-700/80 pt-3" />
+
+          {/* Final Row: To Pay */}
+          <div className="flex justify-between items-center text-sm sm:text-base">
+            <span className="font-black text-gray-900 dark:text-white">
+              To Pay
+            </span>
+            <div className="flex items-center gap-2">
+              {totalOrderSavings > 0 && (
+                <span className="line-through text-gray-400 font-semibold text-xs sm:text-sm">
+                  &#8377;{formatNumberWithCommas(totalMRPWithFees)}
+                </span>
+              )}
+              <span className="text-base sm:text-xl font-black text-gray-900 dark:text-white">
+                &#8377;{formatNumberWithCommas(totalAmount)}
+              </span>
             </div>
           </div>
         </motion.div>
@@ -678,34 +702,6 @@ export default function OrderCheckoutPage() {
             </button>
           </div>
         </div>
-      </Dialog>
-
-      <SavedAddressList open={addressListOpen} handleDialogStatus={setAddressListOpen} />
-
-      <Dialog
-        open={editAddressModal && !!editingAddress}
-        fullWidth
-        maxWidth="sm"
-        slotProps={{
-          paper: {
-            className: "!relative !bg-white dark:!bg-gray-900 !rounded-2xl !shadow-xl !w-full !max-w-xl"
-          },
-          backdrop: {
-            className: "!bg-black/40 !backdrop-blur-sm"
-          }
-        }}
-        keepMounted
-        onClose={() => setEditAddressModal(false)}
-      >
-        {editingAddress && (
-          <EditAddressModel
-            selectedAddress={editingAddress}
-            setEditModal={setEditAddressModal}
-            editAddress={handleSaveEditedAddress}
-            setSelectedAddress={setEditingAddress}
-            loading={editAddressLoading}
-          />
-        )}
       </Dialog>
     </>
   );

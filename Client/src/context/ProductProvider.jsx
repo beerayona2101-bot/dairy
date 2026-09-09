@@ -1,8 +1,8 @@
 import { useMemo, useState, createContext, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
 import { getProducts } from "../services/productServices";
-import { socket } from "../socket/socket";
-import PropTypes from "prop-types"
-import { enqueueSnackbar } from "notistack";
+import wsManager from "../socket/WebSocketManager";
+
 export const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
@@ -57,40 +57,48 @@ export const ProductProvider = ({ children }) => {
     }, []);
 
     const handleAddNewProduct = useCallback((data) => {
-        const { newProduct } = data;
-        setProducts((prev) => [...prev, newProduct]);
+        const newProduct = data?.newProduct || data;
+        if (newProduct && newProduct._id) {
+            setProducts((prev) => [...prev.filter(p => p._id !== newProduct._id), newProduct]);
+        }
     }, []);
 
     const handleRemoveProduct = useCallback((data) => {
-        const { deletedProduct } = data;
+        const deletedProduct = data?.deletedProduct || data;
 
-        setProducts((prevProducts) =>
-            prevProducts.filter((product) => product._id !== deletedProduct._id)
-        );
+        if (deletedProduct && deletedProduct._id) {
+            setProducts((prevProducts) =>
+                prevProducts.filter((product) => String(product._id) !== String(deletedProduct._id))
+            );
+        }
     }, []);
 
     const handleUpdateProduct = useCallback((data) => {
-        const { updatedProduct } = data;
+        const updatedProduct = data?.updatedProduct || data;
 
-        setProducts((prevProducts) =>
-            prevProducts.map((product) =>
-                product._id === updatedProduct._id ? updatedProduct : product
-            )
-        );
+        if (updatedProduct && updatedProduct._id) {
+            setProducts((prevProducts) =>
+                prevProducts.map((product) =>
+                    String(product._id) === String(updatedProduct._id) ? updatedProduct : product
+                )
+            );
+        }
     }, []);
 
     useEffect(() => {
-        socket.on("product-stock-update", updateProducts);
-        socket.on("add-new-product:success", handleAddNewProduct);
-        socket.on("remove-product:success", handleRemoveProduct);
-        socket.on("update-product:success", handleUpdateProduct);
+        const unsubs = [
+            wsManager.subscribe("product-stock-update", updateProducts),
+            wsManager.subscribe("add-new-product:success", handleAddNewProduct),
+            wsManager.subscribe("product.created", handleAddNewProduct),
+            wsManager.subscribe("remove-product:success", handleRemoveProduct),
+            wsManager.subscribe("product.deleted", handleRemoveProduct),
+            wsManager.subscribe("update-product:success", handleUpdateProduct),
+            wsManager.subscribe("product.updated", handleUpdateProduct),
+        ];
 
         return () => {
-            socket.off("product-stock-update", updateProducts);
-            socket.off("add-new-product:success", handleAddNewProduct);
-            socket.off("remove-product:success", handleRemoveProduct);
-            socket.off("update-product:success", handleUpdateProduct);
-        }
+            unsubs.forEach((unsub) => unsub());
+        };
     }, [updateProducts,
         handleAddNewProduct,
         handleRemoveProduct,

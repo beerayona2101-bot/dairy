@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -6,8 +6,9 @@ import UserProfileSidebar from "../components/UserProfileSidebar";
 import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider";
 import PropTypes from "prop-types";
 import BuffaloLoader from "../components/BuffaloLoader";
-
 import PageTransition from "../components/PageTransition";
+import { Menu, X, User, ShoppingBag, MapPin, Heart, CreditCard, ChevronRight, Info, Headphones } from "lucide-react";
+import { Drawer } from "@mui/material";
 
 export default function UserProfileLayout({ children }) {
     const scrollRef = useRef(null);
@@ -15,6 +16,7 @@ export default function UserProfileLayout({ children }) {
     const navigate = useNavigate();
     const { authUser, authUserLoading } = useContext(UserAuthContext);
     const { authAdmin, authAdminLoading } = useContext(AdminAuthContext);
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -22,34 +24,80 @@ export default function UserProfileLayout({ children }) {
         }
     }, [location.pathname]);
 
-    const activeUser = authUser || authAdmin;
-    const isAnyUserInStorage = localStorage.getItem("User") || localStorage.getItem("Admin");
+    const userToken = sessionStorage.getItem("userToken");
+    const userRole = sessionStorage.getItem("userRole");
 
-    if (authUserLoading || authAdminLoading) {
+    const mobileNavTabs = [
+        { key: "/user-profile", label: "My Profile", icon: <User size={14} /> },
+        { key: "/user-profile/orders", label: "My Orders", icon: <ShoppingBag size={14} /> },
+        { key: "/user-profile/addresses", label: "Saved Addresses", icon: <MapPin size={14} /> },
+        { key: "/user-profile/wishlist", label: "My Wishlist", icon: <Heart size={14} /> },
+        { key: "/user-profile/payments", label: "Payments", icon: <CreditCard size={14} /> },
+        { key: "/about", label: "About Us", icon: <Info size={14} /> },
+        { key: "/contact-us", label: "Contact Us", icon: <Headphones size={14} /> },
+    ];
+
+    const currentTabLabel = mobileNavTabs.find(tab => tab.key === location.pathname)?.label || "Profile Options";
+
+    if (authUserLoading) {
         return <BuffaloLoader variant="full" text="Loading your profile... Please wait." />;
     }
 
-    if (!isAnyUserInStorage || !activeUser) {
+    if (!authUser || !userToken || userRole !== "user") {
         return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
 
     return (
         <div
-            className="h-screen flex flex-col bg-[#F0F1F3] dark:bg-[#121212] text-black dark:text-white transition-colors duration-300 overflow-hidden"
+            className="h-screen flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
         >
             <Navbar />
 
-            <main className="w-full max-w-7xl mx-auto flex-1 flex flex-col md:flex-row items-stretch pt-20 pb-4 sm:pb-6 px-3 sm:px-6 gap-6 min-w-0 overflow-hidden h-[calc(100vh-64px)]">
+            <main className="w-full max-w-7xl mx-auto flex-1 flex flex-col md:flex-row items-stretch pt-16 sm:pt-24 md:pt-22 pb-16 sm:pb-6 px-0 sm:px-6 gap-6 min-w-0 overflow-hidden h-full">
+                {/* Desktop Sidebar (hidden on mobile) */}
                 <div className="hidden md:flex flex-col w-64 shrink-0 h-full overflow-hidden">
                     <UserProfileSidebar />
                 </div>
 
-                <div className="flex-1 w-full min-w-0 h-full rounded-[24px] shadow-sm bg-white dark:bg-gray-800/85 backdrop-blur-[16px] dark:text-white p-4 sm:p-6 transition-all duration-300 border border-white/90 dark:border-gray-700/80 flex flex-col overflow-hidden">
-                    <PageTransition key={location.pathname} className="h-full flex flex-col">
+                {/* Main Content Glass Card (Full Width Transparent on Mobile, Rounded Card on Desktop) */}
+                <div className="flex-1 w-full min-w-0 h-full rounded-none md:rounded-[24px] shadow-none md:shadow-[0_10px_30px_rgba(0,0,0,0.06)] bg-transparent md:bg-white dark:md:bg-slate-900 backdrop-blur-none md:backdrop-blur-2xl dark:text-white p-3.5 sm:p-6 transition-all duration-300 border-0 md:border border-gray-200/90 dark:border-gray-800 flex flex-col overflow-hidden">
+                    
+
+                    {/* Page Content */}
+                    <PageTransition key={location.pathname} className="h-full flex flex-col min-h-0 flex-1">
                         {children}
                     </PageTransition>
                 </div>
             </main>
+
+            {/* Mobile Sidebar Slide Drawer */}
+            <Drawer
+                anchor="left"
+                open={mobileDrawerOpen}
+                onClose={() => setMobileDrawerOpen(false)}
+                slotProps={{
+                    paper: {
+                        className: "!bg-transparent !p-0 !m-0 !w-[280px] sm:!w-[320px] !shadow-2xl !rounded-l-none !rounded-r-[24px] !border-l-0",
+                    },
+                    backdrop: {
+                        className: "!bg-black/60 !backdrop-blur-xs",
+                    },
+                }}
+            >
+                <div className="h-full relative rounded-l-none rounded-r-[24px] overflow-hidden">
+                    <button
+                        type="button"
+                        onClick={() => setMobileDrawerOpen(false)}
+                        className="absolute top-3 right-3 z-50 p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-200 hover:bg-red-50 hover:text-red-500 transition cursor-pointer shadow-xs"
+                    >
+                        <X size={18} />
+                    </button>
+                    <UserProfileSidebar
+                        userProfileDrawer={mobileDrawerOpen}
+                        setUserProfileDrawer={setMobileDrawerOpen}
+                    />
+                </div>
+            </Drawer>
         </div>
     );
 }

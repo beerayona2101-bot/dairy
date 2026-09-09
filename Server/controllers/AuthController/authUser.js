@@ -2,8 +2,11 @@ import mongoose from "mongoose";
 import User from "../../models/UserSchema.js";
 import Admin from "../../models/AdminSchema.js";
 import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../../middlewares/authMiddleware.js";
 import { OAuth2Client } from "google-auth-library";
 import { sendWelcomeCredentialsEmail, sendOtpEmail } from "../../config/nodemailer.js";
+import { sendSMS } from "../../config/fast2sms.js";
 
 const googleClientId = (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "dummy_google_client_id")
   ? process.env.GOOGLE_CLIENT_ID
@@ -69,16 +72,27 @@ export const signUpUser = async (req, res) => {
 };
 
 export const sendOtpController = async (req, res) => {
-  const { email, otp } = req.body;
-  if (!email || !otp) {
-    return res.status(400).json({ success: false, message: "Email and OTP are required" });
+  const { email, mobileNo, phone, otp } = req.body;
+  if ((!email && !mobileNo && !phone) || !otp) {
+    return res.status(400).json({ success: false, message: "Email or Mobile Number and OTP are required" });
   }
 
-  const result = await sendOtpEmail(email, otp);
+  let emailResult = null;
+  let smsResult = null;
+
+  if (email) {
+    emailResult = await sendOtpEmail(email, otp);
+  }
+
+  const targetMobile = mobileNo || phone;
+  if (targetMobile) {
+    smsResult = await sendSMS({ mobileNo: targetMobile, otp });
+  }
+
   return res.status(200).json({
     success: true,
-    message: "OTP email dispatched",
-    info: result,
+    message: "OTP dispatched successfully via Email and SMS",
+    info: { emailResult, smsResult },
   });
 };
 
@@ -121,10 +135,16 @@ export const loginUser = async (req, res) => {
       isAdminMatched = true;
     }
     if (isAdminMatched) {
+      const adminToken = jwt.sign(
+        { id: admin._id, role: "admin", email: admin.email },
+        JWT_SECRET,
+        { expiresIn: "1d" }
+      );
       return res.status(200).json({
         success: true,
         isAdmin: true,
         message: "Admin Login Successful",
+        adminToken,
         admin: {
           _id: admin._id,
           name: admin.name,
@@ -157,9 +177,16 @@ export const loginUser = async (req, res) => {
     });
   }
 
+  const userToken = jwt.sign(
+    { id: user._id, role: "user", email: user.email },
+    JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+
   res.status(200).json({
     success: true,
     message: "Login Successful",
+    userToken,
     user: {
       _id: user?._id,
       email: user?.email || cleanEmail,
@@ -168,6 +195,14 @@ export const loginUser = async (req, res) => {
       mobileNo: user?.mobileNo || "9876543210",
     },
     filledBasicInfo: true,
+  });
+};
+
+export const verifyUserSession = async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    user: req.user,
+    role: "user",
   });
 };
 
@@ -239,10 +274,16 @@ export const loginWithGoogle = async (req, res) => {
       user.address
   );
 
+  const userToken = jwt.sign(
+    { id: user._id, role: "user", email: user.email },
+    JWT_SECRET,
+    { expiresIn: "1d" }
+  );
 
   res.status(200).json({
     success: true,
     message: "Google login successful",
+    userToken,
     user,
     filledBasicInfo: isfilledBasicInfo,
   });
@@ -297,9 +338,16 @@ export const verifyOtp = async (req, res) => {
     rawPassword: password,
   }).catch((err) => console.warn("Signup welcome email notice:", err.message));
 
+  const userToken = jwt.sign(
+    { id: newUser._id, role: "user", email: newUser.email },
+    JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+
   res.status(201).json({
     message: "Account Created Successfully! Welcome email sent to your mail.",
     success: true,
+    userToken,
     user: {
       _id: newUser._id,
       email: newUser.email,

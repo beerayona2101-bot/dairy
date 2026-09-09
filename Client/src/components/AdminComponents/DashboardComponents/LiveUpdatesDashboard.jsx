@@ -11,7 +11,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 
-import { socket } from "../../../socket/socket";
+import wsManager from "../../../socket/WebSocketManager";
 import { formatNumberWithCommas } from "../../../utils/format";
 
 const itemVariants = {
@@ -30,8 +30,8 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
 
     // Add Order events
     (allOrders || []).forEach((order) => {
-      const { _id, address, totalAmount, status, createdAt, productsData } = order;
-      const customerName = address?.name || address?.owner?.firstName || "Customer";
+      const { _id, address, user, totalAmount, status, createdAt, productsData } = order;
+      const customerName = (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null) || address?.name || address?.fullName || (address?.owner?.firstName ? `${address.owner.firstName} ${address.owner.lastName || ''}`.trim() : null) || "Customer";
 
       events.push({
         id: `order-${_id}`,
@@ -68,15 +68,13 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
 
   // Listen to real-time socket events
   useEffect(() => {
-    if (!socket) return;
-
     const handleNewOrder = (data) => {
       const newEv = {
         id: `live-order-${Date.now()}`,
         type: "order",
         orderId: data?.orderId || data?._id,
         status: data?.status || "Pending",
-        title: `⚡ Live New Order #${data?.orderId?.slice(-6) || "Placed"}`,
+        title: `⚡ Live New Order ${data?.orderId ? `#${data.orderId}` : "Placed"}`,
         subtitle: `Total: ₹${formatNumberWithCommas(data?.totalAmount || 0)} • Just Now`,
         timestamp: new Date(),
         isNew: true,
@@ -91,7 +89,7 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
         orderId: data?.orderId,
         status: data?.status,
         title: `🔔 Order Status Updated to "${data?.status}"`,
-        subtitle: `Order #${data?.orderId?.slice(-6) || ""} • Live Update`,
+        subtitle: `Order ${data?.orderId ? `#${data.orderId}` : ""} • Live Update`,
         timestamp: new Date(),
         isNew: true,
       };
@@ -111,18 +109,38 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
       setLiveEvents((prev) => [newEv, ...prev]);
     };
 
-    socket.on("order:new", handleNewOrder);
-    socket.on("order:accept", handleStatusUpdate);
-    socket.on("order:reject", handleStatusUpdate);
-    socket.on("order:status-updated", handleStatusUpdate);
-    socket.on("user:registered", handleNewUser);
+    const handleNewEnquiry = (data) => {
+      const enquiry = data?.data || data;
+      const newEv = {
+        id: `live-enquiry-${Date.now()}`,
+        type: "user",
+        title: `📩 New Enquiry from ${enquiry?.fullName || "Customer"}`,
+        subtitle: `Phone: ${enquiry?.phone || "N/A"} • "${enquiry?.message?.slice(0, 30) || ""}..."`,
+        timestamp: new Date(),
+        isNew: true,
+      };
+      setLiveEvents((prev) => [newEv, ...prev]);
+    };
+
+    const unsubs = [
+      wsManager.subscribe("order:new", handleNewOrder),
+      wsManager.subscribe("order.created", handleNewOrder),
+      wsManager.subscribe("order:accept", handleStatusUpdate),
+      wsManager.subscribe("order:reject", handleStatusUpdate),
+      wsManager.subscribe("order:status-updated", handleStatusUpdate),
+      wsManager.subscribe("user-order:updated-status", handleStatusUpdate),
+      wsManager.subscribe("admin:order-updated", handleStatusUpdate),
+      wsManager.subscribe("order:global-status-update", handleStatusUpdate),
+      wsManager.subscribe("order:accept-success", handleStatusUpdate),
+      wsManager.subscribe("admin-order:delivered-success", handleStatusUpdate),
+      wsManager.subscribe("order:reject-success", handleStatusUpdate),
+      wsManager.subscribe("order.updated", handleStatusUpdate),
+      wsManager.subscribe("user:registered", handleNewUser),
+      wsManager.subscribe("enquiry.created", handleNewEnquiry),
+    ];
 
     return () => {
-      socket.off("order:new", handleNewOrder);
-      socket.off("order:accept", handleStatusUpdate);
-      socket.off("order:reject", handleStatusUpdate);
-      socket.off("order:status-updated", handleStatusUpdate);
-      socket.off("user:registered", handleNewUser);
+      unsubs.forEach((unsub) => unsub());
     };
   }, []);
 
@@ -240,13 +258,14 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
     if (filter === "All") return true;
     if (filter === "Pending Orders") return ev.status === "Pending";
     if (filter === "Shipped") return ev.status === "Shipped";
+    if (filter === "Ready to Deliver") return ev.status === "Ready to Deliver" || ev.status === "Out for Delivery";
     if (filter === "Delivered") return ev.status === "Delivered";
     if (filter === "Cancelled") return ev.status === "Cancelled";
     if (filter === "New Users") return ev.type === "user";
     return true;
   });
 
-  const filterTabs = ["All", "Pending Orders", "Shipped", "Delivered", "Cancelled", "New Users"];
+  const filterTabs = ["All", "Pending Orders", "Shipped", "Ready to Deliver", "Delivered", "Cancelled", "New Users"];
 
   const handleEventClick = (event) => {
     if (event.type === "user") {
@@ -271,7 +290,7 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
               LIVE
             </span>
           </div>
-          <p className="text-xs text-[#64748B] dark:text-gray-400 mt-1">
+          <p className="text-xs text-[#64748B] dark:text-gray-400 mt-1 hidden sm:block">
             Real-time activity feed for orders, customer signups, shipping updates, and deliveries.
           </p>
         </div>
@@ -315,12 +334,12 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
       ) : (
         <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1 scrollbar-hide relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700">
           <AnimatePresence>
-            {filteredEvents.map((event) => {
+            {filteredEvents.map((event, idx) => {
               const markerColors = getMarkerColor(event);
 
               return (
                 <motion.div
-                  key={event.id}
+                  key={`${event.id || 'event'}-${idx}`}
                   variants={itemVariants}
                   initial="hidden"
                   animate="visible"

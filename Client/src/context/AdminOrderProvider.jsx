@@ -2,14 +2,12 @@ import React, { createContext, useState, useMemo, useContext, useEffect, useCall
 import PropTypes from "prop-types";
 import { AdminAuthContext } from "./AuthProvider";
 import { getAdminOrders, getAllOrders } from "../services/orderService";
-import { socket } from "../socket/socket";
-import { useSnackbar } from "notistack";
+import wsManager from "../socket/WebSocketManager";
 
 export const AdminOrderContext = createContext();
 
 export default function AdminOrderProvider({ children }) {
 
-    const { enqueueSnackbar } = useSnackbar();
     const { authAdmin } = useContext(AdminAuthContext);
     const [adminOrders, setAdminOrders] = useState([]);
     const [allOrders, setAllOrders] = useState([]);
@@ -31,9 +29,11 @@ export default function AdminOrderProvider({ children }) {
             }
         };
 
-        const adminStored = (() => { try { return JSON.parse(localStorage.getItem("Admin")); } catch { return null; } })();
-        if (authAdmin?._id || adminStored?._id) {
-            setNotification(authAdmin?.notifications || adminStored?.notifications || []);
+        const adminId = authAdmin?._id;
+
+        if (adminId) {
+            setNotification(authAdmin?.notifications || []);
+            wsManager.connect({ role: "admin", adminId, _id: adminId });
             fetchOrders();
         } else {
             setOrderLoading(false);
@@ -60,77 +60,70 @@ export default function AdminOrderProvider({ children }) {
     const handleAdminNotification = useCallback(({ title, description, date }) => {
         setNotification((prev) => [
             {
-                title,
-                description,
+                title: title || "New Notification",
+                description: description || "",
                 date: date || new Date().toISOString(),
             },
             ...prev,
         ]);
-
     }, []);
 
-    const handleNewPendingOrder = ({ order }) => {
-        setAdminOrders((prevOrders) => [...prevOrders, order]);
-        setAllOrders(prevOrders => [order, ...prevOrders]);
-    };
+    const handleNewPendingOrder = useCallback(({ order }) => {
+        if (order && order._id) {
+            setAdminOrders((prevOrders) => {
+                if (prevOrders.some(o => String(o?._id) === String(order?._id))) return prevOrders;
+                return [order, ...prevOrders];
+            });
+            setAllOrders((prevOrders) => {
+                if (prevOrders.some(o => String(o?._id) === String(order?._id))) return prevOrders;
+                return [order, ...prevOrders];
+            });
+        }
+        fetchAllOrders();
+    }, [fetchAllOrders]);
 
-    const handleOrderAccept = ({ orderId, status }) => {
-        if (!orderId) return;
+    const handleGenericOrderUpdate = useCallback(({ orderId, status }) => {
+        if (!orderId) {
+            fetchAllOrders();
+            return;
+        }
 
-        setAdminOrders((prevOrders) =>
-            prevOrders?.filter((order) => order?._id !== orderId)
-        );
+        if (status) {
+            setAdminOrders((prevOrders) =>
+                status === "Pending"
+                    ? prevOrders
+                    : prevOrders?.filter((order) => String(order?._id) !== String(orderId))
+            );
 
-        setAllOrders(prevOrders =>
-            prevOrders?.map(order =>
-                order._id === orderId ? { ...order, status: status || "Confirmed" } : order
-            )
-        );
-    };
+            setAllOrders((prevOrders) =>
+                prevOrders?.map((order) =>
+                    String(order._id) === String(orderId) ? { ...order, status } : order
+                )
+            );
+        }
 
-    const handleOrderReject = ({ orderId, status }) => {
-        if (!orderId) return;
-
-        setAdminOrders((prevOrders) =>
-            prevOrders?.filter((order) => order?._id !== orderId)
-        );
-
-        setAllOrders(prevOrders =>
-            prevOrders?.map(order =>
-                order._id === orderId ? { ...order, status: status || "Cancelled" } : order
-            )
-        );
-    };
-
-    const handleOrderDelivered = ({ orderId }) => {
-        setAdminOrders((prev) =>
-            prev.map((order) =>
-                order._id === orderId ? { ...order, status: "Delivered" } : order
-            )
-        );
-
-        setAllOrders(prev =>
-            prev.map(order =>
-                order._id === orderId ? { ...order, status: "Delivered" } : order
-            )
-        );
-    }
+        fetchAllOrders();
+    }, [fetchAllOrders]);
 
     useEffect(() => {
-        socket.on("order:new-pending-order", handleNewPendingOrder);
-        socket.on("order:accept-success", handleOrderAccept);
-        socket.on("order:reject-success", handleOrderReject);
-        socket.on("admin:notification", handleAdminNotification)
-        socket.on("admin-order:delivered-success", handleOrderDelivered);
+        const unsubs = [
+            wsManager.subscribe("order:new-pending-order", handleNewPendingOrder),
+            wsManager.subscribe("order:accept-success", handleGenericOrderUpdate),
+            wsManager.subscribe("order:reject-success", handleGenericOrderUpdate),
+            wsManager.subscribe("admin:notification", handleAdminNotification),
+            wsManager.subscribe("admin-order:delivered-success", handleGenericOrderUpdate),
+            wsManager.subscribe("admin:order-updated", handleGenericOrderUpdate),
+            wsManager.subscribe("order:global-status-update", handleGenericOrderUpdate),
+            wsManager.subscribe("user-order:updated-status", handleGenericOrderUpdate),
+            wsManager.subscribe("order:status-updated", handleGenericOrderUpdate),
+            wsManager.subscribe("order.updated", handleGenericOrderUpdate),
+            wsManager.subscribe("order.created", handleNewPendingOrder),
+        ];
 
         return () => {
-            socket.off("order:new-pending-order", handleNewPendingOrder);
-            socket.off("order:accept-success", handleOrderAccept);
-            socket.off("order:reject-success", handleOrderReject);
-            socket.off("admin:notification", handleAdminNotification)
-            socket.off("admin-order:delivered-success", handleOrderDelivered);
-        }
-    }, [handleAdminNotification]);
+            unsubs.forEach((unsub) => unsub());
+        };
+    }, [handleAdminNotification, handleGenericOrderUpdate, handleNewPendingOrder]);
 
     const value = useMemo(() => ({
         adminOrders,

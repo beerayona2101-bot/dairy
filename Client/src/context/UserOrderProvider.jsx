@@ -1,26 +1,22 @@
 import React, { createContext, useState, useMemo, useEffect, useContext, useCallback } from "react";
 import { getUserOrders } from "../services/orderService";
 import { UserAuthContext, AdminAuthContext } from "./AuthProvider";
-import { socket } from "../socket/socket";
-import { useSnackbar } from "notistack";
+import wsManager from "../socket/WebSocketManager";
 
 export const UserOrderContext = createContext();
 
 export default function UserOrderProvider({ children }) {
 
-    const { enqueueSnackbar } = useSnackbar();
     const { authUser } = useContext(UserAuthContext);
-    const { authAdmin } = useContext(AdminAuthContext);
-    const activeUser = authUser || authAdmin;
 
     const [userOrders, setUserOrders] = useState([]);
     const [orderLoading, setOrderLoading] = useState(true);
     const [notification, setNotification] = useState([]);
 
     const fetchOrders = useCallback(async () => {
-        const localUser = JSON.parse(localStorage.getItem("User")) || JSON.parse(localStorage.getItem("Admin"));
-        const userId = activeUser?._id || activeUser?.id || localUser?._id || localUser?.id;
+        const userId = authUser?._id || authUser?.id;
         if (!userId) {
+            setUserOrders([]);
             setOrderLoading(false);
             return;
         }
@@ -35,30 +31,33 @@ export default function UserOrderProvider({ children }) {
         } finally {
             setOrderLoading(false);
         }
-    }, [activeUser?._id, activeUser?.id]);
+    }, [authUser?._id, authUser?.id]);
 
     useEffect(() => {
-        const localUser = JSON.parse(localStorage.getItem("User")) || JSON.parse(localStorage.getItem("Admin"));
-        const userId = activeUser?._id || activeUser?.id || localUser?._id || localUser?.id;
+        const userId = authUser?._id || authUser?.id;
         if (userId) {
-            setNotification(activeUser?.notifications || []);
+            setNotification(authUser?.notifications || []);
             fetchOrders();
         } else {
+            setUserOrders([]);
+            setNotification([]);
             setOrderLoading(false);
         }
-    }, [activeUser?._id, activeUser?.id, activeUser?.notifications, fetchOrders]);
+    }, [authUser?._id, authUser?.id, authUser?.notifications, fetchOrders]);
 
-    const handleUserNotification = useCallback(({ title, description, date }) => {
-        setNotification((prev) => [
-            {
-                title,
-                description,
-                date: date || new Date().toISOString(),
-            },
-            ...prev,
-        ]);
-        enqueueSnackbar(description, { variant: "info" });
-    }, [enqueueSnackbar]);
+    const handleUserNotification = useCallback((notifPayload) => {
+        if (!notifPayload) return;
+        const newNotif = {
+            title: notifPayload.title || "Notification",
+            description: notifPayload.description || "",
+            date: notifPayload.date || new Date().toISOString(),
+            isRead: notifPayload.isRead ?? false,
+            orderId: notifPayload.orderId,
+            type: notifPayload.type || "order",
+            _id: notifPayload._id || `notif-${Date.now()}-${Math.random()}`,
+        };
+        setNotification((prev) => [newNotif, ...prev]);
+    }, []);
 
     const handlePlaceNewOrder = useCallback(({ newOrder }) => {
         if (newOrder) {
@@ -69,36 +68,49 @@ export default function UserOrderProvider({ children }) {
     }, [fetchOrders]);
 
     const handleUserOrderUpdateStatus = useCallback(({ orderId, status }) => {
+        if (!orderId || !status) return;
         setUserOrders((prevOrders) =>
             prevOrders?.map((order) =>
-                order?._id === orderId ? { ...order, status } : order
+                String(order?._id) === String(orderId) ? { ...order, status } : order
             )
         );
         fetchOrders();
     }, [fetchOrders]);
 
     useEffect(() => {
-        socket.on("user:notification", handleUserNotification);
-        socket.on("order:place-new-success", handlePlaceNewOrder);
-        socket.on("new-order-place-success", fetchOrders);
-        socket.on("user-order:updated-status", handleUserOrderUpdateStatus);
+        const unsubs = [
+            wsManager.subscribe("user:notification", handleUserNotification),
+            wsManager.subscribe("order:place-new-success", handlePlaceNewOrder),
+            wsManager.subscribe("new-order-place-success", fetchOrders),
+            wsManager.subscribe("user-order:updated-status", handleUserOrderUpdateStatus),
+            wsManager.subscribe("order:global-status-update", handleUserOrderUpdateStatus),
+            wsManager.subscribe("order:status-updated", handleUserOrderUpdateStatus),
+            wsManager.subscribe("order:accept-success", handleUserOrderUpdateStatus),
+            wsManager.subscribe("admin-order:delivered-success", handleUserOrderUpdateStatus),
+            wsManager.subscribe("order:reject-success", handleUserOrderUpdateStatus),
+            wsManager.subscribe("order.updated", handleUserOrderUpdateStatus),
+            wsManager.subscribe("order.created", handlePlaceNewOrder),
+        ];
 
         return () => {
-            socket.off("user:notification", handleUserNotification);
-            socket.off("order:place-new-success", handlePlaceNewOrder);
-            socket.off("new-order-place-success", fetchOrders);
-            socket.off("user-order:updated-status", handleUserOrderUpdateStatus);
-        }
+            unsubs.forEach((unsub) => unsub());
+        };
     }, [handleUserNotification, handlePlaceNewOrder, handleUserOrderUpdateStatus, fetchOrders]);
+
+    const unreadCount = useMemo(() => {
+        return (notification || []).filter((n) => !n.isRead).length;
+    }, [notification]);
 
     const value = useMemo(() => ({
         userOrders,
         orderLoading,
         notification,
+        unreadCount,
         setUserOrders,
         setOrderLoading,
         setNotification,
-    }), [userOrders, orderLoading, notification]);
+        fetchOrders,
+    }), [userOrders, orderLoading, notification, unreadCount, fetchOrders]);
 
     return (
         <UserOrderContext.Provider value={value}>

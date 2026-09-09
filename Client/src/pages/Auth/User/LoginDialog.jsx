@@ -42,37 +42,49 @@ export default function LoginDialog() {
         setOpenLoginDialog(false);
         if (res?.isAdmin || res?.admin) {
           handleUserLogout();
-          localStorage.setItem("Admin", JSON.stringify(res?.admin));
-          if (fetchAdminData) await fetchAdminData(res?.admin?._id);
+          if (res?.adminToken) {
+            sessionStorage.setItem("adminToken", res.adminToken);
+            sessionStorage.setItem("adminRole", "admin");
+          }
+          if (fetchAdminData) await fetchAdminData(res?.admin);
 
           enqueueSnackbar("Admin Login Successful!", { variant: "success" });
-          navigate("/admin/dashboard");
+          navigate("/admin/dashboard", { replace: true });
         } else {
           handleAdminLogout();
+          if (res?.userToken) {
+            sessionStorage.setItem("userToken", res.userToken);
+            sessionStorage.setItem("userRole", "user");
+          }
           if (!res?.filledBasicInfo) {
             navigate("/signup/info-input", {
               state: { user: res?.user, viaLogin: !res?.filledBasicInfo },
             });
           } else {
-            localStorage.setItem("User", JSON.stringify(res?.user));
-            await fetchUserData(res?.user?._id);
+            await fetchUserData(res?.user);
             enqueueSnackbar("Login Successful!", { variant: "success" });
 
             const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
             sessionStorage.removeItem("redirectAfterLogin");
 
+            const isAuthPath = (path) => {
+              if (!path || typeof path !== "string") return true;
+              const clean = path.toLowerCase();
+              return (
+                clean === "/login" ||
+                clean === "/signup" ||
+                clean === "/admin/login" ||
+                clean.startsWith("/login/") ||
+                clean.startsWith("/signup/")
+              );
+            };
+
             const currentPath = window.location.pathname;
-            let destPath = storedRedirect;
+            const validDest = (!isAuthPath(storedRedirect) && storedRedirect) ||
+                              (!isAuthPath(currentPath) && currentPath) ||
+                              "/user-profile/dashboard";
 
-            if (!destPath) {
-              if (currentPath && currentPath !== "/login" && currentPath !== "/signup") {
-                destPath = currentPath;
-              } else {
-                destPath = "/cart";
-              }
-            }
-
-            navigate(destPath);
+            navigate(validDest, { replace: true });
           }
         }
         setEmail("");
@@ -273,7 +285,7 @@ export default function LoginDialog() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-6 rounded-full bg-gradient-to-r from-[#1E88E5] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-bold text-xs sm:text-sm tracking-widest uppercase shadow-md shadow-blue-500/20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all cursor-pointer mt-4 btn-reflection"
+                className="w-full py-3 px-6 rounded-full bg-gradient-to-r from-[#1E88E5] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-bold text-xs sm:text-sm tracking-widest uppercase shadow-md shadow-blue-500/20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all cursor-pointer mt-4 btn-reflection periodic-glass-shine"
               >
                 {loading ? (
                   <BuffaloLoader variant="button" text="Logging in..." />

@@ -87,39 +87,8 @@ export default function ProductDetailsPage() {
 
     return (
         <>
-            <section className="px-4 md:px-6 pt-4 md:pt-24 pb-6 md:pb-10 md:max-w-6xl mx-auto">
-                {/* Breadcrumbs Navigation Track */}
-                <div className="flex items-center text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-400 mb-5 pt-1 md:pt-0 px-1">
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                        <Link to="/home" className="hover:text-[#1E88E5] dark:hover:text-[#42A5F5] transition-colors">
-                            Home
-                        </Link>
-                        <span className="text-gray-400 dark:text-gray-600 font-normal">/</span>
-                        
-                        <Link to="/products" className="hover:text-[#1E88E5] dark:hover:text-[#42A5F5] transition-colors">
-                            Products
-                        </Link>
-                        <span className="text-gray-400 dark:text-gray-600 font-normal">/</span>
-                        
-                        {(selectedProduct?.category || selectedProduct?.type) && (
-                            <>
-                                <Link
-                                    to={`/products/${slugify(selectedProduct?.category || selectedProduct?.type)}`}
-                                    className="hover:text-[#1E88E5] dark:hover:text-[#42A5F5] transition-colors"
-                                >
-                                    {selectedProduct?.category || selectedProduct?.type}
-                                </Link>
-                                <span className="text-gray-400 dark:text-gray-600 font-normal">/</span>
-                            </>
-                        )}
-                        
-                        <span className="text-[#1E88E5] dark:text-[#42A5F5] font-extrabold truncate max-w-[220px] sm:max-w-none">
-                            {selectedProduct?.name || unslugify(productId)}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
+            <section className="px-0 sm:px-6 pt-0 sm:pt-2 pb-4 max-w-7xl mx-auto">
+                <div className="w-full">
                     <ProductDetails
                         productId={selectedProduct?._id || ""}
                     />

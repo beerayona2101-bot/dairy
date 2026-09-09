@@ -160,17 +160,17 @@ export const updatePageContent = async (req, res) => {
     const { _id, __v, createdAt, updatedAt, ...cleanUpdateData } = req.body;
 
     if (cleanUpdateData.heroBannerImage) {
-      cleanUpdateData.heroBannerImage = await uploadToCloudinary(cleanUpdateData.heroBannerImage, "evan_homepage_cms");
+      cleanUpdateData.heroBannerImage = await uploadToCloudinary(cleanUpdateData.heroBannerImage, "dairy_app");
     }
     if (cleanUpdateData.landingHeroImage) {
-      cleanUpdateData.landingHeroImage = await uploadToCloudinary(cleanUpdateData.landingHeroImage, "evan_homepage_cms");
+      cleanUpdateData.landingHeroImage = await uploadToCloudinary(cleanUpdateData.landingHeroImage, "dairy_app");
     }
 
     if (Array.isArray(cleanUpdateData.homeCategoryCards)) {
       cleanUpdateData.homeCategoryCards = await Promise.all(
         cleanUpdateData.homeCategoryCards.map(async (item) => ({
           title: item.title || "",
-          image: await uploadToCloudinary(item.image || "", "evan_categories"),
+          image: await uploadToCloudinary(item.image || "", "dairy_app"),
         }))
       );
     }
@@ -180,7 +180,7 @@ export const updatePageContent = async (req, res) => {
         cleanUpdateData.landingShowcaseCards.map(async (item) => ({
           title: item.title || "",
           description: item.description || "",
-          image: await uploadToCloudinary(item.image || "", "evan_homepage_cms"),
+          image: await uploadToCloudinary(item.image || "", "dairy_app"),
           features: Array.isArray(item.features) ? item.features : [],
         }))
       );
@@ -191,7 +191,7 @@ export const updatePageContent = async (req, res) => {
         cleanUpdateData.goodnessOfferings.map(async (item) => ({
           title: item.title || "",
           description: item.description || "",
-          image: await uploadToCloudinary(item.image || "", "evan_homepage_cms"),
+          image: await uploadToCloudinary(item.image || "", "dairy_app"),
         }))
       );
     }

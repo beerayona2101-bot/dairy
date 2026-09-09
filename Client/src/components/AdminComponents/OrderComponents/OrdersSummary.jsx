@@ -71,7 +71,7 @@ export default function OrdersSummary({
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-500/20 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700/50 w-full space-y-4"
+      className="hidden md:block bg-white dark:bg-gray-500/20 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700/50 w-full space-y-4"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

@@ -7,7 +7,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node --no-deprecation index.js",
+    "start": "nodemon --no-deprecation -e js,mjs,json index.js",
     "dev": "nodemon --no-deprecation -e js,mjs,json index.js",
     "seed:admin": "node --no-deprecation seeds/adminSeed.mjs",
     "test:qa": "node --no-deprecation scripts/qaReportRunner.js"

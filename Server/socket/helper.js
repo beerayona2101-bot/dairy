@@ -12,7 +12,7 @@ export const validateOrderData = (data) => {
   ) {
     return "Missing required fields.";
   }
-  const validModes = ["Cash on Delivery", "Online"];
+  const validModes = ["Cash on Delivery", "Online", "Online (Test Mode)"];
   if (!validModes.includes(paymentMode)) {
     return "Invalid payment mode.";
   }
@@ -82,14 +82,28 @@ export const emitAdminOrderNotifications = (
   date,
   io
 ) => {
-  for (const [, socketSet] of adminSocketMap) {
-    for (const socketId of socketSet) {
-      io.to(socketId).emit("order:new-pending-order", { order });
-      io.to(socketId).emit("admin:notification", {
-        title: "New Order Received",
-        description: `You have a new pending order from ${user?.firstName} ${user?.lastName}`,
-        date,
-      });
+  if (!io) return;
+
+  const notifObj = {
+    title: "New Order Received 📦",
+    description: `New pending order #${order?.orderId || String(order?._id || "").slice(-6).toUpperCase()} received from ${user?.firstName || "Customer"} ${user?.lastName || ""}`.trim(),
+    date: date || new Date().toISOString(),
+  };
+
+  // Broadcast to admin room & global events
+  io.to("admin_room").emit("order:new-pending-order", { order });
+  io.to("admin_room").emit("admin:notification", notifObj);
+  io.emit("order:new-pending-order", { order });
+  io.emit("order.created", { order, newOrder: order });
+  io.emit("admin:notification", notifObj);
+
+  // Broadcast to any mapped sockets
+  if (adminSocketMap) {
+    for (const [, socketSet] of adminSocketMap) {
+      for (const socketId of socketSet) {
+        io.to(socketId).emit("order:new-pending-order", { order });
+        io.to(socketId).emit("admin:notification", notifObj);
+      }
     }
   }
 };

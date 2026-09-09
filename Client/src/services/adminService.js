@@ -43,4 +43,9 @@ export const handleUpdateAdminPassword = async (adminId, newPassword, serverOtp,
     userOtp,
   });
   return res?.data;
-}
+};
+
+export const verifyAdminSessionApi = async () => {
+  const res = await api.get("/admin/verify-session");
+  return res?.data;
+};

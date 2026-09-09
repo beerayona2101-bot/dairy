@@ -3,6 +3,8 @@ import Routers from "./routes/Routers";
 import "./index.css";
 import { SnackbarProvider } from "notistack";
 
+import ConnectionStatusIndicator from "./components/Common/ConnectionStatusIndicator";
+
 function App() {
   return (
     <SnackbarProvider
@@ -12,6 +14,7 @@ function App() {
       autoHideDuration={2000}
     >
       <Routers />
+      <ConnectionStatusIndicator />
     </SnackbarProvider>
   );
 }

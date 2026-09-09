@@ -142,7 +142,7 @@ export default function Revenue() {
             <TrendingUpIcon className="text-emerald-600 dark:text-emerald-400 !text-3xl" />
             Revenue & Financial Analytics
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-300 mt-1 hidden sm:block">
             Click any metric card below to switch and view detailed reports & breakdown at the bottom.
           </p>
         </div>
@@ -171,34 +171,34 @@ export default function Revenue() {
         </div>
       </motion.div>
 
-      {/* 4 Financial Metric Cards - Clickable Interactive Buttons */}
+      {/* 4 Financial Metric Cards - Compact 2x2 Grid on Mobile (< sm) */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4"
       >
         {/* Card 1: Gross Revenue */}
         <button
           type="button"
           onClick={() => setActiveMetricTab("revenue")}
-          className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-2 relative overflow-hidden ${
+          className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "revenue"
-              ? "bg-blue-100/90 dark:bg-blue-900/40 border-[#1E88E5] ring-2 ring-[#1E88E5] shadow-md scale-[1.02]"
+              ? "bg-blue-100/90 dark:bg-blue-900/40 border-[#1E88E5] ring-2 ring-[#1E88E5] shadow-md"
               : "bg-blue-50/90 dark:bg-blue-950/40 border-blue-200/80 dark:border-blue-800/40 hover:border-blue-400 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-            <span>Total Gross Revenue</span>
-            <div className="p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#1E88E5] dark:text-blue-400 shadow-xs">
-              <PaidIcon className="!text-xl" />
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+            <span className="truncate">Total Gross Revenue</span>
+            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#1E88E5] dark:text-blue-400 shadow-xs shrink-0">
+              <PaidIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-[#1E88E5] dark:text-white">
+          <div className="text-sm sm:text-3xl font-extrabold text-[#1E88E5] dark:text-white truncate">
             &#8377; {formatNumberWithCommas(totalRevenue)}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">From all customer orders</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">From all customer orders</p>
             {activeMetricTab === "revenue" && (
-              <span className="text-[10px] font-black text-[#1E88E5] bg-blue-100 dark:bg-blue-950 px-2 py-0.5 rounded-full border border-blue-300">
+              <span className="text-[8px] sm:text-[10px] font-black text-[#1E88E5] bg-blue-100 dark:bg-blue-950 px-1.5 py-0.5 rounded-full border border-blue-300">
                 ✓ Active View
               </span>
             )}
@@ -209,25 +209,25 @@ export default function Revenue() {
         <button
           type="button"
           onClick={() => setActiveMetricTab("profit")}
-          className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-2 relative overflow-hidden ${
+          className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "profit"
-              ? "bg-sky-100/90 dark:bg-sky-900/40 border-sky-500 ring-2 ring-sky-500 shadow-md scale-[1.02]"
+              ? "bg-sky-100/90 dark:bg-sky-900/40 border-sky-500 ring-2 ring-sky-500 shadow-md"
               : "bg-sky-50/90 dark:bg-sky-950/40 border-sky-200/80 dark:border-sky-800/40 hover:border-sky-400 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-            <span>Estimated Profit</span>
-            <div className="p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#1E88E5] dark:text-sky-400 shadow-xs">
-              <AccountBalanceWalletIcon className="!text-xl" />
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+            <span className="truncate">Estimated Profit</span>
+            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#1E88E5] dark:text-sky-400 shadow-xs shrink-0">
+              <AccountBalanceWalletIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-[#1E88E5] dark:text-white">
+          <div className="text-sm sm:text-3xl font-extrabold text-[#1E88E5] dark:text-white truncate">
             &#8377; {formatNumberWithCommas(totalProfit)}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Net margin earnings</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">Net margin earnings</p>
             {activeMetricTab === "profit" && (
-              <span className="text-[10px] font-black text-sky-700 bg-sky-100 dark:bg-sky-950 px-2 py-0.5 rounded-full border border-sky-300">
+              <span className="text-[8px] sm:text-[10px] font-black text-sky-700 bg-sky-100 dark:bg-sky-950 px-1.5 py-0.5 rounded-full border border-sky-300">
                 ✓ Active View
               </span>
             )}
@@ -238,25 +238,25 @@ export default function Revenue() {
         <button
           type="button"
           onClick={() => setActiveMetricTab("delivered")}
-          className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-2 relative overflow-hidden ${
+          className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "delivered"
-              ? "bg-indigo-100/90 dark:bg-indigo-900/40 border-indigo-500 ring-2 ring-indigo-500 shadow-md scale-[1.02]"
+              ? "bg-indigo-100/90 dark:bg-indigo-900/40 border-indigo-500 ring-2 ring-indigo-500 shadow-md"
               : "bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-200/80 dark:border-indigo-800/40 hover:border-indigo-400 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-            <span>Delivered Sales</span>
-            <div className="p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#1565C0] dark:text-indigo-300 shadow-xs">
-              <ShoppingBagIcon className="!text-xl" />
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+            <span className="truncate">Delivered Sales</span>
+            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#1565C0] dark:text-indigo-300 shadow-xs shrink-0">
+              <ShoppingBagIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-[#1565C0] dark:text-white">
+          <div className="text-sm sm:text-3xl font-extrabold text-[#1565C0] dark:text-white truncate">
             &#8377; {formatNumberWithCommas(deliveredRevenue)}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{deliveredOrders.length} orders delivered</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">{deliveredOrders.length} orders delivered</p>
             {activeMetricTab === "delivered" && (
-              <span className="text-[10px] font-black text-indigo-700 bg-indigo-100 dark:bg-indigo-950 px-2 py-0.5 rounded-full border border-indigo-300">
+              <span className="text-[8px] sm:text-[10px] font-black text-indigo-700 bg-indigo-100 dark:bg-indigo-950 px-1.5 py-0.5 rounded-full border border-indigo-300">
                 ✓ Active View
               </span>
             )}
@@ -267,25 +267,25 @@ export default function Revenue() {
         <button
           type="button"
           onClick={() => setActiveMetricTab("avgOrder")}
-          className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-2 relative overflow-hidden ${
+          className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "avgOrder"
-              ? "bg-slate-200/90 dark:bg-slate-800/80 border-teal-500 ring-2 ring-teal-500 shadow-md scale-[1.02]"
+              ? "bg-slate-200/90 dark:bg-slate-800/80 border-teal-500 ring-2 ring-teal-500 shadow-md"
               : "bg-slate-100/90 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-700/80 hover:border-teal-400 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-            <span>Avg. Order Value</span>
-            <div className="p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#00ACC1] dark:text-sky-300 shadow-xs">
-              <TrendingUpIcon className="!text-xl" />
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+            <span className="truncate">Avg. Order Value</span>
+            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#00ACC1] dark:text-sky-300 shadow-xs shrink-0">
+              <TrendingUpIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-[#00ACC1] dark:text-white">
+          <div className="text-sm sm:text-3xl font-extrabold text-[#00ACC1] dark:text-white truncate">
             &#8377; {formatNumberWithCommas(avgOrderValue.toFixed(2))}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Average ticket size</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">Average ticket size</p>
             {activeMetricTab === "avgOrder" && (
-              <span className="text-[10px] font-black text-teal-700 bg-teal-100 dark:bg-teal-950 px-2 py-0.5 rounded-full border border-teal-300">
+              <span className="text-[8px] sm:text-[10px] font-black text-teal-700 bg-teal-100 dark:bg-teal-950 px-1.5 py-0.5 rounded-full border border-teal-300">
                 ✓ Active View
               </span>
             )}

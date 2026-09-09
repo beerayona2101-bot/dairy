@@ -40,7 +40,7 @@ export default function Reports() {
     return getReportAnalyticsData(allOrders || [], products || [], timeRange, startDate, endDate);
   }, [allOrders, products, timeRange, startDate, endDate]);
 
-  const { summaryMetrics, timelineData, categoryData, productGrowthData, orderStatusData } = analyticsData;
+  const { summaryMetrics, timelineData, categoryData, productGrowthData, orderStatusData, timeFilteredOrders = [] } = analyticsData;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -56,17 +56,90 @@ export default function Reports() {
   };
 
   const handleExportCSV = () => {
-    const headers = "Product Name,Category,Units Sold,Revenue (INR),Growth Rate (%)\n";
-    const rows = productGrowthData
-      .map((p) => `"${p.name}","${p.category}",${p.sold},${p.revenue},${p.growth}%`)
-      .join("\n");
+    const sanitize = (val) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    let csvContent = "";
+
+    // Section 1: Header & Metadata
+    csvContent += `MADHUR DAIRY & DAILY NEEDS - COMPREHENSIVE SALES & ORDERS REPORT\n`;
+    csvContent += `Report Generated On,${sanitize(new Date().toLocaleString("en-IN"))}\n`;
+    csvContent += `Selected Period Filter,${sanitize(timeRange.toUpperCase())}\n`;
+    if (timeRange === "custom") {
+      csvContent += `Custom Date Range,${sanitize(`${startDate} to ${endDate}`)}\n`;
+    }
+    csvContent += `\n`;
+
+    // Section 2: Executive Summary Metrics
+    csvContent += `--- EXECUTIVE SUMMARY METRICS ---\n`;
+    csvContent += `Metric Name,Value\n`;
+    csvContent += `Total Sales Revenue,INR ${summaryMetrics.revenue}\n`;
+    csvContent += `Total Orders / Units Sold,${summaryMetrics.salesCount}\n`;
+    csvContent += `Estimated Net Profit,INR ${summaryMetrics.profit}\n`;
+    csvContent += `Average Order Value,INR ${summaryMetrics.avgOrderValue}\n`;
+    csvContent += `Fulfillment Rate,${summaryMetrics.fulfillmentRate}%\n`;
+    csvContent += `\n`;
+
+    // Section 3: Detailed Orders List for Selected Date Range
+    csvContent += `--- DETAILED ORDERS REPORT (${timeFilteredOrders.length} Orders) ---\n`;
+    csvContent += `Order ID,Customer Name,Email,Mobile,Order Date & Time,Status,Payment Mode,Total Amount (INR),Items Purchased,Delivery Address\n`;
+
+    if (timeFilteredOrders.length > 0) {
+      timeFilteredOrders.forEach((o) => {
+        const orderId = o.orderId || o._id || "N/A";
+        const userObj = o.user;
+        const custName =
+          (userObj?.firstName ? `${userObj.firstName} ${userObj.lastName || ""}`.trim() : null) ||
+          o.address?.name ||
+          o.address?.fullName ||
+          (o.address?.owner?.firstName ? `${o.address.owner.firstName} ${o.address.owner.lastName || ""}`.trim() : null) ||
+          "Customer";
+        const email = userObj?.email || o.address?.email || "N/A";
+        const mobile = userObj?.mobileNo || o.address?.phone || "N/A";
+        const orderDate = o.createdAt ? new Date(o.createdAt).toLocaleString("en-IN") : "N/A";
+        const status = o.status || "Pending";
+        const paymentMode = o.paymentMode || "Cash on Delivery";
+        const totalAmount = o.totalAmount || 0;
+
+        const itemsStr = (o.productsData || [])
+          .map((item) => {
+            const pName = item?.productId?.name || "Product";
+            const qty = item?.productQuantity || 1;
+            const price = item?.productPrice || 0;
+            return `${pName} (x${qty} @ INR ${price})`;
+          })
+          .join(" | ");
+
+        const fullAddr = o.address
+          ? typeof o.address === "string"
+            ? o.address
+            : [o.address.streetAddress, o.address.city, o.address.state, o.address.pincode].filter(Boolean).join(", ")
+          : "N/A";
+
+        csvContent += `${sanitize(orderId)},${sanitize(custName)},${sanitize(email)},${sanitize(mobile)},${sanitize(orderDate)},${sanitize(status)},${sanitize(paymentMode)},INR ${totalAmount},${sanitize(itemsStr)},${sanitize(fullAddr)}\n`;
+      });
+    } else {
+      csvContent += `No orders found for the selected timeframe.\n`;
+    }
+
+    csvContent += `\n`;
+
+    // Section 4: Product Performance Breakdown
+    csvContent += `--- PRODUCT PERFORMANCE BREAKDOWN ---\n`;
+    csvContent += `Product Name,Category,Units Sold,Revenue (INR),Growth Rate (%)\n`;
+    (productGrowthData || []).forEach((p) => {
+      csvContent += `${sanitize(p.name)},${sanitize(p.category)},${p.sold},INR ${p.revenue},${p.growth}%\n`;
+    });
 
     const fileName =
       timeRange === "custom"
-        ? `Madhur_Dairy_Sales_Report_From_${startDate}_To_${endDate}.csv`
-        : `Madhur_Dairy_Sales_Report_${timeRange.toUpperCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
+        ? `Madhur_Dairy_Report_${startDate}_to_${endDate}.csv`
+        : `Madhur_Dairy_Report_${timeRange.toUpperCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
 
-    const blob = new Blob([headers + rows], { type: "text/csv" });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -74,7 +147,7 @@ export default function Reports() {
     a.click();
     window.URL.revokeObjectURL(url);
 
-    enqueueSnackbar(`Report downloaded for period: ${timeRange === "custom" ? `${startDate} to ${endDate}` : timeRange}!`, {
+    enqueueSnackbar(`Complete CSV report downloaded for period: ${timeRange === "custom" ? `${startDate} to ${endDate}` : timeRange}!`, {
       variant: "success",
     });
   };
@@ -97,7 +170,7 @@ export default function Reports() {
               <AssessmentOutlinedIcon className="text-[#1E88E5] dark:text-pink-400 !text-3xl" />
               Analytics & Reports Dashboard
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mt-1 hidden sm:block">
               Real-time interactive graphical presentations, sales growth metrics, circular share breakdowns, and static data reports.
             </p>
           </div>
@@ -159,7 +232,7 @@ export default function Reports() {
       </motion.div>
 
       {/* Metric Summary Cards Grid */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Card 1: Revenue */}
         <div className="bg-blue-50/90 dark:bg-blue-950/40 p-5 rounded-2xl border border-blue-200/80 dark:border-blue-800/40 shadow-xs flex flex-col justify-between space-y-3">
           <div className="flex justify-between items-start">

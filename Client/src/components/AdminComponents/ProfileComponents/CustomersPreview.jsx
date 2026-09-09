@@ -127,7 +127,13 @@ export default function CustomersList() {
             <td className="px-3 py-2">{cust?.email ?? "N/A"}</td>
             <td className="px-3 py-2">{cust?.gender ?? "-"}</td>
             <td className="px-3 py-2 font-semibold text-gray-800 dark:text-white">
-              {cust?.orders?.length ?? 0}
+              <Link
+                to={`/admin/customers/${cust?._id}/orders-history`}
+                className="text-purple-600 dark:text-purple-400 hover:underline font-bold"
+                title="View user order history"
+              >
+                {cust?.orders?.length ?? 0}
+              </Link>
             </td>
             <td className="px-3 py-2 flex items-center flex-nowrap gap-2">
               <button
@@ -149,10 +155,10 @@ export default function CustomersList() {
               </button>
 
               <Link
-                to={`/admin/store/${cust?._id}/orders-history`}
+                to={`/admin/customers/${cust?._id}/orders-history`}
                 className="flex items-center gap-1 text-sm text-blue-600 hover:underline whitespace-nowrap"
               >
-                <EyeIcon size={16} /> View
+                <EyeIcon size={16} /> View Orders
               </Link>
             </td>
           </tr>
@@ -167,7 +173,7 @@ export default function CustomersList() {
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white">👥 Customers</h2>
           <Link
-            to="/admin/store"
+            to="/admin/customers"
             className="text-blue-600 hover:underline text-sm font-medium"
           >
             View All

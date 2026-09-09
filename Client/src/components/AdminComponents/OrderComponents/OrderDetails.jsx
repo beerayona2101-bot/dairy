@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useDebounce } from "use-debounce";
 import { useSnackbar } from "notistack";
-import { Avatar, Menu, MenuItem, Dialog, Slide } from "@mui/material";
+import { Avatar, Menu, MenuItem, Dialog, Slide, useTheme, useMediaQuery } from "@mui/material";
 import { FilterIcon, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -19,22 +19,35 @@ import { updateOrderStatusApi, cancelOrderApi } from "../../../services/orderSer
 import { formatNumberWithCommas } from "../../../utils/format";
 import { getProductImage } from "../../../utils/helper";
 import { AdminOrderContext } from "../../../context/AdminOrderProvider";
-import { formatFullAddress } from "../../../utils/dateUtils";
+import { formatFullAddress, formatOrderDate } from "../../../utils/dateUtils";
+import OrderStatusTracker from "../../OrderStatusTracker";
+import OrderStatusDropdown from "./OrderStatusDropdown";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const statusLevels = {
+const STATUS_STAGES = {
   Pending: 0,
   Confirmed: 1,
   Processing: 2,
   Shipped: 3,
-  Delivered: 4,
-  Cancelled: 99,
+  "Out for Delivery": 4,
+  Delivered: 5,
+  Cancelled: -1,
+};
+
+const isOptionDisabled = (currentStatus, optionValue) => {
+  if (currentStatus === "Cancelled" || currentStatus === "Delivered") return true;
+  if (optionValue === "Cancelled") return false;
+  const currentLevel = STATUS_STAGES[currentStatus] ?? 0;
+  const optionLevel = STATUS_STAGES[optionValue] ?? 0;
+  return optionLevel < currentLevel;
 };
 
 export default function OrderDetails({ allOrders = [], loading, statusFilter, handleStatusFilter }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { enqueueSnackbar } = useSnackbar();
   const { navbarInput, highlightMatch } = useContext(SidebarContext);
   const { setAllOrders, refetchAllOrders } = useContext(AdminOrderContext);
@@ -49,6 +62,12 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const [statusMenuAnchor, setStatusMenuAnchor] = useState(null);
+  const openStatusMenu = Boolean(statusMenuAnchor);
+
+  const handleStatusMenuClick = (e) => setStatusMenuAnchor(e.currentTarget);
+  const handleStatusMenuClose = () => setStatusMenuAnchor(null);
 
   // Sync localOrders whenever allOrders or sortOption changes
   useEffect(() => {
@@ -118,7 +137,14 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
 
       if (res?.success) {
         if (socket && socket.connected) {
-          socket.emit(newStatus === "Cancelled" ? "order:reject" : "order:accept", {
+          const socketEvent =
+            newStatus === "Cancelled"
+              ? "order:reject"
+              : newStatus === "Delivered"
+              ? "order:delivered"
+              : "order:accept";
+
+          socket.emit(socketEvent, {
             orderId,
             status: newStatus,
             userId,
@@ -142,11 +168,6 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
             prev.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o))
           );
         }
-
-        // Trigger refetch if available
-        if (typeof refetchAllOrders === "function") {
-          refetchAllOrders();
-        }
       } else {
         enqueueSnackbar(res?.message || "Failed to update order status.", { variant: "error" });
       }
@@ -167,11 +188,23 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
     { value: "amountLow", label: "Low to High Amount" },
   ];
 
+  const matchesStatusFilter = (orderStatus, targetFilter) => {
+    if (targetFilter === "All") return true;
+    if (!orderStatus) return false;
+    if (orderStatus === targetFilter) return true;
+    if (
+      (targetFilter === "Ready to Deliver" || targetFilter === "Out for Delivery") &&
+      (orderStatus === "Ready to Deliver" || orderStatus === "Out for Delivery")
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   const filteredOrders = filterOrdersBySearch(localOrders, debouncedSearchText);
-  const statusFilteredOrders =
-    statusFilter === "All"
-      ? filteredOrders
-      : filteredOrders.filter((order) => order.status === statusFilter);
+  const statusFilteredOrders = filteredOrders.filter((order) =>
+    matchesStatusFilter(order.status, statusFilter)
+  );
 
   const getTabActiveStyle = (status) => {
     switch (status) {
@@ -204,6 +237,8 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
         return "bg-indigo-100 text-indigo-900 dark:bg-indigo-950/60 dark:text-indigo-200 border-indigo-300";
       case "Shipped":
         return "bg-sky-100 text-sky-900 dark:bg-sky-900/60 dark:text-sky-200 border-sky-300";
+      case "Ready to Deliver":
+        return "bg-teal-100 text-teal-900 dark:bg-teal-950/60 dark:text-teal-200 border-teal-300";
       case "Delivered":
         return "bg-blue-100 text-[#1E88E5] dark:bg-blue-950/60 dark:text-blue-300 border-blue-300";
       case "Cancelled":
@@ -213,7 +248,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
     }
   };
 
-  const allStatuses = ["All", "Pending", "Confirmed", "Processing", "Shipped", "Delivered", "Cancelled"];
+  const allStatuses = ["All", "Pending", "Confirmed", "Processing", "Shipped", "Ready to Deliver", "Delivered", "Cancelled"];
 
   let content;
   if (loading) {
@@ -235,7 +270,10 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
       <div className="space-y-4">
         {statusFilteredOrders.map((order) => {
           const { address, productsData = [], totalAmount, status = "Pending", createdAt, _id } = order;
-          const owner = address?.owner;
+          const owner = order?.user || address?.owner;
+          const displayName = owner?.firstName 
+            ? `${owner.firstName} ${owner.lastName || ''}`.trim()
+            : (address?.name || address?.fullName || "Customer Account");
 
           return (
             <div
@@ -249,18 +287,24 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
               {/* Compact Card Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 dark:border-gray-700/60 pb-3">
                 <div className="flex items-center gap-3">
-                  <Avatar src={owner?.photo} alt={owner?.firstName} className="!w-10 !h-10 border border-gray-200" />
+                  <Avatar src={owner?.photo} alt={owner?.firstName || displayName} className="!w-10 !h-10 border border-gray-200" />
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Link
-                        to={`/admin/customers/${owner?._id}/orders-history`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="font-bold text-[#0F2742] dark:text-white hover:text-[#1E88E5] transition text-sm sm:text-base"
-                      >
-                        {highlightMatch(owner?.firstName, navbarInput)} {highlightMatch(owner?.lastName, navbarInput)}
-                      </Link>
+                      {owner?._id ? (
+                        <Link
+                          to={`/admin/customers/${owner._id}/orders-history`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="font-bold text-[#0F2742] dark:text-white hover:text-[#1E88E5] transition text-sm sm:text-base"
+                        >
+                          {highlightMatch(displayName, navbarInput)}
+                        </Link>
+                      ) : (
+                        <span className="font-bold text-[#0F2742] dark:text-white text-sm sm:text-base">
+                          {highlightMatch(displayName, navbarInput)}
+                        </span>
+                      )}
                       <span className="text-[11px] font-mono font-black text-[#1E88E5] bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800">
-                        #{order?.orderId || `MD-${_id?.slice(-6).toUpperCase()}`}
+                        {order?.orderId || `MD-ORD-260907-0001`}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -279,15 +323,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                 </div>
               </div>
 
-              {/* Delivery Precautions Badge if available */}
-              {order?.deliveryInstructions && (
-                <div className="text-xs bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800/60 font-semibold flex items-center gap-1.5">
-                  <span className="shrink-0 text-sm">⚠️</span>
-                  <span className="truncate">
-                    <strong>Precautions:</strong> &ldquo;{order.deliveryInstructions}&rdquo;
-                  </span>
-                </div>
-              )}
+
 
               {/* Ordered Item Preview (Image + Name + Qty + Price) */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50 dark:bg-gray-700/30 p-3 rounded-xl border border-gray-100 dark:border-gray-700/50">
@@ -352,50 +388,105 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
 
   return (
     <div className="bg-white dark:bg-gray-500/20 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700/50 w-full space-y-4">
-      {/* Header bar with Sort filter */}
+      {/* Header bar with Sort filter & Mobile Status Dropdown side-by-side */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-700/60 pb-3">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
           <ReceiptLongOutlinedIcon className="text-[#1E88E5] dark:text-blue-400" />
           Orders Management
         </h2>
 
-        <div>
-          <button
-            type="button"
-            onClick={handleClick}
-            className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/60 dark:hover:bg-gray-700 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-gray-300 dark:border-gray-600 transition cursor-pointer text-gray-800 dark:text-white"
-          >
-            <FilterIcon size={15} />
-            <span>{filterOptions.find((f) => f.value === sortOption)?.label || "Select Filter"}</span>
-          </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Sort Filter Dropdown */}
+          <div>
+            <button
+              type="button"
+              onClick={handleClick}
+              className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/60 dark:hover:bg-gray-700 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-gray-300 dark:border-gray-600 transition cursor-pointer text-gray-800 dark:text-white"
+            >
+              <FilterIcon size={15} />
+              <span>{filterOptions.find((f) => f.value === sortOption)?.label || "Select Filter"}</span>
+            </button>
 
-          <Menu anchorEl={anchorEl} open={open} onClose={handleClose} className="mt-1">
-            {filterOptions.map((filter) => (
-              <MenuItem
-                key={filter.value}
-                onClick={() => {
-                  setSortOption(filter.value);
-                  handleClose();
-                }}
-                className={`text-xs hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  sortOption === filter.value ? "font-bold text-[#1E88E5] dark:text-blue-400" : ""
-                }`}
-              >
-                {filter.label}
-              </MenuItem>
-            ))}
-          </Menu>
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose} className="mt-1">
+              {filterOptions.map((filter) => (
+                <MenuItem
+                  key={filter.value}
+                  onClick={() => {
+                    setSortOption(filter.value);
+                    handleClose();
+                  }}
+                  className={`text-xs hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                    sortOption === filter.value ? "font-bold text-[#1E88E5] dark:text-blue-400" : ""
+                  }`}
+                >
+                  {filter.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+
+          {/* Status Filter Dropdown (Side-by-side on Mobile Only: md:hidden) */}
+          <div className="md:hidden">
+            <button
+              type="button"
+              onClick={handleStatusMenuClick}
+              className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/60 text-[#1E88E5] dark:text-blue-300 px-3 py-1.5 rounded-lg text-xs font-bold border border-blue-200 dark:border-blue-800 transition cursor-pointer"
+            >
+              <span>Status: {statusFilter}</span>
+              <span className="bg-[#1E88E5] text-white text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">
+                {filteredOrders.filter((o) => matchesStatusFilter(o.status, statusFilter)).length}
+              </span>
+              <span className="text-[10px]">▼</span>
+            </button>
+
+            <Menu
+              anchorEl={statusMenuAnchor}
+              open={openStatusMenu}
+              onClose={handleStatusMenuClose}
+              className="mt-1"
+              PaperProps={{
+                sx: {
+                  borderRadius: 2.5,
+                  minWidth: 180,
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+                },
+              }}
+            >
+              {allStatuses.map((st) => {
+                const isActive = statusFilter === st;
+                const count = filteredOrders.filter((o) => matchesStatusFilter(o.status, st)).length;
+                return (
+                  <MenuItem
+                    key={`mobile-st-menu-${st}`}
+                    onClick={() => {
+                      handleStatusFilter(st);
+                      handleStatusMenuClose();
+                    }}
+                    className={`flex items-center justify-between text-xs py-2 px-3.5 hover:bg-blue-50 dark:hover:bg-gray-800 ${
+                      isActive ? "font-black text-[#1E88E5] dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/40" : "font-medium text-gray-700 dark:text-gray-200"
+                    }`}
+                  >
+                    <span>{st}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                        isActive ? "bg-[#1E88E5] text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </MenuItem>
+                );
+              })}
+            </Menu>
+          </div>
         </div>
       </div>
 
-      {/* Dynamic Status Tabs */}
-      <div className="flex flex-wrap items-center gap-2 pt-1 pb-2">
+      {/* Dynamic Status Tabs (Desktop Only: hidden md:flex) */}
+      <div className="hidden md:flex flex-wrap items-center gap-2 pt-1 pb-2">
         {allStatuses.map((st) => {
           const isActive = statusFilter === st;
-          const count =
-            st === "All"
-              ? filteredOrders.length
-              : filteredOrders.filter((o) => o.status === st).length;
+          const count = filteredOrders.filter((o) => matchesStatusFilter(o.status, st)).length;
 
           return (
             <button
@@ -429,51 +520,53 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
         open={openDetailsModal && !!selectedOrder}
         onClose={() => setOpenDetailsModal(false)}
         TransitionComponent={Transition}
+        fullScreen={isMobile}
         fullWidth
-        maxWidth="md"
+        maxWidth="lg"
         slotProps={{
           paper: {
-            className: "!bg-white dark:!bg-gray-900 !rounded-2xl !shadow-2xl !p-0 !overflow-hidden",
+            className: "!bg-white dark:!bg-gray-900 sm:!rounded-3xl !rounded-none !shadow-2xl !p-0 !overflow-hidden flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh]",
           },
           backdrop: {
-            className: "!bg-black/50 !backdrop-blur-xs",
+            className: "!bg-black/60 !backdrop-blur-md",
           },
         }}
       >
         {selectedOrder && (() => {
-          const { address, productsData = [], totalAmount, status = "Pending", createdAt, _id, paymentMode } = selectedOrder;
+          const activeSelectedOrder = allOrders?.find((o) => String(o?._id) === String(selectedOrder?._id)) || selectedOrder;
+          const { address, productsData = [], totalAmount, status = "Pending", createdAt, _id, paymentMode } = activeSelectedOrder;
           const owner = address?.owner;
           const isProcessing = processingId?.orderId === _id;
 
           return (
-            <div className="flex flex-col max-h-[90vh]">
+            <div className="flex flex-col h-full sm:max-h-[92vh] overflow-hidden">
               {/* Modal Header */}
-              <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/80 dark:bg-gray-800/80">
-                <div className="flex items-center gap-3">
-                  <Avatar src={owner?.photo} alt={owner?.firstName} className="!w-10 !h-10 border border-gray-200" />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-extrabold text-base text-gray-900 dark:text-white">
+              <div className="p-3.5 sm:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-2 bg-gray-50/80 dark:bg-gray-800/80">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <Avatar src={owner?.photo} alt={owner?.firstName} className="!w-9 !h-9 sm:!w-10 sm:!h-10 border border-gray-200 shrink-0" />
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <h3 className="font-extrabold text-xs sm:text-base text-gray-900 dark:text-white truncate">
                         {owner?.firstName} {owner?.lastName}
                       </h3>
-                      <span className="text-xs font-mono font-black text-[#1E88E5] bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300 px-2.5 py-0.5 rounded border border-blue-200 dark:border-blue-800">
-                        #{selectedOrder?.orderId || `MD-${_id?.slice(-6).toUpperCase()}`}
+                      <span className="text-[10px] sm:text-xs font-mono font-black text-[#1E88E5] bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800">
+                        {selectedOrder?.orderId || `MD-ORD-260907-0001`}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
                       Ordered on: {new Date(createdAt || Date.now()).toLocaleString()}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-full text-xs font-extrabold border ${getStatusBadgeClass(status)}`}>
+                <div className="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
+                  <span className={`px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-extrabold border ${getStatusBadgeClass(status)}`}>
                     {status}
                   </span>
                   <button
                     type="button"
                     onClick={() => setOpenDetailsModal(false)}
-                    className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
+                    className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -481,16 +574,16 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
               </div>
 
               {/* Modal Scrollable Body */}
-              <div className="p-5 overflow-y-auto space-y-4">
+              <div className="p-3.5 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4">
                 {/* Recipient & Full Delivery Address */}
-                <div className="text-xs text-gray-700 dark:text-gray-300 bg-blue-50/50 dark:bg-gray-800/60 p-4 rounded-xl border border-blue-100 dark:border-gray-700 space-y-1.5">
+                <div className="text-[11px] sm:text-xs text-gray-700 dark:text-gray-300 bg-blue-50/50 dark:bg-gray-800/60 p-3 sm:p-4 rounded-xl border border-blue-100 dark:border-gray-700 space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <p className="text-sm">
-                      <strong className="text-gray-900 dark:text-white">Recipient:</strong> {address?.name || "Customer"}{" "}
-                      <span className="text-gray-500 font-normal">({address?.phone || "N/A"})</span>
+                    <p className="text-xs sm:text-sm">
+                      <strong className="text-gray-900 dark:text-white">Recipient:</strong> {selectedOrder?.user?.firstName ? `${selectedOrder.user.firstName} ${selectedOrder.user.lastName || ''}`.trim() : (address?.name || address?.fullName || "Customer")}{" "}
+                      <span className="text-gray-500 font-normal">({selectedOrder?.user?.mobileNo || address?.phone || "N/A"})</span>
                     </p>
                     {address?.addressType && (
-                      <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 rounded border border-blue-200">
+                      <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 rounded border border-blue-200">
                         {address?.addressType}
                       </span>
                     )}
@@ -501,28 +594,15 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                   </p>
                 </div>
 
-                {/* Delivery Precautions & Instructions */}
-                {selectedOrder?.deliveryInstructions && (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs space-y-1">
-                    <div className="flex items-center gap-1.5 font-black uppercase text-amber-800 dark:text-amber-300 text-xs tracking-wider">
-                      <span>⚠️</span>
-                      <span>Delivery Precautions & Instructions:</span>
-                    </div>
-                    <p className="font-bold text-sm leading-relaxed text-amber-950 dark:text-amber-100">
-                      &ldquo;{selectedOrder.deliveryInstructions}&rdquo;
-                    </p>
-                  </div>
-                )}
-
                 {/* Products Table */}
                 <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                  <table className="w-full text-left border-collapse text-xs">
+                  <table className="w-full text-left border-collapse text-[11px] sm:text-xs">
                     <thead>
                       <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold border-b border-gray-200 dark:border-gray-700 uppercase">
-                        <th className="py-3 px-4">Product</th>
-                        <th className="py-3 px-4 text-center">Qty</th>
-                        <th className="py-3 px-4 text-right">Unit Price</th>
-                        <th className="py-3 px-4 text-right">Total</th>
+                        <th className="py-2.5 px-3 sm:py-3 sm:px-4">Product</th>
+                        <th className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">Qty</th>
+                        <th className="py-2.5 px-3 sm:py-3 sm:px-4 text-right">Unit Price</th>
+                        <th className="py-2.5 px-3 sm:py-3 sm:px-4 text-right">Total</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -532,17 +612,17 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                         const price = item?.productPrice || prod?.price || 0;
                         return (
                           <tr key={prod?._id || idx} className="text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition">
-                            <td className="py-2.5 px-4 font-semibold flex items-center gap-2.5">
+                            <td className="py-2 px-3 sm:py-2.5 sm:px-4 font-semibold flex items-center gap-2">
                               <img
                                 src={getProductImage(prod)}
                                 alt={prod?.name}
-                                className="w-9 h-9 object-cover rounded-lg border shrink-0"
+                                className="w-7 h-7 sm:w-9 sm:h-9 object-cover rounded-lg border shrink-0"
                               />
-                              <span className="font-bold text-gray-900 dark:text-white">{prod?.name || item?.productName || "Dairy Product"}</span>
+                              <span className="font-bold text-gray-900 dark:text-white line-clamp-1">{prod?.name || item?.productName || "Dairy Product"}</span>
                             </td>
-                            <td className="py-2.5 px-4 text-center font-extrabold">{qty}</td>
-                            <td className="py-2.5 px-4 text-right">&#8377;{formatNumberWithCommas(price)}</td>
-                            <td className="py-2.5 px-4 text-right font-extrabold text-[#1E88E5] dark:text-blue-400">
+                            <td className="py-2 px-2 sm:py-2.5 sm:px-4 text-center font-extrabold">{qty}</td>
+                            <td className="py-2 px-3 sm:py-2.5 sm:px-4 text-right whitespace-nowrap">&#8377;{formatNumberWithCommas(price)}</td>
+                            <td className="py-2 px-3 sm:py-2.5 sm:px-4 text-right font-extrabold text-[#1E88E5] dark:text-blue-400 whitespace-nowrap">
                               &#8377;{formatNumberWithCommas(qty * price)}
                             </td>
                           </tr>
@@ -553,37 +633,48 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                 </div>
 
                 {/* Total Bill Summary */}
-                <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-gray-50 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Payment Method:</span>
-                    <span className="text-xs font-extrabold px-3 py-1 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300">
+                <div className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] sm:text-xs font-bold text-gray-500 dark:text-gray-400">Payment Method:</span>
+                    <span className="text-[11px] sm:text-xs font-extrabold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300">
                       {paymentMode || "Cash on Delivery"}
                     </span>
                   </div>
 
                   <div className="text-right">
-                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium mr-2">Total Amount:</span>
-                    <span className="text-lg font-black text-[#1E88E5] dark:text-blue-400">
+                    <span className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium mr-1.5">Total Amount:</span>
+                    <span className="text-base sm:text-lg font-black text-[#1E88E5] dark:text-blue-400">
                       &#8377;{formatNumberWithCommas(totalAmount)}
                     </span>
                   </div>
                 </div>
 
+                {/* Live Order Progress Status Tracking Timeline (Positioned at top of Update Order Status Options) */}
+                <OrderStatusTracker status={status} />
+
                 {/* Status Update Options / Action Toolbar */}
-                <div className="p-4 bg-blue-50/80 dark:bg-gray-800/80 rounded-xl border border-blue-100 dark:border-gray-700 space-y-3">
+                <div className="p-3 sm:p-4 bg-[#6C5CE7]/5 dark:bg-gray-800/80 rounded-2xl border border-purple-100 dark:border-gray-700 space-y-2.5 shadow-xs">
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h4 className="text-xs font-extrabold text-[#0F2742] dark:text-white uppercase tracking-wider">
-                      Update Order Status Options:
-                    </h4>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Current Status:</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-extrabold border ${getStatusBadgeClass(status)}`}>
-                        {status}
-                      </span>
+                      <h4 className="text-[11px] sm:text-xs font-black text-[#0F2742] dark:text-white uppercase tracking-wider">
+                        Update Order Status Options:
+                      </h4>
+                    </div>
+
+                    {/* Custom App Glassmorphic Status Update Dropdown Menu */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Select Status:</span>
+                      <OrderStatusDropdown
+                        currentStatus={status}
+                        onUpdateStatus={handleUpdateOrderStatus}
+                        isProcessing={isProcessing}
+                        orderId={_id}
+                        userId={owner?._id}
+                      />
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
                     {/* Action buttons based on current status */}
                     {status === "Pending" && (
                       <>
@@ -591,7 +682,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                           type="button"
                           onClick={() => handleUpdateOrderStatus(_id, status, "Confirmed", owner?._id)}
                           disabled={isProcessing}
-                          className="px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
+                          className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                           <CheckCircleIcon sx={{ fontSize: "1rem" }} /> Confirm Order
                         </button>
@@ -600,7 +691,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                           type="button"
                           onClick={() => handleUpdateOrderStatus(_id, status, "Cancelled", owner?._id)}
                           disabled={isProcessing}
-                          className="px-4 py-2 rounded-xl text-xs font-extrabold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
+                          className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                           <CancelIcon sx={{ fontSize: "1rem" }} /> Reject / Cancel Order
                         </button>
@@ -608,47 +699,91 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                     )}
 
                     {status === "Confirmed" && (
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateOrderStatus(_id, status, "Processing", owner?._id)}
-                        disabled={isProcessing}
-                        className="px-4 py-2 rounded-xl text-xs font-extrabold bg-[#1E88E5] hover:bg-[#1565C0] text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
-                      >
-                        <InventoryIcon sx={{ fontSize: "1rem" }} /> Pack & Process Order
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateOrderStatus(_id, status, "Processing", owner?._id)}
+                          disabled={isProcessing}
+                          className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold bg-[#1E88E5] hover:bg-[#1565C0] text-white shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          <InventoryIcon sx={{ fontSize: "1rem" }} /> Pack & Process Order
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateOrderStatus(_id, status, "Cancelled", owner?._id)}
+                          disabled={isProcessing}
+                          className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:text-rose-600 transition cursor-pointer text-center"
+                        >
+                          Cancel Order
+                        </button>
+                      </>
                     )}
 
                     {status === "Processing" && (
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateOrderStatus(_id, status, "Shipped", owner?._id)}
-                        disabled={isProcessing}
-                        className="px-4 py-2 rounded-xl text-xs font-extrabold bg-blue-600 hover:bg-blue-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
-                      >
-                        <LocalShippingIcon sx={{ fontSize: "1rem" }} /> Mark as Shipped (In Transit)
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateOrderStatus(_id, status, "Shipped", owner?._id)}
+                          disabled={isProcessing}
+                          className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold bg-blue-600 hover:bg-blue-700 text-white shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          <LocalShippingIcon sx={{ fontSize: "1rem" }} /> Mark as Shipped (In Transit)
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateOrderStatus(_id, status, "Out for Delivery", owner?._id)}
+                          disabled={isProcessing}
+                          className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          Mark Ready to Deliver
+                        </button>
+                      </>
                     )}
 
                     {status === "Shipped" && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateOrderStatus(_id, status, "Ready to Deliver", owner?._id)}
+                          disabled={isProcessing}
+                          className="px-4 py-2 rounded-xl text-xs font-extrabold bg-teal-600 hover:bg-teal-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
+                        >
+                          Mark Ready to Deliver
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateOrderStatus(_id, status, "Delivered", owner?._id)}
+                          disabled={isProcessing}
+                          className="px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
+                        >
+                          <CheckCircleIcon sx={{ fontSize: "1rem" }} /> Mark as Delivered
+                        </button>
+                      </>
+                    )}
+
+                    {(status === "Ready to Deliver" || status === "Out for Delivery") && (
                       <button
                         type="button"
                         onClick={() => handleUpdateOrderStatus(_id, status, "Delivered", owner?._id)}
                         disabled={isProcessing}
-                        className="px-4 py-2 rounded-xl text-xs font-extrabold bg-teal-600 hover:bg-teal-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
+                        className="px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
                       >
                         <CheckCircleIcon sx={{ fontSize: "1rem" }} /> Mark as Delivered
                       </button>
                     )}
 
                     {status === "Delivered" && (
-                      <span className="text-xs font-extrabold px-4 py-2 rounded-xl bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300">
-                        ✓ Order Delivered & Completed
+                      <span className="text-xs font-extrabold px-4 py-2 rounded-xl bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 flex items-center gap-1.5">
+                        <CheckCircleIcon sx={{ fontSize: "1rem" }} /> Order Delivered & Completed
                       </span>
                     )}
 
                     {status === "Cancelled" && (
-                      <span className="text-xs font-extrabold px-4 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300">
-                        Order Cancelled
+                      <span className="text-xs font-extrabold px-4 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 flex items-center gap-1.5">
+                        <CancelIcon sx={{ fontSize: "1rem" }} /> Order Cancelled
                       </span>
                     )}
                   </div>

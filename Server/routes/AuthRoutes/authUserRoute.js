@@ -1,9 +1,13 @@
 import express from "express"
 import wrapAsync from "../../utils/wrapAsync.js"
-import { loginUser, signUpUser, verifyOtp, handleInfoInput, getUser, removeUserNotification, getAllCustomers, verifyUser, resetPassword, loginWithGoogle, sendOtpController, deleteUserProfile } from "../../controllers/AuthController/authUser.js";
+import { loginUser, signUpUser, verifyOtp, handleInfoInput, getUser, removeUserNotification, getAllCustomers, verifyUser, resetPassword, loginWithGoogle, sendOtpController, deleteUserProfile, verifyUserSession } from "../../controllers/AuthController/authUser.js";
 import { upload } from "../../config/cloudinary.js"
+import { verifyUserAuth, verifyAdminAuth } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.get("/verify-session", verifyUserAuth, wrapAsync(verifyUserSession));
+router.post("/verify-session", verifyUserAuth, wrapAsync(verifyUserSession));
 
 router.post("/signup", wrapAsync(signUpUser));
 
@@ -23,10 +27,10 @@ router.post("/signup/info-input", upload.single("photo"), wrapAsync(handleInfoIn
 
 router.post("/get-user", wrapAsync(getUser));
 
-router.delete("/delete-notification", wrapAsync(removeUserNotification));
+router.delete("/delete-notification", verifyUserAuth, wrapAsync(removeUserNotification));
 
-router.get("/customers", wrapAsync(getAllCustomers));
+router.get("/customers", verifyAdminAuth, wrapAsync(getAllCustomers));
 
-router.post("/delete-account", wrapAsync(deleteUserProfile));
+router.post("/delete-account", verifyUserAuth, wrapAsync(deleteUserProfile));
 
 export default router;

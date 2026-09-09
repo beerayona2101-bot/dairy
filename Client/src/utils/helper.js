@@ -36,20 +36,45 @@ export const getProductImage = (item, fallbackName = "") => {
   let imageProp = null;
 
   if (typeof item === "string") {
-    if (UNIQUE_PRODUCT_IMAGES[item]) return UNIQUE_PRODUCT_IMAGES[item];
     imageProp = item;
     name = fallbackName;
   } else if (typeof item === "object" && item !== null) {
     name = item.name || item.title || item.productName || fallbackName || "";
-    imageProp = Array.isArray(item.image) ? item.image[0] : (item.image || item.photo || item.imageURL);
+    imageProp = Array.isArray(item.image) ? item.image[0] : (item.image || item.photo || item.imageURL || item.pngImage || item.showcaseCutout);
   }
 
-  // 1. Check exact product name match
+  // 1. Direct custom valid image URL if provided
+  if (typeof imageProp === "string" && imageProp.trim()) {
+    const cleanImg = imageProp.trim();
+    if (
+      cleanImg !== "null" &&
+      cleanImg !== "undefined" &&
+      !cleanImg.includes("unsplash.com")
+    ) {
+      if (
+        cleanImg.startsWith("http://") ||
+        cleanImg.startsWith("https://") ||
+        cleanImg.startsWith("data:") ||
+        cleanImg.startsWith("/uploads") ||
+        cleanImg.startsWith("uploads/") ||
+        cleanImg.startsWith("/images") ||
+        cleanImg.startsWith("images/") ||
+        cleanImg.startsWith("/assets") ||
+        cleanImg.startsWith("assets/") ||
+        cleanImg.startsWith("blob:") ||
+        cleanImg.startsWith("/src")
+      ) {
+        return cleanImg;
+      }
+    }
+  }
+
+  // 2. Exact product name match in UNIQUE_PRODUCT_IMAGES map
   if (name && UNIQUE_PRODUCT_IMAGES[name]) {
     return UNIQUE_PRODUCT_IMAGES[name];
   }
 
-  // 2. Check case-insensitive / partial product name match
+  // 3. Check case-insensitive / partial product name match
   if (name) {
     const cleanName = name.toLowerCase().trim();
     for (const [key, url] of Object.entries(UNIQUE_PRODUCT_IMAGES)) {
@@ -59,7 +84,7 @@ export const getProductImage = (item, fallbackName = "") => {
     }
   }
 
-  // 3. Category/Keywords smart matcher if name has keywords
+  // 4. Category/Keywords smart matcher if name has keywords
   if (name) {
     const n = name.toLowerCase();
     if (n.includes("milk powder") || n.includes("powder")) return UNIQUE_PRODUCT_IMAGES["Madhur Premium Dairy Milk Powder"];
@@ -82,16 +107,9 @@ export const getProductImage = (item, fallbackName = "") => {
     if (n.includes("milk")) return UNIQUE_PRODUCT_IMAGES["Madhur Fresh Whole Cow Milk"];
   }
 
-  // 4. Valid image string check (exclude unsplash random cat photos)
-  if (typeof imageProp === "string" && imageProp.trim()) {
-    if (
-      !imageProp.includes("unsplash.com") &&
-      !imageProp.includes("madhur_dairy_milk.png") &&
-      !imageProp.includes("madhur_dairy_paneer.png") &&
-      !imageProp.includes("madhur_dairy_ghee.png")
-    ) {
-      return imageProp;
-    }
+  // 5. Fallback if any imageProp string exists
+  if (typeof imageProp === "string" && imageProp.trim() && imageProp !== "null" && imageProp !== "undefined") {
+    return imageProp;
   }
 
   return "/images/madhur_cow_milk.png";

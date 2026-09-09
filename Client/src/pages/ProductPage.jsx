@@ -1,14 +1,11 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-// eslint-disable-next-line no-unused-vars
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDebounce } from "use-debounce";
-import { Menu, MenuItem } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import HomeIcon from "@mui/icons-material/Home";
-import StorefrontIcon from "@mui/icons-material/Storefront";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { searchProducts, sortProducts } from "../utils/filterData";
 import ProductList from "../components/ProductComponents/ProductList";
 import ProductVarietyCart from "../components/ProductComponents/ProductVarietyCard";
@@ -18,29 +15,29 @@ import { unslugify } from "../utils/unslugify";
 
 import { ProductContext } from "../context/ProductProvider";
 import { PageContentContext } from "../context/PageContentProvider";
+import { CartContext } from "../context/CartProvider";
 import MadhurLoader from "../components/MadhurLoader";
 import { getProductImage } from "../utils/helper";
 import { products as baseCategories } from "../data/products";
 
 export default function ProductPage() {
 
+    const navigate = useNavigate();
     const { productId } = useParams();
     const { filter, setFilter, products, productLoading } = useContext(ProductContext);
     const { pageContent } = useContext(PageContentContext);
+    const { cartItems } = useContext(CartContext);
 
     const [query, setQuery] = useState(productId || "");
     const [debouncedQuery] = useDebounce(query, 300);
-    const [anchorEl, setAnchorEl] = useState(null);
 
     const [pageLoading, setPageLoading] = useState(true);
 
     useEffect(() => {
-        // Wait until browser has fully loaded (including images, fonts, etc.)
         const handleWindowLoad = () => {
             setPageLoading(false);
         };
 
-        // If already loaded (e.g., fast refresh), skip
         if (document.readyState === "complete") {
             handleWindowLoad();
         } else {
@@ -109,7 +106,6 @@ export default function ProductPage() {
         const searchSlug = slugify(productId);
         const cleanId = productId.toLowerCase().trim();
 
-        // 1. Check base categories in products data
         const baseCat = baseCategories.find((c) => {
             const title = c.title || c.name || "";
             return slugify(title) === searchSlug || title.toLowerCase() === cleanId;
@@ -123,7 +119,6 @@ export default function ProductPage() {
             };
         }
 
-        // 2. Check admin pageContent homeCategoryCards / landingShowcaseCards
         const adminCards = [
             ...(pageContent?.homeCategoryCards || []),
             ...(pageContent?.landingShowcaseCards || [])
@@ -141,7 +136,6 @@ export default function ProductPage() {
             };
         }
 
-        // 3. Check products from ProductContext
         const matchedProduct = (products ?? []).find((p) => {
             if (!p?.category) return false;
             const cat = String(p.category).trim();
@@ -210,83 +204,67 @@ export default function ProductPage() {
 
     return (
         <>
-            <div className={`w-full pt-20 sm:pt-24 pb-8 px-3 lg:px-8 flex flex-col md:flex-row md:gap-6 ${productId ? 'max-w-7xl mx-auto' : ''}`}>
+            <div className={`w-full ${productId ? 'min-h-screen px-0 pb-12' : 'px-0 md:px-6 lg:px-8 pt-1.5 md:pt-5 pb-8 max-w-7xl mx-auto'} flex flex-col md:flex-row md:gap-6`}>
 
                 {/* Left Sidebar Category Filter - Hidden when viewing a specific category page */}
                 {!productId && (
-                    <div className="sticky top-[85px] z-20 hidden md:block w-64 p-4 h-[calc(100vh-100px)] bg-white dark:bg-gray-800/90 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-700/80 flex-shrink-0 transition-colors duration-300">
+                    <div className="sticky top-[75px] z-20 hidden md:block w-64 p-4 h-[calc(100vh-85px)] bg-white/70 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-sm border border-white/80 dark:border-gray-700/80 flex-shrink-0 transition-colors duration-300">
                         <ProductList />
                     </div>
                 )}
 
                 {/* Main Content Area */}
-                <div className="flex-1 space-y-5">
+                <div className={`flex-1 ${productId ? 'flex flex-col space-y-3' : 'space-y-4'} w-full`}>
 
-                    {/* Breadcrumbs Navigation Track - Shown on category pages */}
-                    {productId && (
-                        <div className="flex items-center text-xs font-bold text-gray-500 dark:text-gray-400 px-1 py-0.5">
-                            <div className="flex items-center gap-1.5">
-                                <Link to="/home" className="hover:text-[#6C5CE7] hover:underline">Home</Link>
-                                <span>/</span>
-                                <Link to="/products" className="hover:text-[#6C5CE7] hover:underline">Products</Link>
-                                {categoryInfo && (
-                                    <>
-                                        <span>/</span>
-                                        <span className="font-extrabold text-[#6C5CE7] dark:text-purple-300">{categoryInfo.title}</span>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* CATEGORY HERO BANNER CARD WITH "THIS IMAGE" */}
+                    {/* CATEGORY HERO BANNER CARD - RESPONSIVE BANNER HEIGHT WITH FLOATING GLASS CONTROLS */}
                     {categoryInfo ? (
                         <motion.div
-                            initial={{ opacity: 0, y: 12 }}
+                            initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                            className="relative w-full h-[220px] sm:h-[290px] md:h-[340px] rounded-[24px] sm:rounded-[28px] overflow-hidden shadow-lg border border-white/40 dark:border-gray-700/60 group bg-gray-900"
+                            className="relative w-full h-[100vh] min-h-screen overflow-hidden group bg-gray-900 m-0 p-0 border-0 shadow-none rounded-none flex-shrink-0"
                         >
-                            {/* Back Arrow for Category view (Mobile only) */}
-                            <Link
-                                to="/products"
-                                title="Back to All Products"
-                                className="md:hidden absolute top-4 left-4 z-20 flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-black/40 hover:bg-black/60 active:scale-95 border border-white/30 rounded-full text-white backdrop-blur-md transition-all cursor-pointer shadow-md"
-                            >
-                                <ArrowBackIcon sx={{ fontSize: "1.25rem" }} />
-                            </Link>
+                            {/* Floating Controls Overlay (Back button on top left ON THE IMAGE) */}
+                            <div className="absolute top-4 sm:top-6 left-0 right-0 z-20 px-4 sm:px-8 lg:px-12 w-full flex justify-start items-center">
+                                {/* Top Left: Glass Back Button */}
+                                <Link
+                                    to="/products"
+                                    title="Back to All Categories"
+                                    className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 bg-black/40 hover:bg-black/60 active:scale-95 border border-white/30 rounded-xl text-white backdrop-blur-md transition-all cursor-pointer shadow-md text-xs sm:text-sm font-extrabold"
+                                >
+                                    <ArrowBackIcon sx={{ fontSize: "1.1rem" }} />
+                                    <span>Back to Categories</span>
+                                </Link>
+                            </div>
 
+                            {/* Main Full-Bleed Category Banner Image */}
                             <img
                                 src={categoryInfo.image}
                                 alt={categoryInfo.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-transparent flex flex-col justify-end p-6 sm:p-8 lg:p-10 text-white space-y-2">
-                                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight drop-shadow-md text-white">
-                                    {categoryInfo.title}
-                                </h1>
-                                <p className="text-xs sm:text-sm md:text-base text-gray-200 font-semibold max-w-xl line-clamp-2 drop-shadow-sm">
-                                    {categoryInfo.description}
-                                </p>
-                                <div className="pt-1 flex items-center gap-3">
-                                    <span className="text-xs font-black bg-white/20 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/30 text-white">
-                                        {sortedFilteredProducts?.length || 0} Products Available
-                                    </span>
+
+                            {/* Banner Bottom Text Gradient Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent flex flex-col justify-end p-6 sm:p-10 lg:p-16 text-white space-y-2 pointer-events-none">
+                                <div className="w-full px-2 sm:px-4 lg:px-6 space-y-2 pointer-events-auto pb-6 sm:pb-10">
+                                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-lg text-white">
+                                        {categoryInfo.title}
+                                    </h1>
+                                    <p className="text-xs sm:text-base md:text-lg text-gray-200 font-semibold max-w-2xl drop-shadow-md">
+                                        {categoryInfo.description}
+                                    </p>
                                 </div>
+                            </div>
+
+                            {/* Bouncing Scroll Down Indicator */}
+                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-0.5 text-white/80 text-[11px] sm:text-xs font-bold animate-bounce pointer-events-none">
+                                <span>Scroll for Products</span>
+                                <KeyboardArrowDownIcon sx={{ fontSize: "1.2rem" }} />
                             </div>
                         </motion.div>
                     ) : (
-                        <div className="relative w-full rounded-[20px] overflow-hidden shadow-md bg-gradient-to-r from-[#0F2742] via-[#1E88E5] to-[#1565C0] px-4 sm:px-6 py-3.5 sm:py-4 flex items-center gap-3 sm:gap-4 text-white">
-                            {/* Back to Home Arrow Button (Mobile only) */}
-                            <Link
-                                to="/home"
-                                title="Back to Home"
-                                className="md:hidden flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 active:scale-95 border border-white/30 rounded-full text-white backdrop-blur-md transition-all cursor-pointer shadow-sm"
-                            >
-                                <ArrowBackIcon sx={{ fontSize: "1.25rem" }} />
-                            </Link>
-
-                            <div className="flex flex-col justify-center space-y-0.5 overflow-hidden">
+                        <div className="hidden md:flex relative w-full overflow-hidden bg-gradient-to-r from-[#0F2742] via-[#1E88E5] to-[#1565C0] px-4 sm:px-10 py-3.5 items-center gap-3 sm:gap-4 text-white m-0 border-0 rounded-none sm:rounded-2xl flex-shrink-0">
+                            <div className="w-full flex flex-col justify-center space-y-0.5 overflow-hidden px-1 sm:px-0">
                                 <div className="flex items-center gap-2">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">🥛 Madhur Dairy Collection</span>
                                 </div>
@@ -299,23 +277,50 @@ export default function ProductPage() {
                     )}
 
                     {/* MAIN PRODUCTS CONTENT SECTION */}
-                    <div className="space-y-4">
+                    <div className={`w-full ${productId ? 'px-3 sm:px-6 lg:px-10 py-2 sm:py-3' : 'space-y-4 pt-1 md:pt-2 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8'}`}>
                         {!productId ? (
                             /* MAIN PRODUCTS PAGE VIEW (!productId): Show ALL Category Images Grid */
-                            <div className="space-y-6">
-                                <div className="flex justify-between items-center bg-white dark:bg-gray-800/90 rounded-xl px-4 min-h-[56px] shadow-xs border border-gray-200/80 dark:border-gray-700/80 transition-colors duration-300">
-                                    <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-[#2D3748] dark:text-white flex items-center gap-2 tracking-tight leading-tight">
-                                        <span>Our Dairy Categories</span>
-                                        <span className="text-xs bg-[#6C5CE7]/10 dark:bg-purple-900/30 text-[#6C5CE7] dark:text-purple-300 px-2.5 py-0.5 rounded-full font-bold">
-                                            {allCategoryCards?.length || 0}
-                                        </span>
-                                    </h2>
+                            <div className="space-y-3">
+                                {/* Mobile Top Header Navigation Bar */}
+                                <div className="md:hidden sticky top-1 z-30 w-full py-1.5 px-1 flex items-center justify-between transition-all duration-200">
+                                    {/* Left: Back Button (Goes directly to /home) */}
+                                    <Link
+                                        to="/home"
+                                        title="Go to Home Page"
+                                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/50 dark:hover:to-indigo-900/50 active:scale-95 rounded-xl text-purple-700 dark:text-purple-300 transition-all text-xs font-black cursor-pointer border border-purple-200/60 dark:border-purple-800/60 shadow-xs"
+                                    >
+                                        <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
+                                        <span>Back</span>
+                                    </Link>
+
+                                    {/* Center: Title */}
+                                    <div className="flex flex-col items-center justify-center">
+                                        <h1 className="text-sm font-black tracking-tight text-gray-900 dark:text-white">
+                                            Products Collection
+                                        </h1>
+                                    </div>
+
+                                    {/* Right: Cart Shortcut Only (Home icon removed) */}
+                                    <div className="flex items-center">
+                                        <Link
+                                            to="/cart"
+                                            title="View Cart"
+                                            className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:bg-gray-100/80 dark:hover:bg-gray-800/80 active:scale-95 transition-all flex items-center justify-center"
+                                        >
+                                            <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} />
+                                            {cartItems?.length > 0 && (
+                                                <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
+                                                    {cartItems.length}
+                                                </span>
+                                            )}
+                                        </Link>
+                                    </div>
                                 </div>
 
                                 {productLoading ? (
                                     <MadhurLoader />
                                 ) : (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+                                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 pb-6 pt-1 md:pt-0">
                                         {allCategoryCards.map((cat, index) => (
                                             <OfferingProductCard
                                                 key={`all-cat-${index}-${cat.title}`}
@@ -327,67 +332,54 @@ export default function ProductPage() {
                                 )}
                             </div>
                         ) : (
-                            /* SPECIFIC CATEGORY PAGE VIEW (productId): Show Related Products Grid */
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center bg-white dark:bg-gray-800/90 rounded-xl px-4 min-h-[56px] shadow-xs border border-gray-200/80 dark:border-gray-700/80 transition-colors duration-300">
-                                    <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-[#2D3748] dark:text-white flex items-center gap-2 tracking-tight leading-tight">
-                                        <span>Explore {activeCategoryTitle} Products</span>
-                                        <span className="text-xs bg-[#6C5CE7]/10 dark:bg-purple-900/30 text-[#6C5CE7] dark:text-purple-300 px-2.5 py-0.5 rounded-full font-bold">
-                                            {sortedFilteredProducts?.length || 0}
-                                        </span>
-                                    </h2>
+                            /* SPECIFIC CATEGORY PAGE VIEW (productId): Scrolls naturally when many items are present */
+                            <div className="w-full flex flex-col">
+                                {/* Mobile Top Header Navigation Bar for Category View */}
+                                <div className="md:hidden sticky top-1 z-30 w-full mb-2 py-1.5 px-1 flex items-center justify-between transition-all duration-200">
+                                    {/* Left: Back Button (Goes back to /products) */}
+                                    <Link
+                                        to="/products"
+                                        title="Back to Categories"
+                                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/50 dark:hover:to-indigo-900/50 active:scale-95 rounded-xl text-purple-700 dark:text-purple-300 transition-all text-xs font-black cursor-pointer border border-purple-200/60 dark:border-purple-800/60 shadow-xs"
+                                    >
+                                        <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
+                                        <span>Back</span>
+                                    </Link>
 
-                                    {/* Sort / Filter dropdown button on top right */}
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={(e) => setAnchorEl(e.currentTarget)}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg bg-gray-100 dark:bg-gray-700/60 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition-colors cursor-pointer text-gray-800 dark:text-white"
-                                        >
-                                            <FilterListIcon sx={{ fontSize: "1.1rem" }} />
-                                            <span>{filter === "Sort By" ? "Sort / Filter" : filter}</span>
-                                            <KeyboardArrowDownIcon sx={{ fontSize: "1.1rem" }} />
-                                        </button>
+                                    {/* Center: Title */}
+                                    <div className="flex flex-col items-center justify-center">
+                                        <h1 className="text-sm font-black tracking-tight text-gray-900 dark:text-white capitalize">
+                                            {activeCategoryTitle}
+                                        </h1>
+                                    </div>
 
-                                        <Menu
-                                            anchorEl={anchorEl}
-                                            open={Boolean(anchorEl)}
-                                            onClose={() => setAnchorEl(null)}
-                                            className="mt-1"
+                                    {/* Right: Cart Shortcut */}
+                                    <div className="flex items-center">
+                                        <Link
+                                            to="/cart"
+                                            title="View Cart"
+                                            className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:bg-gray-100/80 dark:hover:bg-gray-800/80 active:scale-95 transition-all flex items-center justify-center"
                                         >
-                                            {[
-                                                "Clear",
-                                                "Price: Low to High",
-                                                "Price: High to Low",
-                                                "Quantity: Low to High",
-                                                "Quantity: High to Low",
-                                                "Sold: Low to High",
-                                                "Sold: High to Low",
-                                            ].map((option) => (
-                                                <MenuItem
-                                                    key={option}
-                                                    onClick={() => {
-                                                        setFilter(option === "Clear" ? "Sort By" : option);
-                                                        setAnchorEl(null);
-                                                    }}
-                                                    className="text-xs sm:text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                                                >
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </Menu>
+                                            <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} />
+                                            {cartItems?.length > 0 && (
+                                                <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
+                                                    {cartItems.length}
+                                                </span>
+                                            )}
+                                        </Link>
                                     </div>
                                 </div>
 
                                 {productLoading ? (
                                     <MadhurLoader />
                                 ) : (
-                                    <section className="w-full">
+                                    <section className="w-full flex flex-col">
                                         {(sortedFilteredProducts?.length ?? 0) === 0 ? (
-                                            <div className="py-20 text-center text-gray-500 dark:text-gray-300 font-medium text-lg bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                                            <div className="py-12 text-center text-gray-500 dark:text-gray-300 font-medium text-base bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
                                                 No products found in this category.
                                             </div>
                                         ) : (
-                                            <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3 sm:gap-6 pb-6">
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 w-full items-stretch">
                                                 {sortedFilteredProducts.map((product, index) => (
                                                     <ProductVarietyCart
                                                         key={product?._id ? String(product._id) : `prod-${index}`}

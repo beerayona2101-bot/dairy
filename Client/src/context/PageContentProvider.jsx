@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useMemo, useCallback } from "react";
 import { getPageContentService } from "../services/pageContentService";
-import { socket } from "../socket/socket";
+import wsManager from "../socket/WebSocketManager";
 
 export const PageContentContext = createContext();
 
@@ -36,15 +36,19 @@ export const PageContentProvider = ({ children }) => {
     fetchContent();
 
     const handleUpdated = (data) => {
-      if (data?.pageContent) {
-        setPageContent(data.pageContent);
+      const updated = data?.pageContent || data;
+      if (updated) {
+        setPageContent(updated);
       }
     };
 
-    socket.on("page-content:updated", handleUpdated);
+    const unsubs = [
+      wsManager.subscribe("page-content:updated", handleUpdated),
+      wsManager.subscribe("page_content.updated", handleUpdated),
+    ];
 
     return () => {
-      socket.off("page-content:updated", handleUpdated);
+      unsubs.forEach((unsub) => unsub());
     };
   }, [fetchContent]);
 

@@ -4,6 +4,7 @@ import BuffaloLoader from "../components/BuffaloLoader";
 import Layout from "../layouts/Layout";
 import AdminLayout from "../layouts/AdminLayout";
 import UserProfileLayout from "../layouts/UserProfileLayout";
+import { AdminProtectedRoute, UserProtectedRoute } from "../components/ProtectedRoute";
 import { AnimatePresence } from "framer-motion";
 import { AdminAuthContext, UserAuthContext } from "../context/AuthProvider";
 import { socket } from "../socket/socket";
@@ -57,70 +58,94 @@ const PageLoader = () => (
 
 export default function Routers() {
     const location = useLocation();
-    const localUser = localStorage.getItem("User");
     const { authUser } = useContext(UserAuthContext);
     const { authAdmin } = useContext(AdminAuthContext);
 
     useEffect(() => {
-        if (!authUser?._id) return;
-        socket.emit("user:register", { userId: authUser?._id });
+        const registerUser = () => {
+            if (authUser?._id) {
+                socket.emit("user:register", { userId: authUser._id });
+            }
+        };
+
+        registerUser();
+        socket.on("connect", registerUser);
+
+        return () => {
+            socket.off("connect", registerUser);
+        };
     }, [authUser]);
 
     useEffect(() => {
-        if (!authAdmin?._id) return;
-        socket.emit("admin:register", { adminId: authAdmin?._id });
+        const registerAdmin = () => {
+            if (authAdmin?._id) {
+                socket.emit("admin:register", { adminId: authAdmin._id });
+            }
+        };
+
+        registerAdmin();
+        socket.on("connect", registerAdmin);
+
+        return () => {
+            socket.off("connect", registerAdmin);
+        };
     }, [authAdmin]);
 
     return (
-        <AnimatePresence mode="wait">
-            <Suspense fallback={<PageLoader />}>
-                <Routes location={location} key={location.pathname}>
-                    <Route path="/" element={<Layout><HomePage /></Layout>} />
-                    <Route path="/home" element={<Layout><HomePage /></Layout>} />
+        <>
+            <AnimatePresence mode="wait">
+                <Suspense fallback={<PageLoader />}>
+                    <Routes location={location} key={location.pathname}>
+                        <Route path="/" element={<Layout><HomePage /></Layout>} />
+                        <Route path="/home" element={<Layout><HomePage /></Layout>} />
 
-                    <Route path="/login" element={<UserLogin />} />
-                    <Route path="/login/forget-password" element={<ForgetPassword />} />
-                    <Route path="/login/reset-password" element={<ResetPassword />} />
-                    <Route path="/signup" element={<UserSignUp />} />
-                    <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route path="/login" element={<UserLogin />} />
+                        <Route path="/login/forget-password" element={<ForgetPassword />} />
+                        <Route path="/login/reset-password" element={<ResetPassword />} />
+                        <Route path="/signup" element={<UserSignUp />} />
+                        <Route path="/admin/login" element={<AdminLogin />} />
 
-                    <Route path="/signup/otp-verification" element={<OtpVerification />} />
-                    <Route path="/signup/info-input" element={<ProfileInfoInput />} />
-                    <Route path="/user-profile/dashboard" element={<UserProfileLayout><UserDashboard /></UserProfileLayout>} />
-                    <Route path="/user-profile" element={<UserProfileLayout><AccountInfo /></UserProfileLayout>} />
-                    <Route path="/user-profile/addresses" element={<UserProfileLayout><MyAddresses /></UserProfileLayout>} />
-                    <Route path="/user-profile/orders" element={<UserProfileLayout><MyOrders /></UserProfileLayout>} />
-                    <Route path="/user-profile/wishlist" element={<UserProfileLayout><MyWishlist /></UserProfileLayout>} />
-                    <Route path="/wishlist" element={<Layout><MyWishlist /></Layout>} />
-                    <Route path="/user-profile/payments" element={<UserProfileLayout><Payments /></UserProfileLayout>} />
+                        <Route path="/signup/otp-verification" element={<OtpVerification />} />
+                        <Route path="/signup/info-input" element={<ProfileInfoInput />} />
+                        
+                        {/* Protected User Profile Routes */}
+                        <Route path="/user-profile/dashboard" element={<UserProtectedRoute><UserProfileLayout><UserDashboard /></UserProfileLayout></UserProtectedRoute>} />
+                        <Route path="/user-profile" element={<UserProtectedRoute><UserProfileLayout><AccountInfo /></UserProfileLayout></UserProtectedRoute>} />
+                        <Route path="/user-profile/addresses" element={<UserProtectedRoute><UserProfileLayout><MyAddresses /></UserProfileLayout></UserProtectedRoute>} />
+                        <Route path="/user-profile/orders" element={<UserProtectedRoute><UserProfileLayout><MyOrders /></UserProfileLayout></UserProtectedRoute>} />
+                        <Route path="/user-profile/wishlist" element={<UserProtectedRoute><UserProfileLayout><MyWishlist /></UserProfileLayout></UserProtectedRoute>} />
+                        <Route path="/wishlist" element={<Layout><MyWishlist /></Layout>} />
+                        <Route path="/user-profile/payments" element={<UserProtectedRoute><UserProfileLayout><Payments /></UserProfileLayout></UserProtectedRoute>} />
 
-                    <Route path="/admin/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
-                    <Route path="/admin/revenue" element={<AdminLayout><Revenue /></AdminLayout>} />
-                    <Route path="/admin/reports" element={<AdminLayout><Reports /></AdminLayout>} />
-                    <Route path="/admin/enquiries" element={<AdminLayout><AdminEnquiries /></AdminLayout>} />
-                    <Route path="/admin/profile" element={<AdminLayout><AdminProfile /></AdminLayout>} />
-                    <Route path="/admin/categories" element={<AdminLayout><CategoriesPage /></AdminLayout>} />
-                    <Route path="/admin/products" element={<AdminLayout><ProductsPage /></AdminLayout>} />
-                    <Route path="/admin/inventory" element={<AdminLayout><Inventory /></AdminLayout>} />
-                    <Route path="/admin/page-content" element={<AdminLayout><PageContentManager /></AdminLayout>} />
-                    <Route path="/admin/orders" element={<AdminLayout><Orders /></AdminLayout>} />
-                    <Route path="/admin/customers" element={<AdminLayout><Stores /></AdminLayout>} />
-                    <Route path="/admin/customers/:userId/orders-History" element={<AdminLayout><StoreOrdersHistory /></AdminLayout>} />
+                        {/* Protected Admin Routes */}
+                        <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminLayout><Dashboard /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/revenue" element={<AdminProtectedRoute><AdminLayout><Revenue /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/reports" element={<AdminProtectedRoute><AdminLayout><Reports /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/enquiries" element={<AdminProtectedRoute><AdminLayout><AdminEnquiries /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/profile" element={<AdminProtectedRoute><AdminLayout><AdminProfile /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/categories" element={<AdminProtectedRoute><AdminLayout><CategoriesPage /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/products" element={<AdminProtectedRoute><AdminLayout><ProductsPage /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/inventory" element={<AdminProtectedRoute><AdminLayout><Inventory /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/page-content" element={<AdminProtectedRoute><AdminLayout><PageContentManager /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/orders" element={<AdminProtectedRoute><AdminLayout><Orders /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/customers" element={<AdminProtectedRoute><AdminLayout><Stores /></AdminLayout></AdminProtectedRoute>} />
+                        <Route path="/admin/customers/:userId/orders-History" element={<AdminProtectedRoute><AdminLayout><StoreOrdersHistory /></AdminLayout></AdminProtectedRoute>} />
 
-                    <Route path="/about" element={<Layout><AboutPage /></Layout>} />
-                    <Route path="/products/:productId?" element={<Layout><ProductPage /></Layout>} />
-                    <Route path="/product-details/:productId?" element={<Layout><ProductDetailsPage /></Layout>} />
+                        <Route path="/about" element={<Layout><AboutPage /></Layout>} />
+                        <Route path="/products/:productId?" element={<Layout><ProductPage /></Layout>} />
+                        <Route path="/product-details/:productId?" element={<Layout><ProductDetailsPage /></Layout>} />
 
-                    <Route path="/cart" element={<Layout><CartPage /></Layout>} />
-                    <Route path="/order-checkout" element={<Layout><OrderCheckoutPage /></Layout>} />
+                        <Route path="/cart" element={<Layout><CartPage /></Layout>} />
+                        <Route path="/order-checkout" element={<Layout><OrderCheckoutPage /></Layout>} />
 
-                    <Route path="/contact-us" element={<Layout><ContactPage /></Layout>} />
+                        <Route path="/contact-us" element={<Layout><ContactPage /></Layout>} />
 
-                    <Route path="*" element={<Navigate to={localUser ? "/home" : "/login"} replace />} />
-                </Routes>
-            </Suspense>
+                        <Route path="*" element={<Navigate to={authUser ? "/home" : "/login"} replace />} />
+                    </Routes>
+                </Suspense>
+            </AnimatePresence>
 
             <LoginDialog />
-        </AnimatePresence>
+        </>
     );
 }

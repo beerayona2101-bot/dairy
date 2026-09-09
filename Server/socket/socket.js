@@ -16,6 +16,104 @@ import {
 import mongoose from "mongoose";
 import { cloudinary, uploadToCloudinary } from "../config/cloudinary.js";
 
+import { publishEvent } from "./eventPublisher.js";
+
+export const broadcastOrderStatusUpdate = async (io, { orderId, status, userId }) => {
+  if (!io) return;
+  const stringOrderId = String(orderId);
+  let stringUserId = userId ? String(userId) : undefined;
+
+  let order = null;
+  try {
+    order = await Order.findById(orderId);
+    if (order && !stringUserId && order.user) {
+      stringUserId = String(order.user);
+    }
+  } catch (err) {
+    console.warn("broadcastOrderStatusUpdate order fetch error:", err?.message);
+  }
+
+  const payload = { orderId: stringOrderId, status, userId: stringUserId };
+
+  publishEvent(io, "order.updated", payload, {
+    userId: stringUserId,
+    rooms: ["admin_room"],
+  });
+
+  if (stringUserId) {
+    io.to(`user:${stringUserId}`).emit("user-order:updated-status", payload);
+  }
+
+  io.emit("user-order:updated-status", payload);
+  io.emit("order:global-status-update", payload);
+  io.emit("admin:order-updated", payload);
+  io.emit("order:status-updated", payload);
+  io.emit("order:accept-success", payload);
+  io.emit("admin-order:delivered-success", payload);
+  io.emit("order:reject-success", payload);
+
+  // Send real-time & persistent notification to the user
+  if (stringUserId) {
+    try {
+      let targetUser = await User.findById(stringUserId);
+      if (!targetUser) {
+        targetUser = await Admin.findById(stringUserId);
+      }
+
+      if (targetUser) {
+        const orderIdDisplay = order?.orderId || stringOrderId.slice(-6).toUpperCase();
+        let notifTitle = `Order Status Updated`;
+        let notifDesc = `Your order #${orderIdDisplay} status has been updated to "${status}".`;
+
+        switch (status) {
+          case "Confirmed":
+            notifTitle = "Order Confirmed 📦";
+            notifDesc = `Great news! Your order #${orderIdDisplay} has been confirmed by our team.`;
+            break;
+          case "Processing":
+            notifTitle = "Order Processing ⚙️";
+            notifDesc = `Your order #${orderIdDisplay} is currently being packed and prepared.`;
+            break;
+          case "Shipped":
+            notifTitle = "Order Dispatched 🚚";
+            notifDesc = `Your order #${orderIdDisplay} has been shipped and is out for delivery!`;
+            break;
+          case "Ready to Deliver":
+            notifTitle = "Ready for Delivery 🛵";
+            notifDesc = `Your order #${orderIdDisplay} is ready and will be delivered to your address shortly!`;
+            break;
+          case "Delivered":
+            notifTitle = "Order Delivered ✅";
+            notifDesc = `Your order #${orderIdDisplay} has been successfully delivered. Thank you for choosing Dairy Excellence!`;
+            break;
+          case "Cancelled":
+            notifTitle = "Order Cancelled ❌";
+            notifDesc = `Your order #${orderIdDisplay} has been cancelled.`;
+            break;
+          default:
+            break;
+        }
+
+        const notificationObj = {
+          title: notifTitle,
+          description: notifDesc,
+          date: new Date(),
+          isRead: false,
+          orderId: order?._id || undefined,
+          type: "order",
+        };
+
+        await addNotification(targetUser, notificationObj);
+
+        io.to(`user:${stringUserId}`).emit("user:notification", notificationObj);
+        io.emit("user:notification", notificationObj);
+      }
+    } catch (notifErr) {
+      console.error("Error creating/sending status notification:", notifErr);
+    }
+  }
+};
+
 export const connectToSocket = (server) => {
   const userSocketMap = new Map();
   const adminSocketMap = new Map();
@@ -26,17 +124,52 @@ export const connectToSocket = (server) => {
       methods: ["GET", "POST", "DELETE", "PUT"],
       credentials: true,
     },
-    transports: ["websocket"],
+    transports: ["polling", "websocket"],
     pingInterval: 25000,
     pingTimeout: 20000,
   });
 
+  // Socket Authentication & Identity Middleware
+  io.use((socket, next) => {
+    try {
+      const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+      let rawUserId = socket.handshake.auth?.userId || socket.handshake.query?.userId;
+      if (rawUserId === "undefined" || rawUserId === "null" || !rawUserId) {
+        rawUserId = null;
+      }
+      const role = socket.handshake.auth?.role || socket.handshake.query?.role || "user";
+
+      socket.user = { id: rawUserId, role, token };
+      return next();
+    } catch (err) {
+      return next(new Error("Authentication failed"));
+    }
+  });
+
   io.on("connection", (socket) => {
+    const displayUser = socket.user?.id ? `User ID: ${socket.user.id}` : "Guest";
+    console.log(`[Socket] Client connected: ${socket.id} (${displayUser})`);
+
+    // Ping / Heartbeat Handler
+    socket.on("ping", () => {
+      socket.emit("pong", { timestamp: new Date().toISOString() });
+    });
+
+    // Room Authorization Join Handler
+    socket.on("room:join", ({ room }) => {
+      if (!room) return;
+      if (room === "admin_room" && socket.user?.role !== "admin") {
+        return socket.emit("error:unauthorized", { message: "Access denied to admin room" });
+      }
+      socket.join(room);
+      socket.emit("room:joined", { room });
+    });
 
     socket.on("user:register", ({ userId }) => {
       if (!userId) return;
 
       socket.data.userId = userId;
+      socket.join(`user:${userId}`);
 
       if (!userSocketMap.has(userId)) {
         userSocketMap.set(userId, new Set());
@@ -48,6 +181,7 @@ export const connectToSocket = (server) => {
       if (!adminId) return;
 
       socket.data.adminId = adminId;
+      socket.join("admin_room");
 
       if (!adminSocketMap.has(adminId)) {
         adminSocketMap.set(adminId, new Set());
@@ -190,7 +324,7 @@ export const connectToSocket = (server) => {
         if (savedOrder) {
           if (instructionText && !savedOrder.deliveryInstructions) {
             savedOrder.deliveryInstructions = instructionText;
-            await savedOrder.save().catch(() => {});
+            await savedOrder.save().catch(() => { });
           }
         } else {
           const newOrder = new Order({
@@ -203,10 +337,10 @@ export const connectToSocket = (server) => {
             razorpay:
               paymentMode === "Online" && paymentInfo
                 ? {
-                    orderId: paymentInfo.razorpayOrderId,
-                    paymentId: paymentInfo.razorpayPaymentId,
-                    signature: paymentInfo.razorpaySignature,
-                  }
+                  orderId: paymentInfo.razorpayOrderId,
+                  paymentId: paymentInfo.razorpayPaymentId,
+                  signature: paymentInfo.razorpaySignature,
+                }
                 : undefined,
           });
           savedOrder = await newOrder.save();
@@ -285,11 +419,12 @@ export const connectToSocket = (server) => {
 
         const validStatuses = [
           "Pending",
+          "Confirmed",
           "Processing",
           "Shipped",
+          "Ready to Deliver",
           "Delivered",
           "Cancelled",
-          "Confirmed",
         ];
 
         if (!validStatuses.includes(status)) {
@@ -338,34 +473,15 @@ export const connectToSocket = (server) => {
           date,
         });
 
+        const targetUserId = userId || order?.user?.toString();
+
+        broadcastOrderStatusUpdate(io, { orderId, status, userId: targetUserId });
+
         socket.emit("order:update-status-success", {
-          message: "Order accepted successfully.",
+          message: `Order status updated to ${status} successfully.`,
           status,
+          orderId,
         });
-
-        for (const [_, socketSet] of adminSocketMap) {
-          for (const socketId of socketSet) {
-            io.to(socketId).emit("order:accept-success", {
-              orderId,
-              status,
-            });
-          }
-        }
-
-        if (userId && userSocketMap.has(userId)) {
-          for (const socketId of userSocketMap.get(userId)) {
-            io.to(socketId).emit("user-order:updated-status", {
-              orderId,
-              status,
-            });
-
-            io.to(socketId).emit("user:notification", {
-              title: "Order Confirmed",
-              description: notificationMessage,
-              date,
-            });
-          }
-        }
       } catch (error) {
         socket.emit("order:update-status-failed", {
           message:
@@ -378,9 +494,9 @@ export const connectToSocket = (server) => {
 
     socket.on("order:reject", async ({ orderId, status, date, userId }) => {
       try {
-        if (!orderId || !status || !userId) {
+        if (!orderId) {
           return socket.emit("order:update-status-failed", {
-            message: "Missing required fields.",
+            message: "Missing order ID.",
             status: "Cancelled",
           });
         }
@@ -393,13 +509,8 @@ export const connectToSocket = (server) => {
           });
         }
 
-        const user = await User.findById(userId);
-        if (!user) {
-          return socket.emit("order:update-status-failed", {
-            message: "User not found.",
-            status: "Cancelled",
-          });
-        }
+        const targetUserId = userId || order?.user?.toString();
+        const user = targetUserId ? await User.findById(targetUserId) : null;
 
         if (order.status === "Cancelled") {
           return socket.emit("order:update-status-failed", {
@@ -432,11 +543,13 @@ export const connectToSocket = (server) => {
         order.status = "Cancelled";
         await order.save();
 
-        await addNotification(user, {
-          title: "Order Cancelled",
-          description: `Order #${order._id} with ${totalItems} item(s) worth ₹${order.totalAmount} has been cancelled.${refundNote}`,
-          date: timestamp,
-        });
+        if (user) {
+          await addNotification(user, {
+            title: "Order Cancelled",
+            description: `Order #${order._id} with ${totalItems} item(s) worth ₹${order.totalAmount} has been cancelled.${refundNote}`,
+            date: timestamp,
+          });
+        }
 
         await Admin.findOneAndUpdate(
           {},
@@ -457,28 +570,7 @@ export const connectToSocket = (server) => {
           orderId,
         });
 
-        for (const [_, socketSet] of adminSocketMap) {
-          for (const socketId of socketSet) {
-            io.to(socketId).emit("order:reject-success", {
-              orderId,
-            });
-          }
-        }
-
-        if (userId && userSocketMap.has(userId)) {
-          for (const socketId of userSocketMap.get(userId)) {
-            io.to(socketId).emit("user-order:updated-status", {
-              orderId,
-              status: "Cancelled",
-            });
-
-            io.to(socketId).emit("user:notification", {
-              title: "Order Cancelled",
-              description: `Order #${order._id} (${totalItems} items, ₹${order.totalAmount}) was cancelled.${refundNote}`,
-              date: timestamp,
-            });
-          }
-        }
+        broadcastOrderStatusUpdate(io, { orderId, status: "Cancelled", userId: targetUserId });
       } catch (error) {
         socket.emit("order:update-status-failed", {
           message:
@@ -491,9 +583,9 @@ export const connectToSocket = (server) => {
 
     socket.on("order:delivered", async ({ orderId, status, userId }) => {
       try {
-        if (!orderId || !status || !userId) {
+        if (!orderId) {
           return socket.emit("order:update-delivered-status", {
-            message: "Missing required fields.",
+            message: "Missing order ID.",
             success: false,
           });
         }
@@ -506,20 +598,10 @@ export const connectToSocket = (server) => {
           });
         }
 
-        const user = await User.findById(userId);
-        if (!user) {
-          return socket.emit("order:update-delivered-status", {
-            message: "User not found.",
-            success: false,
-          });
-        }
+        const targetUserId = userId || order?.user?.toString();
+        const user = targetUserId ? await User.findById(targetUserId) : null;
 
         const admin = await Admin.findOne();
-        if (!admin) {
-          return socket.emit("order:update-delivered-status", {
-            message: "Admin not found",
-          });
-        }
 
         if (order.status === "Delivered") {
           return socket.emit("order:update-delivered-status", {
@@ -537,51 +619,28 @@ export const connectToSocket = (server) => {
           0
         );
 
-        await addNotification(user, {
-          title: "Order Delivered",
-          description: `Your order (ID: ${order._id}) with ${totalItems} item(s) has been successfully delivered. Total: ₹${order.totalAmount}.`,
-          date,
-        });
+        if (user) {
+          await addNotification(user, {
+            title: "Order Delivered",
+            description: `Your order (ID: ${order._id}) with ${totalItems} item(s) has been successfully delivered. Total: ₹${order.totalAmount}.`,
+            date,
+          });
+        }
 
-        await addNotification(admin, {
-          title: "Order Delivered",
-          description: `Order #${order._id} placed by ${user?.firstName} ${user?.lastName} has been delivered. Total: ₹${order.totalAmount}, Items: ${totalItems}`,
-          date,
-        });
+        if (admin) {
+          await addNotification(admin, {
+            title: "Order Delivered",
+            description: `Order #${order._id} placed by ${user?.firstName || "User"} ${user?.lastName || ""} has been delivered. Total: ₹${order.totalAmount}, Items: ${totalItems}`,
+            date,
+          });
+        }
 
         socket.emit("order:update-delivered-status", {
           message: "Order marked as delivered.",
           success: true,
         });
 
-        for (const [_, socketSet] of adminSocketMap) {
-          for (const socketId of socketSet) {
-            io.to(socketId).emit("admin:notification", {
-              title: "Order Delivered",
-              description: `Order #${order._id} placed by ${user?.firstName} ${user?.lastName} has been delivered. Total: ₹${order.totalAmount}, Items: ${totalItems}`,
-              date,
-            });
-
-            io.to(socketId).emit("admin-order:delivered-success", {
-              orderId,
-            });
-          }
-        }
-
-        if (userId && userSocketMap.has(userId)) {
-          for (const socketId of userSocketMap.get(userId)) {
-            io.to(socketId).emit("user-order:updated-status", {
-              orderId,
-              status: "Delivered",
-            });
-
-            io.to(socketId).emit("user:notification", {
-              title: "Order Delivered",
-              description: `Order #${order._id} delivered successfully. Items: ${totalItems}, Amount: ₹${order.totalAmount}.`,
-              date,
-            });
-          }
-        }
+        broadcastOrderStatusUpdate(io, { orderId, status: "Delivered", userId: targetUserId });
       } catch (error) {
         socket.emit("order:update-delivered-status", {
           message:
@@ -624,12 +683,12 @@ export const connectToSocket = (server) => {
         }
 
         if (image) {
-          imageUrl = await uploadToCloudinary(image, "evan_homepage_cms");
+          imageUrl = await uploadToCloudinary(image, "dairy_app");
         }
 
         let pngImageUrl = productDetails?.pngImage || "";
         if (pngImageUrl && typeof pngImageUrl === "string" && pngImageUrl.startsWith("data:image")) {
-          pngImageUrl = await uploadToCloudinary(pngImageUrl, "evan_homepage_cms");
+          pngImageUrl = await uploadToCloudinary(pngImageUrl, "dairy_app");
         }
 
         const newProduct = new Product({
@@ -737,7 +796,7 @@ export const connectToSocket = (server) => {
         }
 
         if (typeof imgVal === "string" && imgVal.startsWith("data:image")) {
-          const uploadedUrl = await uploadToCloudinary(imgVal, "evan_homepage_cms");
+          const uploadedUrl = await uploadToCloudinary(imgVal, "dairy_app");
           updatedProductData.image = [uploadedUrl];
         } else if (Array.isArray(updatedProductData.image)) {
           updatedProductData.image = updatedProductData.image;
@@ -748,7 +807,7 @@ export const connectToSocket = (server) => {
         }
 
         if (typeof updatedProductData.pngImage === "string" && updatedProductData.pngImage.startsWith("data:image")) {
-          const uploadedPngUrl = await uploadToCloudinary(updatedProductData.pngImage, "evan_homepage_cms");
+          const uploadedPngUrl = await uploadToCloudinary(updatedProductData.pngImage, "dairy_app");
           updatedProductData.pngImage = uploadedPngUrl;
         }
 
@@ -819,4 +878,6 @@ export const connectToSocket = (server) => {
       }
     });
   });
+
+  return io;
 };
