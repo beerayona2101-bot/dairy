@@ -51,8 +51,8 @@ const TRACKING_STEPS = [
 export const getStepIndexByStatus = (status) => {
   const normalized = (status || "").toLowerCase().trim();
   if (normalized === "pending" || normalized === "placed") return 0;
-  if (normalized === "confirmed" || normalized === "processing" || normalized === "approved") return 1;
-  if (normalized === "packed" || normalized === "packaging") return 2;
+  if (normalized === "confirmed" || normalized === "approved") return 1;
+  if (normalized === "processing" || normalized === "packed" || normalized === "packaging") return 2;
   if (normalized === "shipped" || normalized === "dispatched" || normalized === "in transit") return 3;
   if (normalized === "ready to deliver" || normalized === "out for delivery" || normalized === "delivering") return 4;
   if (normalized === "delivered" || normalized === "completed" || normalized === "received") return 5;

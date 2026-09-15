@@ -14,24 +14,28 @@ import { PageContentProvider } from './context/PageContentProvider.jsx';
 import { WebSocketProvider } from './context/WebSocketProvider.jsx';
 
 
+import { NavigationProvider } from './context/NavigationProvider.jsx';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || '199361032805-op5jfh1l5ribcj08elgt9gg10i0u56ao.apps.googleusercontent.com'}>
       <BrowserRouter>
         <AuthProvider>
-          <WebSocketProvider>
-            <ProductProvider>
-              <PageContentProvider>
-                <ThemeProvider>
-                  <CartProvider>
-                    <UserOrderProvider>
-                      <App />
-                    </UserOrderProvider>
-                  </CartProvider>
-                </ThemeProvider>
-              </PageContentProvider>
-            </ProductProvider>
-          </WebSocketProvider>
+          <NavigationProvider>
+            <WebSocketProvider>
+              <ProductProvider>
+                <PageContentProvider>
+                  <ThemeProvider>
+                    <CartProvider>
+                      <UserOrderProvider>
+                        <App />
+                      </UserOrderProvider>
+                    </CartProvider>
+                  </ThemeProvider>
+                </PageContentProvider>
+              </ProductProvider>
+            </WebSocketProvider>
+          </NavigationProvider>
         </AuthProvider>
       </BrowserRouter>
     </GoogleOAuthProvider>

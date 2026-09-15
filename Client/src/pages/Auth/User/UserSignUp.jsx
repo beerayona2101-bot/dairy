@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { verifyUserOTP } from "../../../services/userService";
 import { useSnackbar } from "notistack";
 import { motion } from "framer-motion";
+import { AdminAuthContext } from "../../../context/AuthProvider";
 import company from "../../../data/company.json";
 import BuffaloLoader from "../../../components/BuffaloLoader";
 import { Eye, EyeOff, ArrowLeft, Home } from "lucide-react";
@@ -14,9 +15,18 @@ export default function UserSignUp() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { theme } = React.useContext(ThemeContext) || {};
+  const { authAdmin, authAdminLoading } = useContext(AdminAuthContext);
+
+  const adminToken = sessionStorage.getItem("adminToken");
+  const adminRole = sessionStorage.getItem("adminRole");
+  const isValidAdmin = Boolean(authAdmin || (adminToken && adminRole === "admin"));
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  if (isValidAdmin && !authAdminLoading) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   const [formData, setFormData] = useState({
     email: "",
@@ -62,7 +72,7 @@ export default function UserSignUp() {
           sessionStorage.setItem("userToken", res.userToken);
           sessionStorage.setItem("userRole", "user");
         }
-        navigate("/signup/info-input", { state: { formData: res.user } });
+        navigate("/signup/info-input", { state: { formData: res.user }, replace: true });
         setFormData({ email: "", password: "", confirmPassword: "" });
       } else {
         enqueueSnackbar(res?.message || "Signup failed.", { variant: "error" });

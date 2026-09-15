@@ -286,121 +286,174 @@ export default function AdminProfileInfo() {
 
   return (
     <>
-      <div className="bg-gray-100 dark:bg-gray-500/20 p-3 md:p-6 rounded flex flex-col md:flex-row gap-6 transition-all duration-300 items-start md:items-center">
-        <div className="flex md:block flex-col gap-3">
-          <Avatar
-            src={previewImage}
-            alt={formData.name || "Admin"}
-            className="!w-24 !h-24 sm:!w-36 sm:!h-36 md:!w-50 md:!h-50"
-          />
-          {editMode && (
-            <label className="text-sm text-blue-600 dark:text-blue-300 cursor-pointer">
-              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-              Change Photo
-            </label>
-          )}
-        </div>
-
-        <div className="flex-1 w-full space-y-2 text-gray-800 dark:text-white">
-          {[{ label: "Name", name: "name", placeholder: "Enter your name" },
-          { label: "Username", name: "username", placeholder: "Enter username" },
-          { label: "Email", name: "email", placeholder: "Enter email address" },
-          { label: "Mobile No", name: "mobileNo", placeholder: "Enter 10-digit mobile number" }]
-            .map((field) => (
-              <div key={field.name} className="flex items-center justify-between gap-4">
-                <span className="font-medium w-20 sm:w-30 md:w-40">{field.label}:</span>
-                {editMode ? (
-                  <input
-                    type="text"
-                    name={field.name}
-                    value={formData[field.name] || ""}
-                    onChange={handleChange}
-                    placeholder={field.placeholder}
-                    className="flex-1 w-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-                  />
-                ) : (
-                  <span className="flex-1 text-sm">{fallback(formData[field.name])}</span>
-                )}
-              </div>
-            ))}
-
-          <div className="space-y-2">
-            <div className="font-semibold text-lg text-gray-900 dark:text-white">Factory Address</div>
-            {editMode ? (
-              ["street", "city", "state", "pincode"].map((key) => (
-                <div key={key} className="flex items-center justify-between gap-4">
-                  <span className="font-medium w-20 sm:w-30 md:w-40 capitalize">{key}:</span>
-                  <input
-                    type="text"
-                    name={`factoryAddress.${key}`}
-                    value={formData.factoryAddress?.[key] || ""}
-                    onChange={handleChange}
-                    placeholder={`Enter ${key}`}
-                    className="flex-1 w-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="flex items-start gap-4">
-                <span className="font-medium w-20 sm:w-30 md:w-40">Address:</span>
-                <span className="flex-1 text-sm">
-                  {[
-                    formData.factoryAddress?.street,
-                    formData.factoryAddress?.city,
-                    formData.factoryAddress?.state,
-                    formData.factoryAddress?.pincode,
-                  ].filter(Boolean).length > 0
-                    ? [formData.factoryAddress?.street, formData.factoryAddress?.city, formData.factoryAddress?.state, formData.factoryAddress?.pincode].filter(Boolean).join(", ")
-                    : <span className="italic text-gray-400">Not provided</span>}
-                </span>
-              </div>
-            )}
+      <div className="bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 p-5 md:p-8 rounded-3xl shadow-xs space-y-6">
+        {/* Top Header Card */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 pb-6 border-b border-slate-100 dark:border-slate-700/60">
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <div className="relative">
+              <Avatar
+                src={previewImage}
+                alt={formData.name || "Admin"}
+                className="!w-20 !h-20 sm:!w-24 sm:!h-24 border-2 border-[#6C5CE7] shadow-sm"
+              />
+              {editMode && (
+                <label className="absolute bottom-0 right-0 p-1.5 bg-[#6C5CE7] text-white rounded-full cursor-pointer shadow-md hover:scale-110 transition">
+                  <Pencil size={14} />
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </label>
+              )}
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                {formData.name || "MADHU Admin"}
+              </h2>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                @{formData.username || "admin_MADHU"} • {formData.email || "admin@MADHUdairy.com"}
+              </p>
+              <span className="inline-block mt-2 px-3 py-0.5 text-[10px] font-extrabold bg-purple-100 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 rounded-full">
+                System Administrator
+              </span>
+            </div>
           </div>
 
-          <div className="flex justify-end pt-2 gap-3">
+          <div className="flex items-center gap-2">
             {!editMode ? (
               <>
                 <button
+                  type="button"
                   onClick={() => setEditMode(true)}
-                  className="flex items-center gap-1 px-4 py-2 text-sm bg-blue-100 dark:bg-blue-800/30 hover:bg-blue-200 dark:hover:bg-blue-700 text-blue-800 dark:text-white rounded"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold bg-[#6C5CE7] text-white rounded-xl hover:bg-[#5b4cc4] transition shadow-xs cursor-pointer active:scale-95"
                 >
-                  <Pencil size={16} />
-                  Edit
+                  <Pencil size={14} /> Edit Profile
                 </button>
                 <button
+                  type="button"
                   onClick={generateAndSendOtp}
                   disabled={otpSendLoading}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800/30 dark:text-white dark:hover:bg-blue-700 rounded text-sm font-medium transition duration-200 disabled:opacity-60"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition cursor-pointer border border-slate-200 dark:border-slate-600 active:scale-95 disabled:opacity-60"
                 >
                   {otpSendLoading ? (
-                    <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    <span className="animate-spin h-3.5 w-3.5 border-2 border-slate-600 border-t-transparent rounded-full" />
                   ) : (
                     <LockReset fontSize="small" />
                   )}
-                  {otpSendLoading ? "Sending OTP..." : "Update Password"}
+                  {otpSendLoading ? "Sending OTP..." : "Change Password"}
                 </button>
-
               </>
             ) : (
               <>
                 <button
+                  type="button"
                   onClick={() => setEditMode(false)}
-                  className="flex items-center gap-1 px-4 py-2 text-sm bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded"
+                  className="flex items-center gap-1 px-4 py-2 text-xs font-extrabold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 transition cursor-pointer"
                 >
-                  <X size={16} />
-                  Cancel
+                  <X size={14} /> Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleAdminInfo}
                   disabled={loading}
-                  className={`flex items-center gap-1 px-4 py-2 text-sm rounded text-white transition ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                    }`}
+                  className="flex items-center gap-1 px-4 py-2 text-xs font-extrabold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition cursor-pointer disabled:opacity-60"
                 >
-                  <Save size={16} />
-                  {loading ? "Saving..." : "Save"}
+                  <Save size={14} /> {loading ? "Saving..." : "Save Changes"}
                 </button>
               </>
             )}
+          </div>
+        </div>
+
+        {/* Profile Details Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Account Details Card */}
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 space-y-3">
+            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Account Credentials
+            </h3>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                <span className="font-semibold text-slate-500">Name:</span>
+                {editMode ? (
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name || ""}
+                    onChange={handleChange}
+                    className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
+                  />
+                ) : (
+                  <span className="font-bold text-slate-800 dark:text-white">{formData.name || "MADHU Admin"}</span>
+                )}
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                <span className="font-semibold text-slate-500">Username:</span>
+                {editMode ? (
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username || ""}
+                    onChange={handleChange}
+                    className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
+                  />
+                ) : (
+                  <span className="font-bold text-slate-800 dark:text-white">{formData.username || "admin_MADHU"}</span>
+                )}
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                <span className="font-semibold text-slate-500">Email Address:</span>
+                {editMode ? (
+                  <input
+                    type="text"
+                    name="email"
+                    value={formData.email || ""}
+                    onChange={handleChange}
+                    className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
+                  />
+                ) : (
+                  <span className="font-bold text-slate-800 dark:text-white">{formData.email || "admin@MADHUdairy.com"}</span>
+                )}
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="font-semibold text-slate-500">Mobile Phone:</span>
+                {editMode ? (
+                  <input
+                    type="text"
+                    name="mobileNo"
+                    value={formData.mobileNo || ""}
+                    onChange={handleChange}
+                    className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
+                  />
+                ) : (
+                  <span className="font-bold text-slate-800 dark:text-white">{formData.mobileNo || "9876543210"}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Factory Address Card */}
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 space-y-3">
+            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Factory & Operations Address
+            </h3>
+            <div className="space-y-2 text-xs">
+              {["street", "city", "state", "pincode"].map((key) => (
+                <div key={key} className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800 last:border-0">
+                  <span className="font-semibold text-slate-500 capitalize">{key}:</span>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      name={`factoryAddress.${key}`}
+                      value={formData.factoryAddress?.[key] || ""}
+                      onChange={handleChange}
+                      className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
+                    />
+                  ) : (
+                    <span className="font-bold text-slate-800 dark:text-white">
+                      {formData.factoryAddress?.[key] || (key === "street" ? "Dairy Road" : key === "city" ? "Mumbai" : key === "state" ? "Maharashtra" : "400001")}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

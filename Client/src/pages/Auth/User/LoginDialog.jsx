@@ -85,7 +85,7 @@ export default function LoginDialog() {
             const currentPath = window.location.pathname;
             const validDest = (!isAuthPath(storedRedirect) && storedRedirect) ||
                               (!isAuthPath(currentPath) && currentPath) ||
-                              "/user-profile/dashboard";
+                              "/home";
 
             navigate(validDest, { replace: true });
           }

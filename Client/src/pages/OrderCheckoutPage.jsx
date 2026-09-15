@@ -12,6 +12,7 @@ import PaidIcon from "@mui/icons-material/Paid";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BackButton from '../components/Common/BackButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Slide from '@mui/material/Slide';
 
@@ -94,7 +95,7 @@ export default function OrderCheckoutPage() {
     clearCart();
     setOpen(false);
     setOrderLoading(false);
-    navigate(`/user-profile/orders`);
+    navigate(`/user-profile/orders`, { replace: true });
   }, [clearCart, navigate, enqueueSnackbar]);
 
   const orderPlaceFailed = useCallback((error) => {
@@ -217,7 +218,7 @@ export default function OrderCheckoutPage() {
           clearCart();
           alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
           enqueueSnackbar("Order placed successfully!", { variant: 'success' });
-          navigate(`/user-profile/orders`);
+          navigate(`/user-profile/orders`, { replace: true });
         } else {
           enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
         }
@@ -243,7 +244,7 @@ export default function OrderCheckoutPage() {
             clearCart();
             alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
             enqueueSnackbar("Payment successful! Order placed successfully.", { variant: 'success' });
-            navigate(`/user-profile/orders`);
+            navigate(`/user-profile/orders`, { replace: true });
           } else {
             enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
           }
@@ -287,7 +288,7 @@ export default function OrderCheckoutPage() {
             clearCart();
             alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
             enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
-            navigate(`/user-profile/orders`);
+            navigate(`/user-profile/orders`, { replace: true });
           } else {
             enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
           }
@@ -399,14 +400,7 @@ export default function OrderCheckoutPage() {
       {/* Mobile Top Header Navigation Bar (Shown on Mobile Response Only) */}
       <div className="md:hidden sticky top-1 z-30 w-full px-4 py-2 flex items-center justify-between transition-all duration-200">
         {/* Left: Back Button to Cart */}
-        <Link
-          to="/cart"
-          title="Back to Cart"
-          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/50 dark:hover:to-indigo-900/50 active:scale-95 rounded-xl text-purple-700 dark:text-purple-300 transition-all text-xs font-black cursor-pointer border border-purple-200/60 dark:border-purple-800/60 shadow-xs"
-        >
-          <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
-          <span>Back</span>
-        </Link>
+        <BackButton fallbackPath="/cart" />
 
         {/* Center: Title */}
         <div className="flex flex-col items-center justify-center">
@@ -634,12 +628,7 @@ export default function OrderCheckoutPage() {
           transition={{ duration: 0.22, delay: 0.1 }}
           className="flex flex-col sm:flex-row items-center justify-between gap-4"
         >
-          <Link
-            to="/cart"
-            className="w-full sm:w-auto text-center px-6 py-3 rounded-full bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-purple-400 border border-[#6C5CE7]/30 font-bold text-xs shadow-sm hover:bg-purple-50 dark:hover:bg-gray-700 transition"
-          >
-            ← Back to Cart
-          </Link>
+          <BackButton fallbackPath="/cart" label="Back to Cart" variant="pill" className="w-full sm:w-auto text-center px-6 py-3 rounded-full bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-purple-400 border border-[#6C5CE7]/30 font-bold text-xs shadow-sm hover:bg-purple-50 dark:hover:bg-gray-700 transition" />
 
           <button
             disabled={orderLoading}

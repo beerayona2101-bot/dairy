@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa";
 import { Close } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard, LayoutDashboard } from "lucide-react";
+import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard, LayoutDashboard, LogOut, LogIn, ArrowLeft } from "lucide-react";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import { UserAuthContext } from "../../context/AuthProvider";
 import { getUserProfile, updateUserProfile, deleteUserAccount, updateUserProfilePhoto } from "../../services/userProfileService";
@@ -28,7 +28,22 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AccountInfo() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const { authUser, setAuthUser, handleUserLogout } = useContext(UserAuthContext);
+  const { authUser, setAuthUser, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
+
+  const handleLogoutAndLogin = () => {
+    handleUserLogout();
+    enqueueSnackbar("Logged Out Successfully", { variant: "success" });
+    navigate("/");
+    if (setOpenLoginDialog) setOpenLoginDialog(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const [edit, setEdit] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
@@ -305,12 +320,8 @@ export default function AccountInfo() {
             {/* Person Profile Header Card */}
             <div className="p-4 sm:p-5 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-blue-50/60 dark:from-purple-950/40 dark:via-slate-900 dark:to-slate-900 border border-purple-100 dark:border-purple-800/40 rounded-2xl sm:rounded-3xl flex items-center justify-between gap-4 shadow-xs">
               <div className="flex items-center gap-3.5 sm:gap-4">
-                <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
-                  <img
-                    src={photoPreview || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-                    alt="Profile Photo"
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 sm:border-4 border-white dark:border-slate-700 shadow-md"
-                  />
+                <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-full bg-gradient-to-tr from-[#6C5CE7] to-[#1E88E5] text-white flex items-center justify-center font-black text-xl sm:text-2xl shadow-md border-2 sm:border-3 border-white dark:border-slate-700 select-none">
+                  {(dbData?.firstName || authUser?.firstName || dbData?.username || authUser?.username || "U").charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <h4 className="text-base sm:text-xl font-extrabold text-gray-900 dark:text-white leading-tight">
@@ -344,18 +355,13 @@ export default function AccountInfo() {
                 Personal Details Overview
               </h4>
               <div className="grid grid-cols-2 gap-3.5">
-                <div className="p-3.5 bg-gray-50/90 dark:bg-gray-800/60 rounded-xl border border-gray-100 dark:border-gray-700/60">
+                <div className="col-span-2 p-3.5 bg-gray-50/90 dark:bg-gray-800/60 rounded-xl border border-gray-100 dark:border-gray-700/60">
                   <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mb-1">
-                    <FaUser className="text-[#1E88E5]" /> First Name
+                    <FaUser className="text-[#1E88E5]" /> Full Name
                   </span>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{dbData?.firstName || "N/A"}</p>
-                </div>
-
-                <div className="p-3.5 bg-gray-50/90 dark:bg-gray-800/60 rounded-xl border border-gray-100 dark:border-gray-700/60">
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mb-1">
-                    <FaUser className="text-[#1E88E5]" /> Last Name
-                  </span>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{dbData?.lastName || "N/A"}</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    {[dbData?.firstName || authUser?.firstName, dbData?.lastName || authUser?.lastName].filter(Boolean).join(" ") || "N/A"}
+                  </p>
                 </div>
 
                 <div className="p-3.5 bg-gray-50/90 dark:bg-gray-800/60 rounded-xl border border-gray-100 dark:border-gray-700/60">
@@ -391,26 +397,6 @@ export default function AccountInfo() {
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Dashboard Overview Menu Option */}
-                <div
-                  onClick={() => navigate("/user-profile/dashboard")}
-                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-11 h-11 rounded-2xl bg-indigo-100 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <LayoutDashboard size={22} />
-                    </div>
-                    <div>
-                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
-                        Dashboard Overview
-                      </h5>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        View account stats & activity summary
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight size={20} className="text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
-                </div>
 
                 {/* My Orders Menu Option */}
                 <div
@@ -537,176 +523,139 @@ export default function AccountInfo() {
                   </div>
                   <ChevronRight size={20} className="text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                 </div>
+
+                {/* Login / Logout Menu Option */}
+                <div
+                  onClick={handleLogoutAndLogin}
+                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-red-500 dark:hover:border-red-400 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-red-100 dark:bg-red-950/70 text-red-600 dark:text-red-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <LogOut size={22} />
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-300 transition-colors">
+                        Logout
+                      </h5>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Log out of your account
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight size={20} className="text-gray-400 group-hover:text-red-600 group-hover:translate-x-1 transition-all" />
+                </div>
               </div>
             </div>
           </div>
         ) : (
           <form className="space-y-4">
-            {/* Mobile View Profile Photo Card */}
-            <div className="flex items-center justify-between p-3.5 bg-transparent border border-gray-200/80 dark:border-gray-700/80 rounded-2xl mb-4 shadow-xs">
-              <div className="flex items-center gap-3.5">
-                <div className="relative w-16 h-16 shrink-0">
-                  <img
-                    src={photoPreview || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-                    alt="Profile Photo"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-md"
-                  />
+            {/* Edit Mode Top Header with Back Button */}
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-200/80 dark:border-gray-800">
+              <button
+                type="button"
+                onClick={() => setEdit(false)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200/90 dark:border-gray-700/80 shadow-xs hover:bg-gray-100 dark:hover:bg-gray-700/80 text-xs font-bold transition cursor-pointer active:scale-95"
+                title="Back to Profile"
+              >
+                <ArrowLeft className="w-4 h-4 text-[#1E88E5] dark:text-blue-400" />
+                <span>Back</span>
+              </button>
 
-                  {photoUploadProgress > 0 && photoUploadProgress < 100 && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
-                      <CircularProgress
-                        variant="determinate"
-                        value={photoUploadProgress}
-                        size={40}
-                        thickness={4}
-                        style={{ color: "#fff" }}
-                      />
-                    </div>
-                  )}
+              <span className="text-xs font-extrabold text-gray-800 dark:text-gray-200">
+                Edit Account Info
+              </span>
+            </div>
 
-                  <label
-                    htmlFor="mobileProfileImageInput"
-                    className={`absolute bottom-0 right-0 bg-[#1E88E5] text-white p-1.5 rounded-full shadow-md transition ${
-                      photoLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-[#1565C0] active:scale-95"
-                    }`}
-                    title="Edit Profile Photo"
-                  >
-                    <FaCamera className="text-[11px]" />
-                  </label>
-
-                  <input
-                    type="file"
-                    id="mobileProfileImageInput"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handlePhotoChange}
-                    disabled={photoLoading}
-                  />
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-extrabold text-gray-900 dark:text-white leading-tight">
-                    {dbData?.firstName || authUser?.firstName || "User"} {dbData?.lastName || authUser?.lastName || ""}
-                  </h4>
-                  <p className="text-xs text-[#1E88E5] font-semibold mt-0.5">
-                    @{dbData?.username || authUser?.username || "username"}
-                  </p>
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 block">
-                    Tap camera to change photo
-                  </span>
-                </div>
+            {/* Initial Letter Profile Avatar Header */}
+            <div className="flex items-center gap-3.5 p-3.5 bg-gradient-to-r from-purple-50/80 to-blue-50/80 dark:from-purple-950/30 dark:to-slate-900 border border-purple-100 dark:border-purple-900/40 rounded-2xl mb-4 shadow-xs">
+              <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-[#6C5CE7] to-[#1E88E5] text-white flex items-center justify-center font-black text-lg shadow-md border-2 border-white dark:border-slate-700 select-none">
+                {(dbData?.firstName || authUser?.firstName || dbData?.username || authUser?.username || "U").charAt(0).toUpperCase()}
               </div>
-
-              {showPhotoUpdateBtn && (
-                <button
-                  type="button"
-                  onClick={handleUploadProfilePhoto}
-                  disabled={photoLoading}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-xs ${
-                    photoLoading ? "bg-gray-400 cursor-not-allowed text-white" : "bg-[#1E88E5] hover:bg-[#1565C0] text-white animate-pulse"
-                  }`}
-                >
-                  {photoLoading ? (
-                    <>
-                      <span>Updating</span>
-                      <CircularProgress size={12} color="inherit" />
-                    </>
-                  ) : (
-                    "Save Photo"
-                  )}
-                </button>
-              )}
+              <div>
+                <h4 className="text-sm font-extrabold text-gray-900 dark:text-white leading-tight">
+                  {dbData?.firstName || authUser?.firstName || "User"} {dbData?.lastName || authUser?.lastName || ""}
+                </h4>
+                <p className="text-xs text-[#1E88E5] font-semibold mt-0.5">
+                  @{dbData?.username || authUser?.username || "username"}
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 font-medium flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300">First Name</label>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  First Name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
-                  className="w-full p-2 border rounded transition focus:ring-2 focus:ring-blue-300 dark:bg-gray-500/50 dark:border-gray-600 text-gray-900 dark:text-white"
                   name="firstName"
-                  value={editData?.firstName}
-                  onChange={handleInputChange}
-                  required
+                  value={editData.firstName}
+                  onChange={handleChange}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-800 dark:text-white focus:border-[#1E88E5] focus:outline-none transition"
+                  placeholder="First name"
                 />
               </div>
 
               <div>
-                <label className="mb-1 font-medium flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300">Last Name</label>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  Last Name
+                </label>
                 <input
                   type="text"
-                  className="w-full p-2 border rounded transition focus:ring-2 focus:ring-blue-300 dark:bg-gray-500/50 dark:border-gray-600 text-gray-900 dark:text-white"
                   name="lastName"
-                  value={editData?.lastName}
-                  onChange={handleInputChange}
-                  required
+                  value={editData.lastName}
+                  onChange={handleChange}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-800 dark:text-white focus:border-[#1E88E5] focus:outline-none transition"
+                  placeholder="Last name"
                 />
               </div>
 
               <div>
-                <label className="mb-1 font-medium flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300"><FaEnvelope /> Email Address</label>
-                <input
-                  type="email"
-                  className="w-full p-2 border rounded transition focus:ring-2 focus:ring-blue-300 dark:bg-gray-500/50 dark:border-gray-600 text-gray-900 dark:text-white"
-                  name="email"
-                  value={editData?.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 font-medium flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300"><FaUser /> Username</label>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  Phone Number
+                </label>
                 <input
                   type="text"
-                  className="w-full p-2 border rounded transition focus:ring-2 focus:ring-blue-300 dark:bg-gray-500/50 dark:border-gray-600 text-gray-900 dark:text-white"
-                  name="username"
-                  value={editData?.username}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="mb-1 font-medium flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300"><FaPhone /> Phone Number</label>
-                <input
-                  type="tel"
-                  className="w-full p-2 border rounded transition focus:ring-2 focus:ring-blue-300 dark:bg-gray-500/50 dark:border-gray-600 text-gray-900 dark:text-white"
                   name="mobileNo"
-                  value={editData?.mobileNo}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (/^\d{0,10}$/.test(val)) handleInputChange(e);
-                  }}
-                  required
+                  value={editData.mobileNo}
+                  onChange={handleChange}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-800 dark:text-white focus:border-[#1E88E5] focus:outline-none transition"
+                  placeholder="Phone number"
                 />
               </div>
 
-              <div className="sm:col-span-2">
-                <label className="mb-1 font-medium flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300"><FaVenusMars /> Gender</label>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  Gender
+                </label>
                 <select
-                  className="w-full p-2 border rounded transition dark:bg-gray-500/50 dark:border-gray-600 text-gray-900 dark:text-white"
                   name="gender"
-                  value={editData?.gender}
-                  onChange={handleInputChange}
+                  value={editData.gender}
+                  onChange={handleChange}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-800 dark:text-white focus:border-[#1E88E5] focus:outline-none transition"
                 >
-                  <option value="">Select</option>
-                  <option value="Female">Female</option>
+                  <option value="">Select Gender</option>
                   <option value="Male">Male</option>
+                  <option value="Female">Female</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
 
-              <div className="sm:col-span-2">
-                <label className="mb-1 font-medium flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300"><FaMapMarkerAlt /> Address</label>
-                <button
-                  type="button"
-                  onClick={() => setShowAddressModal(true)}
-                  className="px-3 py-2 bg-[#1E88E5] hover:bg-[#1565C0] text-white rounded transition text-xs font-bold"
-                >
-                  Edit Address
-                </button>
-                <p className="text-xs mt-2 text-gray-600 dark:text-gray-300">
+              <div className="col-span-1 sm:col-span-2">
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  Primary Address
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddressModal(true)}
+                    className="px-3.5 py-2 rounded-xl bg-[#1E88E5] text-white text-xs font-bold hover:bg-[#1565C0] transition shadow-xs cursor-pointer flex items-center gap-1.5"
+                  >
+                    <FaMapMarkerAlt /> Change Address
+                  </button>
+                </div>
+
+                <p className="mt-2 text-xs font-semibold text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-2.5 rounded-xl border border-gray-200/80 dark:border-gray-700/80">
                   {formatFullAddress(editData?.address)}
                 </p>
               </div>
@@ -725,91 +674,6 @@ export default function AccountInfo() {
           </form>
         )}
 
-        {/* Danger Zone: Delete Account */}
-        <div className="mt-8 pt-5 border-t border-red-200 dark:border-red-900/40">
-          <div className="p-3.5 sm:p-4 bg-red-50/90 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div>
-              <h4 className="text-sm sm:text-base font-bold text-red-700 dark:text-red-400 flex items-center gap-2">
-                <FaTrashAlt /> Danger Zone: Delete Account
-              </h4>
-              <p className="text-[11px] sm:text-xs text-red-600/90 dark:text-red-300/80 mt-1 leading-snug">
-                Once deleted, all your address details and preferences will be permanently wiped out.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowDeleteModal(true)}
-              className="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition shadow-md whitespace-nowrap cursor-pointer text-center"
-            >
-              Delete Account
-            </button>
-          </div>
-        </div>
-
-        {/* Support & Quick Information Options (About Us & Contact Us - Hidden on Mobile) */}
-        <div className="hidden md:block mt-8 pt-6 border-t border-gray-200/90 dark:border-gray-800 space-y-4 pb-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-              <Sparkles size={14} className="text-[#6C5CE7] animate-pulse" />
-              Quick Support & Information
-            </h4>
-            <span className="text-[10px] font-bold text-gray-400">Madhu Care</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {/* About Us Card Option */}
-            <Link
-              to="/about"
-              className="relative overflow-hidden p-4 bg-gradient-to-br from-purple-50/90 via-white to-purple-50/40 dark:from-purple-950/40 dark:via-gray-900 dark:to-purple-950/20 border border-purple-200/90 dark:border-purple-800/70 rounded-2xl flex items-center justify-between gap-3 hover:border-purple-400 dark:hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/10 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 group cursor-pointer"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#6C5CE7] to-[#805AD5] text-white flex items-center justify-center shrink-0 shadow-md shadow-purple-500/25 group-hover:scale-110 transition-transform duration-200">
-                  <Info size={22} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h5 className="text-sm font-black text-gray-900 dark:text-white group-hover:text-[#6C5CE7] dark:group-hover:text-purple-300 transition-colors">
-                      About Us
-                    </h5>
-                    <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-purple-100 dark:bg-purple-900/70 text-[#6C5CE7] dark:text-purple-300">
-                      Our Story
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium leading-snug">
-                    Discover our farm-fresh milk journey & quality standards
-                  </p>
-                </div>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-[#6C5CE7] group-hover:translate-x-1 transition-all shrink-0" />
-            </Link>
-
-            {/* Contact Us Card Option */}
-            <Link
-              to="/contact-us"
-              className="relative overflow-hidden p-4 bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 dark:from-blue-950/40 dark:via-gray-900 dark:to-blue-950/20 border border-blue-200/90 dark:border-blue-800/70 rounded-2xl flex items-center justify-between gap-3 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 group cursor-pointer"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-[#1E88E5] text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25 group-hover:scale-110 transition-transform duration-200">
-                  <Headphones size={22} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h5 className="text-sm font-black text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
-                      Contact Us
-                    </h5>
-                    <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-blue-100 dark:bg-blue-900/70 text-blue-600 dark:text-blue-300">
-                      24/7 Care
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium leading-snug">
-                    Get round-the-clock helpdesk & customer support
-                  </p>
-                </div>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0" />
-            </Link>
-          </div>
-        </div>
 
         {/* Edit Address Modal */}
         {showAddressModal && (

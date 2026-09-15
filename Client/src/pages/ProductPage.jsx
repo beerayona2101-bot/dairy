@@ -19,6 +19,7 @@ import { CartContext } from "../context/CartProvider";
 import MadhuLoader from "../components/MadhuLoader";
 import { getProductImage } from "../utils/helper";
 import { products as baseCategories } from "../data/products";
+import BackButton from "../components/Common/BackButton";
 
 export default function ProductPage() {
 
@@ -113,7 +114,7 @@ export default function ProductPage() {
         if (baseCat) {
             return {
                 title: baseCat.title || baseCat.name,
-                image: baseCat.image,
+                image: getProductImage(baseCat),
                 description: baseCat.description || `Pure, unadulterated farm-fresh ${baseCat.title} products delivered daily to your doorstep.`,
                 features: baseCat.features || []
             };
@@ -130,7 +131,7 @@ export default function ProductPage() {
         if (adminCat) {
             return {
                 title: adminCat.title || adminCat.name,
-                image: adminCat.image || getProductImage(adminCat),
+                image: getProductImage(adminCat),
                 description: adminCat.description || `Pure, unadulterated farm-fresh ${adminCat.title} products delivered daily to your doorstep.`,
                 features: adminCat.features || []
             };
@@ -152,7 +153,7 @@ export default function ProductPage() {
 
         return {
             title: unslugify(productId),
-            image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969530/MADHU_dairy_products/ftq2d0zfpaw96wiu0cvv.jpg",
+            image: getProductImage(unslugify(productId)),
             description: `Pure, unadulterated farm-fresh ${unslugify(productId)} products delivered daily to your doorstep.`,
             features: []
         };
@@ -227,20 +228,17 @@ export default function ProductPage() {
                             {/* Floating Controls Overlay (Back button on top left ON THE IMAGE) */}
                             <div className="absolute top-4 sm:top-6 left-0 right-0 z-20 px-4 sm:px-8 lg:px-12 w-full flex justify-start items-center">
                                 {/* Top Left: Glass Back Button */}
-                                <Link
-                                    to="/products"
-                                    title="Back to All Categories"
-                                    className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 bg-black/40 hover:bg-black/60 active:scale-95 border border-white/30 rounded-xl text-white backdrop-blur-md transition-all cursor-pointer shadow-md text-xs sm:text-sm font-extrabold"
-                                >
-                                    <ArrowBackIcon sx={{ fontSize: "1.1rem" }} />
-                                    <span>Back to Categories</span>
-                                </Link>
+                                <BackButton fallbackPath="/products" variant="glass" label="Back to Categories" title="Back to All Categories" />
                             </div>
 
                             {/* Main Full-Bleed Category Banner Image */}
                             <img
                                 src={categoryInfo.image}
                                 alt={categoryInfo.title}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = getProductImage(categoryInfo?.title);
+                                }}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                             />
 
@@ -283,15 +281,8 @@ export default function ProductPage() {
                             <div className="space-y-3">
                                 {/* Mobile Top Header Navigation Bar */}
                                 <div className="md:hidden sticky top-1 z-30 w-full py-1.5 px-1 flex items-center justify-between transition-all duration-200">
-                                    {/* Left: Back Button (Goes directly to /home) */}
-                                    <Link
-                                        to="/home"
-                                        title="Go to Home Page"
-                                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/50 dark:hover:to-indigo-900/50 active:scale-95 rounded-xl text-purple-700 dark:text-purple-300 transition-all text-xs font-black cursor-pointer border border-purple-200/60 dark:border-purple-800/60 shadow-xs"
-                                    >
-                                        <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
-                                        <span>Back</span>
-                                    </Link>
+                                    {/* Left: Back Button */}
+                                    <BackButton fallbackPath="/home" />
 
                                     {/* Center: Title */}
                                     <div className="flex flex-col items-center justify-center">
@@ -336,15 +327,8 @@ export default function ProductPage() {
                             <div className="w-full flex flex-col">
                                 {/* Mobile Top Header Navigation Bar for Category View */}
                                 <div className="md:hidden sticky top-1 z-30 w-full mb-2 py-1.5 px-1 flex items-center justify-between transition-all duration-200">
-                                    {/* Left: Back Button (Goes back to /products) */}
-                                    <Link
-                                        to="/products"
-                                        title="Back to Categories"
-                                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/50 dark:hover:to-indigo-900/50 active:scale-95 rounded-xl text-purple-700 dark:text-purple-300 transition-all text-xs font-black cursor-pointer border border-purple-200/60 dark:border-purple-800/60 shadow-xs"
-                                    >
-                                        <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
-                                        <span>Back</span>
-                                    </Link>
+                                    {/* Left: Back Button */}
+                                    <BackButton fallbackPath="/products" />
 
                                     {/* Center: Title */}
                                     <div className="flex flex-col items-center justify-center">

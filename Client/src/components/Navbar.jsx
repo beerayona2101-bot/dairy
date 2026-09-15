@@ -152,7 +152,7 @@ export default function Navbar() {
         handleUserLogout();
         setOpenLoginDialog(true);
         enqueueSnackbar("User Logged Out Successfully", { variant: "success" });
-        navigate("/");
+        navigate("/home", { replace: true });
     }
 
     const handleUserCart = () => {
@@ -231,13 +231,32 @@ export default function Navbar() {
         const userId = authUser?._id || authAdmin?._id;
         if (userId && item?._id) {
             markNotificationAsRead(userId, item._id, "single").catch(() => {});
-            setNotification((prev) => prev.map((n, i) => i === idx || n._id === item._id ? { ...n, isRead: true } : n));
+            setNotification((prev) => prev.map((n, i) => (i === idx || n._id === item._id) ? { ...n, isRead: true } : n));
         }
         setNotificationDialog(false);
+
+        const targetOrderId = item?.orderId || item?.order?._id;
+        const isOrderNotif = item?.type === "order" || Boolean(targetOrderId) || (item?.title && /order/i.test(item.title));
+        const isLoginNotif = item?.type === "login" || (item?.title && /login/i.test(item.title));
+
         if (authAdmin) {
-            navigate("/admin/orders");
+            if (isOrderNotif && targetOrderId) {
+                navigate(`/admin/orders?orderId=${targetOrderId}`, { state: { orderId: targetOrderId } });
+            } else {
+                navigate("/admin/orders");
+            }
         } else {
-            navigate("/user-profile/orders");
+            if (isOrderNotif) {
+                if (targetOrderId) {
+                    navigate(`/user-profile/orders?orderId=${targetOrderId}`, { state: { orderId: targetOrderId } });
+                } else {
+                    navigate("/user-profile/orders");
+                }
+            } else if (isLoginNotif) {
+                navigate("/user-profile");
+            } else {
+                navigate("/user-profile");
+            }
         }
     };
 
@@ -324,8 +343,8 @@ export default function Navbar() {
                 isScrolling ? "-translate-y-full lg:translate-y-0" : "translate-y-0"
             }`}>
                 <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
-                    {/* Left Brand Logo Container */}
-                    <Link to="/" className="flex items-center hover:scale-105 transition-transform py-0.5 z-10">
+                    {/* Desktop View Brand Logo */}
+                    <Link to="/" className="hidden md:flex items-center hover:scale-105 transition-transform py-0.5 z-10">
                         <img
                             src={displayLogo}
                             alt={company?.name || "Madhu Dairy & Daily Needs"}
@@ -333,6 +352,28 @@ export default function Navbar() {
                             decoding="sync"
                             className="h-8 sm:h-9 md:h-10 lg:h-10.5 w-auto object-contain drop-shadow-sm transition-all duration-300"
                         />
+                    </Link>
+
+                    {/* Mobile View Brand Logo: Cow Logo on Left */}
+                    <Link to="/" className="flex md:hidden items-center hover:scale-105 transition-transform py-0.5 z-10">
+                        <img
+                            src={cowLogoImg}
+                            alt="Madhu Dairy Cow Logo"
+                            className="h-8 w-auto object-contain drop-shadow-sm"
+                        />
+                    </Link>
+
+                    {/* Mobile View Centered Madhu Dairy Name (Only Name, No Cow Image) */}
+                    <Link
+                        to="/"
+                        className="md:hidden absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 no-underline cursor-pointer select-none"
+                    >
+                        <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
+                            Madhu Dairy
+                        </span>
+                        <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-widest uppercase leading-tight mt-0.5">
+                            &amp; Daily Needs
+                        </span>
                     </Link>
 
 
@@ -398,20 +439,20 @@ export default function Navbar() {
                             </button>
                         </Tooltip>
 
-                        {/* Notifications Pill (Hidden on mobile response) */}
+                        {/* Notifications Pill (Visible on both Mobile & Desktop) */}
                         {(authUser || authAdmin) && !isCheckoutPage && (
                             <Tooltip title="Notifications">
                                 <button
                                     onClick={() => setNotificationDialog(true)}
-                                    className={`hidden md:flex w-9 h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
+                                    className={`flex w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
                                         notificationDialog
                                             ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.3)]"
                                             : "text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
                                     }`}
                                 >
-                                    <Bell className="w-4 h-4 transition-colors duration-300" />
+                                    <Bell className="w-4.5 h-4.5 sm:w-4 sm:h-4 transition-colors duration-300" />
                                     {(unreadCount > 0 || notification?.length > 0) && (
-                                        <span className="absolute -top-1 -right-1 font-bold px-1.5 py-0.2 bg-amber-500 text-white rounded-full text-[10px] shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                                        <span className="absolute -top-1 -right-1 font-bold px-1.5 py-0.2 bg-amber-500 text-white rounded-full text-[10px] shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse">
                                             {unreadCount > 0 ? unreadCount : notification.length}
                                         </span>
                                     )}
@@ -505,17 +546,6 @@ export default function Navbar() {
                                 Customer Account
                             </span>
                         </div>
-
-                        <MenuItem
-                            onClick={() => {
-                                handleProfileMenuClose();
-                                navigate("/user-profile/dashboard");
-                            }}
-                            className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
-                        >
-                            <DashboardIcon fontSize="small" className="text-[#6C5CE7]" />
-                            <span>Dashboard</span>
-                        </MenuItem>
 
                         <MenuItem
                             onClick={() => {
@@ -677,19 +707,19 @@ export default function Navbar() {
                     paper: {
                         sx: {
                             position: 'absolute',
-                            top: 75,
+                            top: { xs: 60, sm: 75 },
                             m: 0,
-                            maxHeight: "300px",
+                            maxHeight: "420px",
                             backgroundColor: theme === "dark" ? "#0f0f0f" : "#ffffff",
                             right: {
-                                xs: 30,
-                                sm: 100,
-                                md: 150
+                                xs: 12,
+                                sm: 40,
+                                md: 120
                             },
                             width: {
-                                xs: '300px',
-                                sm: '300px',
-                                md: '350px'
+                                xs: 'calc(100vw - 24px)',
+                                sm: '320px',
+                                md: '360px'
                             }
                         },
                     },

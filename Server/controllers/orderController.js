@@ -6,7 +6,7 @@ import Address from "../models/AddressShema.js";
 import Product from "../models/ProductSchema.js";
 import { sendOrderConfirmationEmail } from "../config/nodemailer.js";
 import { broadcastOrderStatusUpdate } from "../socket/socket.js";
-import { emitAdminOrderNotifications } from "../socket/helper.js";
+import { emitAdminOrderNotifications, addNotification } from "../socket/helper.js";
 
 // CREATE: Place new order via REST API
 export const createOrder = async (req, res) => {
@@ -74,9 +74,20 @@ export const createOrder = async (req, res) => {
 
       const finalOrder = populatedOrder || savedOrder;
 
+      const customerNotif = {
+        title: "Order Placed Successfully 🛍️",
+        description: `Your order #${savedOrder?.orderId || String(savedOrder?._id).slice(-6).toUpperCase()} for ₹${savedOrder.totalAmount} has been received!`,
+        date: new Date(),
+        isRead: false,
+        orderId: savedOrder._id,
+        type: "order",
+      };
+      await addNotification(user, customerNotif);
+
       emitAdminOrderNotifications(null, finalOrder, user, new Date().toISOString(), io);
       io.emit("order:place-new-success", { newOrder: finalOrder });
       io.to(`user:${userId}`).emit("order:place-new-success", { newOrder: finalOrder });
+      io.to(`user:${userId}`).emit("user:notification", customerNotif);
       io.emit("order:global-status-update", { orderId: savedOrder._id, status: "Pending", userId });
     } catch (err) {
       console.warn("Socket notification error in createOrder:", err?.message);

@@ -7,8 +7,9 @@ import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider";
 import PropTypes from "prop-types";
 import BuffaloLoader from "../components/BuffaloLoader";
 import PageTransition from "../components/PageTransition";
-import { Menu, X, User, ShoppingBag, MapPin, Heart, CreditCard, ChevronRight, Info, Headphones, LayoutDashboard } from "lucide-react";
+import { Menu, X, User, ShoppingBag, MapPin, Heart, CreditCard, ChevronRight, Info, Headphones, ArrowLeft } from "lucide-react";
 import { Drawer } from "@mui/material";
+import BackButton from "../components/Common/BackButton";
 
 export default function UserProfileLayout({ children }) {
     const scrollRef = useRef(null);
@@ -28,7 +29,6 @@ export default function UserProfileLayout({ children }) {
     const userRole = sessionStorage.getItem("userRole");
 
     const mobileNavTabs = [
-        { key: "/user-profile/dashboard", label: "Dashboard", icon: <LayoutDashboard size={14} /> },
         { key: "/user-profile", label: "My Profile", icon: <User size={14} /> },
         { key: "/user-profile/orders", label: "My Orders", icon: <ShoppingBag size={14} /> },
         { key: "/user-profile/addresses", label: "Saved Addresses", icon: <MapPin size={14} /> },
@@ -38,6 +38,7 @@ export default function UserProfileLayout({ children }) {
         { key: "/contact-us", label: "Contact Us", icon: <Headphones size={14} /> },
     ];
 
+    const isSubProfilePage = location.pathname !== "/user-profile" && location.pathname.startsWith("/user-profile/");
     const currentTabLabel = mobileNavTabs.find(tab => tab.key === location.pathname)?.label || "Profile Options";
 
     if (authUserLoading) {
@@ -54,15 +55,21 @@ export default function UserProfileLayout({ children }) {
         >
             <Navbar />
 
-            <main className="w-full max-w-7xl mx-auto flex-1 flex flex-col md:flex-row items-stretch pt-16 sm:pt-24 md:pt-22 pb-16 sm:pb-6 px-0 sm:px-6 gap-6 min-w-0 overflow-hidden h-full">
+            <main className="w-full max-w-7xl mx-auto flex-1 flex flex-col md:flex-row items-stretch pt-13 sm:pt-24 md:pt-22 pb-16 sm:pb-6 px-0 sm:px-6 gap-6 min-w-0 overflow-hidden h-full">
                 {/* Desktop Sidebar (hidden on mobile) */}
                 <div className="hidden md:flex flex-col w-64 shrink-0 h-full overflow-hidden">
                     <UserProfileSidebar />
                 </div>
 
                 {/* Main Content Glass Card (Full Width Transparent on Mobile, Rounded Card on Desktop) */}
-                <div className="flex-1 w-full min-w-0 h-full rounded-none md:rounded-[24px] shadow-none md:shadow-[0_10px_30px_rgba(0,0,0,0.06)] bg-transparent md:bg-white dark:md:bg-slate-900 backdrop-blur-none md:backdrop-blur-2xl dark:text-white p-3.5 sm:p-6 transition-all duration-300 border-0 md:border border-gray-200/90 dark:border-gray-800 flex flex-col overflow-hidden">
+                <div className="flex-1 w-full min-w-0 h-full rounded-none md:rounded-[24px] shadow-none md:shadow-[0_10px_30px_rgba(0,0,0,0.06)] bg-transparent md:bg-white dark:md:bg-slate-900 backdrop-blur-none md:backdrop-blur-2xl dark:text-white px-3.5 sm:px-6 pt-1 sm:pt-6 pb-3.5 sm:pb-6 transition-all duration-300 border-0 md:border border-gray-200/90 dark:border-gray-800 flex flex-col overflow-hidden">
                     
+                    {/* Mobile Navigation Header with Back Arrow Only (Mobile Only - Only shown when inside sub-options) */}
+                    {isSubProfilePage && !location.pathname.includes("wishlist") && (
+                        <div className="md:hidden flex items-center justify-start pb-2 mb-2 border-b border-gray-200/80 dark:border-gray-800 shrink-0">
+                            <BackButton fallbackPath="/user-profile" />
+                        </div>
+                    )}
 
                     {/* Page Content */}
                     <PageTransition key={location.pathname} className="h-full flex flex-col min-h-0 flex-1">

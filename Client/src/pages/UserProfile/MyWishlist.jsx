@@ -13,6 +13,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { getGuestWishlist, toggleGuestWishlist, clearGuestWishlist } from "../../utils/guestWishlist";
+import BackButton from "../../components/Common/BackButton";
+
 
 export default function MyWishlist() {
   const navigate = useNavigate();
@@ -365,8 +367,36 @@ export default function MyWishlist() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      <div className="shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 md:pt-6 pb-6 flex flex-col h-full overflow-hidden">
+      {/* Mobile Top Back Button Only (Shown on Mobile Response Only - Left Top) */}
+      <div className="md:hidden w-full pb-2 mb-2 flex items-center justify-start shrink-0">
+        <BackButton fallbackPath={activeUser ? "/user-profile" : "/home"} />
+      </div>
+
+      {/* Mobile Actions Bar (Shown on Mobile Response when items exist) */}
+      {wishlist.length > 0 && (
+        <div className="md:hidden flex items-center gap-2 mb-3 pb-2 border-b border-gray-100 dark:border-gray-800/80 shrink-0">
+          <button
+            onClick={handleMoveAllToCart}
+            disabled={clearLoading}
+            className="flex-1 bg-[#1E88E5] hover:bg-[#1565C0] text-white text-xs font-bold py-2 px-3 rounded-xl transition cursor-pointer shadow-xs flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+          >
+            <ShoppingCartIcon sx={{ fontSize: "0.95rem" }} />
+            <span>Move All to Cart</span>
+          </button>
+
+          <button
+            onClick={handleClearAll}
+            disabled={clearLoading}
+            className="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-bold py-2 px-3 rounded-xl transition cursor-pointer active:scale-95 border border-red-200/60 dark:border-red-800/60 disabled:opacity-50"
+          >
+            {clearLoading ? "Clearing..." : "Clear All"}
+          </button>
+        </div>
+      )}
+
+      {/* Desktop Top Header (Hidden on Mobile) */}
+      <div className="hidden md:flex shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 items-center justify-between gap-3">
         <div>
           <h2 className="font-bold text-xl text-gray-800 dark:text-white flex items-center gap-2">
             <span>My Wishlist</span>

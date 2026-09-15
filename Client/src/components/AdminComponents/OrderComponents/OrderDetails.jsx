@@ -106,14 +106,37 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
   );
 
   useEffect(() => {
+    const handleLiveStatusUpdate = ({ orderId, status }) => {
+      if (!orderId || !status) return;
+      setLocalOrders((prev) =>
+        prev.map((o) => (String(o._id) === String(orderId) ? { ...o, status } : o))
+      );
+      setSelectedOrder((prev) =>
+        prev && String(prev._id) === String(orderId) ? { ...prev, status } : prev
+      );
+      if (typeof setAllOrders === "function") {
+        setAllOrders((prev) =>
+          prev.map((o) => (String(o._id) === String(orderId) ? { ...o, status } : o))
+        );
+      }
+    };
+
+    socket.on("order:global-status-update", handleLiveStatusUpdate);
+    socket.on("user-order:updated-status", handleLiveStatusUpdate);
+    socket.on("order:status-updated", handleLiveStatusUpdate);
+    socket.on("admin:order-updated", handleLiveStatusUpdate);
     socket.on("order:update-status-failed", handleOrderUpdateFailed);
     socket.on("order:update-status-success", handleOrderUpdateSuccess);
 
     return () => {
+      socket.off("order:global-status-update", handleLiveStatusUpdate);
+      socket.off("user-order:updated-status", handleLiveStatusUpdate);
+      socket.off("order:status-updated", handleLiveStatusUpdate);
+      socket.off("admin:order-updated", handleLiveStatusUpdate);
       socket.off("order:update-status-failed", handleOrderUpdateFailed);
       socket.off("order:update-status-success", handleOrderUpdateSuccess);
     };
-  }, [handleOrderUpdateFailed, handleOrderUpdateSuccess]);
+  }, [handleOrderUpdateFailed, handleOrderUpdateSuccess, setAllOrders]);
 
   const handleUpdateOrderStatus = async (orderId, currentStatus, newStatus, userId) => {
     if (!orderId || !newStatus || currentStatus === newStatus) return;

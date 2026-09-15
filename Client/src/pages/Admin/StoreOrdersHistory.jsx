@@ -11,6 +11,7 @@ import CallIcon from '@mui/icons-material/Call';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { SidebarContext } from "../../context/SidebarProvider";
 import { useSnackbar } from 'notistack';
+import BackButton from '../../components/Common/BackButton';
 
 
 import { formatFullAddress } from "../../utils/dateUtils";
@@ -65,11 +66,14 @@ export default function StoreOrdersHistory() {
     return (
         <div className="p-3">
             <div className="bg-white dark:bg-gray-500/20 rounded-lg p-3">
-                <div className="flex flex-wrap items-center justify-between border-b pb-2 border-gray-500/20 mb-3">
-                    <h2 className="text-xl text-gray-800 dark:text-white line-clamp-1">
-                        Order History:{" "}
-                        <span className="text-2xl text-green-500 font-bold">{(titleName).toUpperCase()}</span>
-                    </h2>
+                <div className="flex flex-wrap items-center justify-between border-b pb-2 border-gray-500/20 mb-3 gap-2">
+                    <div className="flex items-center gap-3">
+                        <BackButton fallbackPath="/admin/customers" />
+                        <h2 className="text-xl text-gray-800 dark:text-white line-clamp-1">
+                            Order History:{" "}
+                            <span className="text-2xl text-green-500 font-bold">{(titleName).toUpperCase()}</span>
+                        </h2>
+                    </div>
 
                     <div className="hidden sm:flex flex-wrap items-center gap-2">
                         <input

@@ -51,7 +51,7 @@ export default function GoogleLoginComponent( {setOpenLoginDialog, setGoogleLogi
                 );
               };
 
-              const userDest = (!isAuthPath(storedRedirect) && storedRedirect) || "/user-profile/dashboard";
+              const userDest = (!isAuthPath(storedRedirect) && storedRedirect) || "/home";
               navigate(userDest, { replace: true });
             }
             

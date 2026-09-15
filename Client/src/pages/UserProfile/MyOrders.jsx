@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation, Link } from "react-router-dom";
 import { Dialog, useMediaQuery, useTheme } from "@mui/material";
-import { FaHourglassHalf, FaBoxOpen, FaShippingFast, FaCheckCircle, FaTimesCircle, FaMoneyBillWave, FaShoppingCart } from "react-icons/fa";
+import { FaHourglassHalf, FaBoxOpen, FaShippingFast, FaCheckCircle, FaTimesCircle, FaShoppingCart } from "react-icons/fa";
 import CloseIcon from '@mui/icons-material/Close';
 import { UserOrderContext } from "../../context/UserOrderProvider";
 import { CartContext } from "../../context/CartProvider";
@@ -17,8 +17,8 @@ import { cancelOrderApi } from "../../services/orderService";
 import api from "../../services/api";
 import { formatOrderDate, formatFullAddress } from "../../utils/dateUtils";
 import OrderStatusTracker from "../../components/OrderStatusTracker";
-import { ChevronRight, Headphones } from "lucide-react";
-
+import { ChevronRight, Headphones, Search, Filter, X, FileText, Download, Eye } from "lucide-react";
+import InvoiceModal from "../../components/InvoiceModal";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -26,11 +26,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function MyOrders() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const { userOrders, orderLoading } = useContext(UserOrderContext);
+  const { userOrders = [], orderLoading } = useContext(UserOrderContext);
   const { addToCart } = useContext(CartContext);
   const { authUser } = useContext(UserAuthContext);
   const { authAdmin } = useContext(AdminAuthContext);
@@ -38,8 +40,45 @@ export default function MyOrders() {
 
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewInvoiceOrderId, setViewInvoiceOrderId] = useState(null);
+
+  const urlStatus = searchParams.get("status") || "all";
+  const urlOrderId = searchParams.get("orderId") || location.state?.orderId;
+
+  const [activeTab, setActiveTab] = useState(urlStatus);
+
+  // Sync state when URL status changes
+  useEffect(() => {
+    if (urlStatus && urlStatus !== activeTab) {
+      setActiveTab(urlStatus);
+    }
+  }, [urlStatus]);
+
+  // Auto select order if orderId query/state param exists
+  useEffect(() => {
+    if (urlOrderId && userOrders.length > 0) {
+      const match = userOrders.find(
+        (o) => String(o._id) === String(urlOrderId) || String(o.orderId) === String(urlOrderId)
+      );
+      if (match) {
+        setSelectedOrder(match);
+      }
+    }
+  }, [urlOrderId, userOrders]);
 
   const activeSelectedOrder = userOrders?.find((o) => String(o?._id) === String(selectedOrder?._id)) || selectedOrder;
+
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    const newParams = new URLSearchParams(searchParams);
+    if (newTab === "all") {
+      newParams.delete("status");
+    } else {
+      newParams.set("status", newTab);
+    }
+    setSearchParams(newParams, { replace: true });
+  };
 
   const handleOrderAgain = (targetOrder, e) => {
     if (e) e.stopPropagation();
@@ -81,18 +120,17 @@ export default function MyOrders() {
       enqueueSnackbar(message, { variant: "error" });
     }
     setLoading(false);
-  }
+  };
 
   useEffect(() => {
     socket.on("order:update-delivered-status", handleStatusTypeUpdate);
 
     return () => {
       socket.off("order:update-delivered-status", handleStatusTypeUpdate);
-    }
+    };
   }, []);
 
   const handleOrderReceived = () => {
-
     if (!activeSelectedOrder) {
       enqueueSnackbar("No order selected!", { variant: "error" });
       return;
@@ -132,82 +170,122 @@ export default function MyOrders() {
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "Pending":
-        return <FaHourglassHalf className="text-yellow-500" />;
-      case "Processing":
-        return <FaBoxOpen className="text-blue-500" />;
-      case "Shipped":
-        return <FaShippingFast className="text-purple-500" />;
-      case "Ready to Deliver":
-        return <FaShippingFast className="text-teal-500" />;
-      case "Delivered":
-        return <FaCheckCircle className="text-green-600" />;
-      case "Cancelled":
-        return <FaTimesCircle className="text-red-500" />;
-      case "Confirmed":
-        return <FaCheckCircle className="text-blue-500" />;
-      default:
-        return null;
-    }
-  };
+  // Status Counts
+  const totalCount = userOrders.length;
+  const pendingCount = userOrders.filter((o) =>
+    ["pending", "confirmed", "shipped", "processing", "ready to deliver"].includes(o.status?.toLowerCase())
+  ).length;
+  const deliveredCount = userOrders.filter((o) => o.status?.toLowerCase() === "delivered").length;
+  const cancelledCount = userOrders.filter((o) => o.status?.toLowerCase() === "cancelled").length;
 
-  const filteredOrders = userOrders;
+  // Filtered Orders calculation
+  const filteredOrders = userOrders.filter((order) => {
+    const status = order.status?.toLowerCase() || "";
+
+    let matchesTab = true;
+    if (activeTab === "pending") {
+      matchesTab = ["pending", "confirmed", "shipped", "processing", "ready to deliver"].includes(status);
+    } else if (activeTab === "delivered") {
+      matchesTab = status === "delivered";
+    } else if (activeTab === "cancelled") {
+      matchesTab = status === "cancelled";
+    }
+
+    let matchesSearch = true;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const orderIdStr = (order.orderId || order._id || "").toLowerCase();
+      const productMatch = order.productsData?.some((p) =>
+        (p.productId?.name || p.productName || "").toLowerCase().includes(q)
+      );
+      matchesSearch = orderIdStr.includes(q) || productMatch;
+    }
+
+    return matchesTab && matchesSearch;
+  });
 
   let content;
   if (orderLoading) {
-    content = <BuffaloLoader variant="inline" text="Loading orders..." />;
-  } else if (!filteredOrders || filteredOrders?.length === 0) {
+    content = <BuffaloLoader variant="inline" text="Loading your orders..." />;
+  } else if (!userOrders || userOrders.length === 0) {
     content = (
-      <div className="text-center text-gray-600 dark:text-gray-300 py-16 w-full font-medium">
-        You haven't placed any orders yet.
+      <div className="text-center text-gray-500 dark:text-gray-400 py-16 w-full font-medium">
+        <p className="text-base font-bold text-gray-700 dark:text-gray-200">You haven't placed any orders yet.</p>
+        <p className="text-xs mt-1">Explore our fresh dairy catalog and place your first order!</p>
+        <button
+          onClick={() => navigate("/products")}
+          className="mt-4 px-5 py-2.5 bg-[#1E88E5] text-white text-xs font-bold rounded-xl hover:bg-[#1565C0] transition shadow-sm cursor-pointer"
+        >
+          Browse Products
+        </button>
+      </div>
+    );
+  } else if (filteredOrders.length === 0) {
+    content = (
+      <div className="text-center text-gray-500 dark:text-gray-400 py-12 w-full font-medium">
+        <p className="text-sm font-bold text-gray-700 dark:text-gray-200">No orders found matching criteria.</p>
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="mt-3 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-xs font-bold rounded-lg text-[#1E88E5] dark:text-blue-400 hover:underline cursor-pointer"
+          >
+            Clear Search Filter
+          </button>
+        )}
       </div>
     );
   } else {
     content = (
-      <div className="space-y-4 pt-1 pb-20 sm:pb-4">
-        {filteredOrders?.map((order) => {
+      <div className="space-y-4 pt-1 pb-20 sm:pb-6">
+        {filteredOrders.map((order) => {
+          const displayId = order.orderId || order._id?.slice(-8)?.toUpperCase() || "ORD-1234";
           const statusText =
             order?.status === "Delivered"
-              ? "Order delivered"
+              ? "Order Delivered"
               : order?.status === "Cancelled"
-              ? "Order cancelled"
+              ? "Order Cancelled"
               : order?.status === "Pending"
-              ? "Order placed"
+              ? "Order Placed"
               : order?.status === "Processing" || order?.status === "Confirmed"
-              ? "Order confirmed"
-              : `Order ${order?.status?.toLowerCase() || ""}`;
+              ? "Order Confirmed"
+              : `Order ${order?.status || ""}`;
 
           return (
             <div
               key={order?._id}
               onClick={() => setSelectedOrder(order)}
-              className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200/90 dark:border-gray-800 hover:border-[#6C5CE7] dark:hover:border-purple-500 transition-all cursor-pointer space-y-3 group"
+              className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200/90 dark:border-gray-800 hover:border-[#1E88E5] dark:hover:border-blue-500 transition-all cursor-pointer space-y-3 group"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-1.5 font-extrabold text-sm sm:text-base text-gray-900 dark:text-white">
+                  <div className="flex items-center gap-2 font-black text-sm sm:text-base text-gray-900 dark:text-white">
                     <span>{statusText}</span>
                     {order?.status === "Delivered" ? (
-                      <FaCheckCircle className="text-emerald-500 text-sm sm:text-base shrink-0" />
+                      <FaCheckCircle className="text-emerald-500 text-sm shrink-0" />
                     ) : order?.status === "Cancelled" ? (
-                      <FaTimesCircle className="text-red-500 text-sm sm:text-base shrink-0" />
+                      <FaTimesCircle className="text-red-500 text-sm shrink-0" />
                     ) : (
-                      <FaCheckCircle className="text-blue-500 text-sm sm:text-base shrink-0" />
+                      <FaCheckCircle className="text-blue-500 text-sm shrink-0" />
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 dark:text-gray-400 mt-0.5 font-medium">
-                    Placed at {formatOrderDate(order?.createdAt)}
-                  </p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400">
+                      #{displayId}
+                    </span>
+                    <span className="text-gray-300 dark:text-gray-700">•</span>
+                    <p className="text-xs text-gray-400 dark:text-gray-400 font-medium">
+                      Placed on {formatOrderDate(order?.createdAt)}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1 font-extrabold text-base sm:text-lg text-gray-900 dark:text-white shrink-0">
+                <div className="flex items-center gap-1 font-black text-base sm:text-lg text-gray-900 dark:text-white shrink-0">
                   <span>&#8377;{(order?.totalAmount || 0).toFixed(2)}</span>
                   <ChevronRight size={18} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-800 dark:group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
 
+              {/* Product Thumbnails horizontal scroll */}
               <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide py-1">
                 {order?.productsData?.slice(0, 6).map((item, idx) => (
                   <div key={idx} className="relative shrink-0">
@@ -223,7 +301,7 @@ export default function MyOrders() {
                       className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-gray-200/80 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shadow-2xs"
                     />
                     {item?.productQuantity > 1 && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-gray-900 dark:bg-purple-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded-full shadow-xs">
+                      <span className="absolute -top-1.5 -right-1.5 bg-gray-900 dark:bg-blue-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded-full shadow-xs">
                         x{item?.productQuantity}
                       </span>
                     )}
@@ -236,6 +314,7 @@ export default function MyOrders() {
                 )}
               </div>
 
+              {/* Card Footer Actions */}
               <div className="pt-3 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-between gap-2">
                 <button
                   type="button"
@@ -243,9 +322,9 @@ export default function MyOrders() {
                     e.stopPropagation();
                     setSelectedOrder(order);
                   }}
-                  className="text-xs sm:text-sm font-extrabold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition cursor-pointer flex items-center gap-1 group-hover:text-[#6C5CE7]"
+                  className="text-xs sm:text-sm font-extrabold text-gray-600 dark:text-gray-300 hover:text-[#1E88E5] dark:hover:text-blue-400 transition cursor-pointer flex items-center gap-1"
                 >
-                  View Details <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#6C5CE7] transition" />
+                  View Details <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#1E88E5] transition" />
                 </button>
 
                 <button
@@ -265,24 +344,128 @@ export default function MyOrders() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-extrabold text-gray-900 dark:text-white whitespace-nowrap">
-            My Orders
-          </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            View and manage your recent order history and status.
-          </p>
+      {/* Header & Controls */}
+      <div className="shrink-0 pb-3 mb-3 border-b border-gray-200/80 dark:border-gray-700/80 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-extrabold text-gray-900 dark:text-white whitespace-nowrap">
+              My Orders
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              View, track, and manage your complete order history.
+            </p>
+          </div>
+
+          {/* Search Box */}
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by ID or item name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-[#1E88E5] text-xs font-semibold text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none transition"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pt-1">
+          <button
+            type="button"
+            onClick={() => handleTabChange("all")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === "all"
+                ? "bg-[#1E88E5] text-white shadow-xs"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+          >
+            All Orders
+            <span className={`px-1.5 py-0.2 text-[10px] rounded-full font-black ${
+              activeTab === "all" ? "bg-white/20 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            }`}>
+              {totalCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabChange("pending")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === "pending"
+                ? "bg-amber-500 text-white shadow-xs"
+                : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/60"
+            }`}
+          >
+            Pending / Active
+            <span className={`px-1.5 py-0.2 text-[10px] rounded-full font-black ${
+              activeTab === "pending" ? "bg-white/20 text-white" : "bg-amber-200 dark:bg-amber-900 text-amber-800 dark:text-amber-200"
+            }`}>
+              {pendingCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabChange("delivered")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === "delivered"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60"
+            }`}
+          >
+            Delivered
+            <span className={`px-1.5 py-0.2 text-[10px] rounded-full font-black ${
+              activeTab === "delivered" ? "bg-white/20 text-white" : "bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200"
+            }`}>
+              {deliveredCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabChange("cancelled")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === "cancelled"
+                ? "bg-rose-600 text-white shadow-xs"
+                : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60"
+            }`}
+          >
+            Cancelled
+            <span className={`px-1.5 py-0.2 text-[10px] rounded-full font-black ${
+              activeTab === "cancelled" ? "bg-white/20 text-white" : "bg-rose-200 dark:bg-rose-900 text-rose-800 dark:text-rose-200"
+            }`}>
+              {cancelledCount}
+            </span>
+          </button>
         </div>
       </div>
 
+      {/* Scrollable Order List Container */}
       <div className="flex-1 overflow-y-auto scrollbar-hide pr-1">
         {content}
       </div>
 
+      {/* Order Details View Dialog Modal */}
       <Dialog
         open={!!selectedOrder}
-        onClose={() => setSelectedOrder(null)}
+        onClose={() => {
+          setSelectedOrder(null);
+          if (searchParams.get("orderId")) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.delete("orderId");
+            setSearchParams(newParams, { replace: true });
+          }
+        }}
         TransitionComponent={Transition}
         fullScreen={isMobile}
         fullWidth
@@ -303,7 +486,14 @@ export default function MyOrders() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setSelectedOrder(null)}
+                  onClick={() => {
+                    setSelectedOrder(null);
+                    if (searchParams.get("orderId")) {
+                      const newParams = new URLSearchParams(searchParams);
+                      newParams.delete("orderId");
+                      setSearchParams(newParams, { replace: true });
+                    }
+                  }}
                   className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer text-gray-700 dark:text-gray-200"
                   aria-label="Back"
                 >
@@ -325,7 +515,7 @@ export default function MyOrders() {
                   setSelectedOrder(null);
                   navigate("/contact-us");
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/50 text-[#FF2E63] dark:text-pink-300 font-extrabold text-xs hover:bg-pink-100 transition cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/50 text-[#FF2E63] dark:text-pink-300 font-extrabold text-xs hover:bg-pink-100 transition cursor-pointer shadow-2xs"
               >
                 <Headphones size={14} />
                 <span>Get Help</span>
@@ -404,18 +594,19 @@ export default function MyOrders() {
                   </div>
                 </div>
 
-                {activeSelectedOrder?.status === "Delivered" && (
-                  <div className="pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
-                    <a
-                      href={`${api.defaults.baseURL || 'http://localhost:9000'}/pdf/generate-bill/${activeSelectedOrder?._id}?print=true`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl text-xs font-extrabold bg-purple-100 text-[#6C5CE7] hover:bg-purple-200 dark:bg-purple-950/80 dark:text-purple-300 transition shadow-2xs cursor-pointer"
-                    >
-                      Download Invoice / Credit Note
-                    </a>
-                  </div>
-                )}
+                <div className="pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <FileText className="w-3.5 h-3.5 text-[#6C5CE7]" /> Tax Invoice Receipt
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setViewInvoiceOrderId(activeSelectedOrder?._id)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition shadow-xs cursor-pointer active:scale-95"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>View Invoice</span>
+                  </button>
+                </div>
               </div>
 
               {/* Order Details Card */}
@@ -510,8 +701,13 @@ export default function MyOrders() {
           </div>
         )}
       </Dialog>
+
+      {/* In-Page Invoice Modal */}
+      <InvoiceModal
+        open={!!viewInvoiceOrderId}
+        onClose={() => setViewInvoiceOrderId(null)}
+        orderId={viewInvoiceOrderId}
+      />
     </div>
   );
 }
-
-

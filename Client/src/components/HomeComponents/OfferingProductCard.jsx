@@ -68,9 +68,9 @@ export default function OfferingProductCard({ image, title }) {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
 
-                {/* Bottom-to-Top Black Gradient Shadow Overlay with Bottom-Centered White Title */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end justify-center pb-3 sm:pb-8 px-2 sm:px-4 transition-all duration-300 group-hover:from-black">
-                    <h3 className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-black text-white text-center tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] transform group-hover:scale-105 transition-transform duration-300 line-clamp-1">
+                {/* Bottom-to-Top Subtle Gradient Overlay with Bottom-Centered White Title */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent flex items-end justify-center pb-3 sm:pb-8 px-2 sm:px-4 transition-all duration-300 group-hover:from-black/70">
+                    <h3 className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-black text-white text-center tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] transform group-hover:scale-105 transition-transform duration-300 line-clamp-1">
                         {title}
                     </h3>
                 </div>

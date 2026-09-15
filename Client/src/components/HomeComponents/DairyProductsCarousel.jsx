@@ -52,11 +52,11 @@ export default function DairyProductsCarousel({ half }) {
                             />
 
                             {/* Minimal Bottom Shadow Overlay covering ONLY text area */}
-                            <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent pointer-events-none rounded-b-full" />
+                            <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent pointer-events-none rounded-b-full" />
 
                             {/* Category Name INSIDE Circle at Bottom */}
                             <div className="absolute bottom-2 sm:bottom-3 inset-x-0 px-1.5 flex items-center justify-center pointer-events-none z-10">
-                                <span className="text-xs sm:text-sm font-extrabold text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.95)] tracking-wide group-hover/item:text-purple-200 transition-colors duration-300 truncate max-w-full">
+                                <span className="text-xs sm:text-sm font-extrabold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] tracking-wide group-hover/item:text-purple-200 transition-colors duration-300 truncate max-w-full">
                                     {title}
                                 </span>
                             </div>

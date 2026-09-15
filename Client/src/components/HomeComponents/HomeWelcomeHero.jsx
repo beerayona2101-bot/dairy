@@ -23,9 +23,8 @@ export default function HomeWelcomeHero() {
                 className="absolute inset-0 w-full h-full object-cover object-[center_25%] md:object-right z-0 brightness-105 contrast-105 saturate-105"
             />
 
-            {/* 2. Seamless Gradient Overlays for High Legibility */}
-            {/* Mobile dark overlay gradient for maximum text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/60 to-slate-900/40 z-[1]" />
+            {/* 2. Soft Gradient Overlay for Pristine Image Clarity & Legibility */}
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/35 via-slate-950/15 to-transparent z-[1]" />
             {/* Bottom Fade transition to white page body */}
             <div className="absolute bottom-0 inset-x-0 h-8 sm:h-16 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-[1]" />
 
@@ -39,14 +38,14 @@ export default function HomeWelcomeHero() {
                         whileInView={{ y: 0, opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                        className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                     >
                         {loggedInName ? (
                             <div className="space-y-1">
                                 <span className="block text-white text-xs sm:text-2xl font-bold opacity-95">
                                     Welcome Back,
                                 </span>
-                                <span className="inline-block text-2xl sm:text-5xl lg:text-6xl font-[900] text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-lime-300 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] py-0.5">
+                                <span className="inline-block text-2xl sm:text-5xl lg:text-6xl font-[900] text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-lime-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] py-0.5">
                                     {loggedInName}!
                                 </span>
                                 <span className="block text-xs sm:text-xl lg:text-2xl font-extrabold text-blue-100 opacity-95">
@@ -54,7 +53,7 @@ export default function HomeWelcomeHero() {
                                 </span>
                             </div>
                         ) : (
-                            <span className="block text-lg sm:text-4xl lg:text-5xl font-[900] text-white leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.95)]">
+                            <span className="block text-lg sm:text-4xl lg:text-5xl font-[900] text-white leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
                                 Welcome to <span className="text-purple-300 drop-shadow-md">MADHU</span> Dairy & Daily Needs
                             </span>
                         )}
@@ -66,7 +65,7 @@ export default function HomeWelcomeHero() {
                         whileInView={{ y: 0, opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="text-xs sm:text-sm md:text-base text-white/95 font-semibold leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl mx-auto md:mx-0"
+                        className="text-xs sm:text-sm md:text-base text-white/95 font-semibold leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] max-w-xl mx-auto md:mx-0"
                     >
                         {loggedInName
                             ? "Your daily dose of 100% unadulterated farm-fresh A2 milk, ghee, paneer, and sweets is ready for doorstep delivery."

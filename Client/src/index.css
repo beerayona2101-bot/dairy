@@ -233,18 +233,22 @@ input.border-0 {
 
 /* Brand Utility Classes matching Palette */
 .bg-primary-blue,
+.bg-madhu-blue,
 .bg-madhur-blue {
   background-color: #1E88E5 !important;
 }
+.hover\:bg-madhu-blue-dark:hover,
 .hover\:bg-madhur-blue-dark:hover,
 .hover\:bg-primary-blue-dark:hover {
   background-color: #1565C0 !important;
 }
 .text-primary-blue,
+.text-madhu-blue,
 .text-madhur-blue {
   color: #1E88E5 !important;
 }
 .border-primary-blue,
+.border-madhu-blue,
 .border-madhur-blue {
   border-color: #1E88E5 !important;
 }
@@ -260,14 +264,17 @@ input.border-0 {
 }
 
 .bg-farm-green,
+.bg-madhu-green,
 .bg-madhur-green {
   background-color: #43A047 !important;
 }
+.hover\:bg-madhu-green-dark:hover,
 .hover\:bg-madhur-green-dark:hover,
 .hover\:bg-farm-green-dark:hover {
   background-color: #2E7D32 !important;
 }
 .text-farm-green,
+.text-madhu-green,
 .text-madhur-green {
   color: #43A047 !important;
 }
@@ -276,10 +283,12 @@ input.border-0 {
 }
 
 .bg-accent-teal,
+.bg-madhu-cyan,
 .bg-madhur-cyan {
   background-color: #00ACC1 !important;
 }
 .text-accent-teal,
+.text-madhu-cyan,
 .text-madhur-cyan {
   color: #00ACC1 !important;
 }
@@ -287,9 +296,11 @@ input.border-0 {
   border-color: #00ACC1 !important;
 }
 
+.bg-madhu-gold,
 .bg-madhur-gold {
   background-color: #FB8C00 !important;
 }
+.text-madhu-gold,
 .text-madhur-gold {
   color: #FB8C00 !important;
 }

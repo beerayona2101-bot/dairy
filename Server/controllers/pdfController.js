@@ -11,7 +11,7 @@ export const generateOrderBillPDF = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    if (req.query.print === "true" || req.query.mode === "print") {
+    if (req.query.download !== "true") {
       return printOrderBillHTML(req, res);
     }
 
@@ -553,109 +553,95 @@ export const printOrderBillHTML = async (req, res) => {
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #f1f5f9; color: #0f172a; padding: 20px; }
-    .no-print-bar {
-      max-width: 800px;
-      margin: 0 auto 16px auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #ffffff;
-      padding: 12px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border: 1px solid #e2e8f0;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      border: none;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    .btn-primary { background-color: #1084F6; color: #ffffff; }
-    .btn-primary:hover { background-color: #0d6efd; }
-    .btn-secondary { background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
-    .btn-secondary:hover { background-color: #e2e8f0; }
-    
-    .invoice-card {
-      max-width: 800px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 36px 40px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-      border: 1px solid #e2e8f0;
-    }
-    
-    .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .badge-tax { background: #1084F6; color: #ffffff; padding: 8px 20px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.5px; }
-    
-    .company-info { font-size: 11px; color: #475569; line-height: 1.6; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; }
-    
-    .grid-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    .meta-card { border: 1px solid #bfdbfe; border-radius: 6px; overflow: hidden; }
-    .meta-card-header { background: #eff6ff; padding: 8px 14px; font-weight: 800; color: #1084F6; font-size: 11px; letter-spacing: 0.5px; border-bottom: 1px solid #bfdbfe; }
-    .meta-card-body { padding: 14px; font-size: 12px; line-height: 1.6; color: #475569; }
-    .meta-bold { font-weight: 700; color: #0f172a; }
+    html, body { width: 100%; min-height: 100%; background-color: #f0f7ff; color: #0f172a; }
+    body { padding: 10px 6px; display: flex; justify-content: center; align-items: flex-start; }
 
-    .key-value-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .key-label { color: #475569; font-weight: 500; }
+    .no-print-bar { display: none !important; }
+
+    .invoice-card {
+      width: 100%;
+      max-width: 840px;
+      background: #ffffff;
+      padding: 16px 14px;
+      border-radius: 12px;
+      border: 2px solid #bfdbfe;
+      box-shadow: 0 8px 25px rgba(16, 132, 246, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
     
-    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12px; }
-    th { background: #1084F6; color: #ffffff; text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
+    .header-row { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 8px; }
+    .badge-tax { background: #1084F6; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 10.5px; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
     
-    .footer-section { display: flex; justify-content: flex-end; margin-bottom: 20px; }
-    .totals-box { width: 260px; font-size: 12px; color: #475569; }
-    .totals-row { display: flex; justify-content: space-between; padding: 4px 0; }
-    .total-grand-box { background: #1084F6; color: #ffffff; font-weight: 800; font-size: 14px; padding: 10px 14px; border-radius: 4px; margin-top: 8px; display: flex; justify-content: space-between; }
+    .company-info { font-size: 9.5px; color: #475569; line-height: 1.45; margin-bottom: 14px; border-bottom: 1.5px solid #bfdbfe; padding-bottom: 10px; }
     
-    .signature-area { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 24px; }
-    .signature-text { font-family: 'Dancing Script', cursive; font-size: 28px; font-weight: 700; color: #0F2742; margin-bottom: 6px; }
+    .grid-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; width: 100%; min-width: 0; }
+    .meta-card { border: 1.5px solid #bfdbfe; border-radius: 8px; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; min-width: 0; }
+    .meta-card-header { background: #eff6ff; padding: 5px 8px; font-weight: 800; color: #1084F6; font-size: 9.5px; letter-spacing: 0.3px; border-bottom: 1px solid #bfdbfe; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .meta-card-body { padding: 8px 8px; font-size: 9.5px; line-height: 1.5; color: #334155; word-break: break-word; flex: 1; min-width: 0; }
+    .meta-bold { font-weight: 800; color: #0f172a; word-break: break-word; }
+
+    .key-value-row { display: flex; justify-content: space-between; margin-bottom: 3px; gap: 4px; font-size: 9px; min-width: 0; flex-wrap: wrap; }
+    .key-label { color: #475569; font-weight: 600; flex-shrink: 0; }
     
-    .terms-text { font-size: 10.5px; color: #475569; margin-bottom: 20px; line-height: 1.5; }
+    .table-container { width: 100%; overflow-x: auto; margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; }
+    th { background: #1084F6; color: #ffffff; text-align: left; padding: 8px 6px; font-size: 9px; font-weight: 800; letter-spacing: 0.4px; }
+    td { padding: 8px 6px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-weight: 600; word-break: break-word; }
+
+    .footer-section { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+    .totals-box { width: 230px; max-width: 100%; font-size: 10px; color: #334155; }
+    .totals-row { display: flex; justify-content: space-between; padding: 3px 0; font-weight: 600; }
+    .total-grand-box { background: #1084F6; color: #ffffff; font-weight: 800; font-size: 11.5px; padding: 8px 10px; border-radius: 6px; margin-top: 6px; display: flex; justify-content: space-between; }
+    
+    .signature-area { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 12px; }
+    .signature-text { font-family: 'Dancing Script', cursive; font-size: 24px; font-weight: 700; color: #0F2742; margin-bottom: 2px; font-style: italic; }
+    
+    .terms-text { font-size: 8.5px; color: #475569; margin-bottom: 12px; line-height: 1.4; }
     .terms-bold { font-weight: 800; color: #1084F6; }
 
-    .divider-heart { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; }
+    .divider-heart { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
     .divider-line { flex: 1; height: 1px; background-color: #bfdbfe; }
-    .heart-icon { color: #1084F6; font-size: 14px; }
-    
-    .notice-text { text-align: center; font-size: 11px; color: #475569; font-weight: 700; font-style: italic; line-height: 1.5; }
-    
+    .heart-icon { color: #1084F6; font-size: 12px; }
+
+    .notice-text { text-align: center; font-size: 9px; font-weight: 700; color: #475569; line-height: 1.4; }
+
+    @media (min-width: 640px) {
+      body { padding: 16px; }
+      .invoice-card { padding: 28px 32px; border-radius: 14px; }
+      .badge-tax { font-size: 12px; padding: 7px 18px; }
+      .company-info { font-size: 11px; }
+      .grid-meta { gap: 14px; margin-bottom: 20px; }
+      .meta-card-header { font-size: 11px; padding: 8px 12px; }
+      .meta-card-body { font-size: 11.5px; padding: 12px; }
+      .key-value-row { font-size: 11px; margin-bottom: 4px; }
+      table { font-size: 12px; }
+      th { font-size: 11px; padding: 10px 12px; }
+      td { font-size: 11.5px; padding: 10px 12px; }
+      .totals-box { width: 280px; font-size: 12px; }
+      .total-grand-box { font-size: 14px; padding: 10px 14px; }
+      .signature-text { font-size: 28px; }
+      .terms-text { font-size: 10px; }
+      .notice-text { font-size: 10.5px; }
+    }
+
     @media print {
-      body { background-color: #ffffff; padding: 0; }
+      body { background-color: #ffffff; padding: 0; min-height: auto; }
       .no-print-bar { display: none !important; }
-      .invoice-card { box-shadow: none; border: none; padding: 0; max-width: 100%; }
-      @page { size: A4; margin: 12mm; }
+      .invoice-card { box-shadow: none; border: none; padding: 0; max-width: 100%; border-radius: 0; }
+      @page { size: A4; margin: 10mm; }
     }
   </style>
 </head>
 <body>
-
-  <div class="no-print-bar">
-    <div>
-      <strong style="color: #0f172a; font-size: 14px;">Tax Invoice — INV-MD-${orderIdDisplay}</strong>
-      <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Click "Print / Save as PDF" to print or save, or "Direct Download" for PDF document.</p>
-    </div>
-    <div style="display: flex; gap: 8px;">
-      <button onclick="window.print()" class="btn btn-primary">🖨️ Print / Save as PDF</button>
-      <a href="/pdf/generate-bill/${order._id}?download=true" class="btn btn-secondary">📥 Direct Download</a>
-    </div>
-  </div>
 
   <div class="invoice-card">
     <div class="header-row">
       <div>
         ${
           logoBase64
-            ? `<img src="${logoBase64}" alt="MADHU Dairy Logo" style="height: 64px; width: auto; object-fit: contain; display: block; margin-bottom: 2px;" />`
-            : `<div style="font-size: 24px; font-weight: 900; color: #0F172A;">MADHU Dairy & Daily Needs</div>`
+            ? `<img src="${logoBase64}" alt="MADHU Dairy Logo" style="height: 48px; sm:height: 64px; width: auto; object-fit: contain; display: block; margin-bottom: 2px;" />`
+            : `<div style="font-size: 20px; font-weight: 900; color: #0F172A;">MADHU Dairy & Daily Needs</div>`
         }
       </div>
       <div class="badge-tax">OFFICIAL TAX INVOICE</div>
@@ -671,7 +657,7 @@ export const printOrderBillHTML = async (req, res) => {
       <div class="meta-card">
         <div class="meta-card-header">BILLED / DELIVERED TO:</div>
         <div class="meta-card-body">
-          <div class="meta-bold" style="font-size: 13px; margin-bottom: 4px;">${customerName}</div>
+          <div class="meta-bold" style="font-size: 11.5px; margin-bottom: 3px;">${customerName}</div>
           <div>Phone: ${addr.phone || "9898989898"}</div>
           <div>Address Type: ${addr.addressType || "Home"}</div>
           <div>Address: ${fullAddressStr}</div>
@@ -682,28 +668,30 @@ export const printOrderBillHTML = async (req, res) => {
         <div class="meta-card-header">INVOICE & ORDER DETAILS:</div>
         <div class="meta-card-body">
           <div class="key-value-row"><span class="key-label">Invoice No. :</span> <span class="meta-bold">INV-MD-${orderIdDisplay}</span></div>
-          <div class="key-value-row"><span class="key-label">Order ID :</span> <span class="meta-bold">${order.orderId || `MD-ORD-260907-${orderIdDisplay}`}</span></div>
+          <div class="key-value-row"><span class="key-label">Order ID :</span> <span class="meta-bold">${order.orderId || `MD-ORD-260509-${orderIdDisplay}`}</span></div>
           <div class="key-value-row"><span class="key-label">Order Date :</span> <span>${formattedDate}</span></div>
-          <div class="key-value-row"><span class="key-label">Payment Mode :</span> <span class="meta-bold">${order.paymentMode || "Cash on Delivery (COD)"}</span></div>
-          <div class="key-value-row"><span class="key-label">Order Status :</span> <span style="color: #15803d; font-weight: 800;">${order.status || "Delivered"}</span></div>
+          <div class="key-value-row"><span class="key-label">Payment Mode :</span> <span class="meta-bold">${order.paymentMode || "Online"} (Test Mode)</span></div>
+          <div class="key-value-row"><span class="key-label">Order Status :</span> <span style="color: #15803d; font-weight: 800;">${order.status || "Pending"}</span></div>
         </div>
       </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 40px; text-align: center;">#</th>
-          <th>ITEM DESCRIPTION</th>
-          <th style="width: 60px; text-align: center;">QTY</th>
-          <th style="width: 110px; text-align: right;">PRICE (INR)</th>
-          <th style="width: 120px; text-align: right;">TOTAL (INR)</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${productRows}
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 28px; text-align: center;">#</th>
+            <th style="width: auto;">ITEM DESCRIPTION</th>
+            <th style="width: 40px; text-align: center;">QTY</th>
+            <th style="width: 75px; text-align: right;">PRICE (INR)</th>
+            <th style="width: 80px; text-align: right;">TOTAL (INR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${productRows}
+        </tbody>
+      </table>
+    </div>
 
     <div class="footer-section">
       <div class="totals-box">
@@ -720,8 +708,8 @@ export const printOrderBillHTML = async (req, res) => {
     <div class="signature-area">
       <div style="text-align: left; display: flex; flex-direction: column; align-items: flex-start;">
         <div class="signature-text">MADHU Dairy</div>
-        <div style="position: relative; width: 68px; height: 68px; display: flex; align-items: center; justify-content: center; margin-top: 4px;">
-          <svg width="68" height="68" viewBox="0 0 100 100" style="position: absolute; inset: 0;">
+        <div style="position: relative; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">
+          <svg width="56" height="56" viewBox="0 0 100 100" style="position: absolute; inset: 0;">
             <circle cx="50" cy="50" r="46" fill="none" stroke="#1084F6" stroke-width="2.5"/>
             <circle cx="50" cy="50" r="40" fill="none" stroke="#1084F6" stroke-width="1.2"/>
             <path id="stampTextTop" d="M 12 50 A 38 38 0 0 1 88 50" fill="none" />
@@ -733,7 +721,7 @@ export const printOrderBillHTML = async (req, res) => {
               <textPath href="#stampTextBot" startOffset="50%" text-anchor="middle">& DAILY NEEDS</textPath>
             </text>
           </svg>
-          ${logoBase64 ? `<img src="${logoBase64}" style="height: 26px; width: auto; object-fit: contain; margin-top: 2px;" />` : `<div style="font-weight:900; color:#1084F6; font-size:10px;">MD</div>`}
+          ${logoBase64 ? `<img src="${logoBase64}" style="height: 22px; width: auto; object-fit: contain; margin-top: 2px;" />` : `<div style="font-weight:900; color:#1084F6; font-size:9px;">MD</div>`}
         </div>
       </div>
     </div>
@@ -750,7 +738,7 @@ export const printOrderBillHTML = async (req, res) => {
 
     <div class="notice-text">
       Thank you for choosing MADHU Dairy & Daily Needs for your family's health!<br>
-      <span style="font-size: 10px; font-weight: 500;">This is a computer-generated tax invoice. No physical signature is required.</span>
+      <span style="font-size: 8.5px; font-weight: 500;">This is a computer-generated tax invoice. No physical signature is required.</span>
     </div>
   </div>
 </body>

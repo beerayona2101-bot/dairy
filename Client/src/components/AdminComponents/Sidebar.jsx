@@ -10,6 +10,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from "@mui/icons-material/Logout";
 
+import PersonIcon from "@mui/icons-material/Person";
+
 import { ThemeContext } from "../../context/ThemeProvider";
 import { AdminAuthContext, UserAuthContext } from "../../context/AuthProvider";
 
@@ -93,6 +95,12 @@ export default function Sidebar() {
                 { label: "Reports", to: "/admin/reports" },
             ],
         },
+        {
+            type: "single",
+            label: "Profile",
+            icon: <PersonIcon sx={{ fontSize: "1.3rem" }} />,
+            to: "/admin/profile",
+        },
     ];
 
     const closeSidebar = () => {
@@ -103,7 +111,7 @@ export default function Sidebar() {
         handleAdminLogout();
         closeSidebar();
         setOpenLoginDialog(true);
-        navigate("/");
+        navigate("/login", { replace: true });
     };
 
     const renderSidebarContent = () => (

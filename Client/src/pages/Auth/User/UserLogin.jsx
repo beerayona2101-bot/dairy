@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { motion } from "framer-motion";
 import { loginUser } from "../../../services/userService";
@@ -16,11 +16,19 @@ export default function UserLogin() {
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const { fetchUserData, handleUserLogout } = useContext(UserAuthContext);
-  const { fetchAdminData, handleAdminLogout } = useContext(AdminAuthContext);
+  const { authAdmin, authAdminLoading, fetchAdminData, handleAdminLogout } = useContext(AdminAuthContext);
   const { theme } = useContext(ThemeContext) || {};
+
+  const adminToken = sessionStorage.getItem("adminToken");
+  const adminRole = sessionStorage.getItem("adminRole");
+  const isValidAdmin = Boolean(authAdmin || (adminToken && adminRole === "admin"));
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  if (isValidAdmin && !authAdminLoading) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   const [formData, setFormData] = useState({
     email: "",
@@ -83,6 +91,7 @@ export default function UserLogin() {
           if (!res?.filledBasicInfo) {
             navigate("/signup/info-input", {
               state: { user: res?.user, viaLogin: !res?.filledBasicInfo },
+              replace: true,
             });
           } else {
             await fetchUserData(res?.user);
@@ -95,7 +104,7 @@ export default function UserLogin() {
             const validUserTarget =
               (!isAuthPath(storedRedirect) && storedRedirect) ||
               (!isAuthPath(targetPath) && !targetPath.startsWith("/admin") && targetPath) ||
-              "/user-profile/dashboard";
+              "/home";
 
             navigate(validUserTarget, { replace: true });
           }

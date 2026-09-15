@@ -7,6 +7,7 @@ import { JWT_SECRET } from "../../middlewares/authMiddleware.js";
 import { OAuth2Client } from "google-auth-library";
 import { sendWelcomeCredentialsEmail, sendOtpEmail } from "../../config/nodemailer.js";
 import { sendSMS } from "../../config/fast2sms.js";
+import { addNotification } from "../../socket/helper.js";
 
 const googleClientId = (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "dummy_google_client_id")
   ? process.env.GOOGLE_CLIENT_ID
@@ -183,6 +184,24 @@ export const loginUser = async (req, res) => {
     { expiresIn: "1d" }
   );
 
+  // Trigger login notification
+  try {
+    const notifObj = {
+      title: "Login Successful 🔐",
+      description: `You logged in to your account (${user?.email || cleanEmail}) successfully.`,
+      date: new Date(),
+      isRead: false,
+      type: "login",
+    };
+    await addNotification(user, notifObj);
+    const io = req.app.get("io");
+    if (io) {
+      io.to(`user:${String(user._id)}`).emit("user:notification", notifObj);
+    }
+  } catch (notifErr) {
+    console.warn("Login notification notice:", notifErr?.message);
+  }
+
   res.status(200).json({
     success: true,
     message: "Login Successful",
@@ -279,6 +298,24 @@ export const loginWithGoogle = async (req, res) => {
     JWT_SECRET,
     { expiresIn: "1d" }
   );
+
+  // Trigger login notification
+  try {
+    const notifObj = {
+      title: "Google Login Successful 🔐",
+      description: `Welcome back! You logged in via Google (${email}).`,
+      date: new Date(),
+      isRead: false,
+      type: "login",
+    };
+    await addNotification(user, notifObj);
+    const io = req.app.get("io");
+    if (io) {
+      io.to(`user:${String(user._id)}`).emit("user:notification", notifObj);
+    }
+  } catch (notifErr) {
+    console.warn("Google login notification notice:", notifErr?.message);
+  }
 
   res.status(200).json({
     success: true,

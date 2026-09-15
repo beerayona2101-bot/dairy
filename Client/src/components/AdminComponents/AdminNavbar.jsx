@@ -101,12 +101,12 @@ export default function AdminNavbar() {
     return (
         <nav className="sticky top-0 z-50 w-full py-3 px-3 sm:px-6 lg:px-8 transition-all duration-300 bg-[#EFF1F5]/80 dark:bg-gray-900/80 backdrop-blur-md">
             {/* Single Floating White Capsule Pill Container matching customer Navbar */}
-            <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800/95 rounded-full px-4 sm:px-6 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-white/80 dark:border-gray-700 flex items-center justify-between transition-all duration-300">
+            <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800/95 rounded-full px-4 sm:px-6 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-white/80 dark:border-gray-700 flex items-center justify-between transition-all duration-300 relative">
                 
                 {/* Left Side: Sidebar Toggle Menu */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3 z-10">
                     <button
-                        className="w-9 h-9 rounded-full bg-purple-50 dark:bg-gray-700 text-[#6C5CE7] dark:text-purple-300 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-purple-100 dark:border-gray-600"
+                        className="w-9 h-9 rounded-full bg-purple-50 dark:bg-gray-700 text-[#6C5CE7] dark:text-purple-300 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-purple-100 dark:border-gray-600 shrink-0"
                         onClick={handleSidebarToggle}
                         title="Toggle Sidebar Menu"
                     >
@@ -114,8 +114,21 @@ export default function AdminNavbar() {
                     </button>
                 </div>
 
-                {/* Right Action Icons: Notification Bell & Admin Avatar Badge */}
-                <div className="flex items-center gap-2 sm:gap-3">
+                {/* Center: Centered Madhu Dairy Brand Name */}
+                <Link
+                    to="/admin/dashboard"
+                    className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 no-underline cursor-pointer select-none"
+                >
+                    <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
+                        Madhu Dairy
+                    </span>
+                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-widest uppercase leading-tight mt-0.5">
+                        &amp; Daily Needs
+                    </span>
+                </Link>
+
+                {/* Right Action Icons: Notification Bell */}
+                <div className="flex items-center gap-2 sm:gap-3 z-10">
                     <Tooltip title="Notifications">
                         <button
                             onClick={() => setNotificationDialog(true)}
@@ -131,18 +144,6 @@ export default function AdminNavbar() {
                             )}
                         </button>
                     </Tooltip>
-
-                    {/* Admin Avatar Pill Badge */}
-                    <Link to="/admin/profile" className="flex items-center gap-2 bg-purple-50 dark:bg-gray-700 px-3 py-1 rounded-full border border-purple-100 dark:border-gray-600 hover:scale-102 transition">
-                        {authAdminLoading ? (
-                            <div className="h-7 w-7 rounded-full bg-gray-300 animate-pulse" />
-                        ) : (
-                            <Avatar src={authAdmin?.image} alt={authAdmin?.name} sx={{ width: 28, height: 28 }} />
-                        )}
-                        <span className="text-xs font-black text-[#0F2742] dark:text-white hidden sm:inline">
-                            {authAdmin?.name || "Admin"}
-                        </span>
-                    </Link>
                 </div>
             </div>
 

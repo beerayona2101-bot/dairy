@@ -15,6 +15,7 @@ import { UserAuthContext, AdminAuthContext } from "../../context/AuthProvider";
 import { CartContext } from "../../context/CartProvider";
 import { productLike } from "../../services/productServices";
 import { getDiscountedPrice, getProductImage } from "../../utils/helper";
+import BackButton from "../Common/BackButton";
 import { formatNumberWithCommas } from "../../utils/format";
 import { addToWishlist, removeProductFromWishList } from "../../services/userProfileService";
 import { ProductContext } from "../../context/ProductProvider";
@@ -86,9 +87,7 @@ export default function ProductDetails({ productId: propProductId }) {
         setIsWishlisted(Boolean(wishlisted));
         setLocalLikes(finalProduct?.likes || []);
         if (finalProduct) {
-            const defaultImg = (Array.isArray(finalProduct.image) && finalProduct.image[0])
-                ? finalProduct.image[0]
-                : (typeof finalProduct.image === 'string' && finalProduct.image.trim() !== '' ? finalProduct.image : finalProduct.pngImage || getProductImage(finalProduct));
+            const defaultImg = getProductImage(finalProduct);
             setSelectedImage(defaultImg);
         }
         setLocalQty(0);
@@ -311,14 +310,7 @@ export default function ProductDetails({ productId: propProductId }) {
                     {/* Main Image View - 100% Edge-to-Edge Full Width on Mobile Only */}
                     <div className="relative -mx-3 sm:mx-0 -mt-3 sm:mt-0 w-[calc(100%+24px)] sm:w-full h-[270px] sm:h-[300px] md:h-[320px] lg:h-[340px] rounded-none sm:rounded-2xl border-0 overflow-hidden flex items-center justify-center group transition-all duration-300">
                         {/* Floating Back Button */}
-                        <button
-                            type="button"
-                            onClick={() => navigate(-1)}
-                            className="absolute top-3 left-3 z-30 rounded-full w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/80 dark:border-gray-700 text-gray-800 dark:text-white shadow-md hover:scale-110 active:scale-95 transition cursor-pointer"
-                            title="Go Back to Previous Page"
-                        >
-                            <i className="fa-solid fa-arrow-left text-sm sm:text-base"></i>
-                        </button>
+                        <BackButton fallbackPath="/products" variant="circle" className="absolute top-3 left-3 z-30" title="Go Back to Previous Page" />
 
                         {(!selectedImage || selectedImage === 'null') ? (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-none sm:rounded-2xl">
@@ -335,7 +327,7 @@ export default function ProductDetails({ productId: propProductId }) {
                                 decoding="async"
                                 onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = "/images/MADHU_cow_milk.png";
+                                    e.target.src = getProductImage(selectedProduct);
                                 }}
                                 className="w-full h-full object-cover rounded-none sm:rounded-2xl group-hover:scale-105 transition-transform duration-500 ease-out block p-0 m-0 border-0"
                             />
@@ -383,7 +375,7 @@ export default function ProductDetails({ productId: propProductId }) {
                                         alt={`${selectedProduct?.name || 'Product'} thumbnail ${idx + 1}`}
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = "/images/MADHU_cow_milk.png";
+                                            e.target.src = getProductImage(selectedProduct);
                                         }}
                                         className="w-full h-full object-contain rounded-lg"
                                     />

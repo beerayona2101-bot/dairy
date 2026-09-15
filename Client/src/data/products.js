@@ -2,7 +2,7 @@ export const products = [
   {
     title: "Milk",
     description: "Pure, unadulterated milk from grass-fed cows—rich in calcium and essential nutrients for stronger bones.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969530/MADHU_dairy_products/ftq2d0zfpaw96wiu0cvv.jpg",
+    image: "/images/madhu_cow_milk.png",
     features: [
       "Pasteurized for safety",
       "Rich in calcium and vitamins",
@@ -13,7 +13,7 @@ export const products = [
   {
     title: "Paneer",
     description: "Fresh homemade paneer made with traditional methods—packed with protein, perfect for muscle growth.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969545/MADHU_dairy_products/fjzgvoiujr6wco1s8frv.jpg",
+    image: "/images/madhu_malai_paneer.png",
     features: [
       "High protein content",
       "Soft and fresh texture",
@@ -24,7 +24,7 @@ export const products = [
   {
     title: "Ghee",
     description: "Pure clarified butter with aromatic flavor, used in cooking and traditional remedies.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969537/MADHU_dairy_products/eg07fuoa6yyz16kp2duy.jpg",
+    image: "/images/madhu_desi_ghee.png",
     features: [
       "Slow-cooked for purity",
       "High smoke point for cooking",
@@ -35,7 +35,7 @@ export const products = [
   {
     title: "Curd",
     description: "Thick, creamy curd loaded with probiotics—great for gut health and perfect for daily consumption.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969548/MADHU_dairy_products/tpk19n9emretjunded8t.jpg",
+    image: "/images/madhu_thick_curd.png",
     features: [
       "Contains live probiotics",
       "Improves gut health",
@@ -46,7 +46,7 @@ export const products = [
   {
     title: "Butter",
     description: "Traditional cream butter—rich, savory, and perfect for spreads, baking, and traditional cooking.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969529/MADHU_dairy_products/uftolohqiilawevlbgmu.jpg",
+    image: "/images/madhu_cooking_butter.png",
     features: [
       "Farm-fresh churned",
       "Low in moisture, high in taste",
@@ -57,7 +57,7 @@ export const products = [
   {
     title: "Lassi",
     description: "Sweet and savory lassi made from farm-fresh curd—natural source of energy and hydration.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969544/MADHU_dairy_products/umhuttcbgjekli62ibjr.jpg",
+    image: "/images/madhu_malai_lassi.png",
     features: [
       "Cool and refreshing",
       "Natural energy booster",
@@ -68,7 +68,7 @@ export const products = [
   {
     title: "Chaas",
     description: "Spiced masala buttermilk infused with roasted cumin, mint, and black salt for digestion.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969546/MADHU_dairy_products/kkludx8awoi1fca0fd5b.jpg",
+    image: "/images/madhu_masala_chaas.png",
     features: [
       "Low fat & digestive",
       "Refreshing summer drink",
@@ -79,7 +79,7 @@ export const products = [
   {
     title: "Shrikhand",
     description: "Sweetened strained yogurt dessert flavored with saffron, cardamom, and roasted pistachios.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969542/MADHU_dairy_products/tae6as2rrwwcfeudvcwd.jpg",
+    image: "/images/madhu_kesar_shrikhand.png",
     features: [
       "Probiotic benefits",
       "Rich kesar & cardamom flavor",
@@ -90,7 +90,7 @@ export const products = [
   {
     title: "Basundi",
     description: "Reduced milk dessert with creamy texture, flavored with cardamom, saffron, and nuts.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969540/MADHU_dairy_products/u64iwoyr5mlfcwmync6c.jpg",
+    image: "/images/madhu_kesar_basundi.png",
     features: [
       "Slow-cooked perfection",
       "Rich in milk solids",
@@ -101,7 +101,7 @@ export const products = [
   {
     title: "Khoya",
     description: "Traditional mawa milk solid used in Indian sweets, made by reducing pure whole milk slowly.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969543/MADHU_dairy_products/sihobwplxrwso3zfbtkd.jpg",
+    image: "/images/madhu_khoya_mawa.png",
     features: [
       "Authentic preparation method",
       "Rich and creamy texture",
@@ -112,7 +112,7 @@ export const products = [
   {
     title: "Cheese",
     description: "Artisanal mozzarella and cheddar cheese varieties crafted from pure milk.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969547/MADHU_dairy_products/chq0qfbl2ttirwsb74zv.jpg",
+    image: "/images/madhu_mozzarella_cheese.png",
     features: [
       "Aged to perfection",
       "Rich in calcium and protein",
@@ -123,7 +123,7 @@ export const products = [
   {
     title: "Flavored Milk",
     description: "Nourishing chilled milk drink blended with natural chocolate, saffron, or strawberry.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969528/MADHU_dairy_products/m1andk2jgffuklldfaw5.jpg",
+    image: "/images/madhu_buffalo_milk.png",
     features: [
       "Pasteurized & homogenized",
       "Rich energy drink",
@@ -134,7 +134,7 @@ export const products = [
   {
     title: "Dairy Sweets",
     description: "Delicious gulab jamun, rasgulla, and sweet peda made from farm-fresh dairy khoya.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969538/MADHU_dairy_products/ib5rbqpl14iwzsn8ye50.jpg",
+    image: "/images/madhu_gulab_jamun.png",
     features: [
       "Soft and juicy texture",
       "Made with pure ghee",
@@ -145,7 +145,7 @@ export const products = [
   {
     title: "Milk Powder",
     description: "Instant milk powder—long shelf life, rich in nutrients, great for travel and emergency use.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969547/MADHU_dairy_products/kfdrncte8psxmqrryiyz.jpg",
+    image: "/images/madhu_milk_powder.png",
     features: [
       "Quick to dissolve",
       "Long shelf life",
@@ -156,7 +156,7 @@ export const products = [
   {
     title: "Cream",
     description: "Fresh dairy cream with rich texture, perfect for whipping, desserts, and gourmet cooking.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969531/MADHU_dairy_products/w5qjc7dlwh80lzgvfdj3.jpg",
+    image: "/images/madhu_dairy_cream.png",
     features: [
       "High butterfat content",
       "Whipping and cooking varieties",
@@ -167,7 +167,7 @@ export const products = [
   {
     title: "Badham",
     description: "Nourishing almond badam milk enriched with real crushed almonds and saffron strands.",
-    image: "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969541/MADHU_dairy_products/shjs3gz3eblnlg7kvsc7.jpg",
+    image: "/images/madhu_kesar_peda.png",
     features: [
       "Real almond nut crunch",
       "Saffron & cardamom aroma",

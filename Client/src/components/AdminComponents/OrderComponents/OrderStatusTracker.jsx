@@ -51,23 +51,15 @@ export default function OrderStatusTracker({ currentStatus }) {
   const isCancelled = currentStatus === "Cancelled";
 
   const getStepIndex = (status) => {
-    switch (status) {
-      case "Pending":
-        return 0;
-      case "Confirmed":
-        return 1;
-      case "Processing":
-        return 2;
-      case "Shipped":
-        return 3;
-      case "Ready to Deliver":
-      case "Out for Delivery":
-        return 4;
-      case "Delivered":
-        return 5;
-      default:
-        return 0;
-    }
+    const normalized = (status || "").toLowerCase().trim();
+    if (normalized === "pending" || normalized === "placed") return 0;
+    if (normalized === "confirmed" || normalized === "approved") return 1;
+    if (normalized === "processing" || normalized === "packed" || normalized === "packaging") return 2;
+    if (normalized === "shipped" || normalized === "dispatched" || normalized === "in transit") return 3;
+    if (normalized === "ready to deliver" || normalized === "out for delivery" || normalized === "delivering") return 4;
+    if (normalized === "delivered" || normalized === "completed" || normalized === "received") return 5;
+    if (normalized === "cancelled" || normalized === "rejected") return -1;
+    return 0;
   };
 
   const activeIndex = getStepIndex(currentStatus);

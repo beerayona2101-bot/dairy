@@ -1,4 +1,5 @@
 import PageContent from "../models/PageContentSchema.js";
+import { uploadToCloudinary } from "../config/cloudinary.js";
 
 const defaultInitialContent = {
   companyName: "MADHU Dairy And Daily Needs",
@@ -125,6 +126,29 @@ const defaultInitialContent = {
       answer: "We deliver fresh products daily in most urban areas. For rural areas, deliveries are made 3-4 times a week.",
     },
   ],
+  aboutUs: {
+    badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
+    title: "About Madhu Dairy & Daily Needs",
+    subtitle: "Delivering unadulterated farm-fresh milk, pure ghee, paneer, and daily kitchen essentials straight to thousands of happy families every morning by 7 AM.",
+    journeyTitle: "WHO WE ARE",
+    journeySubtitle: "Our Journey & Mission",
+    stats: [
+      { value: "100%", label: "Pure & Fresh Milk", icon: "🥛", color: "#477A50" },
+      { value: "7 AM", label: "Doorstep Delivery", icon: "🚚", color: "#00ACC1" },
+      { value: "100+", label: "Quality Tests", icon: "🔬", color: "#6C5CE7" },
+      { value: "50,000+", label: "Happy Families", icon: "❤️", color: "#FF7675" },
+    ],
+  },
+  contactUs: {
+    badgeText: "GET IN TOUCH",
+    title: "Contact Information",
+    supportText: "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
+    address: "Shed no. A-31, Madhu Dairy & Daily Needs, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
+    phone: "+91 94906 44434",
+    email: "beerayona143@gmail.com",
+    whatsappNumber: "919490644434",
+    googleMaps: "https://maps.google.com/?q=Madhu+Dairy+Ambad+Nashik",
+  },
 };
 
 export const getPageContent = async (req, res) => {
@@ -133,7 +157,6 @@ export const getPageContent = async (req, res) => {
     if (!content) {
       content = await PageContent.create(defaultInitialContent);
     } else {
-      // Ensure missing arrays get default fields
       let needsSave = false;
       if (!content.homeCategoryCards) {
         content.homeCategoryCards = defaultInitialContent.homeCategoryCards;
@@ -141,6 +164,14 @@ export const getPageContent = async (req, res) => {
       }
       if (!content.landingShowcaseCards) {
         content.landingShowcaseCards = defaultInitialContent.landingShowcaseCards;
+        needsSave = true;
+      }
+      if (!content.aboutUs) {
+        content.aboutUs = defaultInitialContent.aboutUs;
+        needsSave = true;
+      }
+      if (!content.contactUs) {
+        content.contactUs = defaultInitialContent.contactUs;
         needsSave = true;
       }
       if (needsSave) {
@@ -152,8 +183,6 @@ export const getPageContent = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-import { uploadToCloudinary } from "../config/cloudinary.js";
 
 export const updatePageContent = async (req, res) => {
   try {
@@ -213,7 +242,7 @@ export const updatePageContent = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Landing & Home Page content updated successfully!",
+      message: "Page content updated successfully!",
       pageContent: content,
     });
   } catch (error) {

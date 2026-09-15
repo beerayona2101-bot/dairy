@@ -71,7 +71,7 @@ export default function UserOrderProvider({ children }) {
         if (!orderId || !status) return;
         setUserOrders((prevOrders) =>
             prevOrders?.map((order) =>
-                String(order?._id) === String(orderId) ? { ...order, status } : order
+                (String(order?._id) === String(orderId) || String(order?.orderId) === String(orderId)) ? { ...order, status } : order
             )
         );
         fetchOrders();

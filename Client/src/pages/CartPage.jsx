@@ -7,6 +7,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider"
 import { CartContext } from "../context/CartProvider";
+import BackButton from "../components/Common/BackButton";
 import { getCartProductDetails, calculateCartTotals } from "../utils/cartUtils";
 import { getDiscountedPrice } from "../utils/helper";
 import { formatNumberWithCommas } from "../utils/format";
@@ -112,55 +113,35 @@ export default function CartPage() {
 
     if (cartItems?.length === 0) {
         return (
-            <div className="px-3 py-10 text-center">
-                <ShoppingCartIcon className="mx-auto text-4xl text-gray-400 mb-4" />
-                <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    Could not find matching products in your cart.
-                </p>
-                <Link
-                    to="/products"
-                    className="inline-flex items-center px-4 py-2 bg-primary-500 text-blue-500 hover:text-blue-600 rounded hover:bg-primary-600 transition"
-                >
-                    <ArrowBackIcon className="mr-2" sx={{ fontSize: "1.3rem" }} />
-                    Continue Shopping
-                </Link>
+            <div className="w-full max-w-5xl mx-auto px-4 py-4">
+                {/* Mobile Top Back Button Only (Left Top) */}
+                <div className="md:hidden flex items-center justify-start mb-2">
+                    <BackButton fallbackPath="/home" />
+                </div>
+
+                <div className="px-3 py-10 text-center">
+                    <ShoppingCartIcon className="mx-auto text-4xl text-gray-400 mb-4" />
+                    <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">
+                        Could not find matching products in your cart.
+                    </p>
+                    <Link
+                        to="/products"
+                        className="inline-flex items-center px-4 py-2 bg-primary-500 text-blue-500 hover:text-blue-600 rounded hover:bg-primary-600 transition"
+                    >
+                        <ArrowBackIcon className="mr-2" sx={{ fontSize: "1.3rem" }} />
+                        Continue Shopping
+                    </Link>
+                </div>
             </div>
         );
     }
 
     return (
         <>
-            {/* Mobile Top Header Navigation Bar (Shown on Mobile Response Only) */}
-            <div className="md:hidden sticky top-1 z-30 w-full px-4 py-2 flex items-center justify-between transition-all duration-200">
-                {/* Left: Back Button */}
-                <Link
-                    to="/products"
-                    title="Back to Products"
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/50 dark:hover:to-indigo-900/50 active:scale-95 rounded-xl text-purple-700 dark:text-purple-300 transition-all text-xs font-black cursor-pointer border border-purple-200/60 dark:border-purple-800/60 shadow-xs"
-                >
-                    <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
-                    <span>Back</span>
-                </Link>
-
-                {/* Center: Title */}
-                <div className="flex flex-col items-center justify-center">
-                    <h1 className="text-sm font-black tracking-tight text-gray-900 dark:text-white">
-                        My Shopping Cart
-                    </h1>
-                </div>
-
-                {/* Right: Cart Item Badge Count */}
-                <div className="flex items-center">
-                    <div className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 flex items-center justify-center">
-                        <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
-                        {cartItems?.length > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
-                                {cartItems.length}
-                            </span>
-                        )}
-                    </div>
-                </div>
+            {/* Mobile Top Back Button Only (Shown on Mobile Response Only - Left Top) */}
+            <div className="md:hidden w-full px-4 pt-3 pb-1 flex items-center justify-start">
+                <BackButton fallbackPath="/home" />
             </div>
 
             {/* Delivery Address Section (Logged-in User Only) */}

@@ -94,7 +94,6 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
     }
 
     const navigationLinks = [
-        { key: "/user-profile/dashboard", icon: <MdDashboard />, label: "Dashboard" },
         { key: "/user-profile", icon: <MdOutlineAccountCircle />, label: "My Profile" },
         { key: "/user-profile/orders", icon: <MdShoppingCart />, label: "My Orders" },
         { key: "/user-profile/addresses", icon: <MdLocationOn />, label: "Saved Addresses" },
@@ -115,59 +114,9 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
         <aside className={`scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 ${userProfileDrawer ? "rounded-l-none rounded-r-[24px] border-y border-r border-l-0 border-gray-200 dark:border-gray-700/80" : "rounded-[24px] border border-gray-200/90 dark:border-gray-700/80"}`}>
             <div>
                 <div className="flex flex-col items-center mb-4 relative group">
-                    <div className="relative w-20 h-20">
-                        <img
-                            src={photoUrl || null}
-                            alt={photoUrl}
-                            className="rounded-full w-20 h-20 object-cover border-2 border-purple-100 dark:border-gray-700 shadow-sm"
-                        />
-
-                        {uploadProgress > 0 && uploadProgress < 100 && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
-                                <CircularProgress
-                                    variant="determinate"
-                                    value={uploadProgress}
-                                    size={52}
-                                    thickness={4}
-                                    style={{ color: "#fff" }}
-                                />
-                            </div>
-                        )}
-
-                        <label
-                            htmlFor="profileImageInput"
-                            className={`absolute bottom-0 right-0 bg-[#6C5CE7] text-white p-1.5 rounded-full shadow-md transition ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-[#5b4cc4]"}`}
-                            title="Edit Photo"
-                        >
-                            <i className="fa-solid fa-pen-to-square text-[10px]" />
-                        </label>
-
-                        <input
-                            type="file"
-                            id="profileImageInput"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handlePhotoChange}
-                            disabled={loading}
-                        />
+                    <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-tr from-[#6C5CE7] to-[#1E88E5] text-white flex items-center justify-center font-black text-2xl shadow-md border-2 border-purple-100 dark:border-gray-700 select-none">
+                        {(authUser?.firstName || authUser?.name || authUser?.username || authAdmin?.name || "U").charAt(0).toUpperCase()}
                     </div>
-
-                    {showUpdateButton && (
-                        <button
-                            onClick={handleProfileImageChange}
-                            disabled={loading}
-                            className={`mt-2.5 px-3 py-1 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white shadow-xs"}`}
-                        >
-                            {loading ? (
-                                <>
-                                    <span>Updating</span>
-                                    <CircularProgress size={14} color="inherit" />
-                                </>
-                            ) : (
-                                "Update Photo"
-                            )}
-                        </button>
-                    )}
 
                     <h2 className="text-base font-extrabold mt-2 text-[#2D3748] dark:text-white tracking-tight text-center">
                         {authAdmin ? (authAdmin?.name || "Madhu Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}

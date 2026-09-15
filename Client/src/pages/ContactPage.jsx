@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { LocationOn, Phone, Email } from "@mui/icons-material";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useSnackbar } from "notistack";
 import company from "../data/company.json";
 import { submitEnquiryApi } from "../services/enquiryService";
+import { PageContentContext } from "../context/PageContentProvider";
+import BackButton from "../components/Common/BackButton";
 
 export default function ContactPage() {
-
     const { enqueueSnackbar } = useSnackbar();
+    const { pageContent } = useContext(PageContentContext) || {};
     const [submitting, setSubmitting] = useState(false);
+
+    const contactData = pageContent?.contactUs || {
+        badgeText: "GET IN TOUCH",
+        title: "Contact Information",
+        supportText: company.supportText || "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
+        address: `${company.address.line}, ${company.address.city}, ${company.address.state} - ${company.address.pincode}`,
+        phone: company.phone || "+91 94906 44434",
+        email: company.email || "beerayona143@gmail.com",
+        whatsappNumber: "919490644434",
+        googleMaps: company.googleMaps || "https://maps.google.com",
+    };
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -61,7 +73,6 @@ export default function ContactPage() {
             return;
         }
 
-        // Auto-apply corrected email format if user had typed a typo like gmailcom
         if (cleanedEmail !== email) {
             setFormData((prev) => ({ ...prev, email: cleanedEmail }));
         }
@@ -84,18 +95,27 @@ export default function ContactPage() {
 
     return (
         <div className="min-h-[calc(100vh-70px)] flex flex-col justify-center py-2 sm:py-4 px-4 sm:px-6 max-w-6xl mx-auto">
+            {/* Mobile View Back Button (Mobile Only: md:hidden) */}
+            <div className="md:hidden flex items-center justify-start pb-2 mb-1 w-full">
+                <BackButton fallbackPath="/user-profile" />
+            </div>
+
             <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-stretch justify-center w-full">
                 {/* Contact Info Glass Card */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                    className="md:w-1/2 space-y-4 p-5 sm:p-6 lg:p-7 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
+                    className="order-2 md:order-1 md:w-1/2 space-y-4 p-5 sm:p-6 lg:p-7 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
                 >
                     <div className="space-y-4">
                         <div>
-                            <span className="text-[11px] font-black uppercase text-[#6C5CE7] tracking-wider">GET IN TOUCH</span>
-                            <h2 className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mt-0.5">Contact Information</h2>
+                            <span className="text-[11px] font-black uppercase text-[#6C5CE7] tracking-wider">
+                                {contactData.badgeText || "GET IN TOUCH"}
+                            </span>
+                            <h2 className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mt-0.5">
+                                {contactData.title || "Contact Information"}
+                            </h2>
                         </div>
 
                         <div className="space-y-3 pt-1">
@@ -104,12 +124,12 @@ export default function ContactPage() {
                                     <LocationOn sx={{ fontSize: "1rem" }} />
                                 </div>
                                 <a
-                                    href={company.googleMaps}
+                                    href={contactData.googleMaps || "https://maps.google.com"}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="hover:text-[#6C5CE7] transition-colors leading-relaxed font-semibold"
                                 >
-                                    {company.address.line}, {company.address.city}, {company.address.state} - {company.address.pincode}
+                                    {contactData.address}
                                 </a>
                             </div>
 
@@ -117,8 +137,8 @@ export default function ContactPage() {
                                 <div className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/50 text-[#6C5CE7] flex items-center justify-center shrink-0 border border-purple-200">
                                     <Phone sx={{ fontSize: "1rem" }} />
                                 </div>
-                                <a href={`tel:${company.phone}`} className="hover:text-[#6C5CE7] transition-colors font-semibold">
-                                    {company.phone}
+                                <a href={`tel:${contactData.phone}`} className="hover:text-[#6C5CE7] transition-colors font-semibold">
+                                    {contactData.phone}
                                 </a>
                             </div>
 
@@ -126,15 +146,15 @@ export default function ContactPage() {
                                 <div className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/50 text-[#6C5CE7] flex items-center justify-center shrink-0 border border-purple-200">
                                     <Email sx={{ fontSize: "1rem" }} />
                                 </div>
-                                <a href={`mailto:${company.email}`} className="hover:text-[#6C5CE7] transition-colors font-semibold">
-                                    {company.email}
+                                <a href={`mailto:${contactData.email}`} className="hover:text-[#6C5CE7] transition-colors font-semibold">
+                                    {contactData.email}
                                 </a>
                             </div>
                         </div>
                     </div>
 
                     <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-700 leading-relaxed">
-                        {company.supportText}
+                        {contactData.supportText}
                     </p>
                 </motion.div>
 
@@ -143,7 +163,7 @@ export default function ContactPage() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.22, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-                    className="md:w-1/2 space-y-3 p-5 sm:p-6 lg:p-7 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
+                    className="order-1 md:order-2 md:w-1/2 space-y-3 p-5 sm:p-6 lg:p-7 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
                     onSubmit={handleSubmit}
                 >
                     <div>
@@ -246,7 +266,8 @@ export default function ContactPage() {
                             onClick={() => {
                                 const { fullName, phone, email, message } = formData;
                                 const whatsappMessage = `Hello! I'm ${fullName || "Customer"},\nPhone: ${phone}\nEmail: ${email}\nMessage: ${message}`;
-                                window.open(`https://wa.me/919490644434?text=${encodeURIComponent(whatsappMessage)}`, "_blank");
+                                const targetWa = (contactData.whatsappNumber || "919490644434").replace(/\D/g, "");
+                                window.open(`https://wa.me/${targetWa}?text=${encodeURIComponent(whatsappMessage)}`, "_blank");
                             }}
                             className="w-full py-2 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full font-bold text-xs transition cursor-pointer flex items-center justify-center gap-2"
                         >

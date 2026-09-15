@@ -36,6 +36,7 @@ const MyAddresses = lazy(() => import("../pages/UserProfile/MyAddresses"));
 const MyOrders = lazy(() => import("../pages/UserProfile/MyOrders"));
 const MyWishlist = lazy(() => import("../pages/UserProfile/MyWishlist"));
 const Payments = lazy(() => import("../pages/UserProfile/Payments"));
+const InvoiceViewPage = lazy(() => import("../pages/InvoiceViewPage"));
 
 const Inventory = lazy(() => import("../pages/Admin/Inventory"));
 const CategoriesPage = lazy(() => import("../pages/Admin/CategoriesPage"));
@@ -109,13 +110,15 @@ export default function Routers() {
                         <Route path="/signup/info-input" element={<ProfileInfoInput />} />
                         
                         {/* Protected User Profile Routes */}
-                        <Route path="/user-profile/dashboard" element={<UserProtectedRoute><UserProfileLayout><UserDashboard /></UserProfileLayout></UserProtectedRoute>} />
+                        <Route path="/user-profile/dashboard" element={<Navigate to="/user-profile" replace />} />
                         <Route path="/user-profile" element={<UserProtectedRoute><UserProfileLayout><AccountInfo /></UserProfileLayout></UserProtectedRoute>} />
                         <Route path="/user-profile/addresses" element={<UserProtectedRoute><UserProfileLayout><MyAddresses /></UserProfileLayout></UserProtectedRoute>} />
                         <Route path="/user-profile/orders" element={<UserProtectedRoute><UserProfileLayout><MyOrders /></UserProfileLayout></UserProtectedRoute>} />
                         <Route path="/user-profile/wishlist" element={<UserProtectedRoute><UserProfileLayout><MyWishlist /></UserProfileLayout></UserProtectedRoute>} />
                         <Route path="/wishlist" element={<Layout><MyWishlist /></Layout>} />
                         <Route path="/user-profile/payments" element={<UserProtectedRoute><UserProfileLayout><Payments /></UserProfileLayout></UserProtectedRoute>} />
+                        <Route path="/user-profile/invoice/:orderId" element={<UserProtectedRoute><InvoiceViewPage /></UserProtectedRoute>} />
+                        <Route path="/invoice/:orderId" element={<UserProtectedRoute><InvoiceViewPage /></UserProtectedRoute>} />
 
                         {/* Protected Admin Routes */}
                         <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminLayout><Dashboard /></AdminLayout></AdminProtectedRoute>} />
@@ -140,7 +143,7 @@ export default function Routers() {
 
                         <Route path="/contact-us" element={<Layout><ContactPage /></Layout>} />
 
-                        <Route path="*" element={<Navigate to={authUser ? "/home" : "/login"} replace />} />
+                        <Route path="*" element={<Navigate to={authAdmin ? "/admin/dashboard" : authUser ? "/home" : "/login"} replace />} />
                     </Routes>
                 </Suspense>
             </AnimatePresence>

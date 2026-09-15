@@ -387,13 +387,26 @@ export const connectToSocket = (server) => {
           date,
         });
 
+        const customerNotifObj = {
+          title: "Order Placed Successfully 🛍️",
+          description: `Your order #${savedOrder?.orderId || String(savedOrder?._id).slice(-6).toUpperCase()} for ₹${formattedServerTotal} was confirmed!`,
+          date: date || new Date().toISOString(),
+          isRead: false,
+          orderId: savedOrder?._id,
+          type: "order",
+        };
+        await addNotification(user, customerNotifObj);
+
         emitAdminOrderNotifications(adminSocketMap, savedOrder, user, date, io);
 
-        if (userId && userSocketMap.has(userId)) {
-          for (const socketId of userSocketMap.get(userId)) {
-            io.to(socketId).emit("order:place-new-success", {
-              newOrder: savedOrder,
-            });
+        if (userId) {
+          io.to(`user:${userId}`).emit("user:notification", customerNotifObj);
+          if (userSocketMap.has(userId)) {
+            for (const socketId of userSocketMap.get(userId)) {
+              io.to(socketId).emit("order:place-new-success", {
+                newOrder: savedOrder,
+              });
+            }
           }
         }
 

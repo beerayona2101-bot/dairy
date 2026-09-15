@@ -152,35 +152,47 @@ export default function MyAddresses() {
     )
   } else {
     content = (
-      <div className="space-y-4 pb-20 sm:pb-4">
+      <div className="space-y-3.5 pb-24 sm:pb-6">
         {addresses.map((item) => {
           const isSelected = deliveryAddress?._id === item._id;
 
           return (
             <div
               key={item._id}
-              className={`rounded-2xl p-4 sm:p-5 shadow-xs backdrop-blur-xl transition-all duration-200 border ${
+              className={`rounded-2xl p-3.5 sm:p-5 shadow-xs transition-all duration-200 border ${
                 isSelected
-                  ? "bg-[#6C5CE7]/10 dark:bg-purple-900/30 border-[#6C5CE7] dark:border-purple-400"
-                  : "bg-white/40 dark:bg-slate-900/40 border-white/60 dark:border-gray-700/60"
+                  ? "bg-purple-50/90 dark:bg-purple-950/40 border-[#6C5CE7] dark:border-purple-400"
+                  : "bg-white dark:bg-slate-800/90 border-gray-200/90 dark:border-gray-700/80"
               }`}
             >
-              <div className="w-full flex items-center justify-between">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-gray-800 text-white dark:text-white">
+              <div className="w-full flex items-center justify-between gap-2">
+                <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-black tracking-wide bg-purple-100 dark:bg-purple-900/60 text-[#6C5CE7] dark:text-purple-300">
                   {item.addressType || "Home"}
                 </span>
-                {isSelected && (
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#1E88E5] text-white shadow-xs">
-                    ✓ Selected Active Address
+                {isSelected ? (
+                  <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-emerald-600 text-white shadow-xs flex items-center gap-1">
+                    ✓ Active Address
                   </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeliveryAddress(item);
+                      enqueueSnackbar("Selected as active delivery address", { variant: "success" });
+                    }}
+                    className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#1E88E5] dark:text-blue-300 hover:bg-blue-100 transition cursor-pointer border border-blue-200/60 dark:border-blue-800/60"
+                  >
+                    Set Active
+                  </button>
                 )}
               </div>
 
-              <div className="w-full">
-                <p className="font-semibold text-lg mt-3 text-gray-800 dark:text-gray-100">
-                  {item.name} <span className="font-normal text-gray-600 dark:text-gray-300 ml-3">{item.phone}</span>
+              <div className="w-full mt-2.5">
+                <p className="font-extrabold text-sm sm:text-base text-gray-900 dark:text-white flex items-center justify-between gap-2">
+                  <span>{item.name}</span>
+                  <span className="text-xs font-bold text-[#1E88E5] dark:text-blue-400 shrink-0">{item.phone}</span>
                 </p>
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                   {[
                     item?.hno ? `House No. ${item.hno}` : null,
                     item?.streetAddress,
@@ -193,46 +205,29 @@ export default function MyAddresses() {
                 </p>
               </div>
 
-              <hr className="border-dashed border-gray-300 dark:border-gray-500 w-full my-3" />
+              <hr className="border-gray-100 dark:border-gray-700/60 w-full my-3" />
 
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    className="flex items-center gap-2 py-2 px-3 text-sm bg-blue-100 text-blue-700 dark:bg-blue-600/20 dark:text-blue-300 rounded font-medium hover:bg-blue-200 dark:hover:bg-blue-600/40 transition-colors duration-200 cursor-pointer"
-                    onClick={() => {
-                      setEditModal(true);
-                      setSelectedAddress(item);
-                    }}
-                    aria-label={`Edit address for ${item.name}`}
-                  >
-                    <Edit2 size={14} /> Edit
-                  </button>
-
-                  <button
-                    className="flex items-center gap-2 py-2 px-3 text-sm bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300 rounded font-medium hover:bg-red-200 dark:hover:bg-red-600/40 transition-colors duration-200 cursor-pointer"
-                    onClick={() => {
-                      setRemoveModal(true);
-                      setSelectedAddress(item);
-                    }}
-                    aria-label={`Remove address for ${item.name}`}
-                  >
-                    <Trash2 size={14} /> Remove
-                  </button>
-                </div>
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  className="flex items-center gap-1.5 py-1.5 px-3 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition cursor-pointer"
+                  onClick={() => {
+                    setEditModal(true);
+                    setSelectedAddress(item);
+                  }}
+                  aria-label={`Edit address for ${item.name}`}
+                >
+                  <Edit2 size={13} /> Edit
+                </button>
 
                 <button
-                  type="button"
+                  className="flex items-center gap-1.5 py-1.5 px-3 text-xs bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300 rounded-xl font-bold hover:bg-red-100 transition cursor-pointer border border-red-100 dark:border-red-900/40"
                   onClick={() => {
-                    setDeliveryAddress(item);
-                    enqueueSnackbar("Selected as active delivery address", { variant: "success" });
+                    setRemoveModal(true);
+                    setSelectedAddress(item);
                   }}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    isSelected
-                      ? "bg-emerald-600 text-white cursor-default"
-                      : "bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-xs"
-                  }`}
+                  aria-label={`Remove address for ${item.name}`}
                 >
-                  {isSelected ? "Selected" : "Set as Active Address"}
+                  <Trash2 size={13} /> Remove
                 </button>
               </div>
             </div>
@@ -244,16 +239,18 @@ export default function MyAddresses() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 flex justify-between items-center">
+      <div className="shrink-0 pb-3 mb-3 border-b border-gray-200/80 dark:border-gray-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Manage Addresses</h3>
+          <h3 className="text-base sm:text-xl font-black text-gray-900 dark:text-white flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-[#1E88E5]" /> Saved Delivery Addresses
+          </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            Add or edit delivery addresses for your account.
+            Manage home, work, & default delivery locations.
           </p>
         </div>
 
         <button
-          className="flex items-center text-xs gap-1.5 bg-[#1E88E5] hover:bg-[#1565C0] text-white font-bold py-1.5 px-3 rounded-lg shadow-xs transition cursor-pointer"
+          className="w-full sm:w-auto flex items-center justify-center text-xs gap-1.5 bg-[#1E88E5] hover:bg-[#1565C0] text-white font-extrabold py-2 px-4 rounded-xl shadow-xs transition cursor-pointer active:scale-98"
           onClick={() => setNewAddressModel(true)}
         >
           <HiPlus className="text-base" />
