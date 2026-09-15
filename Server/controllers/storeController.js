@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import User from "../models/UserSchema.js";
 import bcryptjs from "bcryptjs";
 import { sendWelcomeCredentialsEmail } from "../config/nodemailer.js";
+import { notifyNewUserRegistration } from "../socket/helper.js";
 
 // READ: Get all customers
 export const getAllStores = async (req, res) => {
@@ -50,6 +51,13 @@ export const createCustomer = async (req, res) => {
 
   const savedUser = await newUser.save();
   console.log("✅ [ADMIN_CREATE_USER] Saved user ID: %s, Email: %s", savedUser._id, savedUser.email);
+
+  // Trigger registration notifications for User & Admin
+  try {
+    await notifyNewUserRegistration(savedUser, req.app.get("io"), { createdByAdmin: true });
+  } catch (notifErr) {
+    console.warn("Admin create customer notification notice:", notifErr?.message);
+  }
 
   // Send Welcome Email with login credentials after user is saved in DB
   let emailSent = false;

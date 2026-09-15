@@ -2,6 +2,7 @@ import React, { createContext, useState, useMemo, useContext, useEffect, useCall
 import PropTypes from "prop-types";
 import { AdminAuthContext } from "./AuthProvider";
 import { getAdminOrders, getAllOrders } from "../services/orderService";
+import { getUserNotifications } from "../services/notificationService";
 import wsManager from "../socket/WebSocketManager";
 
 export const AdminOrderContext = createContext();
@@ -33,6 +34,12 @@ export default function AdminOrderProvider({ children }) {
 
         if (adminId) {
             setNotification(authAdmin?.notifications || []);
+            getUserNotifications(adminId).then((res) => {
+                if (res?.success && Array.isArray(res.notifications)) {
+                    setNotification(res.notifications);
+                }
+            }).catch(() => {});
+
             wsManager.connect({ role: "admin", adminId, _id: adminId });
             fetchOrders();
         } else {
@@ -57,15 +64,17 @@ export default function AdminOrderProvider({ children }) {
         fetchAllOrders();
     }, [fetchAllOrders]);
 
-    const handleAdminNotification = useCallback(({ title, description, date }) => {
-        setNotification((prev) => [
-            {
-                title: title || "New Notification",
-                description: description || "",
-                date: date || new Date().toISOString(),
-            },
-            ...prev,
-        ]);
+    const handleAdminNotification = useCallback((notifPayload) => {
+        if (!notifPayload) return;
+        const newNotif = {
+            title: notifPayload.title || "New Notification",
+            description: notifPayload.description || "",
+            date: notifPayload.date || new Date().toISOString(),
+            isRead: notifPayload.isRead ?? false,
+            type: notifPayload.type || "system",
+            _id: notifPayload._id || `admin-notif-${Date.now()}-${Math.random()}`,
+        };
+        setNotification((prev) => [newNotif, ...prev]);
     }, []);
 
     const handleNewPendingOrder = useCallback(({ order }) => {
@@ -111,6 +120,11 @@ export default function AdminOrderProvider({ children }) {
             wsManager.subscribe("order:accept-success", handleGenericOrderUpdate),
             wsManager.subscribe("order:reject-success", handleGenericOrderUpdate),
             wsManager.subscribe("admin:notification", handleAdminNotification),
+            wsManager.subscribe("user:new-registered", (data) => {
+                if (data?.notification) {
+                    handleAdminNotification(data.notification);
+                }
+            }),
             wsManager.subscribe("admin-order:delivered-success", handleGenericOrderUpdate),
             wsManager.subscribe("admin:order-updated", handleGenericOrderUpdate),
             wsManager.subscribe("order:global-status-update", handleGenericOrderUpdate),

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -13,6 +13,7 @@ import { AdminOrderContext } from "../../context/AdminOrderProvider";
 import { getTotalRevenue } from "../../utils/DashboardHelpers/salesOverviewHelper";
 import { getAllStores } from "../../services/storeServices";
 import { formatNumberWithCommas } from "../../utils/format";
+import wsManager from "../../socket/WebSocketManager";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,20 +23,30 @@ export default function Dashboard() {
   const [storesList, setStoresList] = useState([]);
   const [customerCount, setCustomerCount] = useState(0);
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await getAllStores();
-        if (res?.success) {
-          setStoresList(res.stores || []);
-          setCustomerCount(res.stores?.length || 0);
-        }
-      } catch (err) {
-        console.error("Failed to fetch customer count for dashboard:", err);
+  const fetchCustomers = useCallback(async () => {
+    try {
+      const res = await getAllStores();
+      if (res?.success) {
+        setStoresList(res.stores || []);
+        setCustomerCount(res.stores?.length || 0);
       }
-    };
-    fetchCustomers();
+    } catch (err) {
+      console.error("Failed to fetch customer count for dashboard:", err);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
+
+  useEffect(() => {
+    const unsub1 = wsManager.subscribe("user:registered", fetchCustomers);
+    const unsub2 = wsManager.subscribe("user:new-registered", fetchCustomers);
+    return () => {
+      unsub1();
+      unsub2();
+    };
+  }, [fetchCustomers]);
 
   const fadeUpVariant = {
     hidden: { opacity: 0, y: 20 },

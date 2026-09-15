@@ -41,7 +41,7 @@ export default function Layout({ children }) {
     return (
         <div ref={scrollRef} className="h-screen scroll-smooth flex flex-col overflow-y-auto overflow-x-hidden bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">
             {!hideNavbar && <Navbar />}
-            <main className={`flex-1 flex flex-col ${(isProductsPage || isCartPage || isCheckoutPage) ? 'pt-0 md:pt-[72px] lg:pt-[76px]' : hideNavbar ? 'pt-0' : 'pt-[56px] sm:pt-[64px] md:pt-[76px] lg:pt-[82px]'} ${hideFooter ? 'pb-0' : 'pb-16 lg:pb-0'}`}>
+            <main className={`flex-1 flex flex-col ${(isProductsPage || isCartPage || isCheckoutPage) ? 'pt-0 md:pt-[56px]' : hideNavbar ? 'pt-0' : 'pt-[48px] sm:pt-[52px] md:pt-[56px]'} ${hideFooter ? 'pb-0' : 'pb-16 lg:pb-0'}`}>
                 <PageTransition key={location.pathname}>
                     {children}
                 </PageTransition>

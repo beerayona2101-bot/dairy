@@ -287,25 +287,25 @@ export default function ProductVarietyCard(props) {
 
                     {/* Footer Row: Bold price + Pill button [ Add ] */}
                     <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-gray-200/90 dark:border-gray-700/60">
-                        <div className="flex flex-col">
+                        <div className="flex flex-col min-w-0">
                             {discountPercent > 0 ? (
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-sm sm:text-base font-black text-[#6C5CE7]">
+                                <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-1">
+                                    <span className="text-xs sm:text-base font-black text-[#6C5CE7] leading-tight truncate">
                                         &#8377;{formatNumberWithCommas(discountedPrice)}
                                     </span>
-                                    <span className="text-[10px] sm:text-xs text-slate-400 line-through font-semibold">
+                                    <span className="text-[9px] sm:text-xs text-slate-400 line-through font-semibold leading-tight truncate">
                                         &#8377;{formatNumberWithCommas(priceNumber)}
                                     </span>
                                 </div>
                             ) : (
-                                <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                                <span className="text-xs sm:text-base font-black text-slate-900 dark:text-white leading-tight truncate">
                                     &#8377;{formatNumberWithCommas(priceNumber)}
                                 </span>
                             )}
                         </div>
 
                         {existing ? (
-                            <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-700/80 p-0.5 rounded-full border border-gray-200 dark:border-gray-600">
+                            <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-700/80 p-0.5 rounded-full border border-gray-200 dark:border-gray-600 shrink-0">
                                 <Tooltip title="Decrease quantity" arrow placement="top">
                                     <button
                                         onClick={handleDecrementCart}
@@ -331,7 +331,7 @@ export default function ProductVarietyCard(props) {
                             <button
                                 onClick={handleAddInitialToCart}
                                 disabled={stock <= 0}
-                                className="flex items-center gap-1 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#4C1D95] hover:from-[#5b21b6] hover:to-[#3b0764] text-white text-xs sm:text-xs font-black shadow-xs hover:shadow-md hover:scale-105 transition-all cursor-pointer disabled:opacity-50"
+                                className="flex items-center justify-center gap-1 px-2.5 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#4C1D95] hover:from-[#5b21b6] hover:to-[#3b0764] text-white text-[11px] sm:text-xs font-black shadow-xs hover:shadow-md hover:scale-105 transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
                             >
                                 <ShoppingCartIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
                                 <span>Add</span>

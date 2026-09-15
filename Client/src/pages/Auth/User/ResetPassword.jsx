@@ -1,8 +1,10 @@
 import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { resetUserPassword } from "../../../services/userService";
+import { Home } from "lucide-react";
+import BackButton from "../../../components/Common/BackButton";
 
 export default function ResetPassword() {
   const location = useLocation();
@@ -49,14 +51,23 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#f5f5f5] dark:bg-[#121212] px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition">
-        <button
-          className="text-sm text-gray-600 dark:text-gray-300 flex items-center cursor-pointer hover:text-[#1E88E5] transition mb-4"
-          onClick={() => navigate("/login")}
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#f5f5f5] dark:bg-[#121212] px-4 py-10">
+      {/* Floating Top Nav Buttons */}
+      <div className="absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex items-center justify-between z-30">
+        <BackButton fallbackPath="/login" label="Back" />
+        <Link
+          to="/home"
+          className="flex items-center gap-2 px-3.5 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-extrabold text-xs backdrop-blur-md"
         >
-          <i className="fa-solid fa-arrow-left me-2"></i>Back to Login Page
-        </button>
+          <Home className="w-4 h-4" />
+          <span>Home</span>
+        </Link>
+      </div>
+
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition mt-12 sm:mt-0">
+        <div className="mb-4">
+          <BackButton fallbackPath="/login" label="Back to Login Page" />
+        </div>
 
         <h2 className="text-3xl font-semibold text-[#1E88E5] dark:text-white mb-6">Reset Password</h2>
         <p className="text-sm mb-4 text-gray-600 dark:text-gray-300">

@@ -7,7 +7,7 @@ import { JWT_SECRET } from "../../middlewares/authMiddleware.js";
 import { OAuth2Client } from "google-auth-library";
 import { sendWelcomeCredentialsEmail, sendOtpEmail } from "../../config/nodemailer.js";
 import { sendSMS } from "../../config/fast2sms.js";
-import { addNotification } from "../../socket/helper.js";
+import { addNotification, notifyNewUserRegistration } from "../../socket/helper.js";
 
 const googleClientId = (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "dummy_google_client_id")
   ? process.env.GOOGLE_CLIENT_ID
@@ -54,6 +54,13 @@ export const signUpUser = async (req, res) => {
 
   await newUser.save();
 
+  // Trigger registration notifications for User & Admin
+  try {
+    await notifyNewUserRegistration(newUser, req.app.get("io"));
+  } catch (notifErr) {
+    console.warn("New user registration notification notice:", notifErr?.message);
+  }
+
   // Send Welcome Email with Welcome Note & Account Credentials from Admin Email
   sendWelcomeCredentialsEmail({
     toEmail: email,
@@ -68,6 +75,7 @@ export const signUpUser = async (req, res) => {
     user: {
       _id: newUser._id,
       email: newUser.email,
+      notifications: newUser.notifications || [],
     },
   });
 };
@@ -275,6 +283,13 @@ export const loginWithGoogle = async (req, res) => {
 
     await user.save();
 
+    // Trigger registration notifications for User & Admin
+    try {
+      await notifyNewUserRegistration(user, req.app.get("io"));
+    } catch (notifErr) {
+      console.warn("Google signup registration notification notice:", notifErr?.message);
+    }
+
     // Send Welcome Email for new Google sign up
     sendWelcomeCredentialsEmail({
       toEmail: email,
@@ -367,6 +382,13 @@ export const verifyOtp = async (req, res) => {
 
   await newUser.save();
 
+  // Trigger registration notifications for User & Admin
+  try {
+    await notifyNewUserRegistration(newUser, req.app.get("io"));
+  } catch (notifErr) {
+    console.warn("OTP signup registration notification notice:", notifErr?.message);
+  }
+
   // Send Welcome Credentials Email directly to user mail
   sendWelcomeCredentialsEmail({
     toEmail: email,
@@ -388,6 +410,7 @@ export const verifyOtp = async (req, res) => {
     user: {
       _id: newUser._id,
       email: newUser.email,
+      notifications: newUser.notifications || [],
     },
   });
 };

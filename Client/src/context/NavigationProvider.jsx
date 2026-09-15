@@ -4,6 +4,20 @@ import { AdminAuthContext } from "./AuthProvider";
 
 export const NavigationContext = createContext(null);
 
+const isMainTabPath = (pathname) => {
+  if (!pathname) return false;
+  const cleanPath = pathname.split("?")[0].replace(/\/$/, "");
+  return (
+    cleanPath === "" ||
+    cleanPath === "/home" ||
+    cleanPath === "/products" ||
+    cleanPath === "/wishlist" ||
+    cleanPath === "/user-profile/wishlist" ||
+    cleanPath === "/cart" ||
+    cleanPath === "/user-profile"
+  );
+};
+
 export const NavigationProvider = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -91,16 +105,14 @@ export const NavigationProvider = ({ children }) => {
     const currentPath = location.pathname + location.search;
     const isAdmin = location.pathname.startsWith("/admin");
     const stack = historyStackRef.current;
+    const defaultFallback = fallbackPath || (isAdmin ? "/admin/dashboard" : authAdmin ? "/admin/dashboard" : "/home");
 
-    // Filter stack entries matching current role/context (admin vs user)
+    // Check if there is a previous entry in our recorded history stack
     const validPrevious = stack.slice(0, -1).findLast((item) => {
       if (isAdmin) return item.isAdmin && item.fullPath !== currentPath;
       return !item.isAdmin && item.fullPath !== currentPath;
     });
 
-    const defaultFallback = fallbackPath || (isAdmin ? "/admin/dashboard" : authAdmin ? "/admin/dashboard" : "/home");
-
-    // Check if real browser history exists
     const hasBrowserHistory = window.history.length > 1 && window.history.state && window.history.state.idx > 0;
 
     if (validPrevious && hasBrowserHistory) {
@@ -109,7 +121,7 @@ export const NavigationProvider = ({ children }) => {
     } else if (validPrevious) {
       isInternalBackRef.current = true;
       navigate(validPrevious.fullPath);
-    } else if (hasBrowserHistory && window.history.state?.idx > 0) {
+    } else if (hasBrowserHistory) {
       isInternalBackRef.current = true;
       navigate(-1);
     } else {

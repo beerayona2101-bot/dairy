@@ -15,7 +15,7 @@ export default function HomeWelcomeHero() {
     const loggedInName = authUser?.firstName || authUser?.name || authAdmin?.name || null;
 
     return (
-        <section className="relative w-full h-[32vh] min-h-[240px] sm:h-auto sm:min-h-[calc(100vh-52px)] md:min-h-[calc(100vh-54px)] overflow-hidden text-white bg-slate-900 dark:bg-slate-950 flex items-center">
+        <section className="relative w-full h-[32vh] min-h-[240px] sm:h-auto sm:min-h-[320px] md:h-[calc(100vh-56px)] md:min-h-[calc(100vh-56px)] overflow-hidden text-white bg-slate-900 dark:bg-slate-950 flex items-center">
             {/* 1. Full-Width Background Image */}
             <img
                 src={homeHeroBg}

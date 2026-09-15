@@ -1,9 +1,11 @@
 import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { generateOtp, verifyUserByEmail } from "../../../services/userService";
 import { sendOtpEmail } from "../../../services/sentOtp";
+import { Home } from "lucide-react";
+import BackButton from "../../../components/Common/BackButton";
 
 export default function ForgetPassword() {
   const navigate = useNavigate()
@@ -79,14 +81,23 @@ export default function ForgetPassword() {
   };
 
   return (
-    <div className={`flex flex-col md:flex-row min-h-screen transition bg-[#f5f5f5] dark:bg-[#121212] items-center justify-center px-4 py-10`}>
-      <div className="w-full md:w-[40%] bg-white dark:bg-gray-500/20 rounded-2xl shadow-2xl p-8 max-w-md transition">
-        <button
-          className="text-sm text-gray-600 dark:text-gray-300 flex items-center cursor-pointer hover:text-[#1E88E5] transition"
-          onClick={() => navigate("/login")}
+    <div className={`relative flex flex-col md:flex-row min-h-screen transition bg-[#f5f5f5] dark:bg-[#121212] items-center justify-center px-4 py-10`}>
+      {/* Floating Top Nav Buttons */}
+      <div className="absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex items-center justify-between z-30">
+        <BackButton fallbackPath="/login" label="Back" />
+        <Link
+          to="/home"
+          className="flex items-center gap-2 px-3.5 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-extrabold text-xs backdrop-blur-md"
         >
-          <i className="fa-solid fa-arrow-left me-3"></i>Back to Login Page
-        </button>
+          <Home className="w-4 h-4" />
+          <span>Home</span>
+        </Link>
+      </div>
+
+      <div className="w-full md:w-[40%] bg-white dark:bg-gray-500/20 rounded-2xl shadow-2xl p-8 max-w-md transition mt-12 md:mt-0">
+        <div className="mb-4">
+          <BackButton fallbackPath="/login" label="Back to Login Page" />
+        </div>
 
         <h1 className="text-3xl font-semibold mt-6 text-[#1E88E5] dark:text-white">Forgot your password ?</h1>
 

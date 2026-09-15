@@ -1,5 +1,6 @@
 import React, { createContext, useState, useMemo, useEffect, useContext, useCallback } from "react";
 import { getUserOrders } from "../services/orderService";
+import { getUserNotifications } from "../services/notificationService";
 import { UserAuthContext, AdminAuthContext } from "./AuthProvider";
 import wsManager from "../socket/WebSocketManager";
 
@@ -37,6 +38,11 @@ export default function UserOrderProvider({ children }) {
         const userId = authUser?._id || authUser?.id;
         if (userId) {
             setNotification(authUser?.notifications || []);
+            getUserNotifications(userId).then((res) => {
+                if (res?.success && Array.isArray(res.notifications)) {
+                    setNotification(res.notifications);
+                }
+            }).catch(() => {});
             fetchOrders();
         } else {
             setUserOrders([]);

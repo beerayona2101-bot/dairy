@@ -325,34 +325,6 @@ export default function ProductPage() {
                         ) : (
                             /* SPECIFIC CATEGORY PAGE VIEW (productId): Scrolls naturally when many items are present */
                             <div className="w-full flex flex-col">
-                                {/* Mobile Top Header Navigation Bar for Category View */}
-                                <div className="md:hidden sticky top-1 z-30 w-full mb-2 py-1.5 px-1 flex items-center justify-between transition-all duration-200">
-                                    {/* Left: Back Button */}
-                                    <BackButton fallbackPath="/products" />
-
-                                    {/* Center: Title */}
-                                    <div className="flex flex-col items-center justify-center">
-                                        <h1 className="text-sm font-black tracking-tight text-gray-900 dark:text-white capitalize">
-                                            {activeCategoryTitle}
-                                        </h1>
-                                    </div>
-
-                                    {/* Right: Cart Shortcut */}
-                                    <div className="flex items-center">
-                                        <Link
-                                            to="/cart"
-                                            title="View Cart"
-                                            className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:bg-gray-100/80 dark:hover:bg-gray-800/80 active:scale-95 transition-all flex items-center justify-center"
-                                        >
-                                            <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} />
-                                            {cartItems?.length > 0 && (
-                                                <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
-                                                    {cartItems.length}
-                                                </span>
-                                            )}
-                                        </Link>
-                                    </div>
-                                </div>
 
                                 {productLoading ? (
                                     <MadhuLoader />

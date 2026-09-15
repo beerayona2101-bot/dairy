@@ -136,6 +136,7 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
       wsManager.subscribe("order:reject-success", handleStatusUpdate),
       wsManager.subscribe("order.updated", handleStatusUpdate),
       wsManager.subscribe("user:registered", handleNewUser),
+      wsManager.subscribe("user:new-registered", (data) => handleNewUser(data?.user || data)),
       wsManager.subscribe("enquiry.created", handleNewEnquiry),
     ];
 
