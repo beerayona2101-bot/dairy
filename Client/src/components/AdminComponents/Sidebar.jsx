@@ -180,7 +180,7 @@ export default function Sidebar() {
                                     {group.icon}
                                     <span>{group.label}</span>
                                     {group.badge > 0 && (
-                                        <span className="px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded-full font-extrabold">
+                                        <span className="px-1.5 py-0.5 text-[10px] bg-[#6C5CE7] text-white rounded-full font-extrabold shadow-xs">
                                             {group.badge}
                                         </span>
                                     )}
@@ -216,7 +216,7 @@ export default function Sidebar() {
                                                     >
                                                         <span>{subItem.label}</span>
                                                         {subItem?.orderCount > 0 && (
-                                                            <span className="text-[10px] bg-red-500 px-2 py-0.5 rounded-full text-white font-bold">
+                                                            <span className="text-[10px] bg-[#6C5CE7] px-2 py-0.5 rounded-full text-white font-bold">
                                                                 {subItem.orderCount}
                                                             </span>
                                                         )}
@@ -243,14 +243,14 @@ export default function Sidebar() {
                         {theme === "light" ? <DarkModeIcon sx={{ fontSize: "1.2rem" }} /> : <LightModeIcon sx={{ fontSize: "1.2rem" }} />}
                         <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-extrabold bg-gray-100 dark:bg-gray-700">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-extrabold bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-200">
                         {theme === "light" ? "OFF" : "ON"}
                     </span>
                 </button>
 
                 <button
                     onClick={handleLogout}
-                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-black text-red-500 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 transition cursor-pointer"
+                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-black text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
                 >
                     <div className="flex items-center gap-2.5">
                         <LogoutIcon sx={{ fontSize: "1.1rem" }} />
@@ -266,7 +266,7 @@ export default function Sidebar() {
             <div className={`h-screen overflow-auto transition-colors duration-300 ${
                 theme === "light"
                     ? "bg-white text-[#1E293B]"
-                    : "bg-[#0F2742] text-white"
+                    : "bg-[#0F172A] text-white"
             }`}>
                 {renderSidebarContent()}
             </div>

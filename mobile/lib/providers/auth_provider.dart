@@ -14,7 +14,6 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> initAuth() async {
     _isLoading = true;
-    notifyListeners();
 
     final token = await AuthService.getToken();
     final userId = await AuthService.getUserId();

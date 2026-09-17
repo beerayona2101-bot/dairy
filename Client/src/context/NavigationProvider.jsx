@@ -103,14 +103,29 @@ export const NavigationProvider = ({ children }) => {
 
   const goBack = (fallbackPath) => {
     const currentPath = location.pathname + location.search;
+    const cleanCurrentPath = location.pathname.split("?")[0].replace(/\/$/, "");
     const isAdmin = location.pathname.startsWith("/admin");
     const stack = historyStackRef.current;
     const defaultFallback = fallbackPath || (isAdmin ? "/admin/dashboard" : authAdmin ? "/admin/dashboard" : "/home");
 
+    // Fix history loop: going back from /products ALWAYS navigates to /home or fallbackPath
+    if (cleanCurrentPath === "/products" || cleanCurrentPath === "/products/") {
+      navigate(fallbackPath || "/home");
+      return;
+    }
+
+    // Fix history loop: going back from /products/:productId ALWAYS navigates to /products
+    if (cleanCurrentPath.startsWith("/products/")) {
+      navigate(fallbackPath || "/products");
+      return;
+    }
+
     // Check if there is a previous entry in our recorded history stack
     const validPrevious = stack.slice(0, -1).findLast((item) => {
+      if (!item || !item.fullPath) return false;
+      const itemClean = item.pathname.replace(/\/$/, "");
       if (isAdmin) return item.isAdmin && item.fullPath !== currentPath;
-      return !item.isAdmin && item.fullPath !== currentPath;
+      return !item.isAdmin && item.fullPath !== currentPath && itemClean !== cleanCurrentPath;
     });
 
     const hasBrowserHistory = window.history.length > 1 && window.history.state && window.history.state.idx > 0;

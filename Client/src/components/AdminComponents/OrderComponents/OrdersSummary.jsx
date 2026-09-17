@@ -6,6 +6,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import UndoIcon from "@mui/icons-material/Undo";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import BackButton from "../../Common/BackButton";
 
 const containerVariants = {
   hidden: {},
@@ -35,36 +36,36 @@ export default function OrdersSummary({
     {
       name: "Pending Orders",
       value: totalOrders,
-      icon: <ShoppingCartIcon sx={{ fontSize: "1.3rem" }} className="text-[#1E88E5] dark:text-blue-400" />,
-      bg: "bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/40 text-[#1E88E5] dark:text-white",
+      icon: <ShoppingCartIcon sx={{ fontSize: "1.3rem" }} className="text-[#6C5CE7] dark:text-purple-300" />,
+      bg: "bg-white dark:bg-gray-800 border border-purple-100 dark:border-gray-700 text-[#6C5CE7] dark:text-purple-300 shadow-xs hover:border-[#6C5CE7]",
       status: "Pending",
     },
     {
       name: "Total Orders Recieved",
       value: totalRecievedOrders,
-      icon: <CheckCircleIcon sx={{ fontSize: "1.3rem" }} className="text-[#1E88E5] dark:text-sky-400" />,
-      bg: "bg-sky-50/90 dark:bg-sky-950/40 border border-sky-200/80 dark:border-sky-800/40 text-[#1E88E5] dark:text-white",
+      icon: <CheckCircleIcon sx={{ fontSize: "1.3rem" }} className="text-[#6C5CE7] dark:text-purple-300" />,
+      bg: "bg-white dark:bg-gray-800 border border-purple-100 dark:border-gray-700 text-[#6C5CE7] dark:text-purple-300 shadow-xs hover:border-[#6C5CE7]",
       status: "All",
     },
     {
       name: "Total Returned Orders",
       value: 0,
-      icon: <UndoIcon sx={{ fontSize: "1.3rem" }} className="text-[#1565C0] dark:text-indigo-300" />,
-      bg: "bg-indigo-50/90 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/40 text-[#1565C0] dark:text-white",
+      icon: <UndoIcon sx={{ fontSize: "1.3rem" }} className="text-[#6C5CE7] dark:text-purple-300" />,
+      bg: "bg-white dark:bg-gray-800 border border-purple-100 dark:border-gray-700 text-[#6C5CE7] dark:text-purple-300 shadow-xs hover:border-[#6C5CE7]",
       status: "All",
     },
     {
       name: "Total Canceled Orders",
       value: totalCanceledOrders,
-      icon: <CancelIcon sx={{ fontSize: "1.3rem" }} className="text-slate-700 dark:text-slate-300" />,
-      bg: "bg-slate-100/90 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-white",
+      icon: <CancelIcon sx={{ fontSize: "1.3rem" }} className="text-gray-600 dark:text-gray-400" />,
+      bg: "bg-white dark:bg-gray-800 border border-purple-100 dark:border-gray-700 text-gray-900 dark:text-white shadow-xs hover:border-[#6C5CE7]",
       status: "Cancelled",
     },
     {
       name: "Total Drafted Orders",
       value: 0,
-      icon: <EditNoteIcon sx={{ fontSize: "1.3rem" }} className="text-[#00ACC1] dark:text-sky-300" />,
-      bg: "bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/40 text-[#00ACC1] dark:text-white",
+      icon: <EditNoteIcon sx={{ fontSize: "1.3rem" }} className="text-[#6C5CE7] dark:text-purple-300" />,
+      bg: "bg-white dark:bg-gray-800 border border-purple-100 dark:border-gray-700 text-[#6C5CE7] dark:text-purple-300 shadow-xs hover:border-[#6C5CE7]",
       status: "All",
     },
   ];
@@ -77,7 +78,10 @@ export default function OrdersSummary({
       variants={containerVariants}
     >
       <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700/60 pb-3">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Orders Overview</h2>
+        <div className="flex items-center gap-3">
+          <BackButton fallbackPath="/admin/dashboard" />
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Orders Overview</h2>
+        </div>
         <span className="text-xs text-gray-400 font-medium">Click card to filter table</span>
       </div>
 

@@ -14,17 +14,23 @@ class ProductCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cartProvider = Provider.of<CartProvider>(context);
     final isWishlisted = cartProvider.isWishlisted(product.id);
+    final inCart = cartProvider.cartItems.containsKey(product.id);
+    final qty = inCart ? (cartProvider.cartItems[product.id]!['quantity'] as int) : 0;
 
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppTheme.darkCard : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+          color: inCart
+              ? AppTheme.primary.withValues(alpha: 0.4)
+              : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: inCart
+                ? AppTheme.primary.withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -45,7 +51,7 @@ class ProductCard extends StatelessWidget {
                   child: Image.network(
                     product.image,
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
+                    errorBuilder: (ctx, error, stack) {
                       return Container(
                         color: AppTheme.primary.withValues(alpha: 0.1),
                         child: const Icon(
@@ -98,6 +104,28 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
               ),
+
+              // In cart indicator
+              if (inCart)
+                Positioned(
+                  bottom: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '$qty in cart',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
 
@@ -124,7 +152,7 @@ class ProductCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: isDark ? Colors.white : AppTheme.textDark,
                   ),
@@ -135,12 +163,13 @@ class ProductCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Price column
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (product.discount > 0)
                           Text(
-                            '₹${product.price.toStringAsFixed(2)}',
+                            '₹${product.price.toStringAsFixed(0)}',
                             style: const TextStyle(
                               fontSize: 10,
                               color: Colors.grey,
@@ -148,7 +177,7 @@ class ProductCard extends StatelessWidget {
                             ),
                           ),
                         Text(
-                          '₹${product.finalPrice.toStringAsFixed(2)}',
+                          '₹${product.finalPrice.toStringAsFixed(0)}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
@@ -158,32 +187,71 @@ class ProductCard extends StatelessWidget {
                       ],
                     ),
 
-                    // Add Button
-                    GestureDetector(
-                      onTap: () {
-                        cartProvider.addToCart(product);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${product.name} added to cart!'),
-                            duration: const Duration(seconds: 1),
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: AppTheme.primary,
+                    // Add / Stepper Button
+                    if (qty == 0)
+                      GestureDetector(
+                        onTap: () {
+                          cartProvider.addToCart(product);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${product.name} added to cart!'),
+                              duration: const Duration(seconds: 1),
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: AppTheme.primary,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.primaryGradient,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
+                          child: const Icon(Icons.add, size: 16, color: Colors.white),
+                        ),
+                      )
+                    else
+                      // Quantity stepper for items already in cart
+                      Container(
                         decoration: BoxDecoration(
-                          gradient: AppTheme.primaryGradient,
+                          color: isDark ? Colors.black26 : Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
-                          Icons.add,
-                          size: 16,
-                          color: Colors.white,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: () => cartProvider.removeFromCart(product.id),
+                              child: Container(
+                                width: 26,
+                                height: 26,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.remove, size: 14, color: Colors.redAccent),
+                              ),
+                            ),
+                            Text(
+                              '$qty',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => cartProvider.addToCart(product),
+                              child: Container(
+                                width: 26,
+                                height: 26,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primary,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(Icons.add, size: 14, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
                   ],
                 ),
               ],

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
@@ -9,8 +9,8 @@ import AboutCard from "../components/AboutComponents/AboutCard";
 import aboutData from "../data/about.json";
 import { ThemeContext } from "../context/ThemeProvider";
 import { PageContentContext } from "../context/PageContentProvider";
-import MadhuLoader from "../components/MadhuLoader";
 import BackButton from "../components/Common/BackButton";
+import AnimatedHeading from "../components/Common/AnimatedHeading";
 
 export default function AboutPage() {
   const navigate = useNavigate();
@@ -18,7 +18,6 @@ export default function AboutPage() {
   const { pageContent } = useContext(PageContentContext) || {};
   const logoSrc = theme === "dark" ? logoDarkMode : logoLightMode;
 
-  const [pageLoading, setPageLoading] = useState(true);
 
   const aboutUsData = pageContent?.aboutUs || {
     badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
@@ -35,29 +34,7 @@ export default function AboutPage() {
     ],
   };
 
-  useEffect(() => {
-    const handleWindowLoad = () => {
-      setPageLoading(false);
-    };
 
-    if (document.readyState === "complete") {
-      handleWindowLoad();
-    } else {
-      window.addEventListener("load", handleWindowLoad);
-    }
-
-    return () => {
-      window.removeEventListener("load", handleWindowLoad);
-    };
-  }, []);
-
-  if (pageLoading) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-black">
-        <MadhuLoader />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen text-slate-900 dark:text-white transition-colors duration-300">
@@ -100,9 +77,12 @@ export default function AboutPage() {
           </motion.div>
 
           {/* Main Headline */}
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2">
-            {aboutUsData.title || "About Madhu Dairy & Daily Needs"}
-          </h1>
+          <AnimatedHeading
+            blackText="About Madhu Dairy &"
+            violetText="Daily Needs"
+            as="h1"
+            className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2 justify-center"
+          />
 
           <p className="text-xs sm:text-sm text-slate-700 dark:text-gray-200 max-w-xl leading-relaxed font-semibold mb-6">
             {aboutUsData.subtitle ||
@@ -141,9 +121,11 @@ export default function AboutPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
             {aboutUsData.journeySubtitle || "Our Journey & Mission"}
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-            {aboutUsData.journeyTitle || "WHO WE ARE"}
-          </h2>
+          <AnimatedHeading
+            blackText="Our Journey &"
+            violetText="Mission"
+            className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight justify-center"
+          />
 
           <div className="flex items-center gap-2 mt-3">
             <div className="w-10 h-[3px] rounded-full bg-[#1E88E5]"></div>

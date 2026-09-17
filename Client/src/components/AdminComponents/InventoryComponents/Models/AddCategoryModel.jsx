@@ -41,7 +41,7 @@ export default function AddCategoryModel({ open, onClose, onCategoryCreated }) {
     >
       <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <FolderPlus className="text-[#1E88E5] dark:text-blue-400 w-5 h-5" />
+          <FolderPlus className="text-[#6C5CE7] dark:text-purple-400 w-5 h-5" />
           Add New Category
         </h3>
         <button
@@ -58,7 +58,7 @@ export default function AddCategoryModel({ open, onClose, onCategoryCreated }) {
           <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">
             Category Name
           </label>
-          <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2.5 bg-white dark:bg-gray-800 focus-within:border-[#1E88E5] focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition">
+          <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2.5 bg-white dark:bg-gray-800 focus-within:border-[#6C5CE7] focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition">
             <Tag className="text-gray-400 w-4 h-4" />
             <input
               type="text"
@@ -85,7 +85,7 @@ export default function AddCategoryModel({ open, onClose, onCategoryCreated }) {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-[#1E88E5] hover:bg-[#003e7a] text-white transition cursor-pointer shadow-xs"
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition cursor-pointer shadow-xs"
           >
             Create Category
           </button>

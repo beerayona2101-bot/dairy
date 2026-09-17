@@ -21,6 +21,7 @@ export default function Layout({ children }) {
     const isValidAdmin = Boolean(authAdmin || (adminToken && adminRole === "admin"));
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         if (scrollRef.current) {
             scrollRef.current.scrollTo({ top: 0 });
         }
@@ -30,8 +31,6 @@ export default function Layout({ children }) {
         return <Navigate to="/admin/dashboard" replace />;
     }
 
-
-
     const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
     const isCartPage = location.pathname.includes("cart");
     const isCheckoutPage = location.pathname.includes("checkout");
@@ -39,16 +38,25 @@ export default function Layout({ children }) {
     const hideNavbar = (location.pathname.startsWith("/products/") && location.pathname !== "/products") || location.pathname.startsWith("/product-details");
 
     return (
-        <div ref={scrollRef} className="h-screen scroll-smooth flex flex-col overflow-y-auto overflow-x-hidden bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">
+        <div ref={scrollRef} className="min-h-screen w-full max-w-full flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">
             {!hideNavbar && <Navbar />}
-            <main className={`flex-1 flex flex-col ${(isProductsPage || isCartPage || isCheckoutPage) ? 'pt-0 md:pt-[56px]' : hideNavbar ? 'pt-0' : 'pt-[48px] sm:pt-[52px] md:pt-[56px]'} ${hideFooter ? 'pb-0' : 'pb-16 lg:pb-0'}`}>
+            <main className={`flex-1 min-h-[100dvh] flex flex-col w-full max-w-full overflow-x-hidden ${hideNavbar ? 'pt-0' : (isProductsPage || isCartPage || isCheckoutPage) ? 'pt-0 md:pt-[56px]' : 'pt-[48px] sm:pt-[52px] md:pt-[56px]'} ${hideFooter ? 'pb-20 lg:pb-0' : ''}`}>
                 <PageTransition key={location.pathname}>
                     {children}
                 </PageTransition>
             </main>
+
+            {/* Footer sits naturally at the bottom of page content — NEVER sticky or in initial fold */}
             {!hideFooter && <Footer />}
+
+            {/* Transparent spacer: clears the fixed mobile bottom nav bar (64px + safe-area) */}
+            <div
+                className="lg:hidden shrink-0 w-full"
+                style={{ height: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
+                aria-hidden="true"
+            />
         </div>
-    )
+    );
 }
 
 Layout.propTypes = {

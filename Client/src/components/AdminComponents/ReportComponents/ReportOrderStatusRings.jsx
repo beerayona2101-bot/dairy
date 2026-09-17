@@ -13,34 +13,34 @@ export default function ReportOrderStatusRings({ orderStatusData = {} }) {
       title: "Delivered Orders",
       pct: delivered.pct || 92,
       count: delivered.count || 108,
-      color: "#43A047",
-      bgColor: "bg-green-500",
-      stroke: "stroke-green-500",
-      bgStroke: "stroke-green-100 dark:stroke-green-950",
-      badge: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-      icon: <AssignmentTurnedInIcon className="text-green-600 dark:text-green-400" />,
+      color: "#6C5CE7",
+      bgColor: "bg-purple-600",
+      stroke: "stroke-[#6C5CE7]",
+      bgStroke: "stroke-purple-100 dark:stroke-purple-950",
+      badge: "bg-purple-100 text-purple-900 border border-purple-300 dark:bg-purple-950 dark:text-purple-200",
+      icon: <AssignmentTurnedInIcon className="text-[#6C5CE7] dark:text-purple-300" />,
     },
     {
       title: "Active / Shipping",
       pct: pending.pct || 6,
       count: pending.count || 7,
-      color: "#1E88E5",
-      bgColor: "bg-blue-500",
-      stroke: "stroke-blue-500",
-      bgStroke: "stroke-blue-100 dark:stroke-blue-950",
-      badge: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-      icon: <LocalShippingIcon className="text-blue-600 dark:text-blue-400" />,
+      color: "#8B5CF6",
+      bgColor: "bg-purple-500",
+      stroke: "stroke-purple-500",
+      bgStroke: "stroke-purple-100 dark:stroke-purple-950",
+      badge: "bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-900/40 dark:text-purple-300",
+      icon: <LocalShippingIcon className="text-purple-600 dark:text-purple-300" />,
     },
     {
       title: "Cancelled Orders",
       pct: cancelled.pct || 2,
       count: cancelled.count || 3,
-      color: "#EF4444",
-      bgColor: "bg-red-500",
-      stroke: "stroke-red-500",
-      bgStroke: "stroke-red-100 dark:stroke-red-950",
-      badge: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-      icon: <CancelIcon className="text-red-600 dark:text-red-400" />,
+      color: "#18181B",
+      bgColor: "bg-zinc-900",
+      stroke: "stroke-zinc-900 dark:stroke-zinc-400",
+      bgStroke: "stroke-zinc-200 dark:stroke-zinc-800",
+      badge: "bg-zinc-900 text-white border border-zinc-700 dark:bg-zinc-800 dark:text-gray-200",
+      icon: <CancelIcon className="text-zinc-800 dark:text-zinc-300" />,
     },
   ];
 
@@ -49,7 +49,7 @@ export default function ReportOrderStatusRings({ orderStatusData = {} }) {
       <div className="border-b border-gray-100 dark:border-gray-700/60 pb-3 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <AssignmentTurnedInIcon className="text-[#1E88E5] dark:text-blue-400" />
+            <AssignmentTurnedInIcon className="text-[#6C5CE7] dark:text-purple-300" />
             Order Fulfillment Circular Progress
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

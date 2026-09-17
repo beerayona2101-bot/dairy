@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { slugify } from "../../utils/slugify";
 import { motion } from "framer-motion";
 
-export default function OfferingProductCard({ image, title }) {
+export default function OfferingProductCard({ image, title, hideNameOnWeb = false }) {
     const cardRef = useRef(null);
     const [transformStyle, setTransformStyle] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
     const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
@@ -48,7 +48,7 @@ export default function OfferingProductCard({ image, title }) {
                     transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                     transformStyle: "preserve-3d",
                 }}
-                className={`relative h-44 sm:h-64 md:h-80 lg:h-96 w-full shadow-md sm:shadow-[0_16px_40px_rgba(0,0,0,0.12)] rounded-2xl sm:rounded-[28px] overflow-hidden border border-white/40 dark:border-gray-700/60 transition-all duration-300 floating-border-light ${isHovered ? 'active-touch' : ''}`}
+                className={`relative h-44 sm:h-64 md:h-80 lg:h-96 w-full shadow-md sm:shadow-[0_16px_40px_rgba(0,0,0,0.12)] rounded-2xl sm:rounded-[28px] overflow-hidden border border-white/40 dark:border-gray-700/60 transition-all duration-300 floating-border-light periodic-glass-shine ${isHovered ? 'active-touch' : ''}`}
             >
                 {/* Dynamic Mouse & Touch Cursor Spotlight Glow Effect */}
                 <div
@@ -68,9 +68,14 @@ export default function OfferingProductCard({ image, title }) {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
 
-                {/* Bottom-to-Top Subtle Gradient Overlay with Bottom-Centered White Title */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent flex items-end justify-center pb-3 sm:pb-8 px-2 sm:px-4 transition-all duration-300 group-hover:from-black/70">
-                    <h3 className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-black text-white text-center tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] transform group-hover:scale-105 transition-transform duration-300 line-clamp-1">
+                {/* On-Image Category Title Overlay */}
+                <div
+                    style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 30 }}
+                    className={`w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-8 pb-3 sm:pb-4 px-2 flex items-center justify-center pointer-events-none ${
+                        hideNameOnWeb ? "flex md:hidden" : "flex"
+                    }`}
+                >
+                    <h3 className="w-full text-center text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] group-hover:scale-105 transition-transform duration-300 line-clamp-1 px-1">
                         {title}
                     </h3>
                 </div>
@@ -82,4 +87,5 @@ export default function OfferingProductCard({ image, title }) {
 OfferingProductCard.propTypes = {
     image: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
+    hideNameOnWeb: PropTypes.bool,
 };

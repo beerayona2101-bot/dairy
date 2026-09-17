@@ -20,6 +20,7 @@ import {
   Button,
 } from "@mui/material";
 import { fetchEnquiriesApi, replyEnquiryApi } from "../../services/enquiryService";
+import BackButton from "../../components/Common/BackButton";
 
 export default function AdminEnquiries() {
   const { enqueueSnackbar } = useSnackbar();
@@ -146,18 +147,21 @@ export default function AdminEnquiries() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm">
-        <div>
-          <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">
-            ADMIN MAIL CENTER
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 mt-1">
-            <Mail className="w-7 h-7 text-[#6C5CE7]" />
-            <span>Customer Enquiries & SMTP Mail</span>
-          </h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
-            Send 1-click emails to users from official admin mail (
-            <code className="text-[#6C5CE7] font-bold">beerayona143@gmail.com</code>)
-          </p>
+        <div className="flex items-start sm:items-center gap-3">
+          <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
+          <div>
+            <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">
+              ADMIN MAIL CENTER
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 mt-1">
+              <Mail className="w-7 h-7 text-[#6C5CE7]" />
+              <span>Customer Enquiries & SMTP Mail</span>
+            </h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
+              Send 1-click emails to users from official admin mail (
+              <code className="text-[#6C5CE7] font-bold">beerayona143@gmail.com</code>)
+            </p>
+          </div>
         </div>
 
         <button
@@ -195,7 +199,7 @@ export default function AdminEnquiries() {
               {enquiries.length}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-[#6C5CE7] flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] flex items-center justify-center shadow-xs">
             <MessageSquare className="w-5 h-5" />
           </div>
         </button>
@@ -206,24 +210,24 @@ export default function AdminEnquiries() {
           onClick={() => setStatusFilter("Pending")}
           className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border flex items-center justify-between relative overflow-hidden ${
             statusFilter === "Pending"
-              ? "bg-amber-50/90 dark:bg-amber-950/40 border-amber-500 ring-2 ring-amber-500 shadow-md scale-[1.02]"
-              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-amber-300 hover:shadow-xs"
+              ? "bg-purple-100/90 dark:bg-purple-900/40 border-[#8B5CF6] ring-2 ring-[#8B5CF6] shadow-md scale-[1.02]"
+              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-purple-300 hover:shadow-xs"
           }`}
         >
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">Pending Reply</p>
+              <p className="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase">Pending Reply</p>
               {statusFilter === "Pending" && (
-                <span className="text-[10px] font-black text-amber-700 bg-amber-100 dark:bg-amber-950 px-2 py-0.5 rounded-full border border-amber-300">
+                <span className="text-[10px] font-black text-purple-800 bg-purple-200 dark:bg-purple-950 px-2 py-0.5 rounded-full border border-purple-300">
                   ✓ Active View
                 </span>
               )}
             </div>
-            <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
+            <p className="text-2xl font-black text-purple-700 dark:text-purple-300 mt-1">
               {pendingCount}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-[#8B5CF6] flex items-center justify-center shadow-xs">
             <Clock className="w-5 h-5" />
           </div>
         </button>
@@ -234,24 +238,24 @@ export default function AdminEnquiries() {
           onClick={() => setStatusFilter("Replied")}
           className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border flex items-center justify-between relative overflow-hidden ${
             statusFilter === "Replied"
-              ? "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-500 ring-2 ring-emerald-500 shadow-md scale-[1.02]"
-              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-emerald-300 hover:shadow-xs"
+              ? "bg-zinc-900 text-white border-zinc-700 ring-2 ring-zinc-500 shadow-md scale-[1.02]"
+              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-zinc-500 hover:shadow-xs"
           }`}
         >
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Mail Replied</p>
+              <p className="text-xs font-bold text-zinc-300 uppercase">Mail Replied</p>
               {statusFilter === "Replied" && (
-                <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-300">
+                <span className="text-[10px] font-black text-white bg-zinc-800 px-2 py-0.5 rounded-full border border-zinc-600">
                   ✓ Active View
                 </span>
               )}
             </div>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+            <p className="text-2xl font-black text-white mt-1">
               {repliedCount}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-zinc-800 text-purple-400 flex items-center justify-center shadow-xs">
             <CheckCircle className="w-5 h-5" />
           </div>
         </button>
@@ -307,7 +311,7 @@ export default function AdminEnquiries() {
                         </a>
                       </span>
                       <span className="flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5 text-emerald-500" />
+                        <Phone className="w-3.5 h-3.5 text-purple-600" />
                         <a href={`tel:${enquiry.phone}`} className="hover:underline font-semibold">
                           {enquiry.phone}
                         </a>
@@ -318,8 +322,8 @@ export default function AdminEnquiries() {
                   <span
                     className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
                       enquiry.status === "Replied"
-                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
-                        : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                        ? "bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200 border border-purple-300"
+                        : "bg-zinc-900 text-white dark:bg-zinc-800 dark:text-zinc-200 border border-zinc-700"
                     }`}
                   >
                     {enquiry.status}

@@ -212,7 +212,7 @@ export default function AddProductModel({ open, onClose, initialCategory = "" })
           <div className="p-4 bg-gray-50 dark:bg-gray-800/40 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
             <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
               <h3 className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-white flex items-center gap-2">
-                <Image className="w-4 h-4 text-blue-600" />
+                <Image className="w-4 h-4 text-[#6C5CE7]" />
                 Product Images (2 Image Options)
               </h3>
               <span className="text-[11px] font-bold text-gray-500">Normal JPG + Cutout PNG</span>
@@ -233,7 +233,7 @@ export default function AddProductModel({ open, onClose, initialCategory = "" })
                     className="absolute bottom-0 right-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-1.5 rounded-full cursor-pointer shadow-sm hover:scale-105 transition"
                     title="Upload normal photo"
                   >
-                    <Image className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                    <Image className="w-3.5 h-3.5 text-[#6C5CE7] dark:text-purple-400" />
                   </label>
                   <input
                     type="file"
@@ -255,7 +255,7 @@ export default function AddProductModel({ open, onClose, initialCategory = "" })
                     setProductDetails((prev) => ({ ...prev, image: url }));
                   }}
                   disabled={isAdding}
-                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:border-[#1E88E5]"
+                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:border-[#6C5CE7]"
                 />
               </div>
 
@@ -515,7 +515,7 @@ export default function AddProductModel({ open, onClose, initialCategory = "" })
           Cancel
         </button>
         <button onClick={handleAddProduct} disabled={isAdding}
-          className="bg-blue-500 dark:bg-orange-600/30 dark:hover:bg-orange-600/40 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+          className="bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white px-4 py-1.5 rounded-xl font-bold transition shadow-xs cursor-pointer"
         >
           {isAdding ? "Adding..." : "Add Product"}
         </button>

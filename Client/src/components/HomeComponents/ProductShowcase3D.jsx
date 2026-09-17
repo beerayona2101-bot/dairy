@@ -128,200 +128,16 @@ export const getNormalizedNutritionMetrics = (item, title) => {
 
 // 3D Studio Product Bottle Render with Custom Labels & Liquid Themes
 const MADHUStudioProductRender = ({ title, image, transparentUrl }) => {
-    const lower = (title || "").toLowerCase();
-
-    // Use user's exact uploaded studio image for Milk
-    if (lower.includes("milk") && !lower.includes("badam") && !lower.includes("badham") && !lower.includes("flavor") && !lower.includes("powder")) {
-        return (
-            <img
-                src={transparentUrl || image || "/assets/showcase/milk_hd.png"}
-                alt={title}
-                loading="lazy"
-                decoding="async"
-                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
-            />
-        );
-    }
-
-    if (lower.includes("lassi")) {
-        return (
-            <img
-                src={transparentUrl || image || "/assets/showcase/lassi_hd.png"}
-                alt={title}
-                loading="lazy"
-                decoding="async"
-                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
-            />
-        );
-    }
-
-    if (lower.includes("chaas") || lower.includes("buttermilk")) {
-        return (
-            <img
-                src={transparentUrl || image || "/assets/showcase/buttermilk_hd.png"}
-                alt={title}
-                loading="lazy"
-                decoding="async"
-                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
-            />
-        );
-    }
-
-    if (lower.includes("ghee")) {
-        return (
-            <img
-                src={transparentUrl || image || "/assets/showcase/ghee_hd.png"}
-                alt={title}
-                loading="lazy"
-                decoding="async"
-                className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] transition-transform duration-200"
-            />
-        );
-    }
-
-    // Dynamic 3D Glass Bottle Render for Rabri, Khoya, Butter, Cream, Badam, Shrikhand, Sweets, etc.
-    let liquidColor = "#FFFDF5"; // Cream default
-    let subTitle = "Pure Dairy";
-
-    if (lower.includes("rabri") || lower.includes("basundi")) {
-        liquidColor = "#F5D061"; // Saffron Rabri
-        subTitle = "Creamy Malai Rabri";
-    } else if (lower.includes("badam") || lower.includes("badham")) {
-        liquidColor = "#F3C06B"; // Saffron Almond
-        subTitle = "Badam Milk";
-    } else if (lower.includes("butter")) {
-        liquidColor = "#F6E05E"; // Butter Yellow
-        subTitle = "Cooking Butter";
-    } else if (lower.includes("khoya") || lower.includes("mawa")) {
-        liquidColor = "#FFFDF0";
-        subTitle = "Pure Fresh Khoya";
-    } else if (lower.includes("shrikhand")) {
-        liquidColor = "#F6AD55";
-        subTitle = "Kesar Shrikhand";
-    } else if (lower.includes("cream")) {
-        liquidColor = "#FFFFFF";
-        subTitle = "Fresh Malai Cream";
-    } else if (lower.includes("sweet") || lower.includes("mithai")) {
-        liquidColor = "#EBF8FF";
-        subTitle = "Dairy Sweets";
-    } else if (lower.includes("curd") || lower.includes("dahi")) {
-        liquidColor = "#FFFFFF";
-        subTitle = "Pure Fresh Dahi";
-    } else if (lower.includes("paneer") || lower.includes("cheese")) {
-        liquidColor = "#FFFFFF";
-        subTitle = "Fresh A2 Paneer";
-    }
-
-    const displayLabel = title || subTitle;
+    const imgSrc = transparentUrl || image || "/assets/showcase/milk_hd.png";
 
     return (
-        <div className="relative flex items-center justify-center max-h-[110px] sm:max-h-[270px] h-[110px] sm:h-[270px] w-auto">
-            <svg
-                viewBox="0 0 200 420"
-                className="h-full w-auto max-h-[260px] drop-shadow-[0_22px_28px_rgba(0,0,0,0.3)] filter"
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <defs>
-                    <linearGradient id={`glassGrad-${displayLabel.replace(/[^a-zA-Z]/g, '')}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-                        <stop offset="20%" stopColor="#ffffff" stopOpacity="0.2" />
-                        <stop offset="50%" stopColor="#ffffff" stopOpacity="0.05" />
-                        <stop offset="80%" stopColor="#ffffff" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#ffffff" stopOpacity="0.75" />
-                    </linearGradient>
-
-                    <linearGradient id={`liquidGrad-${displayLabel.replace(/[^a-zA-Z]/g, '')}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor={liquidColor} stopOpacity="1" />
-                        <stop offset="100%" stopColor={liquidColor} stopOpacity="0.85" />
-                    </linearGradient>
-
-                    <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#1565C0" />
-                        <stop offset="40%" stopColor="#1E88E5" />
-                        <stop offset="70%" stopColor="#42A5F5" />
-                        <stop offset="100%" stopColor="#0D47A1" />
-                    </linearGradient>
-
-                    <linearGradient id="labelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#FFFDF9" />
-                        <stop offset="100%" stopColor="#F5F0E6" />
-                    </linearGradient>
-
-                    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="8" stdDeviation="6" floodColor="#000000" floodOpacity="0.2" />
-                    </filter>
-                </defs>
-
-                {/* Liquid Fill Inside Glass */}
-                <path
-                    d="M 68,60 L 132,60 C 142,60 148,80 152,110 L 154,370 C 154,395 130,405 100,405 C 70,405 46,395 46,370 L 48,110 C 52,80 58,60 68,60 Z"
-                    fill={`url(#liquidGrad-${displayLabel.replace(/[^a-zA-Z]/g, '')})`}
-                />
-
-                {/* Outer Glass Contour */}
-                <path
-                    d="M 68,50 L 132,50 C 144,50 150,75 154,110 L 156,370 C 156,398 132,408 100,408 C 68,408 44,398 44,370 L 46,110 C 50,75 56,50 68,50 Z"
-                    fill={`url(#glassGrad-${displayLabel.replace(/[^a-zA-Z]/g, '')})`}
-                    stroke="rgba(255,255,255,0.7)"
-                    strokeWidth="2"
-                />
-
-                {/* Metallic Blue Cap */}
-                <rect x="64" y="32" width="72" height="22" rx="4" fill="url(#capGrad)" filter="url(#dropShadow)" />
-                <rect x="66" y="34" width="68" height="4" rx="2" fill="rgba(255,255,255,0.4)" />
-                <line x1="64" y1="46" x2="136" y2="46" stroke="#0D47A1" strokeWidth="1.5" />
-
-                {/* Glass Reflection Highlight Stripe */}
-                <path
-                    d="M 52,120 Q 56,80 68,62 L 76,62 Q 64,80 60,120 L 58,360 Q 64,390 80,396 L 72,396 Q 54,390 50,360 Z"
-                    fill="rgba(255, 255, 255, 0.45)"
-                />
-
-                {/* Condensation Droplets */}
-                <circle cx="62" cy="140" r="2.5" fill="rgba(255,255,255,0.9)" />
-                <circle cx="140" cy="160" r="3" fill="rgba(255,255,255,0.85)" />
-                <circle cx="68" cy="210" r="3.5" fill="rgba(255,255,255,0.9)" />
-                <circle cx="136" cy="270" r="2.5" fill="rgba(255,255,255,0.85)" />
-                <circle cx="70" cy="320" r="3" fill="rgba(255,255,255,0.9)" />
-                <circle cx="134" cy="350" r="2" fill="rgba(255,255,255,0.8)" />
-
-                {/* Brand Cream Label with Gold & Blue Borders */}
-                <g filter="url(#dropShadow)">
-                    <rect x="47" y="175" width="106" height="155" rx="6" fill="url(#labelGrad)" stroke="#1E88E5" strokeWidth="2" />
-                    <rect x="49" y="177" width="102" height="151" rx="4" fill="none" stroke="#D4AF37" strokeWidth="1" />
-
-                    {/* Blue Arch */}
-                    <path d="M 52,205 Q 100,185 148,205" fill="none" stroke="#1E88E5" strokeWidth="2.5" />
-
-                    {/* MADHU Header */}
-                    <text x="100" y="222" textAnchor="middle" fill="#0F2742" fontFamily="serif" fontSize="18" fontWeight="900" letterSpacing="1">
-                        MADHU
-                    </text>
-
-                    {/* Dynamic Product Name */}
-                    <text x="100" y="242" textAnchor="middle" fill="#1E88E5" fontFamily="sans-serif" fontSize="10" fontWeight="700">
-                        {displayLabel.length > 18 ? displayLabel.substring(0, 16) + "..." : displayLabel}
-                    </text>
-
-                    {/* Cow Vector Art */}
-                    <g transform="translate(74, 250) scale(0.45)">
-                        <path d="M 20,10 C 15,5 5,10 5,20 C 5,30 20,35 30,30 C 40,35 55,30 55,20 C 55,10 45,5 40,10 Z" fill="#795548" />
-                        <path d="M 25,12 C 22,8 12,12 12,20 C 12,28 25,32 30,28 Z" fill="#FFFFFF" />
-                        <circle cx="22" cy="18" r="2" fill="#000" />
-                        <circle cx="38" cy="18" r="2" fill="#000" />
-                    </g>
-
-                    {/* Badge */}
-                    <line x1="57" y1="290" x2="143" y2="290" stroke="#D4AF37" strokeWidth="1" />
-                    <text x="100" y="303" textAnchor="middle" fill="#0F2742" fontFamily="sans-serif" fontSize="8" fontWeight="800">
-                        A2 FARM FRESH
-                    </text>
-                    <text x="100" y="316" textAnchor="middle" fill="#718096" fontFamily="sans-serif" fontSize="6.5" fontWeight="600">
-                        100% PURE &amp; NATURAL
-                    </text>
-                </g>
-            </svg>
-        </div>
+        <img
+            src={imgSrc}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.3)] transition-transform duration-200"
+        />
     );
 };
 
@@ -776,10 +592,12 @@ export default function ProductShowcase3D() {
                             {/* 3. Add to Cart Button */}
                             <button
                                 onClick={handlePurchase}
-                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-[0_8px_20px_rgba(108,92,231,0.35)] hover:scale-[1.02] active:scale-95"
+                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-[0_8px_20px_rgba(108,92,231,0.35)] hover:scale-[1.02] active:scale-95 periodic-glass-shine btn-reflection"
                             >
-                                <AddIcon sx={{ fontSize: { xs: "1rem", sm: "1.3rem" } }} />
-                                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-center leading-tight">Add to Cart</span>
+                                <span className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5">
+                                    <AddIcon sx={{ fontSize: { xs: "1rem", sm: "1.3rem" } }} />
+                                    <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-center leading-tight">Add to Cart</span>
+                                </span>
                             </button>
                         </div>
                     </div>

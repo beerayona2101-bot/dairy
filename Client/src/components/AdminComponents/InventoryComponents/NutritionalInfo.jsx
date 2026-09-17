@@ -87,7 +87,7 @@ export default function NutritionInput({ onChange, value, isAdding }) {
             <button
               type="button"
               onClick={() => handleRemoveField(index)}
-              className="text-red-500 font-bold px-2"
+              className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-bold px-2"
             >
               ✕
             </button>
@@ -98,7 +98,7 @@ export default function NutritionInput({ onChange, value, isAdding }) {
       <button
         type="button"
         onClick={handleAddField}
-        className="w-fit px-4 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+        className="w-fit px-4 py-1 text-sm text-white bg-[#6C5CE7] hover:bg-[#5b4cc4] font-bold rounded"
       >
         + Add More
       </button>

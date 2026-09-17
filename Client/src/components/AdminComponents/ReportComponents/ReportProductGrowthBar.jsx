@@ -21,9 +21,9 @@ const CustomBarTooltip = ({ active, payload }) => {
       <div className="bg-white dark:bg-gray-800 p-3 shadow-xl rounded-xl border border-gray-200 dark:border-gray-700 text-xs space-y-1">
         <p className="font-bold text-gray-800 dark:text-white line-clamp-1">{data.name}</p>
         <p className="text-gray-500 dark:text-gray-400">Category: {data.category}</p>
-        <p className="text-[#43A047] font-bold">Units Sold: {data.sold} units</p>
-        <p className="text-[#1E88E5] font-bold">Revenue: ₹{formatNumberWithCommas(data.revenue)}</p>
-        <p className="text-pink-600 font-semibold flex items-center gap-1">
+        <p className="text-[#6C5CE7] font-bold">Units Sold: {data.sold} units</p>
+        <p className="text-purple-600 font-bold">Revenue: ₹{formatNumberWithCommas(data.revenue)}</p>
+        <p className="text-purple-400 font-semibold flex items-center gap-1">
           <TrendingUpIcon sx={{ fontSize: "0.9rem" }} />
           Growth Rate: +{data.growth}%
         </p>
@@ -39,14 +39,14 @@ CustomBarTooltip.propTypes = {
 };
 
 export default function ReportProductGrowthBar({ productGrowthData = [] }) {
-  const barColors = ["#1E88E5", "#1E88E5", "#43A047", "#FE8C00", "#E91E63", "#9C27B0"];
+  const barColors = ["#6C5CE7", "#8B5CF6", "#A78BFA", "#4C1D95", "#C4B5FD", "#6D28D9"];
 
   return (
     <div className="bg-white dark:bg-gray-500/20 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-4">
       <div className="border-b border-gray-100 dark:border-gray-700/60 pb-3 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <BarChartIcon className="text-[#43A047] dark:text-green-400" />
+            <BarChartIcon className="text-[#6C5CE7] dark:text-purple-300" />
             Top Product Sales & Revenue Growth
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

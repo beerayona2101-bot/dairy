@@ -39,7 +39,7 @@ export default function AdminAccordion({
       >
         <div className="flex items-center gap-3 min-w-0">
           {icon && (
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1E88E5] dark:text-blue-300 shrink-0">
+            <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 shrink-0">
               {icon}
             </div>
           )}
@@ -49,7 +49,7 @@ export default function AdminAccordion({
                 {title}
               </h3>
               {badgeCount !== undefined && badgeCount !== null && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-50 dark:bg-blue-950/60 text-[#1E88E5] dark:text-blue-300 border border-blue-200 dark:border-blue-800 shrink-0">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0">
                   {badgeCount}
                 </span>
               )}

@@ -110,15 +110,17 @@ export const getAllUserOrders = async (req, res) => {
       return res.status(200).json({ success: true, message: "No orders found.", orders: [] });
     }
 
-    let user = await User.findById(userId);
-    if (!user) {
-      user = await Admin.findById(userId);
-    }
-    if (!user) {
+    const [user, admin] = await Promise.all([
+      User.findById(userId).select("orders").lean(),
+      Admin.findById(userId).select("orders").lean(),
+    ]);
+
+    const activeUser = user || admin;
+    if (!activeUser) {
       return res.status(200).json({ success: true, message: "User not found.", orders: [] });
     }
 
-    const userOrderIds = user.orders || [];
+    const userOrderIds = activeUser.orders || [];
 
     const orders = await Order.find({
       $or: [
@@ -135,7 +137,8 @@ export const getAllUserOrders = async (req, res) => {
         path: "productsData.productId",
         model: "Product",
         select: "name quantityUnit image price discount photos photo",
-      });
+      })
+      .lean();
 
     return res.status(200).json({
       success: true,
@@ -170,7 +173,9 @@ export const getAllOrders = async (req, res) => {
       .populate({
         path: "productsData.productId",
         model: "Product",
-      });
+        select: "name quantityUnit image price discount category",
+      })
+      .lean();
 
     return res.status(200).json({
       success: true,
@@ -196,14 +201,16 @@ export const getAdminOrders = async (req, res) => {
           populate: {
             path: "owner",
             model: "User",
+            select: "firstName lastName username email phone mobileNo",
           },
         },
         {
           path: "productsData.productId",
           model: "Product",
+          select: "name quantityUnit image price discount",
         },
       ],
-    });
+    }).lean();
 
     if (!admin) {
       return res
@@ -232,7 +239,8 @@ export const getRecentOrders = async (req, res) => {
         model: "User",
         select: "firstName lastName username email mobileNo",
       })
-      .select("user address productsData totalAmount status createdAt paymentMode");
+      .select("user address productsData totalAmount status createdAt paymentMode")
+      .lean();
 
     return res.status(200).json({
       success: true,
@@ -292,14 +300,19 @@ export const cancelOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "Order is already cancelled." });
     }
 
-    // Restore product stock
-    if (Array.isArray(order.productsData)) {
-      for (const item of order.productsData) {
-        if (item.productId && item.productQuantity && mongoose.Types.ObjectId.isValid(item.productId)) {
-          await Product.findByIdAndUpdate(item.productId, {
-            $inc: { stock: item.productQuantity },
-          });
-        }
+    // Restore product stock using BulkWrite for optimal single-roundtrip performance
+    if (Array.isArray(order.productsData) && order.productsData.length > 0) {
+      const bulkOps = order.productsData
+        .filter(item => item.productId && item.productQuantity && mongoose.Types.ObjectId.isValid(item.productId))
+        .map(item => ({
+          updateOne: {
+            filter: { _id: item.productId },
+            update: { $inc: { stock: item.productQuantity } }
+          }
+        }));
+
+      if (bulkOps.length > 0) {
+        await Product.bulkWrite(bulkOps);
       }
     }
 

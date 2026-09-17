@@ -42,38 +42,38 @@ export default function InventorySummary({
     {
       name: "Total Stock Items",
       value: totalProducts,
-      icon: <FormatListNumberedIcon className="text-[#1E88E5] dark:text-blue-400" />,
-      bg: "bg-blue-50/90 hover:bg-blue-100/90 dark:bg-blue-950/40 dark:hover:bg-blue-950/60 border-blue-200 dark:border-blue-800/40",
+      icon: <FormatListNumberedIcon className="text-[#6C5CE7] dark:text-purple-300" />,
+      bg: "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
       route: "/admin/inventory",
     },
     {
       name: "Low Stock",
       value: lowStockCount,
-      icon: <ReportProblemIcon className="text-[#1E88E5] dark:text-sky-400" />,
+      icon: <ReportProblemIcon className="text-purple-600 dark:text-purple-300" />,
       bg:
         lowStockCount > 0
-          ? "bg-sky-100/90 hover:bg-sky-200/90 dark:bg-sky-900/50 dark:hover:bg-sky-800/60 animate-pulse border-sky-300 dark:border-sky-700/60"
-          : "bg-sky-50/90 hover:bg-sky-100/90 dark:bg-sky-950/40 dark:hover:bg-sky-950/60 border-sky-200 dark:border-sky-800/40",
+          ? "bg-purple-100/90 hover:bg-purple-200/90 dark:bg-purple-900/50 dark:hover:bg-purple-800/60 animate-pulse border-purple-300 dark:border-purple-700/60"
+          : "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
       route: "/admin/inventory",
     },
     {
       name: "Out of Stock",
       value: outOfStockProducts,
-      icon: <ErrorOutlineIcon className="text-slate-700 dark:text-slate-300" />,
+      icon: <ErrorOutlineIcon className="text-zinc-900 dark:text-zinc-300" />,
       bg:
         outOfStockProducts > 0
-          ? "bg-slate-200/90 hover:bg-slate-300/90 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 animate-pulse border-slate-400 dark:border-slate-600"
-          : "bg-slate-100/90 hover:bg-slate-200/90 dark:bg-slate-800/60 dark:hover:bg-slate-800/80 border-slate-300 dark:border-slate-700",
+          ? "bg-zinc-200/90 hover:bg-zinc-300/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/80 animate-pulse border-zinc-400 dark:border-zinc-600"
+          : "bg-zinc-100/90 hover:bg-zinc-200/90 dark:bg-zinc-800/60 dark:hover:bg-zinc-800/80 border-zinc-300 dark:border-zinc-700",
       route: "/admin/inventory",
     },
     {
       name: "Near Expiry",
       value: expiringSoonCount,
-      icon: <AccessTimeIcon className="text-[#1565C0] dark:text-indigo-300" />,
+      icon: <AccessTimeIcon className="text-purple-700 dark:text-purple-300" />,
       bg:
         expiringSoonCount > 0
-          ? "bg-indigo-100/90 hover:bg-indigo-200/90 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/60 animate-pulse border-indigo-300 dark:border-indigo-700/60"
-          : "bg-indigo-50/90 hover:bg-indigo-100/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800/40",
+          ? "bg-purple-100/90 hover:bg-purple-200/90 dark:bg-purple-900/50 dark:hover:bg-purple-800/60 animate-pulse border-purple-300 dark:border-purple-700/60"
+          : "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
       route: "/admin/inventory",
     },
   ];

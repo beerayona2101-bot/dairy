@@ -153,31 +153,11 @@ const defaultInitialContent = {
 
 export const getPageContent = async (req, res) => {
   try {
-    let content = await PageContent.findOne();
+    let content = await PageContent.findOne().lean();
     if (!content) {
       content = await PageContent.create(defaultInitialContent);
-    } else {
-      let needsSave = false;
-      if (!content.homeCategoryCards) {
-        content.homeCategoryCards = defaultInitialContent.homeCategoryCards;
-        needsSave = true;
-      }
-      if (!content.landingShowcaseCards) {
-        content.landingShowcaseCards = defaultInitialContent.landingShowcaseCards;
-        needsSave = true;
-      }
-      if (!content.aboutUs) {
-        content.aboutUs = defaultInitialContent.aboutUs;
-        needsSave = true;
-      }
-      if (!content.contactUs) {
-        content.contactUs = defaultInitialContent.contactUs;
-        needsSave = true;
-      }
-      if (needsSave) {
-        await content.save();
-      }
     }
+    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
     return res.status(200).json({ success: true, pageContent: content });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

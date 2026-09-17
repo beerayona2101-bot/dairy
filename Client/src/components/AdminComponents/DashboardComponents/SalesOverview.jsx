@@ -40,10 +40,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalRevenue,
             trend: "+14.2%",
             trendUp: true,
-            icon: <TrendingUpIcon className="text-[#1E88E5]" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-blue-50/90 dark:bg-blue-950/40 border-blue-200/80 dark:border-blue-800/40",
-            iconBg: "bg-blue-100 dark:bg-blue-900/60",
-            textColor: "text-[#1E88E5] dark:text-blue-300",
+            icon: <TrendingUpIcon className="text-[#6C5CE7]" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
+            iconBg: "bg-purple-100 dark:bg-purple-900/60",
+            textColor: "text-[#6C5CE7] dark:text-purple-300",
             route: "/admin/orders",
         },
         {
@@ -51,10 +51,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalSales,
             trend: "+18.5%",
             trendUp: true,
-            icon: <PercentIcon className="text-[#43A047]" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-green-50/90 dark:bg-green-950/40 border-green-200/80 dark:border-green-800/40",
-            iconBg: "bg-green-100 dark:bg-green-900/60",
-            textColor: "text-[#43A047] dark:text-green-300",
+            icon: <PercentIcon className="text-purple-600" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
+            iconBg: "bg-purple-100 dark:bg-purple-900/60",
+            textColor: "text-purple-600 dark:text-purple-300",
             route: "/admin/orders",
         },
         {
@@ -62,10 +62,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalProfit,
             trend: "+9.4%",
             trendUp: true,
-            icon: <BarChartIcon className="text-[#00ACC1]" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-cyan-50/90 dark:bg-cyan-950/40 border-cyan-200/80 dark:border-cyan-800/40",
-            iconBg: "bg-cyan-100 dark:bg-cyan-900/60",
-            textColor: "text-[#00ACC1] dark:text-cyan-300",
+            icon: <BarChartIcon className="text-purple-500" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
+            iconBg: "bg-purple-100 dark:bg-purple-900/60",
+            textColor: "text-purple-500 dark:text-purple-300",
             route: "/admin/orders",
         },
         {
@@ -73,10 +73,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalRevenue - totalProfit,
             trend: "-2.1%",
             trendUp: false,
-            icon: <MoneyOffIcon className="text-[#FB8C00]" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-amber-50/90 dark:bg-amber-950/40 border-amber-200/80 dark:border-amber-800/40",
-            iconBg: "bg-amber-100 dark:bg-amber-900/60",
-            textColor: "text-[#FB8C00] dark:text-amber-300",
+            icon: <MoneyOffIcon className="text-purple-700 dark:text-purple-300" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
+            iconBg: "bg-purple-100 dark:bg-purple-900/60",
+            textColor: "text-purple-700 dark:text-purple-300",
             route: "/admin/inventory",
         },
         {
@@ -84,10 +84,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalExpenses,
             trend: "-0.8%",
             trendUp: false,
-            icon: <ListAltIcon className="text-[#0F2742] dark:text-gray-200" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-slate-50/90 dark:bg-slate-900/40 border-slate-200/80 dark:border-slate-800/40",
-            iconBg: "bg-slate-200/80 dark:bg-slate-800/80",
-            textColor: "text-[#0F2742] dark:text-white",
+            icon: <ListAltIcon className="text-zinc-900 dark:text-gray-200" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-zinc-100/90 dark:bg-zinc-900/40 border-zinc-200/80 dark:border-zinc-800/40",
+            iconBg: "bg-zinc-200/80 dark:bg-zinc-800/80",
+            textColor: "text-zinc-900 dark:text-white",
             route: "/admin/orders",
         },
     ];
@@ -100,8 +100,8 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             variants={containerVariants}
         >
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg md:text-xl font-extrabold text-[#0F2742] dark:text-white tracking-tight">Sales & Revenue Metrics</h2>
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                <h2 className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">Sales & Revenue Metrics</h2>
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
                     Live Performance
                 </span>
             </div>
@@ -133,8 +133,8 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
                                 </div>
                                 <span className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${
                                     item.trendUp
-                                        ? "bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300"
-                                        : "bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300"
+                                        ? "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-200 border border-purple-300"
+                                        : "bg-zinc-900 text-white dark:bg-zinc-800 dark:text-gray-200 border border-zinc-700"
                                 }`}>
                                     {item.trendUp ? `↗ ${item.trend}` : `↘ ${item.trend}`}
                                 </span>

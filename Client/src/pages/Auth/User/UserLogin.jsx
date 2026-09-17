@@ -25,15 +25,14 @@ export default function UserLogin() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  if (isValidAdmin && !authAdminLoading) {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  if (isValidAdmin && !authAdminLoading) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   const brandLogo = theme === "dark" ? logoDarkMode : logoLightMode;
 
@@ -77,11 +76,7 @@ export default function UserLogin() {
           if (fetchAdminData) await fetchAdminData(res?.admin);
 
           enqueueSnackbar("Admin Login Successful!", { variant: "success" });
-          const adminDest =
-            targetPath && targetPath.startsWith("/admin") && !isAuthPath(targetPath)
-              ? targetPath
-              : "/admin/dashboard";
-          navigate(adminDest, { replace: true });
+          navigate("/admin/dashboard", { replace: true });
         } else {
           handleAdminLogout();
           if (res?.userToken) {
@@ -148,7 +143,7 @@ export default function UserLogin() {
 
         <Link
           to="/home"
-          className="flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-sm hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
+          className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-sm hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
         >
           <Home className="w-4 h-4" />
           <span>Home</span>
@@ -313,17 +308,18 @@ export default function UserLogin() {
                 </Link>
               </div>
 
-              {/* Submit Pill Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 px-6 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] active:scale-[0.99] text-white font-bold text-sm tracking-widest uppercase shadow-lg shadow-blue-500/30 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-6 periodic-glass-shine"
+                className="w-full py-4 px-6 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white font-bold text-sm tracking-widest uppercase shadow-lg shadow-blue-500/30 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-6 periodic-glass-shine"
               >
-                {isLoading ? (
-                  <BuffaloLoader variant="button" text="Logging in..." />
-                ) : (
-                  "LOG IN"
-                )}
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {isLoading ? (
+                    <BuffaloLoader variant="button" text="Logging in..." />
+                  ) : (
+                    "LOG IN"
+                  )}
+                </span>
               </button>
             </form>
 

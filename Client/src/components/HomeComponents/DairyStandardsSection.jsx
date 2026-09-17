@@ -4,6 +4,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { Link } from "react-router-dom";
 
+import AnimatedHeading from "../Common/AnimatedHeading";
+
 const HAPPY_FAMILY_IMAGE = "https://res.cloudinary.com/dyahibuzy/image/upload/v1750157405/happyFamily_uuyftj.png";
 
 export default function DairyStandardsSection({ image }) {
@@ -43,9 +45,11 @@ export default function DairyStandardsSection({ image }) {
                             <span className="text-[12px] font-extrabold uppercase tracking-widest text-[#0284C7] dark:text-[#6C5CE7]">
                                 MADHU DAIRY STANDARDS
                             </span>
-                            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#2D3748] dark:text-white leading-tight mt-1">
-                                Secret Dairy Technologies & Quality Purity
-                            </h2>
+                            <AnimatedHeading
+                                blackText="Secret Dairy Technologies &"
+                                violetText="Quality Purity"
+                                className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#2D3748] dark:text-white leading-tight mt-1"
+                            />
                         </div>
 
                         {/* 3 Checkmark Bullet Points */}

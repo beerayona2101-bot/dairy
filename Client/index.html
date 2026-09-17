@@ -10,11 +10,15 @@
   <title>Madhu Dairy & Daily Needs</title>
   <link rel="icon" type="image/png" href="https://res.cloudinary.com/dyahibuzy/image/upload/v1752661676/sacred-cow_wrqj3p.png" />
 
-
+  <!-- DNS prefetch + preconnect for fast CDN resource loading -->
+  <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Optimized Google Fonts: only essential weights (removes ~60% of font payload) -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Liter&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap"
     rel="stylesheet" />
 
   <link rel="stylesheet" href="/src/index.css" />
@@ -31,7 +35,8 @@
 
   <script type="module" src="/src/main.jsx"></script>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Razorpay: deferred so it does NOT block HTML parsing -->
+  <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <script>
     function googleTranslateElementInit() {
@@ -47,7 +52,8 @@
     }
   </script>
 
-  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <!-- Google Translate: async so it does NOT block rendering -->
+  <script async src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
 </html>

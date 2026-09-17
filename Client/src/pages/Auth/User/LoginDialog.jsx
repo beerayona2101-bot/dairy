@@ -284,17 +284,18 @@ export default function LoginDialog() {
                 </Link>
               </div>
 
-              {/* Action Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-6 rounded-full bg-gradient-to-r from-[#1E88E5] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-bold text-xs sm:text-sm tracking-widest uppercase shadow-md shadow-blue-500/20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all cursor-pointer mt-4 btn-reflection periodic-glass-shine"
+                className="w-full py-3 px-6 rounded-full bg-gradient-to-r from-[#1E88E5] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-bold text-xs sm:text-sm tracking-widest uppercase shadow-md shadow-blue-500/20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all cursor-pointer mt-4 periodic-glass-shine"
               >
-                {loading ? (
-                  <BuffaloLoader variant="button" text="Logging in..." />
-                ) : (
-                  "LOG IN"
-                )}
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {loading ? (
+                    <BuffaloLoader variant="button" text="Logging in..." />
+                  ) : (
+                    "LOG IN"
+                  )}
+                </span>
               </button>
             </form>
 

@@ -71,7 +71,7 @@ export default function StoreOrdersHistory() {
                         <BackButton fallbackPath="/admin/customers" />
                         <h2 className="text-xl text-gray-800 dark:text-white line-clamp-1">
                             Order History:{" "}
-                            <span className="text-2xl text-green-500 font-bold">{(titleName).toUpperCase()}</span>
+                            <span className="text-2xl text-[#6C5CE7] font-bold">{(titleName).toUpperCase()}</span>
                         </h2>
                     </div>
 
@@ -94,7 +94,7 @@ export default function StoreOrdersHistory() {
                                 setFromDate("");
                                 setToDate("");
                             }}
-                            className="hidden md:flex px-2 md:px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md transition"
+                            className="hidden md:flex px-2 md:px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm rounded-md transition"
                         >
                             Reset Dates
                         </button>
@@ -112,13 +112,13 @@ export default function StoreOrdersHistory() {
                                 <div className="text-sm space-y-2">
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <AssignmentTurnedInIcon className="text-purple-600 dark:text-purple-400" fontSize="small" />
+                                        <AssignmentTurnedInIcon className="text-[#6C5CE7] dark:text-purple-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Order ID:</span>
                                         <span className="text-gray-600 dark:text-gray-300 break-all">{order._id}</span>
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <LocationOnIcon className="text-green-600 dark:text-green-400" fontSize="small" />
+                                        <LocationOnIcon className="text-[#6C5CE7] dark:text-purple-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Address:</span>
                                         <span className="text-gray-600 dark:text-gray-300 break-all">
                                             {formatFullAddress(order?.address)}
@@ -126,13 +126,13 @@ export default function StoreOrdersHistory() {
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <CallIcon className="text-red-500 dark:text-red-400" fontSize="small" />
+                                        <CallIcon className="text-[#6C5CE7] dark:text-purple-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Mobile:</span>
                                         <span className="text-gray-600 dark:text-gray-300">{order?.address?.phone}</span>
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <CalendarMonthIcon className="text-yellow-600 dark:text-yellow-400" fontSize="small" />
+                                        <CalendarMonthIcon className="text-[#6C5CE7] dark:text-purple-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Ordered On:</span>
                                         <span className="text-gray-600 dark:text-gray-300">
                                             {new Date(order.createdAt).toLocaleString("en-IN", {
@@ -176,12 +176,12 @@ export default function StoreOrdersHistory() {
 
                                 <div className="flex flex-wrap gap-x-6 gap-y-2 justify-between text-sm pt-4 text-gray-700 dark:text-gray-300">
                                     <p className="flex items-center gap-1">
-                                        <span className="font-semibold text-indigo-600 dark:text-indigo-400">Status:</span>
+                                        <span className="font-semibold text-[#6C5CE7] dark:text-purple-300">Status:</span>
                                         <span>{order.status}</span>
                                     </p>
 
                                     <p className="flex items-center gap-1">
-                                        <span className="font-semibold text-teal-600 dark:text-teal-400">Payment Mode:</span>
+                                        <span className="font-semibold text-[#6C5CE7] dark:text-purple-300">Payment Mode:</span>
                                         <span>{order.paymentMode}</span>
                                     </p>
 

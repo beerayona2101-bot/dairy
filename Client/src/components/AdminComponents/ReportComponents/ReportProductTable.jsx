@@ -20,7 +20,7 @@ export default function ReportProductTable({ productGrowthData = [] }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-700/60 pb-3">
         <div>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <InventoryIcon className="text-[#1E88E5] dark:text-pink-400" />
+            <InventoryIcon className="text-[#6C5CE7] dark:text-purple-300" />
             Static Data View: Product Growth & Performance Report
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -34,7 +34,7 @@ export default function ReportProductTable({ productGrowthData = [] }) {
             placeholder="Search report products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none border border-transparent focus:border-[#1E88E5] transition"
+            className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none border border-transparent focus:border-[#6C5CE7] transition"
           />
           <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 !text-base" />
         </div>
@@ -66,14 +66,14 @@ export default function ReportProductTable({ productGrowthData = [] }) {
                   />
                   <Link
                     to={`/product-details/${slugify(prod.name)}`}
-                    className="hover:text-[#1E88E5] dark:hover:text-pink-400 font-semibold line-clamp-1"
+                    className="hover:text-[#6C5CE7] dark:hover:text-purple-300 font-semibold line-clamp-1"
                   >
                     {prod.name}
                   </Link>
                 </td>
 
                 <td className="py-3 px-4">
-                  <span className="px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 font-medium">
+                  <span className="px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 font-medium border border-purple-200">
                     {prod.category}
                   </span>
                 </td>
@@ -82,12 +82,12 @@ export default function ReportProductTable({ productGrowthData = [] }) {
                   {prod.sold} pcs
                 </td>
 
-                <td className="py-3 px-4 text-right font-extrabold text-[#1E88E5] dark:text-blue-400">
+                <td className="py-3 px-4 text-right font-extrabold text-[#6C5CE7] dark:text-purple-300">
                   ₹{formatNumberWithCommas(prod.revenue)}
                 </td>
 
                 <td className="py-3 px-4 text-center">
-                  <span className="inline-flex items-center gap-1 font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-2 py-0.5 rounded-md">
+                  <span className="inline-flex items-center gap-1 font-bold text-[#6C5CE7] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded-md border border-purple-200">
                     <TrendingUpIcon sx={{ fontSize: "0.9rem" }} />
                     +{prod.growth}%
                   </span>
@@ -97,8 +97,8 @@ export default function ReportProductTable({ productGrowthData = [] }) {
                   <span
                     className={`px-2.5 py-0.5 rounded-full font-semibold ${
                       prod.stock > 30
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
-                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                        ? "bg-purple-100 text-purple-900 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200"
+                        : "bg-zinc-900 text-white dark:bg-zinc-800 dark:text-gray-200 border border-zinc-700"
                     }`}
                   >
                     {prod.stock} in stock

@@ -142,7 +142,7 @@ export default function UpdateProductModel({ open, onClose, selectedProduct }) {
       <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800 mb-4">
         <div>
           <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <RefreshCw className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> Update Stock & Expiry Data
+            <RefreshCw className="w-5 h-5 text-[#6C5CE7]" /> Update Stock & Expiry Data
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
             Updating stock quantity & expiry info for <span className="font-semibold text-gray-800 dark:text-gray-200">{selectedProduct?.name}</span>
@@ -185,7 +185,7 @@ export default function UpdateProductModel({ open, onClose, selectedProduct }) {
               value={productDetails?.quantityUnit}
               onChange={handleInputChange}
               disabled={isUpdating}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white text-xs font-medium focus:outline-none focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5]/20 transition"
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white text-xs font-medium focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/20 transition"
             >
               {quantityUnits.map((unit) => (
                 <option key={unit} value={unit} className="bg-white dark:bg-gray-800">
@@ -243,7 +243,7 @@ export default function UpdateProductModel({ open, onClose, selectedProduct }) {
           <button
             type="submit"
             disabled={isUpdating}
-            className="px-5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer shadow-xs"
+            className="px-5 py-2 rounded-xl text-xs font-bold bg-[#6C5CE7] hover:bg-[#5a4bcf] text-white transition cursor-pointer shadow-xs"
           >
             {isUpdating ? "Updating Stock & Expiry..." : "Update Stock & Expiry"}
           </button>
@@ -259,7 +259,7 @@ function InputWithLabel({ label, name, placeholder, icon, onChange, isUpdating, 
       <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">
         {label}
       </label>
-      <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 bg-white dark:bg-gray-800 focus-within:border-[#1E88E5] focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition">
+      <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 bg-white dark:bg-gray-800 focus-within:border-[#6C5CE7] focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition">
         {icon}
         <input
           type="text"

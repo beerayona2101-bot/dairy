@@ -260,8 +260,8 @@ export default function AdminProfileInfo() {
   if (canResend) {
     if (otpSendLoading) {
       resendSection = (
-        <div className="flex items-center justify-center text-sm text-blue-600">
-          <div className="h-4 w-4 mr-2 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex items-center justify-center text-sm text-[#6C5CE7]">
+          <div className="h-4 w-4 mr-2 border-2 border-[#6C5CE7] border-t-transparent rounded-full animate-spin"></div>
           Sending...
         </div>
       );
@@ -270,7 +270,7 @@ export default function AdminProfileInfo() {
         <button
           onClick={generateAndSendOtp}
           disabled={otpSendLoading}
-          className="text-blue-600 hover:underline text-sm"
+          className="text-[#6C5CE7] hover:underline text-sm font-bold"
         >
           Resend OTP
         </button>
@@ -353,7 +353,7 @@ export default function AdminProfileInfo() {
                   type="button"
                   onClick={handleAdminInfo}
                   disabled={loading}
-                  className="flex items-center gap-1 px-4 py-2 text-xs font-extrabold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition cursor-pointer disabled:opacity-60"
+                  className="flex items-center gap-1 px-4 py-2 text-xs font-extrabold bg-[#6C5CE7] text-white rounded-xl hover:bg-[#5b4cc4] transition cursor-pointer disabled:opacity-60"
                 >
                   <Save size={14} /> {loading ? "Saving..." : "Save Changes"}
                 </button>
@@ -497,11 +497,11 @@ export default function AdminProfileInfo() {
                 Enter OTP
               </h2>
 
-              <p className="text-sm text-center text-blue-700 dark:text-blue-300 mb-1">
+              <p className="text-sm text-center text-purple-700 dark:text-purple-300 mb-1">
                 OTP has been sent to: <strong>{authAdmin?.email}</strong>
               </p>
 
-              <p className="text-sm text-red-600 text-center mb-3">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 font-bold text-center mb-3">
                 Don't refresh this page.
               </p>
 
@@ -516,7 +516,7 @@ export default function AdminProfileInfo() {
                     onChange={(e) => handleOtpChange(e.target.value, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     disabled={otpSendLoading}
-                    className="w-10 h-10 text-center text-lg border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="w-10 h-10 text-center text-lg border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] dark:bg-gray-700 dark:text-white"
                   />
                 ))}
               </div>
@@ -525,7 +525,7 @@ export default function AdminProfileInfo() {
                 <button
                   onClick={handleVerifyOtp}
                   disabled={otpSendLoading}
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded mb-3 disabled:opacity-60 w-80"
+                  className="bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-2 rounded mb-3 disabled:opacity-60 w-80 font-bold"
                 >
                   Verify OTP
                 </button>
@@ -543,7 +543,7 @@ export default function AdminProfileInfo() {
                 Update Your Password
               </h2>
 
-              <p className="text-sm text-center text-blue-700 dark:text-blue-300 mb-3">
+              <p className="text-sm text-center text-purple-700 dark:text-purple-300 mb-3">
                 OTP verified. You can now set a new password for your account.
               </p>
 
@@ -581,7 +581,7 @@ export default function AdminProfileInfo() {
               <button
                 onClick={handleSubmitNewPassword}
                 disabled={updatePasswordLoading}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded mt-4 disabled:cursor-not-allowed"
+                className="w-full bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-2 rounded mt-4 disabled:cursor-not-allowed font-bold"
               >
                 Update Password
               </button>

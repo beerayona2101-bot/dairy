@@ -8,6 +8,7 @@ import { PageContentContext } from "../../context/PageContentProvider";
 import { features as defaultFeatures } from "../../data/productGoodness ";
 import company from "../../data/company.json";
 import landingHeroBgHD from "../../assets/landing_hero_bg_hd.png";
+import AnimatedHeading from "../Common/AnimatedHeading";
 
 // 4K Ultra-High Resolution Pasture Liquid Milk Hero Background
 const FARM_HERO_BG = landingHeroBgHD;
@@ -147,9 +148,11 @@ export function DairyPromiseCardsSection() {
                     <span>Why Choose {displayCompanyName}?</span>
                 </div>
                 
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-                    Our Promise of Dairy <span className="text-[#6C5CE7] dark:text-[#A29BFE]">Excellence</span>
-                </h2>
+                <AnimatedHeading
+                    blackText="Our Promise of Dairy"
+                    violetText="Excellence"
+                    className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight justify-center"
+                />
 
                 <p className="text-xs sm:text-sm md:text-base text-slate-700 dark:text-gray-200 leading-relaxed font-semibold max-w-2xl mx-auto">
                     Every product is crafted with care, strict cold-chain hygiene, and ethical farm sourcing for your family's health.

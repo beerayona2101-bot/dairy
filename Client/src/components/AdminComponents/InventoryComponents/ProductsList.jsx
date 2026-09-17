@@ -230,27 +230,13 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                 const getRankBadge = (num) => {
                   if (num === 1) {
                     return (
-                      <span className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-200 to-yellow-400 text-amber-950 font-black text-xs flex items-center justify-center shadow-xs border border-amber-300 mx-auto">
+                      <span className="w-7 h-7 rounded-full bg-[#6C5CE7] text-white font-black text-xs flex items-center justify-center shadow-xs border border-purple-300 mx-auto">
                         #1
                       </span>
                     );
                   }
-                  if (num === 2) {
-                    return (
-                      <span className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-200 to-gray-300 text-slate-900 font-black text-xs flex items-center justify-center shadow-xs border border-slate-300 mx-auto">
-                        #2
-                      </span>
-                    );
-                  }
-                  if (num === 3) {
-                    return (
-                      <span className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-200 to-amber-300 text-amber-950 font-black text-xs flex items-center justify-center shadow-xs border border-orange-300 mx-auto">
-                        #3
-                      </span>
-                    );
-                  }
                   return (
-                    <span className="w-7 h-7 rounded-full bg-blue-50 dark:bg-gray-700 text-[#1E88E5] dark:text-blue-300 font-bold text-xs flex items-center justify-center border border-blue-200 dark:border-gray-600 mx-auto">
+                    <span className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 font-bold text-xs flex items-center justify-center border border-purple-200 dark:border-purple-800 mx-auto">
                       #{num}
                     </span>
                   );
@@ -260,7 +246,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                   <motion.tr
                     key={product?._id ? `prod-${product._id}-${index}` : `prod-index-${index}`}
                     variants={rowVariants}
-                    className="border-b border-gray-100 dark:border-gray-700/60 hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors"
+                    className="border-b border-gray-100 dark:border-gray-700/60 hover:bg-purple-50/40 dark:hover:bg-purple-950/20 transition-colors"
                   >
                     <td className="py-3 px-3.5 text-center whitespace-nowrap">
                       {getRankBadge(rankNumber)}
@@ -269,7 +255,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                       <img
                         src={getProductImage(product)}
                         alt={product?.name}
-                        className="w-10 h-10 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shrink-0"
+                        className="w-10 h-10 object-cover rounded-xl border border-purple-100 dark:border-gray-700 shrink-0"
                       />
                       <span className="font-bold text-gray-900 dark:text-white">
                         {highlightMatch(product?.name, navbarInput)}
@@ -277,7 +263,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap">
                       <div className="flex flex-col">
-                        <span className="font-extrabold text-green-700 dark:text-green-400">
+                        <span className="font-black text-gray-900 dark:text-white">
                           &#8377;{formatNumberWithCommas(discountedPrice)}
                         </span>
                         {hasDiscount && (
@@ -289,30 +275,25 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap text-center">
                       {Number(product?.stock || 0) === 0 ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300 border border-red-300 dark:border-red-800">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#6C5CE7] animate-pulse" />
                           Out of Stock
                         </span>
-                      ) : isLowStock ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                          {product?.stock} {product?.quantityUnit || "Units"}
-                        </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#6C5CE7]" />
                           {product?.stock} {product?.quantityUnit || "Units"}
                         </span>
                       )}
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap text-center">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-[#1E88E5] dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200">
                         {highlightMatch(product?.category, navbarInput)}
                       </span>
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap text-center">
                       {hasDiscount ? (
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-300 border border-green-300">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200">
                           {product?.discount}% OFF
                         </span>
                       ) : (
@@ -329,7 +310,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                               setSelectedProduct(product);
                               setOpenEditModal(true);
                             }}
-                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-[#1E88E5] dark:text-blue-300 border border-blue-200 dark:border-blue-800 transition cursor-pointer"
+                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
                             title="Edit product details (Name, Category, Image, Price...)"
                           >
                             <Edit2 size={13} /> Edit
@@ -342,7 +323,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                               setSelectedProduct(product);
                               setOpenUpdateModal(true);
                             }}
-                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition cursor-pointer"
+                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
                             title="Update Stock & Expiry data"
                           >
                             <RefreshCw size={13} /> Update
@@ -355,7 +336,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                               setSelectedProduct(product);
                               setOpenRemoveModel(true);
                             }}
-                            className="flex items-center gap-1 text-xs font-bold p-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/60 dark:hover:bg-red-900 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 transition cursor-pointer"
+                            className="flex items-center gap-1 text-xs font-bold p-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-gray-700 dark:text-gray-300 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
                             title="Remove product"
                           >
                             <Trash2 size={13} />
@@ -363,10 +344,10 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                         </div>
                       ) : (
                         <div className="flex items-center justify-center gap-1.5 mx-auto">
-                          <div className="flex items-center rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-1 shadow-xs">
+                          <div className="flex items-center rounded-xl border border-purple-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xs">
                             <button
                               onClick={(e) => handleStockChange(e, product, -1)}
-                              className="w-7 h-7 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-950/60 dark:hover:bg-red-900 text-red-600 dark:text-red-300 font-black text-sm flex items-center justify-center transition cursor-pointer"
+                              className="w-7 h-7 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#6C5CE7] font-black text-sm flex items-center justify-center transition cursor-pointer border border-purple-200"
                               title="Remove stock (-1)"
                             >
                               -
@@ -376,7 +357,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                             </span>
                             <button
                               onClick={(e) => handleStockChange(e, product, 1)}
-                              className="w-7 h-7 rounded-lg bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-900 text-emerald-600 dark:text-emerald-300 font-black text-sm flex items-center justify-center transition cursor-pointer"
+                              className="w-7 h-7 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#6C5CE7] font-black text-sm flex items-center justify-center transition cursor-pointer border border-purple-200"
                               title="Add stock (+1)"
                             >
                               +
@@ -406,14 +387,14 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                 color: "inherit",
                 transition: "all 0.2s ease",
                 "&:hover": {
-                  border: "2px solid #1E88E5",
+                  border: "2px solid #6C5CE7",
                 },
-                "& .Mui-selected": {
-                  backgroundColor: `${theme === "dark" ? "#1E88E5" : "#fff"}`,
-                  color: `${theme === "light" ? "#1E88E5" : "#fff"}`,
-                  borderColor: "#1E88E5",
+                "&.Mui-selected": {
+                  backgroundColor: "#6C5CE7",
+                  color: "#fff",
+                  borderColor: "#6C5CE7",
                   "&:hover": {
-                    backgroundColor: "#6e305e",
+                    backgroundColor: "#5b4bc4",
                   },
                 },
               },
@@ -426,7 +407,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-500/20 rounded p-4 md:p-6 shadow-md w-full">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 md:p-6 shadow-sm border border-purple-100 dark:border-gray-700 w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-xl font-extrabold text-gray-900 dark:text-white">
@@ -435,7 +416,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
             {selectedFilter &&
               selectedFilter !== "all" &&
               selectedFilter !== "totalProducts" && (
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-100 dark:bg-blue-950/40 text-[#1E88E5] dark:text-blue-300 rounded-full text-xs font-semibold shadow-xs">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-purple-300 rounded-full text-xs font-semibold border border-purple-200 shadow-xs">
                   <span>
                     Filtered by: {
                       selectedFilter === "lowStock" ? "Low Stock Products" :
@@ -446,7 +427,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                   {setSelectedFilter && (
                     <button
                       onClick={() => setSelectedFilter("all")}
-                      className="hover:bg-blue-200 dark:hover:bg-blue-800/50 p-0.5 rounded-full cursor-pointer transition ml-1"
+                      className="hover:bg-purple-200 dark:hover:bg-purple-800/50 p-0.5 rounded-full cursor-pointer transition ml-1"
                       title="Clear filter"
                     >
                       <X size={13} />
@@ -461,7 +442,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
               setInitialCategory(activeCategory || "");
               setOpenAddModal(true);
             }}
-            className="bg-[#1E88E5] hover:bg-[#1565C0] text-white px-4 py-2 rounded-xl font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer flex items-center gap-2"
+            className="bg-[#6C5CE7] hover:bg-[#5b4bc4] text-white px-4 py-2 rounded-xl font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer flex items-center gap-2"
           >
             <Plus size={16} />
             Add Product

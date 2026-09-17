@@ -69,17 +69,17 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
 
   return (
     <div className="relative inline-block">
-      {/* Sleek Custom Trigger Button matching App Design */}
+      {/* Custom Trigger Button */}
       <button
         type="button"
         onClick={handleClick}
         disabled={isProcessing || currentStatus === "Delivered" || currentStatus === "Cancelled"}
-        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl border border-blue-200 dark:border-gray-700 shadow-xs hover:border-[#1E88E5] dark:hover:border-blue-500 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
+        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl border border-purple-200 dark:border-gray-700 shadow-xs hover:border-[#6C5CE7] dark:hover:border-purple-400 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
       >
-        <span className="text-[#1E88E5] dark:text-blue-400">{currentOption.icon}</span>
+        <span className="text-[#6C5CE7] dark:text-purple-300">{currentOption.icon}</span>
         <span>{currentOption.label}</span>
         <KeyboardArrowDownIcon
-          className={`transition-transform duration-200 text-gray-400 group-hover:text-[#1E88E5] ${isOpen ? "rotate-180" : ""}`}
+          className={`transition-transform duration-200 text-gray-400 group-hover:text-[#6C5CE7] ${isOpen ? "rotate-180" : ""}`}
           sx={{ fontSize: "1.1rem" }}
         />
       </button>
@@ -91,7 +91,7 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
         onClose={handleClose}
         slotProps={{
           paper: {
-            className: "!bg-white/95 dark:!bg-gray-900/95 !backdrop-blur-2xl !border !border-white/80 dark:!border-gray-700/80 !shadow-2xl !rounded-2xl !p-1.5 !mt-1.5 !min-w-[250px]",
+            className: "!bg-white/95 dark:!bg-gray-900/95 !backdrop-blur-2xl !border !border-purple-100 dark:!border-gray-700/80 !shadow-2xl !rounded-2xl !p-1.5 !mt-1.5 !min-w-[250px]",
           },
         }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
@@ -110,27 +110,27 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
               disabled={disabled}
               className={`!text-xs !font-bold !py-2.5 !px-3 !rounded-xl !my-0.5 !flex !items-center !justify-between !gap-3 !transition-all ${
                 isCurrent
-                  ? "!bg-blue-50 dark:!bg-blue-950/60 !text-[#1E88E5] dark:!text-blue-300 !font-black"
+                  ? "!bg-purple-50 dark:!bg-purple-950/60 !text-[#6C5CE7] dark:!text-purple-300 !font-black"
                   : isCancel
-                  ? "!text-rose-600 dark:!text-rose-400 hover:!bg-rose-50 dark:hover:!bg-rose-950/40"
-                  : "!text-gray-800 dark:!text-gray-200 hover:!bg-gray-100 dark:hover:!bg-gray-800/60"
+                  ? "!text-gray-600 dark:!text-gray-300 hover:!bg-purple-50 dark:hover:!bg-purple-950/40"
+                  : "!text-gray-900 dark:!text-gray-200 hover:!bg-purple-50 dark:hover:!bg-purple-950/40"
               } ${disabled ? "!opacity-50 !cursor-not-allowed !bg-gray-50/50 dark:!bg-gray-800/30" : ""}`}
             >
               <div className="flex items-center gap-2.5">
-                <span className={isCancel ? "text-rose-500" : isCurrent ? "text-[#1E88E5]" : "text-gray-400"}>
+                <span className={isCurrent ? "text-[#6C5CE7]" : "text-gray-400"}>
                   {opt.icon}
                 </span>
-                <span className={isCurrent ? "font-black" : "font-bold"}>{opt.label}</span>
+                <span className={isCurrent ? "font-black text-[#6C5CE7]" : "font-bold text-gray-900 dark:text-white"}>{opt.label}</span>
               </div>
 
               {isPassed && (
-                <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                <span className="text-[10px] font-black uppercase text-[#6C5CE7] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
                   ✓ Passed
                 </span>
               )}
 
               {isCurrent && (
-                <span className="text-[10px] font-black uppercase text-[#1E88E5] dark:text-blue-300 bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded-full border border-blue-200">
+                <span className="text-[10px] font-black uppercase text-[#6C5CE7] dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full border border-purple-200">
                   Current
                 </span>
               )}

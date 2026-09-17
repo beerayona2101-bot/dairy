@@ -1,21 +1,21 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-
 class ApiConfig {
-  // Host machine local Wi-Fi IP for physical device testing
+  // Host machine local Wi-Fi IP
   static const String lanIp = '192.168.1.46';
 
-  // Configurable base URL with auto-detection for Android Physical Device, Emulator, & Web/Desktop
-  static String get baseUrl {
-    if (kIsWeb) {
-      return 'http://localhost:9000';
-    } else if (!kIsWeb && Platform.isAndroid) {
-      // 10.0.2.2 is for Android Studio Emulator.
-      // lanIp (192.168.1.46) or 127.0.0.1 (via `adb reverse tcp:9000 tcp:9000`) is for physical phone (CLK NX2).
-      return 'http://$lanIp:9000';
-    } else {
-      return 'http://localhost:9000';
-    }
+  // Supported candidate servers (Wi-Fi LAN, USB ADB bridge, Android Emulator, Localhost)
+  static final List<String> candidateServers = [
+    'http://$lanIp:9000',
+    'http://127.0.0.1:9000',
+    'http://10.0.2.2:9000',
+    'http://localhost:9000',
+  ];
+
+  static String _activeBaseUrl = candidateServers[0];
+
+  static String get baseUrl => _activeBaseUrl;
+
+  static void setActiveBaseUrl(String url) {
+    _activeBaseUrl = url;
   }
 
   // Endpoints

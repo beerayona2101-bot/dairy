@@ -19,6 +19,7 @@ import { recommendProducts } from "../utils/filterData";
 import { getProductImage } from "../utils/helper";
 
 import { products as fallbackProducts } from "../data/products";
+import AnimatedHeading from "../components/Common/AnimatedHeading";
 
 export default function ProductDetailsPage() {
 
@@ -96,9 +97,11 @@ export default function ProductDetailsPage() {
             </section>
 
             <section className="px-4 md:px-6 pb-6 md:pb-10 md:max-w-6xl mx-auto">
-                <h2 className="text-xl font-black text-[#2D3748] dark:text-white border-t border-gray-200/60 dark:border-gray-800 pb-3 pt-6 mb-4">
-                    Related Products
-                </h2>
+                <AnimatedHeading
+                    blackText="Related"
+                    violetText="Products"
+                    className="text-xl font-black text-[#2D3748] dark:text-white border-t border-gray-200/60 dark:border-gray-800 pb-3 pt-6 mb-4"
+                />
 
                 {relatedProducts?.length > 0 ? (
                     <>

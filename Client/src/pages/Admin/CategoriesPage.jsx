@@ -10,6 +10,7 @@ import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import { PageContentContext } from "../../context/PageContentProvider";
 import { groupProductsByCategory } from "../../utils/groupProductsByCategory";
+import BackButton from "../../components/Common/BackButton";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 15 },
@@ -53,29 +54,32 @@ export default function CategoriesPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800/80 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/80 shadow-sm"
       >
         <div className="space-y-1">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1E88E5] dark:text-blue-300">
-              <CategoryIcon sx={{ fontSize: "1.6rem" }} />
+          <div className="flex items-center gap-3">
+            <BackButton fallbackPath="/admin/dashboard" />
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-[#8C7CF0] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                <CategoryIcon sx={{ fontSize: "1.6rem" }} />
+              </div>
+              <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                Categories Dashboard
+              </h1>
             </div>
-            <h1 className="text-xl md:text-2xl font-extrabold text-[#0F2742] dark:text-white tracking-tight">
-              Categories Dashboard
-            </h1>
           </div>
-          <p className="text-xs md:text-sm text-[#64748B] dark:text-gray-400 pl-11 hidden sm:block">
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 pl-14 hidden sm:block">
             Manage all dairy categories, custom images, showcase descriptions, feature tags, and inline category products.
           </p>
         </div>
 
         <button
           onClick={() => setOpenAddModal(true)}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E88E5] hover:bg-[#1565C0] text-white font-extrabold text-xs md:text-sm shadow-md transition-all duration-200 cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#8C7CF0] hover:bg-[#7b6be0] text-white font-extrabold text-xs md:text-sm shadow-md transition-all duration-200 cursor-pointer shrink-0"
         >
           <AddIcon sx={{ fontSize: "1.2rem" }} />
           <span>+ Add Category</span>
         </button>
       </motion.div>
 
-      {/* Summary Metrics Bar (Interactive Filters - Compact 3-Column Grid on Mobile) */}
+      {/* Summary Metrics Bar */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
@@ -89,23 +93,23 @@ export default function CategoriesPage() {
           onClick={() => setSelectedFilter("all")}
           className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "all"
-              ? "bg-blue-100/90 dark:bg-blue-900/40 border-blue-400 ring-2 ring-[#1E88E5] shadow-md"
-              : "bg-gradient-to-br from-blue-50/90 to-blue-100/40 dark:from-blue-950/40 dark:to-blue-900/20 border-blue-200/80 dark:border-blue-800/40 hover:border-blue-300"
+              ? "bg-purple-100/90 dark:bg-purple-900/40 border-purple-300 ring-2 ring-[#8C7CF0] shadow-md"
+              : "bg-white dark:bg-gray-800 border-purple-100 dark:border-gray-700 hover:border-purple-300 shadow-xs"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
-              <p className="text-[9px] sm:text-xs font-bold text-[#64748B] dark:text-gray-400 uppercase tracking-wider truncate">Total Categories</p>
-              <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/60 flex sm:hidden items-center justify-center text-[#1E88E5] dark:text-blue-300 font-bold shrink-0 shadow-xs">
+              <p className="text-[9px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">Total Categories</p>
+              <div className="w-6 h-6 rounded-lg bg-purple-50 dark:bg-purple-900/60 flex sm:hidden items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
                 <CategoryIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-2xl font-black text-[#1E88E5] dark:text-blue-300">{totalCategoriesCount}</h3>
-            <span className="text-[11px] font-semibold text-[#1E88E5] dark:text-blue-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-2xl font-black text-[#8C7CF0] dark:text-purple-300">{totalCategoriesCount}</h3>
+            <span className="text-[11px] font-semibold text-[#8C7CF0] dark:text-purple-400 hidden sm:block pt-0.5">
               {selectedFilter === "all" ? "✓ Viewing All Categories" : "Click to view all"}
             </span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/60 hidden sm:flex items-center justify-center text-[#1E88E5] dark:text-blue-300 font-bold shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/60 hidden sm:flex items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
             <CategoryIcon />
           </div>
         </button>
@@ -116,23 +120,23 @@ export default function CategoriesPage() {
           onClick={() => setSelectedFilter("showcase")}
           className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "showcase"
-              ? "bg-cyan-100/90 dark:bg-cyan-900/40 border-cyan-400 ring-2 ring-[#00ACC1] shadow-md"
-              : "bg-gradient-to-br from-cyan-50/90 to-cyan-100/40 dark:from-cyan-950/40 dark:to-cyan-900/20 border-cyan-200/80 dark:border-cyan-800/40 hover:border-cyan-300"
+              ? "bg-purple-100/90 dark:bg-purple-900/40 border-purple-300 ring-2 ring-[#8C7CF0] shadow-md"
+              : "bg-white dark:bg-gray-800 border-purple-100 dark:border-gray-700 hover:border-purple-300 shadow-xs"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
-              <p className="text-[9px] sm:text-xs font-bold text-[#64748B] dark:text-gray-400 uppercase tracking-wider truncate">Showcase Cards</p>
-              <div className="w-6 h-6 rounded-lg bg-cyan-100 dark:bg-cyan-900/60 flex sm:hidden items-center justify-center text-[#00ACC1] dark:text-cyan-300 font-bold shrink-0 shadow-xs">
+              <p className="text-[9px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">Showcase Cards</p>
+              <div className="w-6 h-6 rounded-lg bg-purple-50 dark:bg-purple-900/60 flex sm:hidden items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
                 <ViewCarouselIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-2xl font-black text-[#00ACC1] dark:text-cyan-300">{showcaseCardsCount}</h3>
-            <span className="text-[11px] font-semibold text-[#00ACC1] dark:text-cyan-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-2xl font-black text-[#8C7CF0] dark:text-purple-300">{showcaseCardsCount}</h3>
+            <span className="text-[11px] font-semibold text-[#8C7CF0] dark:text-purple-400 hidden sm:block pt-0.5">
               {selectedFilter === "showcase" ? "✓ Viewing Showcase Cards" : "Click to filter showcase cards"}
             </span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/60 hidden sm:flex items-center justify-center text-[#00ACC1] dark:text-cyan-300 font-bold shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/60 hidden sm:flex items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
             <ViewCarouselIcon />
           </div>
         </button>
@@ -143,23 +147,23 @@ export default function CategoriesPage() {
           onClick={() => setSelectedFilter("products")}
           className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "products"
-              ? "bg-green-100/90 dark:bg-green-900/40 border-green-400 ring-2 ring-[#43A047] shadow-md"
-              : "bg-gradient-to-br from-green-50/90 to-green-100/40 dark:from-green-950/40 dark:to-green-900/20 border-green-200/80 dark:border-green-800/40 hover:border-green-300"
+              ? "bg-purple-100/90 dark:bg-purple-900/40 border-purple-300 ring-2 ring-[#8C7CF0] shadow-md"
+              : "bg-white dark:bg-gray-800 border-purple-100 dark:border-gray-700 hover:border-purple-300 shadow-xs"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
-              <p className="text-[9px] sm:text-xs font-bold text-[#64748B] dark:text-gray-400 uppercase tracking-wider truncate">Catalog Products</p>
-              <div className="w-6 h-6 rounded-lg bg-green-100 dark:bg-green-900/60 flex sm:hidden items-center justify-center text-[#43A047] dark:text-green-300 font-bold shrink-0 shadow-xs">
+              <p className="text-[9px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">Catalog Products</p>
+              <div className="w-6 h-6 rounded-lg bg-purple-50 dark:bg-purple-900/60 flex sm:hidden items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
                 <ShoppingBagIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-2xl font-black text-[#43A047] dark:text-green-300">{safeProducts.length}</h3>
-            <span className="text-[11px] font-semibold text-[#43A047] dark:text-green-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-2xl font-black text-[#8C7CF0] dark:text-purple-300">{safeProducts.length}</h3>
+            <span className="text-[11px] font-semibold text-[#8C7CF0] dark:text-purple-400 hidden sm:block pt-0.5">
               {selectedFilter === "products" ? "✓ Viewing All Products Table" : "Click to view all products list"}
             </span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/60 hidden sm:flex items-center justify-center text-[#43A047] dark:text-green-300 font-bold shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/60 hidden sm:flex items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
             <ShoppingBagIcon />
           </div>
         </button>

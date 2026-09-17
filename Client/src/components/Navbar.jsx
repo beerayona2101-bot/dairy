@@ -26,7 +26,7 @@ import { ThemeContext } from '../context/ThemeProvider';
 import { AdminAuthContext, UserAuthContext } from "../context/AuthProvider"
 import { CartContext } from '../context/CartProvider';
 import { UserOrderContext } from '../context/UserOrderProvider';
-import { Bell, X, ShoppingBag, Info, Home, Headphones, User, Heart, ShoppingCart } from 'lucide-react';
+import { Bell, X, ShoppingBag, Info, Home, Headphones, User, Heart, ShoppingCart, CheckCheck } from 'lucide-react';
 import Slide from '@mui/material/Slide';
 import { removeUserNotification } from '../services/userProfileService';
 import { removeAdminNotification } from '../services/adminService';
@@ -40,6 +40,7 @@ import cowLogoImg from "../assets/cow.png";
 import brandNameTxtImg from "../assets/brand name txt.png";
 
 import { getGuestWishlist } from '../utils/guestWishlist';
+import { prefetchProducts, prefetchPageContent } from '../utils/prefetch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -126,6 +127,8 @@ export default function Navbar() {
     const [animate, setAnimate] = useState(false);
     const [notificationDialog, setNotificationDialog] = useState(false);
     const prevCountRef = useRef(notification.length);
+    const bellBtnRef = useRef(null);
+    const notifPanelRef = useRef(null);
 
     useEffect(() => {
         if (notification.length > prevCountRef.current) {
@@ -134,6 +137,21 @@ export default function Navbar() {
         }
         prevCountRef.current = notification.length;
     }, [notification.length]);
+
+    // Close notification panel on outside click
+    useEffect(() => {
+        if (!notificationDialog) return;
+        const handleOutside = (e) => {
+            if (
+                notifPanelRef.current && !notifPanelRef.current.contains(e.target) &&
+                bellBtnRef.current && !bellBtnRef.current.contains(e.target)
+            ) {
+                setNotificationDialog(false);
+            }
+        };
+        document.addEventListener('mousedown', handleOutside);
+        return () => document.removeEventListener('mousedown', handleOutside);
+    }, [notificationDialog]);
 
     const toggleDrawer = (newOpen) => () => setOpen(newOpen);
 
@@ -386,6 +404,14 @@ export default function Navbar() {
                                     <Link
                                         key={item.path || idx}
                                         to={item.path}
+                                        onMouseEnter={() => {
+                                            if (item.path.includes('product')) prefetchProducts();
+                                            prefetchPageContent();
+                                        }}
+                                        onFocus={() => {
+                                            if (item.path.includes('product')) prefetchProducts();
+                                            prefetchPageContent();
+                                        }}
                                         className={`relative py-1 text-sm font-extrabold no-underline transition-all duration-300 cursor-pointer ${
                                             isActive
                                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] drop-shadow-[0_0_12px_rgba(108,92,231,0.75)] scale-105"
@@ -443,7 +469,8 @@ export default function Navbar() {
                         {(authUser || authAdmin) && !isCheckoutPage && (
                             <Tooltip title="Notifications">
                                 <button
-                                    onClick={() => setNotificationDialog(true)}
+                                    ref={bellBtnRef}
+                                    onClick={() => setNotificationDialog((p) => !p)}
                                     className={`flex w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
                                         notificationDialog
                                             ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.3)]"
@@ -586,8 +613,8 @@ export default function Navbar() {
             </Menu>
 
             {/* Mobile Bottom Navigation Bar */}
-            {!location.pathname.startsWith('/product-details') && !isProductsPage && !hideNavItems && (
-                <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-2 transition-transform duration-300 ease-in-out ${
+            {!location.pathname.startsWith('/product-details') && !isCheckoutPage && (
+                <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 pb-[env(safe-area-inset-bottom)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-2 transition-transform duration-300 ease-in-out ${
                     isScrolling ? "translate-y-full" : "translate-y-0"
                 }`}>
                     {/* 1. Products */}
@@ -695,133 +722,154 @@ export default function Navbar() {
                 </nav>
             )}
 
-            <Dialog
-                open={notificationDialog}
-                onClose={() => setNotificationDialog(false)}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                slots={{
-                    transition: Transition,
-                }}
-                slotProps={{
-                    paper: {
-                        sx: {
-                            position: 'absolute',
-                            top: { xs: 60, sm: 75 },
-                            m: 0,
-                            maxHeight: "420px",
-                            backgroundColor: theme === "dark" ? "#0f0f0f" : "#ffffff",
-                            right: {
-                                xs: 12,
-                                sm: 40,
-                                md: 120
-                            },
-                            width: {
-                                xs: 'calc(100vw - 24px)',
-                                sm: '320px',
-                                md: '360px'
-                            }
-                        },
-                    },
-                }}
-                fullWidth
-            >
-
-                <div className="text-black dark:text-white">
-                    <div className="sticky top-0 z-10 backdrop-blur bg-white/80 dark:bg-[#2f2f2f]/80 px-3.5 py-2.5 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 rounded-t">
-                        <div className="flex items-center gap-2">
-                            <h2 className="text-base font-bold">Notifications</h2>
-                            {unreadCount > 0 && (
-                                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                    {unreadCount} new
-                                </span>
-                            )}
+            {/* User Notification Panel — Native Dropdown (no Dialog backdrop) */}
+            {notificationDialog && (
+                <div
+                    ref={notifPanelRef}
+                    className="fixed z-[9999]"
+                    style={{
+                        top: 70,
+                        right: 16,
+                        width: 'min(390px, calc(100vw - 24px))',
+                    }}
+                >
+                    <div
+                        className="flex flex-col rounded-[20px] overflow-hidden"
+                        style={{
+                            maxHeight: '520px',
+                            background: theme === 'dark' ? '#111827' : '#ffffff',
+                            boxShadow: theme === 'dark'
+                                ? '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.07)'
+                                : '0 20px 60px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.07)',
+                        }}
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                    <Bell className="w-[15px] h-[15px] text-amber-500" strokeWidth={2.2} />
+                                </div>
+                                <div>
+                                    <h2 className="text-[13px] font-black text-gray-900 dark:text-white leading-none tracking-tight">Notifications</h2>
+                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
+                                        {notification.length === 0 ? 'All caught up' : `${notification.length} notification${notification.length !== 1 ? 's' : ''}`}
+                                    </p>
+                                </div>
+                                {unreadCount > 0 && (
+                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-amber-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.4)] ml-1">
+                                        {unreadCount} new
+                                    </span>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => setNotificationDialog(false)}
+                                className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
+                            >
+                                <X size={13} />
+                            </button>
                         </div>
-                        <div className="flex items-center gap-2">
-                            {unreadCount > 0 && (
-                                <button
-                                    onClick={handleMarkAllAsRead}
-                                    className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                                >
-                                    Mark read
-                                </button>
-                            )}
-                            {notification.length > 0 && (
-                                <button
-                                    disabled={notificationLoadingIndex !== null}
-                                    onClick={() => handleRemoveNotification(-1, "all")}
-                                    className="text-[11px] font-bold text-red-500 hover:underline cursor-pointer disabled:cursor-not-allowed"
-                                >
-                                    {notificationLoadingIndex === "all" ? (
-                                        <div className="w-3 h-3 border-[2px] border-t-transparent border-gray-500 rounded-full animate-spin" />
-                                    ) : (
-                                        "Clear All"
+
+                        {/* Action Row */}
+                        {notification.length > 0 && (
+                            <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800/70 border-b border-gray-100 dark:border-gray-800 shrink-0">
+                                <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500">
+                                    {unreadCount > 0 ? `${unreadCount} unread` : 'All read'}
+                                </span>
+                                <div className="flex items-center gap-3">
+                                    {unreadCount > 0 && (
+                                        <button
+                                            onClick={handleMarkAllAsRead}
+                                            className="flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition cursor-pointer"
+                                        >
+                                            <CheckCheck size={12} strokeWidth={2.5} />
+                                            <span>Mark all read</span>
+                                        </button>
                                     )}
-                                </button>
+                                    <button
+                                        disabled={notificationLoadingIndex !== null}
+                                        onClick={() => handleRemoveNotification(-1, 'all')}
+                                        className="flex items-center gap-1 text-[11px] font-bold text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        {notificationLoadingIndex === 'all' ? (
+                                            <div className="w-3 h-3 border-2 border-t-transparent border-red-500 rounded-full animate-spin" />
+                                        ) : (
+                                            <>
+                                                <X size={11} />
+                                                <span>Clear all</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Notification List */}
+                        <div className="overflow-y-auto flex-1" style={{ overscrollBehavior: 'contain' }}>
+                            {notification.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
+                                    <div className="w-14 h-14 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-2xl mb-3">🎉</div>
+                                    <p className="font-black text-sm text-gray-800 dark:text-white">All caught up!</p>
+                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">No new notifications right now.</p>
+                                </div>
+                            ) : (
+                                <ul className="p-3 space-y-2">
+                                    {notification.map((item, idx) => {
+                                        const isUnread = !item?.isRead;
+                                        return (
+                                            <li
+                                                key={item?._id || item?.id || `notif-${idx}`}
+                                                onClick={() => handleNotificationClick(item, idx)}
+                                                className={`group relative p-3 rounded-2xl border transition-all duration-150 cursor-pointer ${
+                                                    isUnread
+                                                        ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/40 hover:bg-amber-100/80 dark:hover:bg-amber-950/50'
+                                                        : 'bg-white dark:bg-gray-800/50 border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                }`}
+                                            >
+                                                <div className="flex items-start gap-2.5">
+                                                    {/* Status Dot */}
+                                                    <div className="mt-[5px] shrink-0">
+                                                        <span className={`block w-2 h-2 rounded-full ${isUnread ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                                                    </div>
+
+                                                    {/* Content */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={`text-[12px] font-bold leading-tight ${isUnread ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>
+                                                            {item?.title}
+                                                        </p>
+                                                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed line-clamp-2">
+                                                            {item?.description}
+                                                        </p>
+                                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 font-semibold">
+                                                            {item?.date ? formatDistanceToNow(new Date(item.date), { addSuffix: true }) : 'Just now'}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Per-item Dismiss */}
+                                                    <button
+                                                        disabled={notificationLoadingIndex !== null}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleRemoveNotification(idx, 'index');
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
+                                                        title="Dismiss"
+                                                    >
+                                                        {notificationLoadingIndex === idx ? (
+                                                            <div className="w-3 h-3 border-2 border-t-transparent border-gray-400 rounded-full animate-spin" />
+                                                        ) : (
+                                                            <X size={11} />
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
                             )}
                         </div>
                     </div>
-
-                    {notification.length === 0 ? (
-                        <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-8 px-4 space-y-1">
-                            <p className="font-bold text-base">🎉 All caught up!</p>
-                            <p className="text-xs">No active notifications at the moment.</p>
-                        </div>
-                    ) : (
-                        <ul className="space-y-2.5 px-3 py-3 max-h-[380px] overflow-y-auto">
-                            {notification.map((item, idx) => {
-                                const isUnread = !item?.isRead;
-                                return (
-                                    <li
-                                        key={item?._id || item?.id || `notif-${idx}-${item?.title || ""}`}
-                                        onClick={() => handleNotificationClick(item, idx)}
-                                        className={`p-3 rounded-xl shadow-xs relative transition cursor-pointer border ${
-                                            isUnread
-                                                ? "bg-blue-50/80 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/60"
-                                                : "bg-gray-50 dark:bg-gray-800/50 border-gray-200/80 dark:border-gray-700/60 hover:bg-gray-100"
-                                        }`}
-                                    >
-                                        <div className="flex justify-between items-start gap-2">
-                                            <div className="flex items-center gap-1.5 min-w-0">
-                                                {isUnread && (
-                                                    <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0" />
-                                                )}
-                                                <p className="font-extrabold text-xs text-gray-900 dark:text-white truncate">
-                                                    {item?.title}
-                                                </p>
-                                            </div>
-
-                                            <button
-                                                disabled={notificationLoadingIndex !== null}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleRemoveNotification(idx, "index");
-                                                }}
-                                                className="text-gray-400 hover:text-red-500 p-0.5 rounded cursor-pointer disabled:cursor-not-allowed shrink-0"
-                                                title="Clear"
-                                            >
-                                                {notificationLoadingIndex === idx ? (
-                                                    <div className="w-3 h-3 border-[2px] border-t-transparent border-gray-500 rounded-full animate-spin" />
-                                                ) : (
-                                                    <X size={13} />
-                                                )}
-                                            </button>
-                                        </div>
-
-                                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 leading-relaxed font-medium">
-                                            {item?.description}
-                                        </p>
-
-                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 text-right font-semibold">
-                                            {item?.date ? formatDistanceToNow(new Date(item.date), { addSuffix: true }) : "Just now"}
-                                        </p>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    )}
                 </div>
-            </Dialog>
+            )}
 
             <SwipeableDrawer
                 anchor="top"

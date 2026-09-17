@@ -142,12 +142,12 @@ export default function CustomersList() {
                   setOpen(true);
                 }}
                 disabled={messageLoading}
-                className={`flex items-center gap-1 text-sm text-green-600 hover:underline 
+                className={`flex items-center gap-1 text-sm text-[#6C5CE7] hover:underline 
     ${messageLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
   `}
               >
                 {messageLoading && selectedUser?._id === cust?._id ? (
-                  <div className="h-4 w-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                  <div className="h-4 w-4 border-2 border-[#6C5CE7] border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <MessageCircleMore size={16} />
                 )}
@@ -156,7 +156,7 @@ export default function CustomersList() {
 
               <Link
                 to={`/admin/customers/${cust?._id}/orders-history`}
-                className="flex items-center gap-1 text-sm text-blue-600 hover:underline whitespace-nowrap"
+                className="flex items-center gap-1 text-sm text-[#6C5CE7] hover:underline whitespace-nowrap font-medium"
               >
                 <EyeIcon size={16} /> View Orders
               </Link>
@@ -174,7 +174,7 @@ export default function CustomersList() {
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white">👥 Customers</h2>
           <Link
             to="/admin/customers"
-            className="text-blue-600 hover:underline text-sm font-medium"
+            className="text-[#6C5CE7] hover:underline text-sm font-medium"
           >
             View All
           </Link>
@@ -236,7 +236,7 @@ export default function CustomersList() {
               rows="4"
               maxLength={100}
               disabled={messageLoading}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:cursor-not-allowed"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#6C5CE7] focus:border-[#6C5CE7] sm:text-sm disabled:cursor-not-allowed"
               placeholder="Write your message..."
             ></textarea>
             <div className="text-right text-xs text-gray-500 mt-1">{message.length}/100</div>
@@ -257,7 +257,7 @@ export default function CustomersList() {
             <button
               onClick={handleMessageSend}
               disabled={messageLoading}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="px-4 py-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white rounded text-sm flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50 font-bold"
             >
               {messageLoading && (
                 <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

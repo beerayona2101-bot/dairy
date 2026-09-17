@@ -1,18 +1,61 @@
 import mongoose from "mongoose";
 import User from "../models/UserSchema.js";
+import Order from "../models/OrderSchema.js";
 import bcryptjs from "bcryptjs";
 import { sendWelcomeCredentialsEmail } from "../config/nodemailer.js";
 import { notifyNewUserRegistration } from "../socket/helper.js";
 
-// READ: Get all customers
+// READ: Get all customers with accurate aggregated order counts
 export const getAllStores = async (req, res) => {
-  const users = await User.find().sort({ createdAt: -1 });
+  try {
+    const users = await User.find()
+      .select("firstName lastName username email mobileNo gender photo createdAt address shopName orders")
+      .sort({ createdAt: -1 })
+      .lean();
 
-  return res.status(200).json({
-    success: true,
-    message: "All users fetched successfully.",
-    stores: users,
-  });
+    // Aggregate order counts directly from Order collection grouped by user
+    const orderAgg = await Order.aggregate([
+      {
+        $group: {
+          _id: "$user",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const orderCountMap = {};
+    orderAgg.forEach((item) => {
+      if (item._id) {
+        orderCountMap[item._id.toString()] = item.count;
+      }
+    });
+
+    const storesWithCounts = users.map((u) => {
+      const dbOrderCount = orderCountMap[u._id.toString()] || 0;
+      const arrayOrderCount = Array.isArray(u.orders) ? u.orders.length : 0;
+      const effectiveOrderCount = Math.max(dbOrderCount, arrayOrderCount);
+
+      return {
+        ...u,
+        orderCount: effectiveOrderCount,
+        orders: Array.isArray(u.orders) && u.orders.length >= effectiveOrderCount
+          ? u.orders
+          : Array(effectiveOrderCount).fill(null),
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "All users fetched successfully.",
+      stores: storesWithCounts,
+    });
+  } catch (error) {
+    console.error("getAllStores error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch customer profiles.",
+    });
+  }
 };
 
 // CREATE: Admin Add Customer
@@ -133,34 +176,51 @@ export const deleteCustomer = async (req, res) => {
 
 // READ: Customer Order History
 export const getStoreOrderHistory = async (req, res) => {
-  const { userId } = req.body;
+  try {
+    const { userId } = req.body;
 
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ success: false, message: "Invalid or missing userId." });
-  }
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid or missing userId." });
+    }
 
-  const store = await User.findById(userId).populate({
-    path: "orders",
-    populate: [
-      {
+    const store = await User.findById(userId).lean();
+
+    if (!store) {
+      return res.status(404).json({ success: false, message: "Customer not found." });
+    }
+
+    const userOrderIds = store.orders || [];
+    const orders = await Order.find({
+      $or: [
+        { user: userId },
+        { _id: { $in: userOrderIds } },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .populate({
         path: "address",
         model: "Address",
-      },
-      {
+      })
+      .populate({
         path: "productsData.productId",
         model: "Product",
-        select: "name image",
+        select: "name image price quantityUnit",
+      })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order history fetched successfully.",
+      orders: {
+        ...store,
+        orders: orders || [],
       },
-    ],
-  });
-
-  if (!store) {
-    return res.status(404).json({ success: false, message: "Customer not found." });
+    });
+  } catch (error) {
+    console.error("getStoreOrderHistory error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch store order history.",
+    });
   }
-
-  return res.status(200).json({
-    success: true,
-    message: "Order history fetched successfully.",
-    orders: store,
-  });
 };

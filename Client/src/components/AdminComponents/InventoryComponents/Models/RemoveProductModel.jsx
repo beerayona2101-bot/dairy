@@ -90,7 +90,7 @@ export default function RemoveProductModel({ open, onClose, selectedProduct }) {
         >
           Cancel
         </button>
-        <button onClick={handleRemoveProduct} disabled={isRemoving} className=" bg-red-200 text-black dark:bg-red-800/40 dark:hover:bg-red-800/50 dark:text-white px-3 py-1 rounded hover:bg-red-300/80"
+        <button onClick={handleRemoveProduct} disabled={isRemoving} className=" bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-700 px-3 py-1 rounded transition cursor-pointer"
         >
           {isRemoving ? "Removing..." : "Remove"}
         </button>

@@ -85,6 +85,11 @@ const OrderSchema = new Schema(
   { timestamps: true }
 );
 
+OrderSchema.index({ user: 1, createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ orderId: 1 });
+
 OrderSchema.pre("save", async function (next) {
   if (!this.orderId) {
     try {
@@ -94,20 +99,20 @@ OrderSchema.pre("save", async function (next) {
       const dd = String(dateObj.getDate()).padStart(2, "0");
       const datePrefix = `MD-ORD-${yy}${mm}${dd}`;
 
-      const existingOrders = await this.constructor
-        .find({ orderId: new RegExp(`^${datePrefix}-`) })
-        .select("orderId");
+      const latestOrder = await this.constructor
+        .findOne({ orderId: new RegExp(`^${datePrefix}-`) })
+        .sort({ orderId: -1 })
+        .select("orderId")
+        .lean();
 
       let maxSeq = 0;
-      existingOrders.forEach((o) => {
-        if (o.orderId) {
-          const parts = o.orderId.split("-");
-          const seq = parseInt(parts[parts.length - 1], 10);
-          if (!isNaN(seq) && seq > maxSeq) {
-            maxSeq = seq;
-          }
+      if (latestOrder && latestOrder.orderId) {
+        const parts = latestOrder.orderId.split("-");
+        const seq = parseInt(parts[parts.length - 1], 10);
+        if (!isNaN(seq)) {
+          maxSeq = seq;
         }
-      });
+      }
 
       const nextSeq = String(maxSeq + 1).padStart(4, "0");
       this.orderId = `${datePrefix}-${nextSeq}`;

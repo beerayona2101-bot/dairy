@@ -6,6 +6,7 @@ import company from "../data/company.json";
 import { submitEnquiryApi } from "../services/enquiryService";
 import { PageContentContext } from "../context/PageContentProvider";
 import BackButton from "../components/Common/BackButton";
+import AnimatedHeading from "../components/Common/AnimatedHeading";
 
 export default function ContactPage() {
     const { enqueueSnackbar } = useSnackbar();
@@ -113,9 +114,11 @@ export default function ContactPage() {
                             <span className="text-[11px] font-black uppercase text-[#6C5CE7] tracking-wider">
                                 {contactData.badgeText || "GET IN TOUCH"}
                             </span>
-                            <h2 className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mt-0.5">
-                                {contactData.title || "Contact Information"}
-                            </h2>
+                            <AnimatedHeading
+                                blackText="Contact"
+                                violetText="Information"
+                                className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mt-0.5"
+                            />
                         </div>
 
                         <div className="space-y-3 pt-1">
@@ -167,7 +170,11 @@ export default function ContactPage() {
                     onSubmit={handleSubmit}
                 >
                     <div>
-                        <h2 className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mb-2.5">Send a Message</h2>
+                        <AnimatedHeading
+                            blackText="Send a"
+                            violetText="Message"
+                            className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mb-2.5"
+                        />
 
                         <div className="space-y-2">
                             <div>

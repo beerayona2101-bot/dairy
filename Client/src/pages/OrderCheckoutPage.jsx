@@ -13,6 +13,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BackButton from '../components/Common/BackButton';
+import AnimatedHeading from '../components/Common/AnimatedHeading';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Slide from '@mui/material/Slide';
 
@@ -481,9 +482,11 @@ export default function OrderCheckoutPage() {
           transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
           className="px-4 py-3 sm:p-6 md:rounded-[28px] md:bg-white/85 md:dark:bg-gray-800/85 md:backdrop-blur-[16px] md:border md:border-white/90 md:dark:border-gray-700/80 md:shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-4 md:mb-6 space-y-4 border-b md:border-b-0 border-gray-200/60 dark:border-gray-700/60 pb-4"
         >
-          <h2 className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700">
-            Order Summary
-          </h2>
+          <AnimatedHeading
+            blackText="Order"
+            violetText="Summary"
+            className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700"
+          />
 
           <div className="space-y-3">
             {cartDetails.map((item, idx) => {
@@ -551,9 +554,11 @@ export default function OrderCheckoutPage() {
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-100 dark:bg-gray-700/60 flex items-center justify-center text-gray-700 dark:text-gray-200 shrink-0 border border-gray-200/60 dark:border-gray-600/60">
               <Receipt className="w-5 h-5 text-gray-800 dark:text-gray-100" />
             </div>
-            <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">
-              Bill Summary
-            </h2>
+            <AnimatedHeading
+              blackText="Bill"
+              violetText="Summary"
+              className="text-base sm:text-lg font-black text-gray-900 dark:text-white"
+            />
           </div>
 
           {/* Line Items Breakdown */}

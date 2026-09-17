@@ -7,6 +7,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import BackButton from "../../Common/BackButton";
 
 // Animation Variants
 const containerVariants = {
@@ -44,11 +45,11 @@ export default function OverallInventory({
       filterKey: "all",
       name: "Total Products",
       value: totalProducts,
-      icon: <InventoryIcon className="text-[#1E88E5] dark:text-blue-300" sx={{ fontSize: "1.3rem" }} />,
-      bg: "bg-blue-50/90 dark:bg-blue-950/40",
-      activeBorder: "border-2 border-[#1E88E5] dark:border-blue-400 ring-2 ring-[#1E88E5]/30 shadow-md",
-      iconBg: "bg-blue-100 dark:bg-blue-900/60",
-      textColor: "text-[#1E88E5] dark:text-blue-300",
+      icon: <InventoryIcon className="text-[#6C5CE7] dark:text-purple-300" sx={{ fontSize: "1.3rem" }} />,
+      bg: "bg-white dark:bg-gray-800",
+      activeBorder: "border-2 border-[#6C5CE7] dark:border-purple-400 ring-2 ring-purple-100/50 shadow-md",
+      iconBg: "bg-purple-50 dark:bg-purple-950/60 border border-purple-100 dark:border-purple-800",
+      textColor: "text-[#6C5CE7] dark:text-purple-300",
       emoji: "📦",
     },
     {
@@ -56,11 +57,11 @@ export default function OverallInventory({
       filterKey: "lowStock",
       name: "Low Stock Products",
       value: lowStockCount,
-      icon: <TrendingDownIcon className="text-[#FB8C00] dark:text-amber-400" sx={{ fontSize: "1.3rem" }} />,
-      bg: "bg-amber-50/90 dark:bg-amber-950/40",
-      activeBorder: "border-2 border-[#FB8C00] dark:border-amber-400 ring-2 ring-[#FB8C00]/30 shadow-md",
-      iconBg: "bg-amber-100 dark:bg-amber-900/60",
-      textColor: "text-[#FB8C00] dark:text-amber-400",
+      icon: <TrendingDownIcon className="text-[#6C5CE7] dark:text-purple-300" sx={{ fontSize: "1.3rem" }} />,
+      bg: "bg-white dark:bg-gray-800",
+      activeBorder: "border-2 border-[#6C5CE7] dark:border-purple-400 ring-2 ring-purple-100/50 shadow-md",
+      iconBg: "bg-purple-50 dark:bg-purple-950/60 border border-purple-100 dark:border-purple-800",
+      textColor: "text-[#6C5CE7] dark:text-purple-300",
       emoji: "⚠️",
     },
     {
@@ -68,11 +69,11 @@ export default function OverallInventory({
       filterKey: "expiringSoon",
       name: "Expiring Soon",
       value: expiringSoonCount,
-      icon: <AccessTimeIcon className="text-[#E53935] dark:text-red-300" sx={{ fontSize: "1.3rem" }} />,
-      bg: "bg-red-50/90 dark:bg-red-950/40",
-      activeBorder: "border-2 border-[#E53935] dark:border-red-400 ring-2 ring-[#E53935]/30 shadow-md",
-      iconBg: "bg-red-100 dark:bg-red-900/60",
-      textColor: "text-[#E53935] dark:text-red-300",
+      icon: <AccessTimeIcon className="text-gray-600 dark:text-gray-400" sx={{ fontSize: "1.3rem" }} />,
+      bg: "bg-white dark:bg-gray-800",
+      activeBorder: "border-2 border-[#6C5CE7] dark:border-purple-400 ring-2 ring-purple-100/50 shadow-md",
+      iconBg: "bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600",
+      textColor: "text-gray-900 dark:text-white",
       emoji: "⏰",
     },
   ];
@@ -85,9 +86,12 @@ export default function OverallInventory({
       variants={containerVariants}
     >
       <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
-        <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-          Inventory Overview
-        </h2>
+        <div className="flex items-center gap-3">
+          <BackButton fallbackPath="/admin/dashboard" />
+          <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+            Inventory Overview
+          </h2>
+        </div>
         <span className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-semibold bg-gray-100 dark:bg-gray-700 px-2.5 py-1 rounded-full hidden sm:inline-block">
           💡 Click card below to filter products
         </span>

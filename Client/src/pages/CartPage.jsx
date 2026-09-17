@@ -8,6 +8,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider"
 import { CartContext } from "../context/CartProvider";
 import BackButton from "../components/Common/BackButton";
+import AnimatedHeading from "../components/Common/AnimatedHeading";
 import { getCartProductDetails, calculateCartTotals } from "../utils/cartUtils";
 import { getDiscountedPrice } from "../utils/helper";
 import { formatNumberWithCommas } from "../utils/format";
@@ -271,9 +272,11 @@ export default function CartPage() {
                     transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     className="w-full md:w-80 px-4 py-4 md:p-6 md:rounded-[28px] md:bg-white/85 md:dark:bg-gray-800/85 md:backdrop-blur-[16px] md:border md:border-white/90 md:dark:border-gray-700/80 md:shadow-[0_10px_30px_rgba(0,0,0,0.04)] h-fit space-y-4 border-t md:border-t-0 border-gray-200/60 dark:border-gray-700/60 pt-4 md:pt-6"
                 >
-                    <h2 className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700">
-                        Price Details
-                    </h2>
+                    <AnimatedHeading
+                        blackText="Price"
+                        violetText="Details"
+                        className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700"
+                    />
 
                     <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 scrollbar-hide">
                         {cartDetails.map((item, idx) => {

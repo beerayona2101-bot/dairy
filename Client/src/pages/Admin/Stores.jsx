@@ -1,16 +1,15 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import { getAllStores } from "../../services/storeServices";
 import { SidebarContext } from "../../context/SidebarProvider";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import { filterStoresByInput } from "../../utils/filterStores";
 import { useSnackbar } from "notistack";
+import BackButton from "../../components/Common/BackButton";
 
 export default function Stores() {
+    const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const { navbarInput } = useContext(SidebarContext);
     const [debouncedInput] = useDebounce(navbarInput, 300);
@@ -38,119 +37,109 @@ export default function Stores() {
 
     const filteredStores = filterStoresByInput(totalStores, debouncedInput);
 
-    const companyName = "MADHU Dairy & Daily Needs";
-    const appLink = "http://localhost:5173";
+    const getInitial = (store) => {
+        const name = store?.firstName || store?.username || "C";
+        return name.charAt(0).toUpperCase();
+    };
+
+    const getAvatarGradient = (name) => {
+        const gradients = [
+            "from-purple-600 to-purple-800 text-white shadow-purple-500/20",
+            "from-purple-700 to-zinc-900 text-white shadow-purple-900/20",
+            "from-violet-600 to-purple-900 text-white shadow-violet-500/20",
+            "from-zinc-800 to-purple-950 text-white shadow-zinc-800/20",
+            "from-purple-500 to-violet-700 text-white shadow-purple-500/20",
+            "from-zinc-900 to-purple-800 text-white shadow-purple-900/20",
+        ];
+        let hash = 0;
+        for (let i = 0; i < (name || "").length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash) % gradients.length;
+        return gradients[index];
+    };
 
     if (loading) {
         return <BuffaloLoader variant="inline" text="Loading Customers..." />;
     }
 
     return (
-        <div className="p-3">
-            <div className="bg-white dark:bg-gray-500/20 rounded-lg p-4 shadow-md">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-3 border-b border-gray-200 dark:border-gray-700">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Customer Profiles & Account Data</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-300 hidden sm:block">View registered customer profiles, contact info, payment modes, and order history.</p>
+        <div className="p-3 sm:p-4 max-w-7xl mx-auto space-y-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center gap-3">
+                        <BackButton fallbackPath="/admin/dashboard" className="shrink-0" />
+                        <div>
+                            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Customer Profiles & Directory</h2>
+                            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Click anywhere on a customer card to open their full details page.</p>
+                        </div>
                     </div>
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60">
+                        {filteredStores?.length || 0} Registered Customers
+                    </span>
                 </div>
 
-                <div className="space-y-6">
+                {/* Summary Cards List */}
+                <div className="space-y-3">
                     {filteredStores?.length > 0 ? (
-                        filteredStores.map((store) => (
-                            <div
-                                key={store._id}
-                                className="md:flex items-start bg-gray-50 dark:bg-gray-500/10 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden"
-                            >
-                                {store?.photo ? (
-                                    <img
-                                        src={store.photo}
-                                        alt={store.firstName}
-                                        loading="lazy"
-                                        className="h-44 w-full md:h-64 md:w-56 object-cover"
-                                    />
-                                ) : (
-                                    <div className="h-44 w-full md:h-64 md:w-56 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-                                        <EmojiFoodBeverageIcon className="text-gray-500 dark:text-gray-300 text-5xl" />
-                                    </div>
-                                )}
+                        filteredStores.map((store) => {
+                            const initial = getInitial(store);
+                            const fullName = `${store.firstName || ""} ${store.lastName || ""}`.trim() || store.username || "Customer";
+                            const gradientClass = getAvatarGradient(fullName);
+                            const orderCount = store.orderCount ?? store.orders?.length ?? 0;
 
-                                <div className="flex-1 flex flex-col justify-between p-4 space-y-2 text-gray-800 dark:text-white">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <h3 className="text-xl font-bold">{store.firstName} {store.lastName}</h3>
-                                            <p className="text-xs text-[#1E88E5] dark:text-pink-400 font-semibold">{store.username ? `@${store.username}` : "Customer Account"}</p>
+                            return (
+                                <div
+                                    key={store._id}
+                                    onClick={() => navigate(`/admin/customers/${store._id}`)}
+                                    className="p-3.5 sm:p-4 rounded-xl bg-gray-50/80 dark:bg-gray-700/40 border border-gray-200/70 dark:border-gray-700 hover:border-[#6C5CE7] dark:hover:border-purple-400 hover:shadow-md hover:scale-[1.005] transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer group"
+                                    title={`Click to view full details page for ${fullName}`}
+                                >
+                                    {/* Left: First Letter Circle Avatar + Name + Email + Mobile */}
+                                    <div className="flex items-center gap-3.5 min-w-0">
+                                        <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${gradientClass} flex items-center justify-center font-black text-base sm:text-lg shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200`}>
+                                            {initial}
+                                        </div>
+
+                                        <div className="min-w-0 space-y-0.5">
+                                            <h3 className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-[#6C5CE7] dark:group-hover:text-purple-300 transition truncate max-w-[240px] sm:max-w-xs">
+                                                {fullName}
+                                            </h3>
+                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-500 dark:text-gray-400">
+                                                <span className="truncate max-w-[180px] sm:max-w-xs" title={store.email}>
+                                                    ✉️ {store.email || "No email"}
+                                                </span>
+                                                <span>•</span>
+                                                <span>📱 {store.mobileNo || "N/A"}</span>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700 dark:text-gray-300">
-                                        <p>
-                                            <span className="font-semibold text-gray-500 dark:text-gray-400">Email:</span>{" "}
-                                            <a
-                                                href={`mailto:${store.email}`}
-                                                className="text-[#1E88E5] dark:text-sky-400 hover:underline font-medium transition"
-                                                title={`Send Email to ${store.email}`}
-                                            >
-                                                {store.email}
-                                            </a>
-                                        </p>
-                                        <p>
-                                            <span className="font-semibold text-gray-500 dark:text-gray-400">Mobile:</span>{" "}
-                                            {store.mobileNo ? (
-                                                <a
-                                                    href={`tel:${store.mobileNo}`}
-                                                    className="text-[#1E88E5] dark:text-sky-400 hover:underline font-medium transition"
-                                                    title={`Call ${store.mobileNo}`}
-                                                >
-                                                    {store.mobileNo}
-                                                </a>
-                                            ) : (
-                                                "N/A"
-                                            )}
-                                        </p>
-                                        <p><span className="font-semibold text-gray-500 dark:text-gray-400">Gender:</span> {store.gender || "N/A"}</p>
-                                        <p>
-                                            <span className="font-semibold text-gray-500 dark:text-gray-400">Total Orders:</span>{" "}
-                                            <Link
-                                                to={`/admin/customers/${store?._id}/orders-history`}
-                                                className="font-bold text-green-600 dark:text-green-400 hover:underline"
-                                            >
-                                                {store.orders?.length || 0} Orders
-                                            </Link>
-                                        </p>
-                                    </div>
+                                    {/* Right: Status Badges & Open Page Button */}
+                                    <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60 dark:border-gray-700">
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#6C5CE7] animate-pulse" />
+                                            Active
+                                        </span>
 
-                                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                                        <Link
-                                            to={`/admin/customers/${store?._id}/orders-history`}
-                                            className="flex items-center gap-1 text-sm bg-[#1E88E5] text-white px-3 py-1.5 rounded-md shadow hover:bg-[#6c2f5c] transition"
-                                        >
-                                            <VisibilityIcon fontSize="small" />
-                                            View Customer Orders & History ({store.orders?.length || 0})
-                                        </Link>
+                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
+                                            📦 {orderCount} {orderCount === 1 ? "Order" : "Orders"}
+                                        </span>
 
-                                        <a
-                                            href={`https://wa.me/91${store?.mobileNo || "9490644434"}?text=${encodeURIComponent(
-                                                `Hello ${store.firstName}, I'm contacting you from *${companyName}*.\nApp: ${appLink}\nMessage: `
-                                            )}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-green-700 transition text-sm"
-                                            title="Message on WhatsApp"
-                                        >
-                                            <WhatsAppIcon fontSize="small" />
-                                            <span>WhatsApp Customer</span>
-                                        </a>
+                                        <span className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-purple-300 group-hover:bg-[#6C5CE7] group-hover:text-white dark:group-hover:bg-[#6C5CE7] dark:group-hover:text-white text-xs font-extrabold transition border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
+                                            Full Profile →
+                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     ) : (
-                        <div className="text-center py-10 text-gray-500 dark:text-gray-300 text-lg">
+                        <div className="text-center py-12 text-gray-500 dark:text-gray-400 text-sm font-semibold">
                             {navbarInput?.trim() ? (
-                                <>No customers found matching <span className="font-semibold">"{navbarInput}"</span>.</>
+                                <>No customers found matching <span className="font-bold text-[#6C5CE7]">"{navbarInput}"</span>.</>
                             ) : (
-                                "No customer accounts registered."
+                                "No customer accounts registered yet."
                             )}
                         </div>
                     )}

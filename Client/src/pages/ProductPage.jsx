@@ -6,6 +6,10 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import HomeIcon from "@mui/icons-material/Home";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
+import TuneIcon from "@mui/icons-material/Tune";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { searchProducts, sortProducts } from "../utils/filterData";
 import ProductList from "../components/ProductComponents/ProductList";
 import ProductVarietyCart from "../components/ProductComponents/ProductVarietyCard";
@@ -20,6 +24,7 @@ import MadhuLoader from "../components/MadhuLoader";
 import { getProductImage } from "../utils/helper";
 import { products as baseCategories } from "../data/products";
 import BackButton from "../components/Common/BackButton";
+import AnimatedHeading from "../components/Common/AnimatedHeading";
 
 export default function ProductPage() {
 
@@ -32,23 +37,13 @@ export default function ProductPage() {
     const [query, setQuery] = useState(productId || "");
     const [debouncedQuery] = useDebounce(query, 300);
 
-    const [pageLoading, setPageLoading] = useState(true);
+    // Mobile filter & search state
+    const [mobileSearchQuery, setMobileSearchQuery] = useState("");
+    const [mobileCategoryTag, setMobileCategoryTag] = useState("All");
+    const [mobileSortOrder, setMobileSortOrder] = useState("default");
+    const [showMobileFilterMenu, setShowMobileFilterMenu] = useState(false);
 
-    useEffect(() => {
-        const handleWindowLoad = () => {
-            setPageLoading(false);
-        };
-
-        if (document.readyState === "complete") {
-            handleWindowLoad();
-        } else {
-            window.addEventListener("load", handleWindowLoad);
-        }
-
-        return () => {
-            window.removeEventListener("load", handleWindowLoad);
-        };
-    }, []);
+    const categoryTags = ["All", "Milk", "Paneer", "Ghee", "Curd", "Butter", "Cheese", "Lassi", "Chaas", "Sweets", "Khoya"];
 
     useEffect(() => {
         setQuery(productId);
@@ -101,6 +96,35 @@ export default function ProductPage() {
 
         return Array.from(cardMap.values());
     }, [pageContent, products]);
+
+    const filteredMobileCategoryCards = useMemo(() => {
+        let result = [...allCategoryCards];
+
+        if (mobileCategoryTag !== "All") {
+            const tagClean = mobileCategoryTag.toLowerCase().trim();
+            result = result.filter(c => {
+                const title = (c.title || "").toLowerCase();
+                return title.includes(tagClean);
+            });
+        }
+
+        if (mobileSearchQuery.trim()) {
+            const q = mobileSearchQuery.toLowerCase().trim();
+            result = result.filter(c => {
+                const title = (c.title || "").toLowerCase();
+                const desc = (c.description || "").toLowerCase();
+                return title.includes(q) || desc.includes(q);
+            });
+        }
+
+        if (mobileSortOrder === "name-asc") {
+            result.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+        } else if (mobileSortOrder === "name-desc") {
+            result.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+        }
+
+        return result;
+    }, [allCategoryCards, mobileCategoryTag, mobileSearchQuery, mobileSortOrder]);
 
     const categoryInfo = useMemo(() => {
         if (!productId) return null;
@@ -195,13 +219,6 @@ export default function ProductPage() {
         });
     }, [filteredProducts, filter, debouncedQuery]);
 
-    if (pageLoading) {
-        return (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-black">
-                <MadhuLoader />
-            </div>
-        );
-    }
 
     return (
         <>
@@ -215,7 +232,7 @@ export default function ProductPage() {
                 )}
 
                 {/* Main Content Area */}
-                <div className={`flex-1 ${productId ? 'flex flex-col space-y-3' : 'space-y-4'} w-full`}>
+                <div className={`flex-1 ${productId ? 'flex flex-col space-y-0' : 'space-y-4'} w-full`}>
 
                     {/* CATEGORY HERO BANNER CARD - RESPONSIVE BANNER HEIGHT WITH FLOATING GLASS CONTROLS */}
                     {categoryInfo ? (
@@ -266,7 +283,7 @@ export default function ProductPage() {
                                 <div className="flex items-center gap-2">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">🥛 Madhu Dairy Collection</span>
                                 </div>
-                                <h1 className="text-base sm:text-xl font-black leading-tight truncate">All Farm-Fresh Products</h1>
+                                <AnimatedHeading blackText="All Farm-Fresh" violetText="Products" as="h1" className="text-base sm:text-xl font-black leading-tight text-white" />
                                 <p className="text-[11px] sm:text-xs text-blue-100 max-w-xl font-medium line-clamp-1">
                                     Explore our complete range of 100% pure A2 milk, ghee, paneer, curd, and daily sweets.
                                 </p>
@@ -279,20 +296,19 @@ export default function ProductPage() {
                         {!productId ? (
                             /* MAIN PRODUCTS PAGE VIEW (!productId): Show ALL Category Images Grid */
                             <div className="space-y-3">
-                                {/* Mobile Top Header Navigation Bar */}
-                                <div className="md:hidden sticky top-1 z-30 w-full py-1.5 px-1 flex items-center justify-between transition-all duration-200">
-                                    {/* Left: Back Button */}
-                                    <BackButton fallbackPath="/home" />
+                                {/* Mobile Header, Search Bar & Filter Options Bar (Full Width Edge-to-Edge) */}
+                                <div className="md:hidden sticky top-0 z-30 w-[calc(100%+1.5rem)] sm:w-[calc(100%+3rem)] -mx-3 sm:-mx-6 px-3.5 sm:px-6 py-2.5 space-y-2.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs transition-colors">
+                                    {/* Top Navigation Row */}
+                                    <div className="flex items-center justify-between">
+                                        <BackButton fallbackPath="/home" />
 
-                                    {/* Center: Title */}
-                                    <div className="flex flex-col items-center justify-center">
-                                        <h1 className="text-sm font-black tracking-tight text-gray-900 dark:text-white">
-                                            Products Collection
-                                        </h1>
-                                    </div>
+                                        <div className="flex flex-col items-center justify-center">
+                                            <AnimatedHeading blackText="Products" violetText="Collection" as="h1" className="text-sm font-black tracking-tight text-gray-900 dark:text-white" />
+                                            <span className="text-[10px] font-bold text-[#6C5CE7] dark:text-purple-400">
+                                                {filteredMobileCategoryCards.length} Categories Available
+                                            </span>
+                                        </div>
 
-                                    {/* Right: Cart Shortcut Only (Home icon removed) */}
-                                    <div className="flex items-center">
                                         <Link
                                             to="/cart"
                                             title="View Cart"
@@ -306,17 +322,113 @@ export default function ProductPage() {
                                             )}
                                         </Link>
                                     </div>
+
+                                    {/* Mobile Search Bar Row */}
+                                    <div className="relative w-full flex items-center gap-2">
+                                        <div className="relative flex-1 flex items-center bg-gray-100 dark:bg-slate-800/90 rounded-2xl border border-gray-200 dark:border-gray-700/80 px-3 py-1.5 focus-within:border-[#6C5CE7] dark:focus-within:border-purple-400 transition-colors">
+                                            <SearchIcon sx={{ fontSize: "1.2rem" }} className="text-gray-400 dark:text-gray-500 mr-1.5 shrink-0" />
+                                            <input
+                                                type="text"
+                                                value={mobileSearchQuery}
+                                                onChange={(e) => setMobileSearchQuery(e.target.value)}
+                                                placeholder="Search categories (e.g. Milk, Ghee, Paneer)..."
+                                                className="w-full bg-transparent text-xs font-semibold text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                                            />
+                                            {mobileSearchQuery && (
+                                                <button
+                                                    onClick={() => setMobileSearchQuery("")}
+                                                    className="p-1 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                                                >
+                                                    <ClearIcon sx={{ fontSize: "1rem" }} />
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {/* Filter Toggle Button */}
+                                        <button
+                                            onClick={() => setShowMobileFilterMenu(!showMobileFilterMenu)}
+                                            className={`p-2 rounded-2xl border transition-all flex items-center justify-center shrink-0 ${
+                                                showMobileFilterMenu || mobileSortOrder !== "default"
+                                                    ? "bg-[#6C5CE7] text-white border-[#6C5CE7] shadow-sm"
+                                                    : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700"
+                                            }`}
+                                            title="Filter and Sort"
+                                        >
+                                            <TuneIcon sx={{ fontSize: "1.1rem" }} />
+                                        </button>
+                                    </div>
+
+                                    {/* Expandable Sort Options Menu */}
+                                    {showMobileFilterMenu && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="pt-2 pb-1 border-t border-gray-200/80 dark:border-gray-800/80 flex flex-col space-y-2"
+                                        >
+                                            <div className="flex items-center justify-between text-xs font-bold text-gray-600 dark:text-gray-400">
+                                                <span>Sort Categories:</span>
+                                                <button
+                                                    onClick={() => {
+                                                        setMobileSortOrder("default");
+                                                        setMobileCategoryTag("All");
+                                                        setMobileSearchQuery("");
+                                                    }}
+                                                    className="text-[11px] text-[#6C5CE7] dark:text-purple-400 font-extrabold"
+                                                >
+                                                    Reset All
+                                                </button>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => setMobileSortOrder("default")}
+                                                    className={`px-2.5 py-1.5 rounded-xl text-xs font-black border ${
+                                                        mobileSortOrder === "default"
+                                                            ? "bg-[#6C5CE7]/10 text-[#6C5CE7] border-[#6C5CE7]"
+                                                            : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
+                                                    }`}
+                                                >
+                                                    Default Order
+                                                </button>
+                                                <button
+                                                    onClick={() => setMobileSortOrder("name-asc")}
+                                                    className={`px-2.5 py-1.5 rounded-xl text-xs font-black border ${
+                                                        mobileSortOrder === "name-asc"
+                                                            ? "bg-[#6C5CE7]/10 text-[#6C5CE7] border-[#6C5CE7]"
+                                                            : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
+                                                    }`}
+                                                >
+                                                    Name A-Z
+                                                </button>
+                                                <button
+                                                    onClick={() => setMobileSortOrder("name-desc")}
+                                                    className={`px-2.5 py-1.5 rounded-xl text-xs font-black border ${
+                                                        mobileSortOrder === "name-desc"
+                                                            ? "bg-[#6C5CE7]/10 text-[#6C5CE7] border-[#6C5CE7]"
+                                                            : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
+                                                    }`}
+                                                >
+                                                    Name Z-A
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
                                 </div>
 
                                 {productLoading ? (
                                     <MadhuLoader />
+                                ) : filteredMobileCategoryCards.length === 0 ? (
+                                    <div className="py-12 text-center text-gray-500 dark:text-gray-300 font-semibold text-sm bg-gray-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+                                        No category cards found matching your search.
+                                    </div>
                                 ) : (
-                                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 pb-6 pt-1 md:pt-0">
-                                        {allCategoryCards.map((cat, index) => (
+                                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 pb-6 pt-2 md:pt-0">
+                                        {filteredMobileCategoryCards.map((cat, index) => (
                                             <OfferingProductCard
                                                 key={`all-cat-${index}-${cat.title}`}
                                                 title={cat.title}
                                                 image={cat.image}
+                                                hideNameOnWeb={true}
                                             />
                                         ))}
                                     </div>

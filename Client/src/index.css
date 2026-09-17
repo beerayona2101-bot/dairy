@@ -311,6 +311,18 @@ input.border-0 {
   margin: 0;
 }
 
+/* Named utility for horizontal scroll containers on mobile */
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+
 /* Hide scrollbars globally across the entire application for all browsers while maintaining smooth scrolling */
 html,
 body,
@@ -448,11 +460,32 @@ body,
   }
 }
 
-/* One-Shot Diagonal Glass Sheen Sweep Effect on Hover */
-@keyframes glassSheenSweep {
+/* Premium Glassmorphism & Moving Mirror Light Reflection Sweep Animation (Continuous Every 2s) */
+@keyframes mirrorReflectionSweep {
   0% {
-    transform: translate(-140%, -140%) rotate(30deg);
+    transform: translateX(-160%) skewX(-25deg);
     opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 1;
+  }
+  42% {
+    transform: translateX(360%) skewX(-25deg);
+    opacity: 0;
+  }
+  42.1%, 100% {
+    transform: translateX(360%) skewX(-25deg);
+    opacity: 0;
+  }
+}
+
+@keyframes mirrorReflectionHoverSweep {
+  0% {
+    transform: translateX(-160%) skewX(-25deg);
+    opacity: 0.2;
   }
   15% {
     opacity: 1;
@@ -461,76 +494,94 @@ body,
     opacity: 1;
   }
   100% {
-    transform: translate(220%, 220%) rotate(30deg);
+    transform: translateX(360%) skewX(-25deg);
     opacity: 0;
   }
 }
 
-.animate-glassSheenSweep {
-  animation: glassSheenSweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) 1 forwards !important;
-}
-
-/* 30-Second Periodic Diagonal Glass Shine Sweep Animation */
-@keyframes periodicGlassShineSweep {
-  0% {
-    transform: translate(-140%, -140%) rotate(30deg);
-    opacity: 0;
-  }
-  0.5% {
-    opacity: 1;
-  }
-  4.5% {
-    opacity: 1;
-  }
-  5% {
-    transform: translate(220%, 220%) rotate(30deg);
-    opacity: 0;
-  }
-  5.1%, 100% {
-    transform: translate(220%, 220%) rotate(30deg);
-    opacity: 0;
-  }
-}
-
-.periodic-glass-shine {
+.periodic-glass-shine,
+.btn-reflection,
+.glass-shine-card {
   position: relative !important;
   overflow: hidden !important;
+  isolation: isolate !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08),
+              inset 0 1px 1.5px rgba(255, 255, 255, 0.45) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease !important;
 }
 
-.periodic-glass-shine::before {
+/* Ensure inner text, icons, and card contents stay layered above the light reflection */
+.periodic-glass-shine > :not(.absolute),
+.btn-reflection > :not(.absolute),
+.glass-shine-card > :not(.absolute) {
+  position: relative;
+  z-index: 10;
+}
+
+/* Diagonal Moving Mirror Reflection Bar */
+.periodic-glass-shine::before,
+.btn-reflection::before,
+.glass-shine-card::before {
   content: "" !important;
   position: absolute !important;
   top: -50% !important;
-  left: -50% !important;
-  width: 200% !important;
+  bottom: -50% !important;
+  left: 0 !important;
+  width: 50% !important;
   height: 200% !important;
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.2) 35%,
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0.2) 65%,
+    rgba(255, 255, 255, 0.12) 20%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.12) 80%,
     rgba(255, 255, 255, 0) 100%
   ) !important;
-  transform: translate(-140%, -140%) rotate(30deg) !important;
-  animation: periodicGlassShineSweep 30s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  transform: translateX(-160%) skewX(-25deg) !important;
+  animation: mirrorReflectionSweep 2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
   pointer-events: none !important;
-  z-index: 25 !important;
+  z-index: 8 !important;
+  will-change: transform, opacity !important;
 }
 
-.dark .periodic-glass-shine::before {
+.dark .periodic-glass-shine::before,
+.dark .btn-reflection::before,
+.dark .glass-shine-card::before {
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.15) 35%,
-    rgba(255, 255, 255, 0.65) 50%,
-    rgba(255, 255, 255, 0.15) 65%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.08) 80%,
     rgba(255, 255, 255, 0) 100%
   ) !important;
 }
 
+.periodic-glass-shine:hover::before,
+.btn-reflection:hover::before,
+.glass-shine-card:hover::before {
+  animation: mirrorReflectionHoverSweep 0.85s cubic-bezier(0.16, 1, 0.3, 1) 1 forwards !important;
+}
+
+.periodic-glass-shine:hover,
+.btn-reflection:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 24px rgba(30, 136, 229, 0.25),
+              inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+
+.periodic-glass-shine:active,
+.btn-reflection:active {
+  transform: scale(0.98) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .periodic-glass-shine::before {
+  .periodic-glass-shine::before,
+  .btn-reflection::before,
+  .glass-shine-card::before {
     animation: none !important;
+    display: none !important;
   }
 }

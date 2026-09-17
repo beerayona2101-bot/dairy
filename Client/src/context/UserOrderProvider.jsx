@@ -1,41 +1,47 @@
 import React, { createContext, useState, useMemo, useEffect, useContext, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserOrders } from "../services/orderService";
 import { getUserNotifications } from "../services/notificationService";
-import { UserAuthContext, AdminAuthContext } from "./AuthProvider";
+import { UserAuthContext } from "./AuthProvider";
 import wsManager from "../socket/WebSocketManager";
 
 export const UserOrderContext = createContext();
 
 export default function UserOrderProvider({ children }) {
-
     const { authUser } = useContext(UserAuthContext);
+    const queryClient = useQueryClient();
+    const userId = authUser?._id || authUser?.id;
 
-    const [userOrders, setUserOrders] = useState([]);
-    const [orderLoading, setOrderLoading] = useState(true);
+    const [localOrders, setLocalOrders] = useState(null);
     const [notification, setNotification] = useState([]);
 
-    const fetchOrders = useCallback(async () => {
-        const userId = authUser?._id || authUser?.id;
-        if (!userId) {
-            setUserOrders([]);
-            setOrderLoading(false);
-            return;
-        }
-        try {
-            setOrderLoading(true);
+    const { data: queryOrders = [], isLoading: queryLoading, refetch: fetchOrders } = useQuery({
+        queryKey: ['userOrders', userId],
+        queryFn: async () => {
+            if (!userId) return [];
             const res = await getUserOrders(userId);
-            if (res?.success) {
-                setUserOrders(res.orders || []);
+            return res?.success ? res.orders || [] : [];
+        },
+        enabled: Boolean(userId),
+        staleTime: 1000 * 60 * 3,
+        gcTime: 1000 * 60 * 20,
+    });
+
+    const userOrders = localOrders ?? queryOrders;
+    const orderLoading = queryLoading && !userOrders.length;
+
+    const setUserOrders = useCallback((updater) => {
+        setLocalOrders((prev) => {
+            const current = prev ?? queryOrders;
+            const next = typeof updater === 'function' ? updater(current) : updater;
+            if (userId) {
+                queryClient.setQueryData(['userOrders', userId], next);
             }
-        } catch (err) {
-            console.error("Error fetching orders:", err);
-        } finally {
-            setOrderLoading(false);
-        }
-    }, [authUser?._id, authUser?.id]);
+            return next;
+        });
+    }, [queryOrders, queryClient, userId]);
 
     useEffect(() => {
-        const userId = authUser?._id || authUser?.id;
         if (userId) {
             setNotification(authUser?.notifications || []);
             getUserNotifications(userId).then((res) => {
@@ -43,13 +49,11 @@ export default function UserOrderProvider({ children }) {
                     setNotification(res.notifications);
                 }
             }).catch(() => {});
-            fetchOrders();
         } else {
-            setUserOrders([]);
+            setLocalOrders([]);
             setNotification([]);
-            setOrderLoading(false);
         }
-    }, [authUser?._id, authUser?.id, authUser?.notifications, fetchOrders]);
+    }, [userId, authUser?.notifications]);
 
     const handleUserNotification = useCallback((notifPayload) => {
         if (!notifPayload) return;
@@ -67,21 +71,21 @@ export default function UserOrderProvider({ children }) {
 
     const handlePlaceNewOrder = useCallback(({ newOrder }) => {
         if (newOrder) {
-            setUserOrders((prevOrders) => [newOrder, ...prevOrders.filter(o => o._id !== newOrder._id)]);
+            setUserOrders((prevOrders) => [newOrder, ...(prevOrders || []).filter(o => o._id !== newOrder._id)]);
         } else {
             fetchOrders();
         }
-    }, [fetchOrders]);
+    }, [fetchOrders, setUserOrders]);
 
     const handleUserOrderUpdateStatus = useCallback(({ orderId, status }) => {
         if (!orderId || !status) return;
         setUserOrders((prevOrders) =>
-            prevOrders?.map((order) =>
+            (prevOrders || [])?.map((order) =>
                 (String(order?._id) === String(orderId) || String(order?.orderId) === String(orderId)) ? { ...order, status } : order
             )
         );
         fetchOrders();
-    }, [fetchOrders]);
+    }, [fetchOrders, setUserOrders]);
 
     useEffect(() => {
         const unsubs = [
@@ -113,10 +117,10 @@ export default function UserOrderProvider({ children }) {
         notification,
         unreadCount,
         setUserOrders,
-        setOrderLoading,
+        setOrderLoading: () => {},
         setNotification,
         fetchOrders,
-    }), [userOrders, orderLoading, notification, unreadCount, fetchOrders]);
+    }), [userOrders, orderLoading, notification, unreadCount, fetchOrders, setUserOrders]);
 
     return (
         <UserOrderContext.Provider value={value}>

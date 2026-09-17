@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import heroImage from "../assets/heroImage.png";
 import { faqs, products } from "../data/products";
-import MadhuLoader from "../components/MadhuLoader";
 import { UserAuthContext } from "../context/AuthProvider";
 import { PageContentContext } from "../context/PageContentProvider";
 import OfferingProductCard from "../components/HomeComponents/OfferingProductCard";
@@ -13,6 +12,9 @@ import { getProductImage } from "../utils/helper";
 import ProductShowcase3D from "../components/HomeComponents/ProductShowcase3D";
 import { DairyPromiseCardsSection } from "../components/HomeComponents/MilkHealthBenefitsSection";
 import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
+
+import AnimatedHeading from "../components/Common/AnimatedHeading";
+import DairyShowcaseBanner from "../components/Common/DairyShowcaseBanner";
 
 const Marquee = lazy(() => import("react-fast-marquee"));
 const DairyProductsCarousel = lazy(() => import("../components/HomeComponents/DairyProductsCarousel"));
@@ -25,7 +27,6 @@ export default function HomePage() {
     const [visibleCount, setVisibleCount] = useState(9);
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
     const [shuffledCategories, setShuffledCategories] = useState([]);
-    const [pageLoading, setPageLoading] = useState(true);
 
     const displayHeroImage = pageContent?.heroBannerImage || heroImage;
     const displayCompanyName = pageContent?.companyName || company?.name;
@@ -96,21 +97,7 @@ export default function HomePage() {
         return Array.from(cardMap.values());
     }, [pageContent]);
 
-    useEffect(() => {
-        const handleWindowLoad = () => {
-            setPageLoading(false);
-        };
 
-        if (document.readyState === "complete") {
-            setPageLoading(false);
-        } else {
-            window.addEventListener("load", handleWindowLoad);
-        }
-
-        return () => {
-            window.removeEventListener("load", handleWindowLoad);
-        };
-    }, []);
 
     const categoriesSectionRef = useRef(null);
     const [catScrollProgress, setCatScrollProgress] = useState(0);
@@ -130,16 +117,32 @@ export default function HomePage() {
     }, [displayCategories]);
 
     useEffect(() => {
+        let ticking = false;
+        let lastCatProgress = -1;
         const handleCatScroll = () => {
-            if (!categoriesSectionRef.current) return;
-            const rect = categoriesSectionRef.current.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            const totalScrollable = rect.height - windowHeight;
-            if (totalScrollable <= 0) return;
-
-            const scrolled = -rect.top;
-            const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
-            setCatScrollProgress(progress);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    if (categoriesSectionRef.current) {
+                        const rect = categoriesSectionRef.current.getBoundingClientRect();
+                        const windowHeight = window.innerHeight;
+                        // Only compute scroll progress when section is visible in viewport
+                        if (rect.bottom > 0 && rect.top < windowHeight) {
+                            const totalScrollable = rect.height - windowHeight;
+                            if (totalScrollable > 0) {
+                                const scrolled = -rect.top;
+                                const rawProgress = Math.max(0, Math.min(1, scrolled / totalScrollable));
+                                const roundedProgress = Math.round(rawProgress * 100) / 100; // Step by 1%
+                                if (Math.abs(roundedProgress - lastCatProgress) >= 0.01) {
+                                    lastCatProgress = roundedProgress;
+                                    setCatScrollProgress(roundedProgress);
+                                }
+                            }
+                        }
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
 
         window.addEventListener("scroll", handleCatScroll, { passive: true });
@@ -148,16 +151,31 @@ export default function HomePage() {
     }, [shuffledCategories.length]);
 
     useEffect(() => {
+        let ticking = false;
+        let lastGoodnessProgress = -1;
         const handleGoodnessScroll = () => {
-            if (!goodnessSectionRef.current) return;
-            const rect = goodnessSectionRef.current.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            const totalScrollable = rect.height - windowHeight;
-            if (totalScrollable <= 0) return;
-
-            const scrolled = -rect.top;
-            const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
-            setGoodnessScrollProgress(progress);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    if (goodnessSectionRef.current) {
+                        const rect = goodnessSectionRef.current.getBoundingClientRect();
+                        const windowHeight = window.innerHeight;
+                        if (rect.bottom > 0 && rect.top < windowHeight) {
+                            const totalScrollable = rect.height - windowHeight;
+                            if (totalScrollable > 0) {
+                                const scrolled = -rect.top;
+                                const rawProgress = Math.max(0, Math.min(1, scrolled / totalScrollable));
+                                const roundedProgress = Math.round(rawProgress * 100) / 100;
+                                if (Math.abs(roundedProgress - lastGoodnessProgress) >= 0.01) {
+                                    lastGoodnessProgress = roundedProgress;
+                                    setGoodnessScrollProgress(roundedProgress);
+                                }
+                            }
+                        }
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
 
         window.addEventListener("scroll", handleGoodnessScroll, { passive: true });
@@ -171,13 +189,7 @@ export default function HomePage() {
 
     const visibleCards = displayHomeCategoryCards.slice(0, visibleCount);
 
-    if (pageLoading) {
-        return (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-black">
-                <MadhuLoader text="Fresh Dairy Goods Loading..." />
-            </div>
-        );
-    }
+
 
     return (
         <>
@@ -190,9 +202,12 @@ export default function HomePage() {
             {/* 3. Discover Our Delicious Dairy Range Carousel Section (Full-Width Edge-to-Edge) */}
             <section className="w-full py-8 md:py-12 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 text-center mb-6 sm:mb-8">
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight">
-                        Discover Our <span className="text-[#6C5CE7] dark:text-[#A29BFE]">Delicious</span> Dairy Range
-                    </h2>
+                    <AnimatedHeading
+                        blackText="Discover Our"
+                        violetText="Delicious"
+                        suffixText="Dairy Range"
+                        className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
+                    />
                 </div>
 
                 <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
@@ -218,9 +233,11 @@ export default function HomePage() {
                     <div className="inline-flex items-center gap-2 bg-[#6C5CE7]/10 dark:bg-purple-900/30 text-[#6C5CE7] dark:text-purple-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-[#6C5CE7]/20">
                         🥛 Farm Fresh Selections
                     </div>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight">
-                        Our Product <span className="text-[#6C5CE7] dark:text-[#A29BFE]">Categories</span>
-                    </h2>
+                    <AnimatedHeading
+                        blackText="Our Product"
+                        violetText="Categories"
+                        className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
+                    />
                     <p className="text-sm sm:text-base text-[#718096] dark:text-gray-300 font-medium max-w-2xl mx-auto">
                         Explore our wide range of 100% pure, farm-fresh A2 dairy products delivered daily to your doorstep.
                     </p>
@@ -279,10 +296,12 @@ export default function HomePage() {
                 <div className="flex justify-center pt-8 pb-4">
                     <Link
                         to="/products"
-                        className="flex items-center gap-3 px-8 py-3.5 rounded-full font-black text-sm sm:text-base bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition-all duration-300 shadow-[0_12px_25px_rgba(108,92,231,0.4)] hover:scale-105 border border-purple-300/30 cursor-pointer"
+                        className="flex items-center gap-3 px-8 py-3.5 rounded-full font-black text-sm sm:text-base bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition-all duration-300 shadow-[0_12px_25px_rgba(108,92,231,0.4)] hover:scale-105 border border-purple-300/30 cursor-pointer periodic-glass-shine btn-reflection"
                     >
-                        <span>Explore Full Product Range</span>
-                        <span className="text-lg">→</span>
+                        <span className="relative z-10 flex items-center gap-3">
+                            <span>Explore Full Product Range</span>
+                            <span className="text-lg">→</span>
+                        </span>
                     </Link>
                 </div>
             </section>
@@ -290,9 +309,11 @@ export default function HomePage() {
             {/* 5. Our Goodness Grid Section (Mobile Sticky Stacking Cards Transition & Desktop Grid) */}
             <section ref={goodnessSectionRef} className="py-10 sm:py-16 px-3 sm:px-6 lg:px-10 max-w-7xl mx-auto">
                 <div className="text-center mb-8 sm:mb-12">
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight">
-                        Our <span className="text-[#6C5CE7] dark:text-[#A29BFE]">Goodness</span>
-                    </h2>
+                    <AnimatedHeading
+                        blackText="Our"
+                        violetText="Goodness"
+                        className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
+                    />
                     <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm md:text-base font-medium">
                         Comes in many forms — all pure, nutritious, and farm-fresh.
                     </p>
@@ -313,16 +334,16 @@ export default function HomePage() {
                     {visibleCount < displayHomeCategoryCards.length ? (
                         <button
                             onClick={handleViewMore}
-                            className="bg-[#1E88E5] hover:bg-[#1565C0] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105"
+                            className="bg-[#1E88E5] hover:bg-[#1565C0] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
                         >
-                            View More
+                            <span className="relative z-10">View More</span>
                         </button>
                     ) : (
                         <Link
                             to="/products"
-                            className="bg-[#213448] hover:bg-[#162331] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105"
+                            className="bg-[#213448] hover:bg-[#162331] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
                         >
-                            Explore All Products
+                            <span className="relative z-10">Explore All Products</span>
                         </Link>
                     )}
                 </div>
@@ -337,9 +358,11 @@ export default function HomePage() {
                     <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
                         GOT QUESTIONS? WE'VE GOT ANSWERS
                     </span>
-                    <h2 className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-                        Frequently Asked <span className="text-[#6C5CE7] dark:text-[#A29BFE]">Questions</span>
-                    </h2>
+                    <AnimatedHeading
+                        blackText="Frequently Asked"
+                        violetText="Questions"
+                        className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight justify-center"
+                    />
                     <div className="w-12 h-1 bg-[#1E88E5] rounded-full mt-3"></div>
                 </div>
 
@@ -357,6 +380,10 @@ export default function HomePage() {
                     </Suspense>
                 </div>
             </section>
+
+            {/* 8. Madhu Dairy Wide Range of Products Banner */}
+            <DairyShowcaseBanner />
         </>
     );
 }
+

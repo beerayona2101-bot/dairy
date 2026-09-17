@@ -82,18 +82,20 @@ export default function HomeWelcomeHero() {
                     >
                         <Link
                             to="/products"
-                            className="bg-[#84CC16] hover:bg-[#65A30D] text-slate-950 font-black uppercase text-xs sm:text-xs tracking-wider sm:tracking-widest px-4 py-2 sm:px-8 sm:py-3.5 rounded-lg sm:rounded-xl shadow-[0_4px_15px_rgba(132,204,22,0.5)] hover:scale-105 transition-all duration-300 border border-lime-300 inline-flex items-center gap-1.5 cursor-pointer"
+                            className="bg-[#84CC16] hover:bg-[#65A30D] text-slate-950 font-black uppercase text-xs sm:text-xs tracking-wider sm:tracking-widest px-4 py-2 sm:px-8 sm:py-3.5 rounded-lg sm:rounded-xl shadow-[0_4px_15px_rgba(132,204,22,0.5)] hover:scale-105 transition-all duration-300 border border-lime-300 inline-flex items-center gap-1.5 cursor-pointer periodic-glass-shine btn-reflection"
                         >
-                            <span>{loggedInName ? "Order Now" : "Explore Products"}</span>
-                            <span className="text-xs sm:text-base">→</span>
+                            <span className="relative z-10 flex items-center gap-1.5">
+                                <span>{loggedInName ? "Order Now" : "Explore Products"}</span>
+                                <span className="text-xs sm:text-base">→</span>
+                            </span>
                         </Link>
 
                         {!loggedInName && (
                             <button
                                 onClick={() => setOpenLoginDialog(true)}
-                                className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-black uppercase text-xs sm:text-xs tracking-wider sm:tracking-widest px-4 py-2 sm:px-6 sm:py-3.5 rounded-lg sm:rounded-xl border border-white/50 transition-all duration-300 hover:scale-105 cursor-pointer shadow-md"
+                                className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-black uppercase text-xs sm:text-xs tracking-wider sm:tracking-widest px-4 py-2 sm:px-6 sm:py-3.5 rounded-lg sm:rounded-xl border border-white/50 transition-all duration-300 hover:scale-105 cursor-pointer shadow-md periodic-glass-shine btn-reflection"
                             >
-                                Login Account
+                                <span className="relative z-10">Login Account</span>
                             </button>
                         )}
                     </motion.div>

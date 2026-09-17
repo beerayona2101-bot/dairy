@@ -489,6 +489,10 @@ export const connectDB = async () => {
       const conn = await mongoose.connect(url, {
         serverSelectionTimeoutMS: 8000,
         connectTimeoutMS: 8000,
+        maxPoolSize: 20,
+        minPoolSize: 5,
+        maxIdleTimeMS: 30000,
+        socketTimeoutMS: 45000,
         family: 4,
       });
       const isAtlas = conn.connection.host.includes("mongodb.net");

@@ -29,25 +29,9 @@ export default function LandingPage() {
         ? pageContent.faqs
         : faqs;
 
-    const [pageLoading, setPageLoading] = useState(true);
     const [shuffledCategories, setShuffledCategories] = useState([]);
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
-    useEffect(() => {
-        const handleWindowLoad = () => {
-            setPageLoading(false);
-        };
-
-        if (document.readyState === "complete") {
-            setPageLoading(false);
-        } else {
-            window.addEventListener("load", handleWindowLoad);
-        }
-
-        return () => {
-            window.removeEventListener("load", handleWindowLoad);
-        };
-    }, []);
 
     const categoriesSectionRef = useRef(null);
     const [catScrollProgress, setCatScrollProgress] = useState(0);
@@ -65,16 +49,24 @@ export default function LandingPage() {
     }, [displayCategories]);
 
     useEffect(() => {
+        let ticking = false;
         const handleCatScroll = () => {
-            if (!categoriesSectionRef.current) return;
-            const rect = categoriesSectionRef.current.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            const totalScrollable = rect.height - windowHeight;
-            if (totalScrollable <= 0) return;
-
-            const scrolled = -rect.top;
-            const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
-            setCatScrollProgress(progress);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    if (categoriesSectionRef.current) {
+                        const rect = categoriesSectionRef.current.getBoundingClientRect();
+                        const windowHeight = window.innerHeight;
+                        const totalScrollable = rect.height - windowHeight;
+                        if (totalScrollable > 0) {
+                            const scrolled = -rect.top;
+                            const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
+                            setCatScrollProgress(progress);
+                        }
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
 
         window.addEventListener("scroll", handleCatScroll, { passive: true });
@@ -82,9 +74,6 @@ export default function LandingPage() {
         return () => window.removeEventListener("scroll", handleCatScroll);
     }, [shuffledCategories.length]);
 
-    if (pageLoading) {
-        return <MadhuLoader text="Fresh Dairy Goods Loading..." />;
-    }
 
     return (
         <>

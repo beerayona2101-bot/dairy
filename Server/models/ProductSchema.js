@@ -52,4 +52,6 @@ const ProductSchema = new Schema(
   { timestamps: true }
 );
 
+ProductSchema.index({ category: 1 });
+
 export default mongoose.model("Product", ProductSchema);
