@@ -117,10 +117,16 @@ textarea:focus {
 /* Disable inner border only on explicitly designated borderless inputs */
 .no-border-input,
 .composite-input-wrapper > input,
+input[type="text"].border-none,
+input[type="text"].border-0,
 input.border-none,
 input.border-0 {
+  border: none !important;
   border-style: none !important;
   border-width: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
 }
 
 /* Material UI Outlined Inputs Thin Single Border */

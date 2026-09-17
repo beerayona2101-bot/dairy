@@ -399,9 +399,9 @@ export default function OrderCheckoutPage() {
   return (
     <>
       {/* Mobile Top Header Navigation Bar (Shown on Mobile Response Only) */}
-      <div className="md:hidden sticky top-1 z-30 w-full px-4 py-2 flex items-center justify-between transition-all duration-200">
+      <div className="md:hidden sticky top-0 z-30 w-full px-4 py-2.5 flex items-center justify-between bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs transition-colors">
         {/* Left: Back Button to Cart */}
-        <BackButton fallbackPath="/cart" />
+        <BackButton fallbackPath="/cart" hideOnWeb={false} label="Cart" title="Back to Cart" />
 
         {/* Center: Title */}
         <div className="flex flex-col items-center justify-center">
@@ -425,15 +425,18 @@ export default function OrderCheckoutPage() {
 
       {/* Checkout Container */}
       <section className="max-w-5xl mx-auto pt-1 sm:pt-4 pb-12 px-4 sm:px-6">
-        {/* Desktop Header Bar (Hidden on Mobile) */}
-        <div className="hidden md:block mb-6">
-          <motion.h1
-            initial={{ opacity: 0, y: -15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 tracking-tight"
-          >
-            Confirm Order & Payment
-          </motion.h1>
+        {/* Desktop Header Bar (Shown on Desktop) */}
+        <div className="hidden md:flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <BackButton fallbackPath="/cart" hideOnWeb={false} label="Back to Cart" title="Back to Cart" />
+            <motion.h1
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 tracking-tight"
+            >
+              Confirm Order & Payment
+            </motion.h1>
+          </div>
         </div>
 
         {/* Delivery Address Location Banner */}
@@ -626,19 +629,17 @@ export default function OrderCheckoutPage() {
           </div>
         </motion.div>
 
-        {/* Bottom Action Navigation Bar */}
+        {/* Bottom Place Order CTA Bar */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.22, delay: 0.1 }}
-          className="flex flex-col sm:flex-row items-center justify-between gap-4"
+          className="w-full flex items-center justify-center pt-2"
         >
-          <BackButton fallbackPath="/cart" label="Back to Cart" variant="pill" className="w-full sm:w-auto text-center px-6 py-3 rounded-full bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-purple-400 border border-[#6C5CE7]/30 font-bold text-xs shadow-sm hover:bg-purple-50 dark:hover:bg-gray-700 transition" />
-
           <button
             disabled={orderLoading}
             onClick={handlePaymentMode}
-            className="w-full sm:w-auto text-center px-8 py-3.5 rounded-full bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white font-extrabold text-xs shadow-[0_10px_25px_rgba(108,92,231,0.4)] hover:scale-102 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full max-w-md text-center py-3.5 sm:py-4 px-8 rounded-full bg-[#6C5CE7] hover:bg-[#5b4cc4] active:scale-95 text-white font-black text-xs sm:text-sm shadow-[0_10px_25px_rgba(108,92,231,0.4)] hover:scale-102 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Place Order →
           </button>

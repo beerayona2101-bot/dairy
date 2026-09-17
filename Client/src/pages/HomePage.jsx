@@ -16,6 +16,7 @@ import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
 import DairyShowcaseBanner from "../components/Common/DairyShowcaseBanner";
 
+import ProductCategoriesSection from "../components/HomeComponents/ProductCategoriesSection";
 const Marquee = lazy(() => import("react-fast-marquee"));
 const DairyProductsCarousel = lazy(() => import("../components/HomeComponents/DairyProductsCarousel"));
 const QuestionAnswer = lazy(() => import("../components/LandingComponents/QuestionAnswer"));
@@ -24,7 +25,7 @@ export default function HomePage() {
 
     const { authUser } = useContext(UserAuthContext);
     const { pageContent } = useContext(PageContentContext);
-    const [visibleCount, setVisibleCount] = useState(9);
+    const [visibleCount, setVisibleCount] = useState(() => (typeof window !== "undefined" && window.innerWidth < 640 ? 8 : 9));
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
     const [shuffledCategories, setShuffledCategories] = useState([]);
 
@@ -183,8 +184,22 @@ export default function HomePage() {
         return () => window.removeEventListener("scroll", handleGoodnessScroll);
     }, [visibleCount]);
 
+    useEffect(() => {
+        const handleResize = () => {
+            const isMobile = window.innerWidth < 640;
+            setVisibleCount((prev) => {
+                if (isMobile && prev === 9) return 8;
+                if (!isMobile && prev === 8) return 9;
+                return prev;
+            });
+        };
+        window.addEventListener("resize", handleResize, { passive: true });
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const handleViewMore = () => {
-        setVisibleCount((prev) => prev + 9);
+        const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+        setVisibleCount((prev) => prev + (isMobile ? 8 : 9));
     };
 
     const visibleCards = displayHomeCategoryCards.slice(0, visibleCount);
@@ -224,87 +239,7 @@ export default function HomePage() {
             </section>
 
             {/* 4. Our Product Categories Section - STICKY STACKING CARDS DECK */}
-            <section
-                ref={categoriesSectionRef}
-                className="relative w-full min-h-[240vh] sm:min-h-[280vh] py-8 px-3 sm:px-6 lg:px-8 transition-colors duration-300 max-w-7xl mx-auto"
-            >
-                {/* Clean Centralized Heading (No card box wrapper, no border, no background, no dots/numbers) */}
-                <div className="text-center space-y-3 max-w-3xl mx-auto px-4 pt-4 pb-8">
-                    <div className="inline-flex items-center gap-2 bg-[#6C5CE7]/10 dark:bg-purple-900/30 text-[#6C5CE7] dark:text-purple-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-[#6C5CE7]/20">
-                        🥛 Farm Fresh Selections
-                    </div>
-                    <AnimatedHeading
-                        blackText="Our Product"
-                        violetText="Categories"
-                        className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
-                    />
-                    <p className="text-sm sm:text-base text-[#718096] dark:text-gray-300 font-medium max-w-2xl mx-auto">
-                        Explore our wide range of 100% pure, farm-fresh A2 dairy products delivered daily to your doorstep.
-                    </p>
-                </div>
-
-                {/* Sticky Stacking Cards Deck Container */}
-                <div className="max-w-6xl mx-auto relative w-full pt-1">
-                    {shuffledCategories.map((product, index) => {
-                        const totalCards = shuffledCategories.length || 4;
-                        const cardStep = 1 / totalCards;
-                        const cardNext = (index + 1) * cardStep;
-
-                        let depth = 0;
-                        if (catScrollProgress > cardNext) {
-                            depth = Math.min(3, (catScrollProgress - cardNext) / cardStep);
-                        }
-
-                        const scale = Math.max(0.93, 1 - depth * 0.035);
-                        const opacity = Math.max(0.78, 1 - depth * 0.08);
-                        const brightness = Math.max(0.85, 1 - depth * 0.05);
-
-                        // Sticky top offset below fixed navbar (~74px height)
-                        const topOffsetDesktop = 96 + index * 12;
-
-                        return (
-                            <div
-                                key={`shuffled-cat-${index}-${product.title || product.name}`}
-                                style={{
-                                    top: `${topOffsetDesktop}px`,
-                                    zIndex: (index + 1) * 10,
-                                }}
-                                className="sticky transition-all duration-200 ease-out mb-8 sm:mb-12"
-                            >
-                                <motion.div
-                                    style={{
-                                        transform: `scale(${scale})`,
-                                        opacity: opacity,
-                                        filter: `brightness(${brightness})`,
-                                    }}
-                                    className="w-full transition-transform duration-300"
-                                >
-                                    <ProductCard
-                                        title={product.title || product.name}
-                                        description={product.description}
-                                        image={product.image}
-                                        features={product?.features}
-                                        isReversed={index % 2 === 0}
-                                        isStacked={true}
-                                    />
-                                </motion.div>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                <div className="flex justify-center pt-8 pb-4">
-                    <Link
-                        to="/products"
-                        className="flex items-center gap-3 px-8 py-3.5 rounded-full font-black text-sm sm:text-base bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition-all duration-300 shadow-[0_12px_25px_rgba(108,92,231,0.4)] hover:scale-105 border border-purple-300/30 cursor-pointer periodic-glass-shine btn-reflection"
-                    >
-                        <span className="relative z-10 flex items-center gap-3">
-                            <span>Explore Full Product Range</span>
-                            <span className="text-lg">→</span>
-                        </span>
-                    </Link>
-                </div>
-            </section>
+            <ProductCategoriesSection displayCategories={displayCategories} />
 
             {/* 5. Our Goodness Grid Section (Mobile Sticky Stacking Cards Transition & Desktop Grid) */}
             <section ref={goodnessSectionRef} className="py-10 sm:py-16 px-3 sm:px-6 lg:px-10 max-w-7xl mx-auto">

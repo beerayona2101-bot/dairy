@@ -110,8 +110,24 @@ export default function DairyShowcaseBanner() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.6 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
+          whileHover={{
+            scale: 1.06,
+            opacity: [1, 0.72, 1],
+            boxShadow: [
+              "0 8px 22px rgba(30,136,229,0.4)",
+              "0 0 38px rgba(108,92,231,0.9)",
+              "0 8px 22px rgba(30,136,229,0.4)"
+            ],
+            transition: {
+              duration: 1.1,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut"
+            }
+          }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleDownloadApp}
-          className="inline-flex items-center gap-3 px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base bg-gradient-to-r from-[#1E88E5] to-[#6C5CE7] hover:from-[#1565C0] hover:to-[#5b4cc4] text-white shadow-[0_8px_22px_rgba(30,136,229,0.38)] hover:shadow-[0_12px_30px_rgba(108,92,231,0.45)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-white/20 focus:outline-none focus:ring-4 focus:ring-blue-300/50 select-none periodic-glass-shine btn-reflection"
+          className="inline-flex items-center gap-3 px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base bg-gradient-to-r from-[#1E88E5] to-[#6C5CE7] hover:from-[#1565C0] hover:to-[#5b4cc4] text-white shadow-[0_8px_22px_rgba(30,136,229,0.38)] transition-all duration-300 cursor-pointer border border-white/20 focus:outline-none focus:ring-4 focus:ring-blue-300/50 select-none periodic-glass-shine btn-reflection"
           aria-label="Download the Madhu Dairy App"
         >
           <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.4">

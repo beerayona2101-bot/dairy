@@ -51,12 +51,12 @@ export default function DairyProductsCarousel({ half }) {
                                 className="w-full h-full object-cover rounded-full brightness-105 contrast-105 saturate-105 group-hover/item:scale-110 group-hover/item:brightness-110 transition-all duration-500 transform-gpu"
                             />
 
-                            {/* Minimal Bottom Shadow Overlay covering ONLY text area */}
-                            <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent pointer-events-none rounded-b-full" />
+                            {/* Light Gradient Overlay covering text area for high black text contrast */}
+                            <div className="absolute bottom-0 inset-x-0 h-2/5 bg-gradient-to-t from-white/90 via-white/60 to-transparent pointer-events-none rounded-b-full" />
 
-                            {/* Category Name INSIDE Circle at Bottom */}
-                            <div className="absolute bottom-2 sm:bottom-3 inset-x-0 px-1.5 flex items-center justify-center pointer-events-none z-10">
-                                <span className="text-xs sm:text-sm font-extrabold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] tracking-wide group-hover/item:text-purple-200 transition-colors duration-300 truncate max-w-full">
+                            {/* Category Name INSIDE Circle at Bottom in BLACK Color */}
+                            <div className="absolute bottom-1.5 sm:bottom-2.5 inset-x-0 px-1 flex items-center justify-center pointer-events-none z-10">
+                                <span className="text-xs sm:text-sm font-black text-black drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)] tracking-tight group-hover/item:text-purple-950 transition-colors duration-300 truncate max-w-full">
                                     {title}
                                 </span>
                             </div>

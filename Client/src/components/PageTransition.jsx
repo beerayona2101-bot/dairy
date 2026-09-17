@@ -36,7 +36,6 @@ export default function PageTransition({ children, className = "" }) {
       exit="exit"
       variants={pageVariants}
       className={`w-full flex-1 ${className}`}
-      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </motion.div>

@@ -50,13 +50,10 @@ export default function ProductProcess() {
                     transition={{ delay: 0.2, duration: 0.5 }}
                     className="text-center mb-12"
                 >
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-900/40">
-                        Our Farm-to-Table Promise
-                    </span>
                     <AnimatedHeading
                         blackText="Bringing Natural Freshness Back to"
                         violetText="Your Kitchen"
-                        className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mt-3 mb-3 justify-center"
+                        className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-3 justify-center"
                     />
                     <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
                         Better everyday health begins with the basics. We ensure everything in

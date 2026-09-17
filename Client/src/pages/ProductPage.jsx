@@ -1,6 +1,6 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDebounce } from "use-debounce";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -34,6 +34,8 @@ export default function ProductPage() {
     const { pageContent } = useContext(PageContentContext);
     const { cartItems } = useContext(CartContext);
 
+    const productsSectionRef = useRef(null);
+
     const [query, setQuery] = useState(productId || "");
     const [debouncedQuery] = useDebounce(query, 300);
 
@@ -47,6 +49,33 @@ export default function ProductPage() {
 
     useEffect(() => {
         setQuery(productId);
+    }, [productId]);
+
+    // Auto-scroll down to products section after 2 seconds of entering category page
+    useEffect(() => {
+        if (!productId) return;
+
+        // Ensure page starts at top upon navigating into category view
+        window.scrollTo({ top: 0, behavior: "instant" });
+
+        const timer = setTimeout(() => {
+            // Only auto-scroll if user hasn't already manually scrolled deep into the page
+            if (window.scrollY < window.innerHeight * 0.4) {
+                if (productsSectionRef.current) {
+                    productsSectionRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                } else {
+                    window.scrollTo({
+                        top: window.innerHeight,
+                        behavior: "smooth",
+                    });
+                }
+            }
+        }, 2000);
+
+        return () => clearTimeout(timer);
     }, [productId]);
 
     const allCategoryCards = useMemo(() => {
@@ -272,10 +301,20 @@ export default function ProductPage() {
                             </div>
 
                             {/* Bouncing Scroll Down Indicator */}
-                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-0.5 text-white/80 text-[11px] sm:text-xs font-bold animate-bounce pointer-events-none">
+                            <button
+                                onClick={() => {
+                                    if (productsSectionRef.current) {
+                                        productsSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+                                    } else {
+                                        window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+                                    }
+                                }}
+                                className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-0.5 text-white/80 hover:text-white text-[11px] sm:text-xs font-bold animate-bounce pointer-events-auto cursor-pointer bg-transparent border-0 outline-none"
+                                title="Scroll for Products"
+                            >
                                 <span>Scroll for Products</span>
                                 <KeyboardArrowDownIcon sx={{ fontSize: "1.2rem" }} />
-                            </div>
+                            </button>
                         </motion.div>
                     ) : (
                         <div className="hidden md:flex relative w-full overflow-hidden bg-gradient-to-r from-[#0F2742] via-[#1E88E5] to-[#1565C0] px-4 sm:px-10 py-3.5 items-center gap-3 sm:gap-4 text-white m-0 border-0 rounded-none sm:rounded-2xl flex-shrink-0">
@@ -323,97 +362,170 @@ export default function ProductPage() {
                                         </Link>
                                     </div>
 
-                                    {/* Mobile Search Bar Row */}
+                                    {/* Mobile Search Bar Row (Google Style Pill Search Bar) */}
                                     <div className="relative w-full flex items-center gap-2">
-                                        <div className="relative flex-1 flex items-center bg-gray-100 dark:bg-slate-800/90 rounded-2xl border border-gray-200 dark:border-gray-700/80 px-3 py-1.5 focus-within:border-[#6C5CE7] dark:focus-within:border-purple-400 transition-colors">
-                                            <SearchIcon sx={{ fontSize: "1.2rem" }} className="text-gray-400 dark:text-gray-500 mr-1.5 shrink-0" />
+                                        <div className="relative flex-1 flex items-center bg-white dark:bg-slate-800 rounded-full border border-gray-200/90 dark:border-slate-700/80 px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-md focus-within:shadow-md focus-within:border-[#6C5CE7] dark:focus-within:border-purple-400 transition-all duration-200">
+                                            <SearchIcon sx={{ fontSize: "1.25rem" }} className="text-gray-400 dark:text-gray-400 mr-2 shrink-0" />
                                             <input
                                                 type="text"
                                                 value={mobileSearchQuery}
                                                 onChange={(e) => setMobileSearchQuery(e.target.value)}
                                                 placeholder="Search categories (e.g. Milk, Ghee, Paneer)..."
-                                                className="w-full bg-transparent text-xs font-semibold text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                                                className="w-full bg-transparent text-xs font-semibold text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 border-none border-0 outline-none focus:outline-none focus:ring-0 focus:border-0 appearance-none shadow-none p-0 m-0 no-border-input"
+                                                style={{ border: "none", outline: "none", boxShadow: "none" }}
                                             />
                                             {mobileSearchQuery && (
                                                 <button
                                                     onClick={() => setMobileSearchQuery("")}
-                                                    className="p-1 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                                                    className="p-1 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors ml-1 shrink-0"
                                                 >
-                                                    <ClearIcon sx={{ fontSize: "1rem" }} />
+                                                    <ClearIcon sx={{ fontSize: "1.05rem" }} />
                                                 </button>
                                             )}
                                         </div>
 
-                                        {/* Filter Toggle Button */}
+                                        {/* Filter Toggle Button (Google Pill Companion Button) */}
                                         <button
-                                            onClick={() => setShowMobileFilterMenu(!showMobileFilterMenu)}
-                                            className={`p-2 rounded-2xl border transition-all flex items-center justify-center shrink-0 ${
-                                                showMobileFilterMenu || mobileSortOrder !== "default"
-                                                    ? "bg-[#6C5CE7] text-white border-[#6C5CE7] shadow-sm"
-                                                    : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700"
+                                            onClick={() => setShowMobileFilterMenu(true)}
+                                            className={`p-2.5 rounded-full border transition-all flex items-center justify-center shrink-0 shadow-sm ${
+                                                showMobileFilterMenu || mobileSortOrder !== "default" || mobileCategoryTag !== "All"
+                                                    ? "bg-[#6C5CE7] text-white border-[#6C5CE7] shadow-md scale-105"
+                                                    : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200/90 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700"
                                             }`}
                                             title="Filter and Sort"
                                         >
-                                            <TuneIcon sx={{ fontSize: "1.1rem" }} />
+                                            <TuneIcon sx={{ fontSize: "1.15rem" }} />
                                         </button>
                                     </div>
-
-                                    {/* Expandable Sort Options Menu */}
-                                    {showMobileFilterMenu && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="pt-2 pb-1 border-t border-gray-200/80 dark:border-gray-800/80 flex flex-col space-y-2"
-                                        >
-                                            <div className="flex items-center justify-between text-xs font-bold text-gray-600 dark:text-gray-400">
-                                                <span>Sort Categories:</span>
-                                                <button
-                                                    onClick={() => {
-                                                        setMobileSortOrder("default");
-                                                        setMobileCategoryTag("All");
-                                                        setMobileSearchQuery("");
-                                                    }}
-                                                    className="text-[11px] text-[#6C5CE7] dark:text-purple-400 font-extrabold"
-                                                >
-                                                    Reset All
-                                                </button>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => setMobileSortOrder("default")}
-                                                    className={`px-2.5 py-1.5 rounded-xl text-xs font-black border ${
-                                                        mobileSortOrder === "default"
-                                                            ? "bg-[#6C5CE7]/10 text-[#6C5CE7] border-[#6C5CE7]"
-                                                            : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
-                                                    }`}
-                                                >
-                                                    Default Order
-                                                </button>
-                                                <button
-                                                    onClick={() => setMobileSortOrder("name-asc")}
-                                                    className={`px-2.5 py-1.5 rounded-xl text-xs font-black border ${
-                                                        mobileSortOrder === "name-asc"
-                                                            ? "bg-[#6C5CE7]/10 text-[#6C5CE7] border-[#6C5CE7]"
-                                                            : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
-                                                    }`}
-                                                >
-                                                    Name A-Z
-                                                </button>
-                                                <button
-                                                    onClick={() => setMobileSortOrder("name-desc")}
-                                                    className={`px-2.5 py-1.5 rounded-xl text-xs font-black border ${
-                                                        mobileSortOrder === "name-desc"
-                                                            ? "bg-[#6C5CE7]/10 text-[#6C5CE7] border-[#6C5CE7]"
-                                                            : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
-                                                    }`}
-                                                >
-                                                    Name Z-A
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    )}
                                 </div>
+
+                                {/* MOBILE BOTTOM SHEET FILTER POPUP MODAL */}
+                                <AnimatePresence>
+                                    {showMobileFilterMenu && (
+                                        <div className="fixed inset-0 z-50 flex items-end justify-center md:hidden">
+                                            {/* Translucent Dark Backdrop Overlay */}
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                onClick={() => setShowMobileFilterMenu(false)}
+                                                className="absolute inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+                                            />
+
+                                            {/* Bottom Sheet Drawer Panel */}
+                                            <motion.div
+                                                initial={{ y: "100%" }}
+                                                animate={{ y: 0 }}
+                                                exit={{ y: "100%" }}
+                                                transition={{ type: "spring", damping: 28, stiffness: 300 }}
+                                                className="relative w-full bg-white dark:bg-slate-900 rounded-t-3xl border-t border-gray-200/80 dark:border-slate-800 shadow-2xl z-10 max-h-[82vh] flex flex-col overflow-hidden"
+                                            >
+                                                {/* Header Handle Bar */}
+                                                <div className="pt-3 pb-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing">
+                                                    <div className="w-12 h-1.5 bg-gray-300 dark:bg-slate-700 rounded-full mb-2" />
+                                                    <div className="w-full px-5 flex items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            <FilterListIcon className="text-[#6C5CE7] dark:text-purple-400" sx={{ fontSize: "1.2rem" }} />
+                                                            <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
+                                                                Filter & Sort Products
+                                                            </h3>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => setShowMobileFilterMenu(false)}
+                                                            className="p-1 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                                        >
+                                                            <ClearIcon sx={{ fontSize: "1.1rem" }} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Scrollable Modal Content */}
+                                                <div className="p-5 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+                                                    {/* 1. Category Tag Selector */}
+                                                    <div className="space-y-2.5">
+                                                        <label className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
+                                                            Select Category
+                                                        </label>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {categoryTags.map((tag) => (
+                                                                <button
+                                                                    key={tag}
+                                                                    onClick={() => setMobileCategoryTag(tag)}
+                                                                    className={`px-3 py-1.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
+                                                                        mobileCategoryTag === tag
+                                                                            ? "bg-[#6C5CE7] text-white border-[#6C5CE7] shadow-sm scale-105"
+                                                                            : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700"
+                                                                    }`}
+                                                                >
+                                                                    {tag}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 2. Sort Order Options */}
+                                                    <div className="space-y-2.5">
+                                                        <label className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
+                                                            Sort Order
+                                                        </label>
+                                                        <div className="grid grid-cols-3 gap-2">
+                                                            <button
+                                                                onClick={() => setMobileSortOrder("default")}
+                                                                className={`px-3 py-2.5 rounded-xl text-xs font-black border text-center transition-all cursor-pointer ${
+                                                                    mobileSortOrder === "default"
+                                                                        ? "bg-[#6C5CE7]/15 text-[#6C5CE7] dark:text-purple-400 border-[#6C5CE7]"
+                                                                        : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-700"
+                                                                }`}
+                                                            >
+                                                                Default
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setMobileSortOrder("name-asc")}
+                                                                className={`px-3 py-2.5 rounded-xl text-xs font-black border text-center transition-all cursor-pointer ${
+                                                                    mobileSortOrder === "name-asc"
+                                                                        ? "bg-[#6C5CE7]/15 text-[#6C5CE7] dark:text-purple-400 border-[#6C5CE7]"
+                                                                        : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-700"
+                                                                }`}
+                                                            >
+                                                                Name A &rarr; Z
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setMobileSortOrder("name-desc")}
+                                                                className={`px-3 py-2.5 rounded-xl text-xs font-black border text-center transition-all cursor-pointer ${
+                                                                    mobileSortOrder === "name-desc"
+                                                                        ? "bg-[#6C5CE7]/15 text-[#6C5CE7] dark:text-purple-400 border-[#6C5CE7]"
+                                                                        : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-700"
+                                                                }`}
+                                                            >
+                                                                Name Z &rarr; A
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Bottom Sheet Action Footer */}
+                                                <div className="p-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50/80 dark:bg-slate-900/80 flex items-center gap-3 shrink-0">
+                                                    <button
+                                                        onClick={() => {
+                                                            setMobileSortOrder("default");
+                                                            setMobileCategoryTag("All");
+                                                            setMobileSearchQuery("");
+                                                        }}
+                                                        className="px-4 py-3 rounded-2xl border border-gray-300 dark:border-slate-700 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                                                    >
+                                                        Reset All
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowMobileFilterMenu(false)}
+                                                        className="flex-1 bg-[#6C5CE7] hover:bg-[#5b4bc4] text-white text-xs font-black py-3 rounded-2xl shadow-lg transition-all text-center cursor-pointer"
+                                                    >
+                                                        Apply Filters ({filteredMobileCategoryCards.length})
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        </div>
+                                    )}
+                                </AnimatePresence>
 
                                 {productLoading ? (
                                     <MadhuLoader />
@@ -436,7 +548,7 @@ export default function ProductPage() {
                             </div>
                         ) : (
                             /* SPECIFIC CATEGORY PAGE VIEW (productId): Scrolls naturally when many items are present */
-                            <div className="w-full flex flex-col">
+                            <div ref={productsSectionRef} className="w-full flex flex-col scroll-mt-6">
 
                                 {productLoading ? (
                                     <MadhuLoader />

@@ -11,8 +11,8 @@ export function CowDecoration({ isReversed }) {
         <div
             className={`absolute z-20 pointer-events-none transition-transform duration-300 group-hover/card:scale-105 ${
                 isReversed 
-                    ? '-bottom-1 sm:-bottom-2 -left-2 sm:-left-4 md:-left-5' 
-                    : '-bottom-1 sm:-bottom-2 -right-2 sm:-right-4 md:-right-5'
+                    ? 'bottom-1 sm:bottom-2 left-1 sm:left-2 md:left-3' 
+                    : 'bottom-1 sm:bottom-2 right-1 sm:right-2 md:right-3'
             }`}
         >
             {/* Soft White Shade & Radial Glow Backdrop (Enhances cow visibility in dark mode) */}
@@ -30,7 +30,7 @@ export function CowDecoration({ isReversed }) {
                 alt="Peeking Cow Head"
                 loading="lazy"
                 decoding="async"
-                className={`w-24 sm:w-32 md:w-40 h-auto object-contain filter drop-shadow-[0_2px_10px_rgba(255,255,255,0.5)] dark:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] ${
+                className={`w-14 sm:w-24 md:w-36 h-auto object-contain filter drop-shadow-[0_2px_8px_rgba(255,255,255,0.5)] dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.7)] ${
                     isReversed ? 'transform -scale-x-100' : ''
                 }`}
             />
@@ -42,7 +42,7 @@ export function ProductImage({ image, title, targetPath }) {
     return (
         <Link 
             to={targetPath} 
-            className="w-full md:w-[48%] h-56 sm:h-64 md:h-72 rounded-2xl sm:rounded-[22px] overflow-hidden flex-shrink-0 relative group shadow-md bg-white/30 dark:bg-slate-800/30 backdrop-blur-md block cursor-pointer z-10 border border-white/60 dark:border-white/10"
+            className="w-full md:w-[46%] h-60 sm:h-64 md:h-64 lg:h-72 rounded-xl sm:rounded-[22px] overflow-hidden flex-shrink-0 relative group shadow-sm sm:shadow-md bg-white/30 dark:bg-slate-800/30 backdrop-blur-md block cursor-pointer z-10 border border-white/60 dark:border-white/10"
         >
             <img
                 src={image}
@@ -65,16 +65,16 @@ export function ProductBenefits({ features }) {
     const displayFeatures = (Array.isArray(features) && features.length > 0) ? features : defaultFeatures;
 
     return (
-        <ul className="space-y-2 py-1">
+        <ul className="space-y-1.5 sm:space-y-2 py-1">
             {displayFeatures.slice(0, 3).map((feature, i) => (
                 <li
                     key={i}
                     className="flex items-center text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100"
                 >
-                    <span className="mr-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/20 dark:bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-400/30 flex-shrink-0 backdrop-blur-sm">
+                    <span className="mr-2 flex items-center justify-center w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-amber-500/20 dark:bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-400/30 flex-shrink-0 backdrop-blur-sm">
                         <CheckIcon sx={{ fontSize: "0.8rem" }} />
                     </span>
-                    <span>{feature}</span>
+                    <span className="truncate">{feature}</span>
                 </li>
             ))}
         </ul>
@@ -83,14 +83,14 @@ export function ProductBenefits({ features }) {
 
 export function ProductInfo({ title, description, targetPath, features }) {
     return (
-        <div className="w-full md:w-[48%] p-2 sm:p-4 md:p-6 flex flex-col justify-center z-10 relative space-y-3.5">
+        <div className="w-full md:w-[50%] p-3 sm:p-5 md:p-6 flex flex-col justify-center z-10 relative space-y-3 sm:space-y-4">
             <Link to={targetPath} className="block hover:text-[#2563EB] dark:hover:text-sky-300 transition-colors cursor-pointer">
-                <h3 className="text-xl sm:text-2xl lg:text-[28px] font-black text-slate-900 dark:text-white tracking-tight">
+                <h3 className="text-xl sm:text-2xl lg:text-[28px] font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                     {title}
                 </h3>
             </Link>
 
-            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed line-clamp-2 font-semibold">
+            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed line-clamp-3 font-semibold">
                 {description || `Pure, fresh, high-quality ${title} products delivered daily.`}
             </p>
 
@@ -98,7 +98,7 @@ export function ProductInfo({ title, description, targetPath, features }) {
 
             <Link 
                 to={targetPath} 
-                className="inline-flex items-center gap-2 w-fit text-xs sm:text-sm font-black text-[#2563EB] dark:text-sky-400 hover:text-[#1D4ED8] dark:hover:text-sky-300 hover:underline underline-offset-4 pt-1 transition-all"
+                className="inline-flex items-center gap-1.5 w-fit text-xs sm:text-sm font-black text-[#2563EB] dark:text-sky-400 hover:text-[#1D4ED8] dark:hover:text-sky-300 hover:underline underline-offset-4 pt-1 transition-all"
             >
                 <span>View More</span>
                 <span>&rarr;</span>
@@ -152,11 +152,11 @@ export default function ProductCard({ title, description, image, features, isRev
                 transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                 transformStyle: "preserve-3d",
             }}
-            className={`relative w-full ${
+            className={`relative w-full min-h-[460px] sm:min-h-[480px] md:min-h-0 ${
                 isStacked
-                    ? "bg-[#FFFDF7] dark:bg-slate-900 border-2 border-[#477A50]/25 dark:border-slate-800 shadow-[0_15px_45px_rgba(23,63,42,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-                    : "bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_45px_rgba(30,136,229,0.18)] hover:border-blue-400/50 hover:bg-white/85 dark:hover:bg-slate-900/85"
-            } p-5 sm:p-7 lg:p-8 rounded-[28px] sm:rounded-[36px] transition-all duration-200 ease-out flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-6 md:gap-10 overflow-hidden cursor-pointer floating-border-light ${isHovered ? 'active-touch' : ''}`}
+                    ? "bg-[#FFFDF7] dark:bg-[#1c1c1e] shadow-[0_10px_35px_rgba(23,63,42,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
+                    : "bg-white/60 dark:bg-[#1c1c1e]/90 backdrop-blur-xl border border-white/80 dark:border-neutral-800 shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_45px_rgba(30,136,229,0.18)] hover:border-blue-400/50 hover:bg-white/85 dark:hover:bg-[#1c1c1e]"
+            } p-5 sm:p-6 lg:p-8 rounded-[24px] sm:rounded-[28px] lg:rounded-[32px] transition-all duration-200 ease-out flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-4 sm:gap-6 md:gap-10 overflow-hidden cursor-pointer ${isHovered ? 'active-touch' : ''}`}
         >
             {/* Dynamic Mouse & Touch Cursor Spotlight Glow */}
             <div
