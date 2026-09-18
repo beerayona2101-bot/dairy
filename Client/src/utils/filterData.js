@@ -9,18 +9,43 @@ export const searchProducts = (products, productId) => {
   const keyword = rawQuery.replace(/-/g, " ").toLowerCase();
   const searchSlug = slugify(rawQuery);
 
-  const isExactCategory = (category) => {
-    if (!category) return false;
-    const catStr = String(category).trim();
-    return slugify(catStr) === searchSlug || catStr.toLowerCase() === keyword;
+  const getNormalizedCategoryKey = (catStr) => {
+    if (!catStr) return "";
+    const c = String(catStr).toLowerCase().trim();
+    if (c.includes("cow milk") || c.includes("whole milk") || c.includes("toned milk") || c === "milk" || c === "fresh milk") return "milk";
+    if (c.includes("paneer")) return "paneer";
+    if (c.includes("ghee")) return "ghee";
+    if (c.includes("curd") || c.includes("dahi") || c.includes("yogurt")) return "curd";
+    if (c.includes("butter") && !c.includes("milk")) return "butter";
+    if (c.includes("cheese") || c.includes("mozzarella")) return "cheese";
+    if (c.includes("lassi")) return "lassi";
+    if (c.includes("chaas") || c.includes("buttermilk")) return "chaas";
+    if (c.includes("khoya") || c.includes("mawa")) return "khoya";
+    if (c.includes("basundi")) return "basundi";
+    if (c.includes("shrikhand")) return "shrikhand";
+    if (c.includes("cream") || c.includes("rabri")) return "cream";
+    if (c.includes("powder")) return "milk-powder";
+    if (c.includes("flavor") || c.includes("flavoured")) return "flavored-milk";
+    if (c.includes("sweet") || c.includes("jamun") || c.includes("rasgulla") || c.includes("peda") || c.includes("mithai")) return "dairy-sweets";
+    if (c.includes("badham") || c.includes("badam")) return "badham";
+    return slugify(c);
   };
 
-  const categoryMatchExists = products.some((product) =>
-    isExactCategory(product?.category)
-  );
+  const queryKey = getNormalizedCategoryKey(rawQuery);
 
-  if (categoryMatchExists) {
-    return products.filter((product) => isExactCategory(product?.category));
+  const isExactCategory = (product) => {
+    if (!product) return false;
+    const catStr = String(product.category || "").trim();
+    const catSlug = slugify(catStr);
+    if (catSlug === searchSlug || catStr.toLowerCase() === keyword) return true;
+    if (queryKey && getNormalizedCategoryKey(catStr) === queryKey) return true;
+    return false;
+  };
+
+  const categoryMatches = products.filter(isExactCategory);
+
+  if (categoryMatches.length > 0) {
+    return categoryMatches;
   }
 
   return products.filter((product) => {

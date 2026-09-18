@@ -72,7 +72,7 @@ function Footer() {
 
       {/* ─── MOBILE COMPACT LAYOUT (hidden on lg+) ─── */}
       <div className="lg:hidden px-5 pt-7 pb-2">
-        {/* Top row: Logo + Status dot */}
+        {/* Top row: Logo */}
         <div className="flex items-center justify-between mb-4">
           <Link to="/" className="inline-block">
             <img
@@ -83,10 +83,6 @@ function Footer() {
               className="h-8 w-auto object-contain"
             />
           </Link>
-          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400 bg-[#162032] px-2.5 py-1 rounded-full border border-[#1E3A2F]">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span>All Systems Live</span>
-          </div>
         </div>
 
         {/* Links: 3 columns side by side */}
@@ -158,11 +154,6 @@ function Footer() {
                 className="h-12 w-auto object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
               />
             </Link>
-
-            <div className="flex items-center gap-2 text-[11px] font-semibold text-[#94A3B8] bg-[#162032] px-3 py-1 rounded-full border border-[#253248] w-fit">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>All Systems &amp; Deliveries Operational</span>
-            </div>
 
             <p className="text-xs text-[#94A3B8] leading-relaxed max-w-xs font-medium">
               Farm-fresh, 100% pure &amp; nutritious A2 dairy delivered daily to your doorstep.

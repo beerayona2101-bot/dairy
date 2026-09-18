@@ -104,9 +104,10 @@ export default function ContactPage() {
             <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-stretch justify-center w-full">
                 {/* Contact Info Glass Card */}
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                     className="order-2 md:order-1 md:w-1/2 space-y-4 p-5 sm:p-6 lg:p-7 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
                 >
                     <div className="space-y-4">
@@ -163,9 +164,10 @@ export default function ContactPage() {
 
                 {/* Contact Form Glass Card */}
                 <motion.form
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.22, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     className="order-1 md:order-2 md:w-1/2 space-y-3 p-5 sm:p-6 lg:p-7 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
                     onSubmit={handleSubmit}
                 >

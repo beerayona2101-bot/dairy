@@ -15,7 +15,7 @@ export default function HomeWelcomeHero() {
     const loggedInName = authUser?.firstName || authUser?.name || authAdmin?.name || null;
 
     return (
-        <section className="relative w-full h-[32vh] min-h-[240px] sm:h-auto sm:min-h-[320px] md:h-[calc(100vh-56px)] md:min-h-[calc(100vh-56px)] overflow-hidden text-white bg-slate-900 dark:bg-slate-950 flex items-center">
+        <section className="relative w-full h-[22vh] min-h-[170px] sm:h-auto sm:min-h-[320px] md:h-[calc(100vh-56px)] md:min-h-[calc(100vh-56px)] overflow-hidden text-white bg-slate-900 dark:bg-slate-950 flex items-center">
             {/* 1. Full-Width Background Image */}
             <img
                 src={homeHeroBg}
@@ -26,11 +26,11 @@ export default function HomeWelcomeHero() {
             {/* 2. Soft Gradient Overlay for Pristine Image Clarity & Legibility */}
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/35 via-slate-950/15 to-transparent z-[1]" />
             {/* Bottom Fade transition to white page body */}
-            <div className="absolute bottom-0 inset-x-0 h-8 sm:h-16 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-[1]" />
+            <div className="absolute bottom-0 inset-x-0 h-6 sm:h-16 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-[1]" />
 
             {/* 3. Text & Action Content aligned within site grid */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 md:py-10">
-                <div className="max-w-2xl space-y-2 sm:space-y-6 text-center md:text-left">
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-8 md:py-10">
+                <div className="max-w-2xl space-y-1.5 sm:space-y-6 text-center md:text-left">
                     
                     {/* Personalized Welcome Headline */}
                     <motion.h1
@@ -38,34 +38,34 @@ export default function HomeWelcomeHero() {
                         whileInView={{ y: 0, opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                        className="text-sm sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                     >
                         {loggedInName ? (
-                            <div className="space-y-1">
-                                <span className="block text-white text-xs sm:text-2xl font-bold opacity-95">
+                            <div className="space-y-0.5 sm:space-y-1">
+                                <span className="block text-white text-[11px] sm:text-2xl font-bold opacity-95">
                                     Welcome Back,
                                 </span>
-                                <span className="inline-block text-2xl sm:text-5xl lg:text-6xl font-[900] text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-lime-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] py-0.5">
+                                <span className="inline-block text-xl sm:text-5xl lg:text-6xl font-[900] text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-lime-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] py-0.5">
                                     {loggedInName}!
                                 </span>
-                                <span className="block text-xs sm:text-xl lg:text-2xl font-extrabold text-blue-100 opacity-95">
+                                <span className="block text-[11px] sm:text-xl lg:text-2xl font-extrabold text-blue-100 opacity-95">
                                     Ready for Fresh Dairy?
                                 </span>
                             </div>
                         ) : (
-                            <span className="block text-lg sm:text-4xl lg:text-5xl font-[900] text-white leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
+                            <span className="block text-sm sm:text-4xl lg:text-5xl font-[900] text-white leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
                                 Welcome to <span className="text-purple-300 drop-shadow-md">MADHU</span> Dairy & Daily Needs
                             </span>
                         )}
                     </motion.h1>
 
-                    {/* Description Subtext */}
+                    {/* Description Subtext - Hidden on mobile view to decrease card content on mobile */}
                     <motion.p
                         initial={{ y: 8, opacity: 0 }}
                         whileInView={{ y: 0, opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="text-xs sm:text-sm md:text-base text-white/95 font-semibold leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] max-w-xl mx-auto md:mx-0"
+                        className="hidden sm:block text-xs sm:text-sm md:text-base text-white/95 font-semibold leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] max-w-xl mx-auto md:mx-0"
                     >
                         {loggedInName
                             ? "Your daily dose of 100% unadulterated farm-fresh A2 milk, ghee, paneer, and sweets is ready for doorstep delivery."
@@ -78,22 +78,22 @@ export default function HomeWelcomeHero() {
                         whileInView={{ scale: 1, opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.4, delay: 0.3 }}
-                        className="pt-1 sm:pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3.5"
+                        className="pt-0.5 sm:pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3.5"
                     >
                         <Link
                             to="/products"
-                            className="bg-[#84CC16] hover:bg-[#65A30D] text-slate-950 font-black uppercase text-xs sm:text-xs tracking-wider sm:tracking-widest px-4 py-2 sm:px-8 sm:py-3.5 rounded-lg sm:rounded-xl shadow-[0_4px_15px_rgba(132,204,22,0.5)] hover:scale-105 transition-all duration-300 border border-lime-300 inline-flex items-center gap-1.5 cursor-pointer periodic-glass-shine btn-reflection"
+                            className="bg-[#84CC16] hover:bg-[#65A30D] text-slate-950 font-black uppercase text-[10px] sm:text-xs tracking-wider sm:tracking-widest px-3.5 py-1.5 sm:px-8 sm:py-3.5 rounded-md sm:rounded-xl shadow-[0_4px_15px_rgba(132,204,22,0.5)] hover:scale-105 transition-all duration-300 border border-lime-300 inline-flex items-center gap-1.5 cursor-pointer periodic-glass-shine btn-reflection"
                         >
                             <span className="relative z-10 flex items-center gap-1.5">
                                 <span>{loggedInName ? "Order Now" : "Explore Products"}</span>
-                                <span className="text-xs sm:text-base">→</span>
+                                <span className="text-[10px] sm:text-base">→</span>
                             </span>
                         </Link>
 
                         {!loggedInName && (
                             <button
                                 onClick={() => setOpenLoginDialog(true)}
-                                className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-black uppercase text-xs sm:text-xs tracking-wider sm:tracking-widest px-4 py-2 sm:px-6 sm:py-3.5 rounded-lg sm:rounded-xl border border-white/50 transition-all duration-300 hover:scale-105 cursor-pointer shadow-md periodic-glass-shine btn-reflection"
+                                className="hidden sm:inline-flex bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-black uppercase text-xs tracking-wider sm:tracking-widest px-4 py-2 sm:px-6 sm:py-3.5 rounded-lg sm:rounded-xl border border-white/50 transition-all duration-300 hover:scale-105 cursor-pointer shadow-md periodic-glass-shine btn-reflection items-center"
                             >
                                 <span className="relative z-10">Login Account</span>
                             </button>

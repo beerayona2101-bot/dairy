@@ -24,7 +24,7 @@ const sampleProducts = [
     name: "Madhu Fresh Whole Cow Milk",
     category: "Milk",
     description: "Pure, farm-fresh whole cow milk from Madhu Dairy—rich in calcium and essential nutrients.",
-    image: ["/images/Madhu_cow_milk.png"],
+    image: ["/images/madhu_cow_milk.png"],
     minQuantity: 1,
     quantityUnit: "Litre",
     stock: 120,
@@ -42,7 +42,7 @@ const sampleProducts = [
     name: "Madhu Buffalo Toned Milk",
     category: "Milk",
     description: "Rich and thick buffalo milk by Madhu Dairy, ideal for making curd, tea, and coffee.",
-    image: ["/images/Madhu_buffalo_milk.png"],
+    image: ["/images/madhu_buffalo_milk.png"],
     minQuantity: 1,
     quantityUnit: "Litre",
     stock: 90,
@@ -62,7 +62,7 @@ const sampleProducts = [
     name: "Madhu Fresh Malai Paneer",
     category: "Paneer",
     description: "Soft, velvety and fresh cottage cheese by Madhu Dairy. High in protein for delicious cooking.",
-    image: ["/images/Madhu_malai_paneer.png"],
+    image: ["/images/madhu_malai_paneer.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 80,
@@ -82,7 +82,7 @@ const sampleProducts = [
     name: "Madhu Organic Desi Cow Ghee",
     category: "Ghee",
     description: "Traditional Bilona A2 Desi Cow Ghee by Madhu Dairy with rich granular aroma and health benefits.",
-    image: ["/images/Madhu_desi_ghee.png"],
+    image: ["/images/madhu_desi_ghee.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 50,
@@ -102,7 +102,7 @@ const sampleProducts = [
     name: "Madhu Natural Thick Curd",
     category: "Curd",
     description: "Creamy set dahi by Madhu Dairy made with active probiotic cultures for gut health.",
-    image: ["/images/Madhu_thick_curd.png"],
+    image: ["/images/madhu_thick_curd.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 100,
@@ -122,7 +122,7 @@ const sampleProducts = [
     name: "Madhu Salted Cooking Butter",
     category: "Butter",
     description: "Pure pasteurized yellow butter by Madhu Dairy with a pinch of salt. Great for spreading and cooking.",
-    image: ["/images/Madhu_cooking_butter.png"],
+    image: ["/images/madhu_cooking_butter.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 60,
@@ -142,7 +142,7 @@ const sampleProducts = [
     name: "Madhu Shredded Mozzarella Cheese",
     category: "Cheese",
     description: "100% pure cow milk mozzarella cheese by Madhu Dairy with ideal stretchiness and melt for pizza.",
-    image: ["/images/Madhu_mozzarella_cheese.png"],
+    image: ["/images/madhu_mozzarella_cheese.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 55,
@@ -162,7 +162,7 @@ const sampleProducts = [
     name: "Madhu Sweet Punjabi Malai Lassi",
     category: "Lassi",
     description: "Thick, creamy chilled Punjabi lassi by Madhu Dairy topped with rich malai.",
-    image: ["/images/Madhu_malai_lassi.png"],
+    image: ["/images/madhu_malai_lassi.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 75,
@@ -177,12 +177,12 @@ const sampleProducts = [
     discount: 10
   },
 
-  // 8. Chaas / Buttermilk
+  // 8. Chaas
   {
     name: "Madhu Spiced Masala Chaas",
     category: "Chaas",
     description: "Refreshing traditional chaas by Madhu Dairy blended with roasted cumin, mint, and rock salt.",
-    image: ["/images/Madhu_masala_chaas.png"],
+    image: ["/images/madhu_masala_chaas.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 150,
@@ -202,7 +202,7 @@ const sampleProducts = [
     name: "Madhu Pure Fresh Khoya (Mawa)",
     category: "Khoya",
     description: "Rich traditional milk solids by Madhu Dairy, slowly reduced to perfection for festive sweet making.",
-    image: ["/images/Madhu_khoya_mawa.png"],
+    image: ["/images/madhu_khoya_mawa.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 40,
@@ -222,7 +222,7 @@ const sampleProducts = [
     name: "Madhu Creamy Kesar Basundi",
     category: "Basundi",
     description: "Rich reduced milk dessert by Madhu Dairy infused with Kashmiri saffron, cardamom, and chopped almonds.",
-    image: ["/images/Madhu_kesar_basundi.png"],
+    image: ["/images/madhu_kesar_basundi.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 35,
@@ -242,7 +242,7 @@ const sampleProducts = [
     name: "Madhu Kesar Shrikhand",
     category: "Shrikhand",
     description: "Authentic sweet shrikhand by Madhu Dairy prepared from strained yoghurt with pure Kashmiri saffron.",
-    image: ["/images/Madhu_kesar_shrikhand.png"],
+    image: ["/images/madhu_kesar_shrikhand.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 45,
@@ -262,7 +262,7 @@ const sampleProducts = [
     name: "Madhu Fresh Dairy Cream",
     category: "Cream",
     description: "Rich fresh dairy cream by Madhu Dairy, perfect for whipping, baking, and gourmet gravy preparations.",
-    image: ["https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80"],
+    image: ["/images/madhu_dairy_cream.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 70,
@@ -282,7 +282,7 @@ const sampleProducts = [
     name: "Madhu Premium Dairy Milk Powder",
     category: "Milk Powder",
     description: "Instant solubility whole milk powder by Madhu Dairy. Packed with calcium and essential vitamins.",
-    image: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80"],
+    image: ["/images/madhu_milk_powder.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 85,
@@ -297,12 +297,32 @@ const sampleProducts = [
     discount: 10
   },
 
-  // 14. Gulab Jamun
+  // 14. Flavored Milk
+  {
+    name: "Madhu Chilled Chocolate Flavored Milk",
+    category: "Flavored Milk",
+    description: "Nourishing chilled chocolate milk drink by Madhu Dairy, blended with cocoa and rich A2 cow milk.",
+    image: ["/images/madhu_buffalo_milk.png"],
+    minQuantity: 1,
+    quantityUnit: "Pack",
+    stock: 80,
+    manufacturingCost: 20,
+    thresholdVal: 10,
+    price: 35,
+    type: "Energy Drink",
+    totalQuantitySold: 460,
+    nutrition: { Protein: "3.5g", Calcium: "130mg", Fat: "3.2g" },
+    shelfLife: "15 Days",
+    expiryDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+    discount: 5
+  },
+
+  // 15. Dairy Sweets
   {
     name: "Madhu Soft Gulab Jamun",
-    category: "Gulab Jamun",
+    category: "Dairy Sweets",
     description: "Mouth-melting soft khoa gulab jamun by Madhu Dairy soaked in aromatic rose sugar syrup.",
-    image: ["https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80"],
+    image: ["/images/madhu_gulab_jamun.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 65,
@@ -316,13 +336,11 @@ const sampleProducts = [
     expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     discount: 10
   },
-
-  // 15. Rasgulla
   {
     name: "Madhu Classic Bengali Rasgulla",
-    category: "Rasgulla",
+    category: "Dairy Sweets",
     description: "Soft, spongy chhena balls by Madhu Dairy soaked in light sugar syrup.",
-    image: ["https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80"],
+    image: ["/images/madhu_bengali_rasgulla.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
     stock: 60,
@@ -337,24 +355,24 @@ const sampleProducts = [
     discount: 10
   },
 
-  // 16. Peda
+  // 16. Badham
   {
-    name: "Madhu Mathura Kesar Peda",
-    category: "Peda",
-    description: "Authentic Mathura style khoa peda by Madhu Dairy garnished with cardamom and pistachio.",
-    image: ["https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80"],
+    name: "Madhu Royal Badham Milk Drink",
+    category: "Badham",
+    description: "Nourishing badham almond milk by Madhu Dairy enriched with real crushed almonds and saffron strands.",
+    image: ["/images/madhu_kesar_peda.png"],
     minQuantity: 1,
     quantityUnit: "Pack",
-    stock: 50,
-    manufacturingCost: 95,
-    thresholdVal: 5,
-    price: 160,
-    type: "Festive Sweet",
-    totalQuantitySold: 280,
-    nutrition: { Protein: "6.5g", Carbohydrates: "52g", Fat: "11.0g" },
-    shelfLife: "20 Days",
-    expiryDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
-    discount: 10
+    stock: 70,
+    manufacturingCost: 30,
+    thresholdVal: 10,
+    price: 50,
+    type: "Almond Milk",
+    totalQuantitySold: 390,
+    nutrition: { Protein: "4.5g", Calcium: "160mg", Fat: "4.8g" },
+    shelfLife: "15 Days",
+    expiryDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+    discount: 8
   }
 ];
 

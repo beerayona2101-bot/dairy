@@ -13,11 +13,22 @@ export default function AnimatedHeading({
   violetText = "",
   suffixText = "",
   as = "h2",
+  align = "center",
   className = "text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight",
   violetClassName = "text-[#6C5CE7] dark:text-[#A29BFE]",
   children,
 }) {
   const Component = motion[as] || motion.h2;
+
+  const getJustifyClass = () => {
+    if (align === "left" || className.includes("justify-start") || className.includes("text-left")) {
+      return "justify-start text-left";
+    }
+    if (align === "right" || className.includes("justify-end") || className.includes("text-right")) {
+      return "justify-end text-right";
+    }
+    return "justify-center";
+  };
 
   const leftVariant = {
     hidden: { opacity: 0, x: -45 },
@@ -40,7 +51,7 @@ export default function AnimatedHeading({
   // If explicit blackText / violetText props are passed
   if (blackText || violetText) {
     return (
-      <Component className={`inline-flex flex-wrap justify-center items-center gap-x-2.5 ${className}`}>
+      <Component className={`inline-flex flex-wrap ${getJustifyClass()} items-center gap-x-2.5 ${className}`}>
         {blackText && (
           <motion.span
             variants={leftVariant}

@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-mot
 import ProductCard from "../LandingComponents/ProductCard";
 import AnimatedHeading from "../Common/AnimatedHeading";
 import { products } from "../../data/products";
+import { getCardBackgroundImage } from "../../utils/helper";
 
 function StackedCategoryCard({ index, totalCards, scrollYProgress, product }) {
     const rangeCount = Math.max(1, totalCards - 1);
@@ -68,7 +69,7 @@ function StackedCategoryCard({ index, totalCards, scrollYProgress, product }) {
                 <ProductCard
                     title={product.title || product.name}
                     description={product.description}
-                    image={product.image}
+                    image={getCardBackgroundImage(product, product.title || product.name)}
                     features={product?.features}
                     isReversed={index % 2 !== 0}
                     isStacked={true}
@@ -110,11 +111,11 @@ export default function ProductCategoriesSection({ displayCategories }) {
             style={{ height: sectionHeight }}
             className="relative w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8"
         >
-            {/* STICKY CONTAINER: Pinned 64px below navbar while cards stack */}
-            <div className="sticky top-[64px] sm:top-[72px] w-full flex flex-col items-center justify-start pt-3 sm:pt-6 pb-6">
+            {/* STICKY CONTAINER: Pinned cleanly below navbar so card deck fits 100% viewport */}
+            <div className="sticky top-[56px] sm:top-[64px] w-full flex flex-col items-center justify-start pt-1 sm:pt-2 pb-2">
                 
-                {/* 1. STICKY HEADING - Clean with generous gap below */}
-                <div className="text-center space-y-1.5 sm:space-y-2 max-w-3xl mx-auto px-4 shrink-0 z-40 mb-6 sm:mb-8 md:mb-10">
+                {/* 1. STICKY HEADING - Tight gap directly above cards */}
+                <div className="text-center space-y-1 max-w-3xl mx-auto px-4 shrink-0 z-40 mb-2 sm:mb-3 md:mb-4">
                     <AnimatedHeading
                         blackText="Our Product"
                         violetText="Categories"
@@ -126,8 +127,8 @@ export default function ProductCategoriesSection({ displayCategories }) {
                     </p>
                 </div>
 
-                {/* 2. OVERLAPPING CARDS STAGE - Generous height for tall mobile cards */}
-                <div className="relative w-full max-w-6xl mx-auto h-[560px] sm:h-[580px] md:h-[440px] lg:h-[460px] flex items-center justify-center">
+                {/* 2. OVERLAPPING CARDS STAGE - Perfect height for 100% viewport visibility */}
+                <div className="relative w-full max-w-6xl mx-auto h-[380px] sm:h-[400px] md:h-[420px] lg:h-[440px] flex items-center justify-center">
                     {cardsToDisplay.map((product, index) => (
                         <StackedCategoryCard
                             key={`cat-card-${index}-${product.title || product.name}`}

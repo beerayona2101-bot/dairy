@@ -8,7 +8,7 @@ import { PageContentContext } from "../context/PageContentProvider";
 import OfferingProductCard from "../components/HomeComponents/OfferingProductCard";
 import ProductCard from "../components/LandingComponents/ProductCard";
 import company from "../data/company.json";
-import { getProductImage } from "../utils/helper";
+import { getProductImage, getCardBackgroundImage } from "../utils/helper";
 import ProductShowcase3D from "../components/HomeComponents/ProductShowcase3D";
 import { DairyPromiseCardsSection } from "../components/HomeComponents/MilkHealthBenefitsSection";
 import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
@@ -17,6 +17,7 @@ import AnimatedHeading from "../components/Common/AnimatedHeading";
 import DairyShowcaseBanner from "../components/Common/DairyShowcaseBanner";
 
 import ProductCategoriesSection from "../components/HomeComponents/ProductCategoriesSection";
+import ScrollReveal from "../components/Common/ScrollReveal";
 const Marquee = lazy(() => import("react-fast-marquee"));
 const DairyProductsCarousel = lazy(() => import("../components/HomeComponents/DairyProductsCarousel"));
 const QuestionAnswer = lazy(() => import("../components/LandingComponents/QuestionAnswer"));
@@ -53,7 +54,7 @@ export default function HomePage() {
                 const key = title.toLowerCase().trim();
                 cardMap.set(key, {
                     title,
-                    image: p.image || getProductImage(p),
+                    image: getCardBackgroundImage(p, title),
                     description: p.description,
                     features: p.features,
                 });
@@ -70,7 +71,7 @@ export default function HomePage() {
                     cardMap.set(key, {
                         ...existing,
                         title,
-                        image: c.image || existing.image || getProductImage(c),
+                        image: getCardBackgroundImage(c, title),
                         description: c.description || existing.description,
                         features: c.features || existing.features,
                     });
@@ -87,7 +88,7 @@ export default function HomePage() {
                     cardMap.set(key, {
                         ...existing,
                         title: sc.title,
-                        image: sc.image || existing.image || getProductImage(sc),
+                        image: getCardBackgroundImage(sc, sc.title),
                         description: sc.description || existing.description,
                         features: sc.features || existing.features,
                     });
@@ -215,109 +216,126 @@ export default function HomePage() {
             <ProductShowcase3D />
 
             {/* 3. Discover Our Delicious Dairy Range Carousel Section (Full-Width Edge-to-Edge) */}
-            <section className="w-full py-8 md:py-12 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 text-center mb-6 sm:mb-8">
-                    <AnimatedHeading
-                        blackText="Discover Our"
-                        violetText="Delicious"
-                        suffixText="Dairy Range"
-                        className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
-                    />
-                </div>
+            <ScrollReveal yOffset={50} duration={0.85}>
+                <section className="w-full py-8 md:py-12 overflow-hidden">
+                    <div className="max-w-7xl mx-auto px-4 text-center mb-6 sm:mb-8">
+                        <AnimatedHeading
+                            blackText="Discover Our"
+                            violetText="Delicious"
+                            suffixText="Dairy Range"
+                            className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
+                        />
+                    </div>
 
-                <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
-                    <Marquee speed={75} gradient={false} pauseOnHover={true} className="w-full overflow-hidden">
-                        <DairyProductsCarousel half="first" />
-                    </Marquee>
-                </Suspense>
+                    <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
+                        <Marquee speed={75} gradient={false} pauseOnHover={true} className="w-full overflow-hidden">
+                            <DairyProductsCarousel half="first" />
+                        </Marquee>
+                    </Suspense>
 
-                <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
-                    <Marquee speed={65} gradient={false} direction="right" className="mt-6 w-full overflow-hidden" pauseOnHover={true}>
-                        <DairyProductsCarousel half={"second"} />
-                    </Marquee>
-                </Suspense>
-            </section>
+                    <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
+                        <Marquee speed={65} gradient={false} direction="right" className="mt-6 w-full overflow-hidden" pauseOnHover={true}>
+                            <DairyProductsCarousel half={"second"} />
+                        </Marquee>
+                    </Suspense>
+                </section>
+            </ScrollReveal>
 
             {/* 4. Our Product Categories Section - STICKY STACKING CARDS DECK */}
             <ProductCategoriesSection displayCategories={displayCategories} />
 
             {/* 5. Our Goodness Grid Section (Mobile Sticky Stacking Cards Transition & Desktop Grid) */}
             <section ref={goodnessSectionRef} className="py-10 sm:py-16 px-3 sm:px-6 lg:px-10 max-w-7xl mx-auto">
-                <div className="text-center mb-8 sm:mb-12">
-                    <AnimatedHeading
-                        blackText="Our"
-                        violetText="Goodness"
-                        className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
-                    />
-                    <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm md:text-base font-medium">
-                        Comes in many forms — all pure, nutritious, and farm-fresh.
-                    </p>
-                </div>
+                <ScrollReveal yOffset={40} duration={0.8}>
+                    <div className="text-center mb-8 sm:mb-12">
+                        <AnimatedHeading
+                            blackText="Our"
+                            violetText="Goodness"
+                            className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
+                        />
+                        <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm md:text-base font-medium">
+                            Comes in many forms — all pure, nutritious, and farm-fresh.
+                        </p>
+                    </div>
+                </ScrollReveal>
 
                 {/* 2-Column Mobile & Multi-Column Desktop Grid View */}
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8 max-w-6xl mx-auto">
                     {visibleCards.map((product, index) => (
-                        <OfferingProductCard
+                        <ScrollReveal
                             key={`home-cat-${index}-${product?.title || product?.name}`}
-                            title={product?.title || product?.name}
-                            image={product?.image || getProductImage(product)}
-                        />
+                            delay={(index % 3) * 0.1}
+                            yOffset={50}
+                            duration={0.8}
+                        >
+                            <OfferingProductCard
+                                title={product?.title || product?.name}
+                                image={getCardBackgroundImage(product, product?.title || product?.name)}
+                            />
+                        </ScrollReveal>
                     ))}
                 </div>
 
-                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    {visibleCount < displayHomeCategoryCards.length ? (
-                        <button
-                            onClick={handleViewMore}
-                            className="bg-[#1E88E5] hover:bg-[#1565C0] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
-                        >
-                            <span className="relative z-10">View More</span>
-                        </button>
-                    ) : (
-                        <Link
-                            to="/products"
-                            className="bg-[#213448] hover:bg-[#162331] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
-                        >
-                            <span className="relative z-10">Explore All Products</span>
-                        </Link>
-                    )}
-                </div>
+                <ScrollReveal yOffset={30} duration={0.7} delay={0.2}>
+                    <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        {visibleCount < displayHomeCategoryCards.length ? (
+                            <button
+                                onClick={handleViewMore}
+                                className="bg-[#1E88E5] hover:bg-[#1565C0] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
+                            >
+                                <span className="relative z-10">View More</span>
+                            </button>
+                        ) : (
+                            <Link
+                                to="/products"
+                                className="bg-[#213448] hover:bg-[#162331] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
+                            >
+                                <span className="relative z-10">Explore All Products</span>
+                            </Link>
+                        )}
+                    </div>
+                </ScrollReveal>
             </section>
 
             {/* 6. Our Promise of Dairy Excellence Cards */}
             <DairyPromiseCardsSection />
 
             {/* 7. Frequently Asked Questions */}
-            <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-                <div className="flex flex-col items-center text-center mb-8">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
-                        GOT QUESTIONS? WE'VE GOT ANSWERS
-                    </span>
-                    <AnimatedHeading
-                        blackText="Frequently Asked"
-                        violetText="Questions"
-                        className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight justify-center"
-                    />
-                    <div className="w-12 h-1 bg-[#1E88E5] rounded-full mt-3"></div>
-                </div>
+            <ScrollReveal yOffset={50} duration={0.85}>
+                <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+                    <div className="flex flex-col items-center text-center mb-8">
+                        <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
+                            GOT QUESTIONS? WE'VE GOT ANSWERS
+                        </span>
+                        <AnimatedHeading
+                            blackText="Frequently Asked"
+                            violetText="Questions"
+                            className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight justify-center"
+                        />
+                        <div className="w-12 h-1 bg-[#1E88E5] rounded-full mt-3"></div>
+                    </div>
 
-                <div className="space-y-3">
-                    <Suspense fallback={<div className="text-center text-gray-600 dark:text-gray-300 py-6">Loading FAQs...</div>}>
-                        {displayFaqs.map((faq, index) => (
-                            <QuestionAnswer
-                                key={faq?._id || faq?.question || `faq-item-${index}`}
-                                question={faq.question}
-                                answer={faq.answer}
-                                isOpen={openFaqIndex === index}
-                                onToggle={() => setOpenFaqIndex((prev) => (prev === index ? null : index))}
-                            />
-                        ))}
-                    </Suspense>
-                </div>
-            </section>
+                    <div className="space-y-3">
+                        <Suspense fallback={<div className="text-center text-gray-600 dark:text-gray-300 py-6">Loading FAQs...</div>}>
+                            {displayFaqs.map((faq, index) => (
+                                <ScrollReveal key={faq?._id || faq?.question || `faq-item-${index}`} delay={(index % 4) * 0.08} yOffset={30}>
+                                    <QuestionAnswer
+                                        question={faq.question}
+                                        answer={faq.answer}
+                                        isOpen={openFaqIndex === index}
+                                        onToggle={() => setOpenFaqIndex((prev) => (prev === index ? null : index))}
+                                    />
+                                </ScrollReveal>
+                            ))}
+                        </Suspense>
+                    </div>
+                </section>
+            </ScrollReveal>
 
             {/* 8. Madhu Dairy Wide Range of Products Banner */}
-            <DairyShowcaseBanner />
+            <ScrollReveal yOffset={50} duration={0.85}>
+                <DairyShowcaseBanner />
+            </ScrollReveal>
         </>
     );
 }

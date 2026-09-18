@@ -186,10 +186,10 @@ export default function ProductVarietyCard(props) {
     return (
         <motion.div
             className="relative rounded-[16px] sm:rounded-[20px] overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/80 dark:border-gray-700/80 p-0 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 15 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
             {/* Square Product Image: Flush with top and side edges with 0 border/margin/padding */}
             <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700/60 p-0 m-0 border-0 rounded-none transition-colors duration-300">

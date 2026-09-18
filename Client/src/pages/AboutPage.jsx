@@ -11,6 +11,7 @@ import { ThemeContext } from "../context/ThemeProvider";
 import { PageContentContext } from "../context/PageContentProvider";
 import BackButton from "../components/Common/BackButton";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
+import ScrollReveal from "../components/Common/ScrollReveal";
 
 export default function AboutPage() {
   const navigate = useNavigate();
@@ -117,29 +118,35 @@ export default function AboutPage() {
 
       {/* Main Story Cards Section */}
       <section className="py-8 px-4 sm:px-6 max-w-7xl mx-auto space-y-8">
-        <div className="text-center flex flex-col items-center mb-8 max-w-3xl mx-auto space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
-            {aboutUsData.journeySubtitle || "Our Journey & Mission"}
-          </span>
-          <AnimatedHeading
-            blackText="Our Journey &"
-            violetText="Mission"
-            className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight justify-center"
-          />
+        <ScrollReveal yOffset={40} duration={0.8}>
+          <div className="text-center flex flex-col items-center mb-8 max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
+              {aboutUsData.journeySubtitle || "Our Journey & Mission"}
+            </span>
+            <AnimatedHeading
+              blackText="Our Journey &"
+              violetText="Mission"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight justify-center"
+            />
 
-          <div className="flex items-center gap-2 mt-3">
-            <div className="w-10 h-[3px] rounded-full bg-[#1E88E5]"></div>
-            <div className="w-2.5 h-2.5 bg-[#1E88E5] rotate-45 rounded-xs"></div>
-            <div className="w-10 h-[3px] rounded-full bg-[#1E88E5]"></div>
+            <div className="flex items-center gap-2 mt-3">
+              <div className="w-10 h-[3px] rounded-full bg-[#1E88E5]"></div>
+              <div className="w-2.5 h-2.5 bg-[#1E88E5] rotate-45 rounded-xs"></div>
+              <div className="w-10 h-[3px] rounded-full bg-[#1E88E5]"></div>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {aboutData.map((card, index) => (
-          <AboutCard key={index} {...card} reverse={index % 2 === 0} />
+          <ScrollReveal key={index} delay={index * 0.1} yOffset={45} duration={0.85}>
+            <AboutCard {...card} reverse={index % 2 === 0} />
+          </ScrollReveal>
         ))}
       </section>
 
-      <ProductProcess />
+      <ScrollReveal yOffset={45} duration={0.85}>
+        <ProductProcess />
+      </ScrollReveal>
     </div>
   );
 }

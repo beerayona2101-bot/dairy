@@ -21,7 +21,7 @@ import { ProductContext } from "../context/ProductProvider";
 import { PageContentContext } from "../context/PageContentProvider";
 import { CartContext } from "../context/CartProvider";
 import MadhuLoader from "../components/MadhuLoader";
-import { getProductImage } from "../utils/helper";
+import { getProductImage, getCardBackgroundImage } from "../utils/helper";
 import { products as baseCategories } from "../data/products";
 import BackButton from "../components/Common/BackButton";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
@@ -87,7 +87,7 @@ export default function ProductPage() {
                 const key = title.toLowerCase().trim();
                 cardMap.set(key, {
                     title,
-                    image: p.image || getProductImage(p),
+                    image: getCardBackgroundImage(p, title),
                     description: p.description,
                 });
             }
@@ -102,7 +102,7 @@ export default function ProductPage() {
                     cardMap.set(key, {
                         ...existing,
                         title,
-                        image: c.image || existing.image || getProductImage(c),
+                        image: getCardBackgroundImage(c, title),
                         description: c.description || existing.description,
                     });
                 }
@@ -116,7 +116,7 @@ export default function ProductPage() {
                 if (!cardMap.has(key)) {
                     cardMap.set(key, {
                         title,
-                        image: getProductImage(p),
+                        image: getCardBackgroundImage(p, title),
                         description: p.description || `Pure and fresh A2 ${title} products delivered daily.`,
                     });
                 }
@@ -167,7 +167,7 @@ export default function ProductPage() {
         if (baseCat) {
             return {
                 title: baseCat.title || baseCat.name,
-                image: getProductImage(baseCat),
+                image: getCardBackgroundImage(baseCat, baseCat.title || baseCat.name),
                 description: baseCat.description || `Pure, unadulterated farm-fresh ${baseCat.title} products delivered daily to your doorstep.`,
                 features: baseCat.features || []
             };
@@ -184,7 +184,7 @@ export default function ProductPage() {
         if (adminCat) {
             return {
                 title: adminCat.title || adminCat.name,
-                image: getProductImage(adminCat),
+                image: getCardBackgroundImage(adminCat, adminCat.title || adminCat.name),
                 description: adminCat.description || `Pure, unadulterated farm-fresh ${adminCat.title} products delivered daily to your doorstep.`,
                 features: adminCat.features || []
             };
@@ -198,7 +198,7 @@ export default function ProductPage() {
         if (matchedProduct) {
             return {
                 title: matchedProduct.category,
-                image: getProductImage(matchedProduct),
+                image: getCardBackgroundImage(matchedProduct, matchedProduct.category),
                 description: `Fresh, nutritious and 100% pure A2 ${matchedProduct.category} products delivered daily.`,
                 features: matchedProduct.features || []
             };
@@ -206,7 +206,7 @@ export default function ProductPage() {
 
         return {
             title: unslugify(productId),
-            image: getProductImage(unslugify(productId)),
+            image: getCardBackgroundImage(unslugify(productId), unslugify(productId)),
             description: `Pure, unadulterated farm-fresh ${unslugify(productId)} products delivered daily to your doorstep.`,
             features: []
         };
@@ -273,8 +273,8 @@ export default function ProductPage() {
                         >
                             {/* Floating Controls Overlay (Back button on top left ON THE IMAGE) */}
                             <div className="absolute top-4 sm:top-6 left-0 right-0 z-20 px-4 sm:px-8 lg:px-12 w-full flex justify-start items-center">
-                                {/* Top Left: Glass Back Button */}
-                                <BackButton fallbackPath="/products" variant="glass" label="Back to Categories" title="Back to All Categories" />
+                                {/* Top Left: Glass Back Button (visible on both mobile and web) */}
+                                <BackButton fallbackPath="/products" hideOnWeb={false} variant="glass" label="Back to Categories" title="Back to All Categories" />
                             </div>
 
                             {/* Main Full-Bleed Category Banner Image */}
@@ -283,7 +283,7 @@ export default function ProductPage() {
                                 alt={categoryInfo.title}
                                 onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = getProductImage(categoryInfo?.title);
+                                    e.target.src = getCardBackgroundImage(categoryInfo?.title);
                                 }}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                             />
@@ -318,12 +318,19 @@ export default function ProductPage() {
                         </motion.div>
                     ) : (
                         <div className="hidden md:flex relative w-full overflow-hidden bg-gradient-to-r from-[#0F2742] via-[#1E88E5] to-[#1565C0] px-4 sm:px-10 py-3.5 items-center gap-3 sm:gap-4 text-white m-0 border-0 rounded-none sm:rounded-2xl flex-shrink-0">
-                            <div className="w-full flex flex-col justify-center space-y-0.5 overflow-hidden px-1 sm:px-0">
+                            <div className="w-full flex flex-col justify-center items-start text-left space-y-0.5 overflow-hidden px-1 sm:px-0">
                                 <div className="flex items-center gap-2">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">🥛 Madhu Dairy Collection</span>
                                 </div>
-                                <AnimatedHeading blackText="All Farm-Fresh" violetText="Products" as="h1" className="text-base sm:text-xl font-black leading-tight text-white" />
-                                <p className="text-[11px] sm:text-xs text-blue-100 max-w-xl font-medium line-clamp-1">
+                                <AnimatedHeading
+                                    blackText="All Farm-Fresh"
+                                    violetText="Products"
+                                    as="h1"
+                                    align="left"
+                                    className="text-base sm:text-xl font-black leading-tight text-white justify-start text-left"
+                                    violetClassName="text-purple-300"
+                                />
+                                <p className="text-[11px] sm:text-xs text-blue-100 max-w-xl font-medium line-clamp-1 text-left">
                                     Explore our complete range of 100% pure A2 milk, ghee, paneer, curd, and daily sweets.
                                 </p>
                             </div>
@@ -553,7 +560,7 @@ export default function ProductPage() {
                                 {productLoading ? (
                                     <MadhuLoader />
                                 ) : (
-                                    <section className="w-full flex flex-col">
+                                     <section className="w-full flex flex-col">
                                         {(sortedFilteredProducts?.length ?? 0) === 0 ? (
                                             <div className="py-12 text-center text-gray-500 dark:text-gray-300 font-medium text-base bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
                                                 No products found in this category.

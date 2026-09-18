@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { products } from "../../data/products";
 import { slugify } from "../../utils/slugify";
-import { getProductImage } from "../../utils/helper";
+import { getCardBackgroundImage } from "../../utils/helper";
 import { PageContentContext } from "../../context/PageContentProvider";
 
 export default function DairyProductsCarousel({ half }) {
@@ -12,7 +12,7 @@ export default function DairyProductsCarousel({ half }) {
     products.forEach((p) => {
         const title = p.title || p.name;
         if (title) {
-            cardMap.set(title.toLowerCase().trim(), { title, image: p.image || getProductImage(p) });
+            cardMap.set(title.toLowerCase().trim(), { title, image: getCardBackgroundImage(p) });
         }
     });
     const homeCards = pageContentCtx.pageContent?.homeCategoryCards;
@@ -22,7 +22,7 @@ export default function DairyProductsCarousel({ half }) {
             const title = c?.title || c?.name;
             if (title) {
                 const key = title.toLowerCase().trim();
-                cardMap.set(key, { title, image: c.image || cardMap.get(key)?.image || getProductImage(c) });
+                cardMap.set(key, { title, image: getCardBackgroundImage(c, title) });
             }
         });
     }
@@ -35,7 +35,7 @@ export default function DairyProductsCarousel({ half }) {
         <div className="flex">
             {displayedItems?.map((item, index) => {
                 const title = item?.title || item?.name || "Item";
-                const imgUrl = item?.image || getProductImage({ name: title, image: item?.image });
+                const imgUrl = getCardBackgroundImage({ name: title, image: item?.image }, title);
                 return (
                     <Link
                         key={`carousel-${half}-${index}-${slugify(title)}`}

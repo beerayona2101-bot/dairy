@@ -40,13 +40,17 @@
 
 html {
   scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   background-color: #FFFFFF;
   color: #1E293B;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pan-x;
   min-height: 100vh;
   position: relative;
 }

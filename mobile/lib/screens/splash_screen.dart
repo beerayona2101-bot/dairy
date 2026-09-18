@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:provider/provider.dart';
-import '../config/app_theme.dart';
-import '../providers/auth_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'mobile_web_view_screen.dart';
 import 'onboarding_screen.dart';
-import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,15 +22,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1400),
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+      ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    _scaleAnimation = Tween<double>(begin: 0.82, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.85, curve: Curves.easeOutBack),
+      ),
     );
 
     _controller.forward();
@@ -40,21 +45,26 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _initializeApp() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.initAuth();
-    await Future.delayed(const Duration(milliseconds: 2200));
+    // Keep splash visible so user sees the brand logo animation
+    await Future.delayed(const Duration(milliseconds: 2300));
+
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
 
     if (!mounted) return;
 
-    if (authProvider.isAuthenticated) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-      );
-    }
+    final Widget nextScreen = hasSeenOnboarding
+        ? const MobileWebViewScreen()
+        : const OnboardingScreen();
+
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, anim, secAnim) => nextScreen,
+        transitionsBuilder: (context, animation, secAnim, child) =>
+            FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 600),
+      ),
+    );
   }
 
   @override
@@ -66,12 +76,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+            colors: [
+              Color(0xFFFFFFFF),
+              Color(0xFFF6FAF8),
+              Color(0xFFEFF8F3),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -80,76 +95,90 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(),
+              const Spacer(flex: 3),
 
-              // Animated Logo Graphic
+              // Animated Hero Brand Logo
               ScaleTransition(
                 scale: _scaleAnimation,
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Column(
                     children: [
+                      // Ambient Glow behind the logo
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 240,
+                            height: 240,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  const Color(0xFF10B981).withValues(alpha: 0.18),
+                                  const Color(0xFF10B981).withValues(alpha: 0.04),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // Brand Logo PNG
+                          Hero(
+                            tag: 'app_brand_logo',
+                            child: Container(
+                              constraints: const BoxConstraints(
+                                maxWidth: 290,
+                                maxHeight: 290,
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Image.asset(
+                                'assets/images/madhur_dairy_logo.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) => Image.asset(
+                                  'assets/images/cowLogo.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+
+                      // Quality Assurance Pill Badge
                       Container(
-                        width: 110,
-                        height: 110,
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: AppTheme.primaryGradient,
+                          color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.4),
+                            width: 1.2,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primary.withValues(alpha: 0.5),
-                              blurRadius: 25,
-                              spreadRadius: 4,
+                              color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                              blurRadius: 14,
+                              offset: const Offset(0, 3),
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.water_drop_rounded,
-                          size: 58,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Brand Title
-                      const Text(
-                        'MADHU DAIRY',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-
-                      // Subtitle
-                      const Text(
-                        '& DAILY NEEDS',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFFA78BFA),
-                          letterSpacing: 3,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.5)),
-                        ),
-                        child: const Text(
-                          '✨ 100% PURE & FARM-FRESH DAIRY',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF34D399),
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('🌱', style: TextStyle(fontSize: 13)),
+                            const SizedBox(width: 7),
+                            Text(
+                              '100% PURE & FARM-FRESH DAIRY',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF047857),
+                                letterSpacing: 0.9,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -157,22 +186,24 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
               ),
 
-              const Spacer(),
+              const Spacer(flex: 2),
 
-              // Loading Indicator
-              const SpinKitFadingCube(
-                color: AppTheme.primary,
-                size: 24,
+              // Bottom Loading Spinner & Slogan
+              const SpinKitThreeBounce(
+                color: Color(0xFF10B981),
+                size: 22,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 14),
               Text(
-                'Connecting to Madhu Dairy Server...',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade400,
+                'Delivering Farm Purity Daily...',
+                style: GoogleFonts.outfit(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF475569),
+                  letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 38),
             ],
           ),
         ),

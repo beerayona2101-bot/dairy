@@ -309,8 +309,8 @@ export default function ProductDetails({ productId: propProductId }) {
                 <div className="md:col-span-5 flex flex-col items-center">
                     {/* Main Image View - 100% Edge-to-Edge Full Width on Mobile Only */}
                     <div className="relative -mx-3 sm:mx-0 -mt-3 sm:mt-0 w-[calc(100%+24px)] sm:w-full h-[270px] sm:h-[300px] md:h-[320px] lg:h-[340px] rounded-none sm:rounded-2xl border-0 overflow-hidden flex items-center justify-center group transition-all duration-300">
-                        {/* Floating Back Button */}
-                        <BackButton fallbackPath="/products" variant="circle" className="absolute top-3 left-3 z-30" title="Go Back to Previous Page" />
+                        {/* Floating Back Button (Mobile only) */}
+                        <BackButton fallbackPath="/products" hideOnWeb={true} variant="circle" className="absolute top-3 left-3 z-30" title="Go Back to Previous Page" />
 
                         {(!selectedImage || selectedImage === 'null') ? (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-none sm:rounded-2xl">

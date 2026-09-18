@@ -20,6 +20,7 @@ import { getProductImage } from "../utils/helper";
 
 import { products as fallbackProducts } from "../data/products";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
+import BackButton from "../components/Common/BackButton";
 
 export default function ProductDetailsPage() {
 
@@ -88,7 +89,28 @@ export default function ProductDetailsPage() {
 
     return (
         <>
-            <section className="px-0 sm:px-6 pt-0 sm:pt-2 pb-4 max-w-7xl mx-auto">
+            <section className="px-0 sm:px-6 pt-1 sm:pt-3 pb-4 max-w-7xl mx-auto">
+                {/* Desktop Web Navigation Bar with Back Arrow Button */}
+                <div className="hidden md:flex items-center justify-between px-1 mb-3">
+                    <div className="flex items-center gap-2.5">
+                        <BackButton
+                            fallbackPath="/products"
+                            hideOnWeb={false}
+                            variant="pill"
+                            label="Back to Products"
+                            title="Back to Products"
+                        />
+                        <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
+                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 capitalize">
+                            {selectedProduct?.category || "Dairy"}
+                        </span>
+                        <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
+                        <span className="text-xs font-black text-gray-800 dark:text-white truncate max-w-xs">
+                            {selectedProduct?.name}
+                        </span>
+                    </div>
+                </div>
+
                 <div className="w-full">
                     <ProductDetails
                         productId={selectedProduct?._id || ""}

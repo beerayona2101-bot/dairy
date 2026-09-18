@@ -1,14 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import VerifiedIcon from "@mui/icons-material/Verified";
 import { Link } from "react-router-dom";
 import { PageContentContext } from "../../context/PageContentProvider";
 import { features as defaultFeatures } from "../../data/productGoodness ";
 import company from "../../data/company.json";
 import landingHeroBgHD from "../../assets/landing_hero_bg_hd.png";
 import AnimatedHeading from "../Common/AnimatedHeading";
+import { getCardBackgroundImage } from "../../utils/helper";
 
 // 4K Ultra-High Resolution Pasture Liquid Milk Hero Background
 const FARM_HERO_BG = landingHeroBgHD;
@@ -86,6 +85,45 @@ export function MilkHealthBenefitsHero() {
     );
 }
 
+// Function to resolve the authentic previous image for goodness / promise card
+export const getPromiseCardImage = (item, index = 0) => {
+    // 1. If admin uploaded a Cloudinary or remote image, prioritize it
+    if (item?.image && typeof item.image === "string") {
+        const trimmed = item.image.trim();
+        if (trimmed.includes("res.cloudinary.com") || trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
+            return trimmed;
+        }
+    }
+
+    // 2. Otherwise match by title with original previous features
+    const itemTitle = (item?.title || item?.name || "").toLowerCase().trim();
+    const matchedFeature = defaultFeatures.find(
+        (f) => (f.title || "").toLowerCase().trim() === itemTitle
+    );
+    if (matchedFeature?.image) {
+        return matchedFeature.image;
+    }
+
+    // 3. Match by index with original previous features
+    if (defaultFeatures[index]?.image) {
+        return defaultFeatures[index].image;
+    }
+
+    // 4. If item has an image object (bundled import) or local path
+    if (item?.image) {
+        if (typeof item.image === "string") {
+            const trimmed = item.image.trim();
+            if (trimmed.startsWith("/assets/") || trimmed.startsWith("assets/")) {
+                return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+            }
+        }
+        return item.image;
+    }
+
+    // 5. Fallback helper
+    return getCardBackgroundImage(item, item?.title || item?.name);
+};
+
 function StackedDairyPromiseCard({ index, totalCards, scrollYProgress, item, color, isActive }) {
     const rangeCount = Math.max(1, totalCards - 1);
     const step = 1 / rangeCount;
@@ -126,6 +164,7 @@ function StackedDairyPromiseCard({ index, totalCards, scrollYProgress, item, col
     );
 
     const isEven = index % 2 === 0;
+    const cardImage = getPromiseCardImage(item, index);
 
     return (
         <motion.div
@@ -138,51 +177,39 @@ function StackedDairyPromiseCard({ index, totalCards, scrollYProgress, item, col
             className="absolute inset-0 m-auto w-full max-w-6xl h-fit flex items-center justify-center transform-gpu will-change-transform px-2 sm:px-4"
         >
             <div
-                className={`w-full min-h-[460px] sm:min-h-[480px] md:min-h-0 rounded-[24px] sm:rounded-[28px] md:rounded-[36px] bg-[#FFFDF7] dark:bg-[#1c1c1e] shadow-[0_10px_35px_rgba(23,63,42,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-5 sm:p-6 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 items-center relative overflow-hidden transition-all duration-300`}
+                className="w-full rounded-[22px] sm:rounded-[26px] md:rounded-[32px] bg-[#FFFDF7] dark:bg-[#1c1c1e] shadow-[0_12px_40px_rgba(23,63,42,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-4 sm:p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 items-center relative overflow-hidden transition-all duration-300 border border-[#477A50]/10 dark:border-white/10 periodic-glass-shine"
             >
                 <div
                     style={{ backgroundColor: color }}
                     className="absolute -top-20 -right-20 w-64 h-64 rounded-full filter blur-3xl opacity-10 pointer-events-none"
                 />
 
-                <div className={`lg:col-span-7 space-y-3 sm:space-y-4 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
-                    <div className="flex items-center gap-2.5 sm:gap-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#E8F5E9] dark:bg-slate-800 border border-[#477A50]/20 dark:border-emerald-500/30 flex items-center justify-center shrink-0">
-                            <CheckCircleIcon style={{ color: color }} sx={{ fontSize: "1.2rem" }} />
-                        </div>
-                        <span
-                            style={{ color: color }}
-                            className="text-xs font-extrabold uppercase tracking-widest bg-[#E8F5E9] dark:bg-slate-800 px-3 py-1 rounded-full border border-[#477A50]/20 dark:border-slate-700"
-                        >
-                            Purity Guarantee #{index + 1}
-                        </span>
-                    </div>
-
+                <div className={`lg:col-span-7 space-y-2.5 sm:space-y-4 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
                     <div>
-                        <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#173F2A] dark:text-white leading-tight tracking-tight">
+                        <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#173F2A] dark:text-white leading-snug tracking-tight">
                             {item.title || item.name}
                         </h3>
                     </div>
 
-                    <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-gray-300 leading-relaxed line-clamp-3 font-medium">
+                    <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-gray-300 leading-relaxed line-clamp-2 sm:line-clamp-3 font-medium">
                         {item.description}
                     </p>
 
-                    <div className="flex items-center gap-2 pt-1 flex-wrap">
-                        <span className="text-xs font-extrabold text-[#173F2A] dark:text-emerald-300 bg-[#E8F5E9] dark:bg-emerald-950/50 px-3 py-1 rounded-full border border-[#477A50]/20 dark:border-emerald-800">
+                    <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                        <span className="text-[10px] sm:text-xs font-extrabold text-[#173F2A] dark:text-emerald-300 bg-[#E8F5E9] dark:bg-emerald-950/50 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#477A50]/20 dark:border-emerald-800">
                             100% Quality Assured
                         </span>
-                        <span className="text-xs font-extrabold text-[#477A50] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                        <span className="text-[10px] sm:text-xs font-extrabold text-[#477A50] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
                             Farm Fresh Daily
                         </span>
                     </div>
                 </div>
 
                 <div className={`lg:col-span-5 flex items-center justify-center ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
-                    <div className="w-full relative rounded-xl sm:rounded-2xl overflow-hidden h-52 sm:h-60 md:h-64 bg-slate-100 dark:bg-slate-800 shadow-md border border-slate-200/80 dark:border-slate-700 group">
-                        {item.image ? (
+                    <div className="w-full relative rounded-xl sm:rounded-2xl overflow-hidden h-44 sm:h-52 md:h-60 bg-slate-100 dark:bg-slate-800 shadow-md border border-slate-200/80 dark:border-slate-700 group">
+                        {cardImage ? (
                             <img
-                                src={item.image}
+                                src={cardImage}
                                 alt={item.title || item.name}
                                 loading="lazy"
                                 className={`w-full h-full object-cover transition-transform duration-500 ease-out ${
@@ -194,8 +221,8 @@ function StackedDairyPromiseCard({ index, totalCards, scrollYProgress, item, col
                                 🥛
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                            <span className="text-white text-xs font-bold flex items-center gap-1.5 drop-shadow-md">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-3.5">
+                            <span className="text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 drop-shadow-md">
                                 <LocalShippingIcon sx={{ fontSize: "1rem" }} className="text-[#D6A84F]" />
                                 {item.title || item.name}
                             </span>
@@ -242,10 +269,10 @@ export function DairyPromiseCardsSection() {
             style={{ height: sectionHeight }}
             className="relative w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8"
         >
-            <div className="sticky top-[64px] sm:top-[72px] w-full flex flex-col items-center justify-start pt-3 sm:pt-6 pb-6">
+            <div className="sticky top-[56px] sm:top-[64px] w-full flex flex-col items-center justify-start pt-1 sm:pt-2 pb-2">
                 
-                {/* 1. STICKY HEADING - Clean with generous gap below */}
-                <div className="text-center space-y-1.5 sm:space-y-2 max-w-3xl mx-auto px-4 shrink-0 z-40 mb-6 sm:mb-8 md:mb-10">
+                {/* 1. STICKY HEADING - Tight gap directly above cards */}
+                <div className="text-center space-y-1 max-w-3xl mx-auto px-4 shrink-0 z-40 mb-2 sm:mb-3 md:mb-4">
                     <AnimatedHeading
                         blackText="Our Promise of Dairy"
                         violetText="Excellence"
@@ -257,8 +284,8 @@ export function DairyPromiseCardsSection() {
                     </p>
                 </div>
 
-                {/* 2. OVERLAPPING CARDS STAGE - Generous compact height directly below heading */}
-                <div className="relative w-full max-w-6xl mx-auto h-[560px] sm:h-[580px] md:h-[440px] lg:h-[460px] flex items-center justify-center">
+                {/* 2. OVERLAPPING CARDS STAGE - Perfect compact height for 100% viewport visibility */}
+                <div className="relative w-full max-w-6xl mx-auto h-[380px] sm:h-[400px] md:h-[420px] lg:h-[440px] flex items-center justify-center">
                     {displayGoodness.map((item, idx) => {
                         const color = accentColors[idx % accentColors.length];
                         const isActive = idx === activeIndex;
