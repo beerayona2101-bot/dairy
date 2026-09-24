@@ -447,14 +447,6 @@ export default function Navbar() {
 
                     {/* Right Action Icons: ♡, 🛍️, 🔔 */}
                     <div className="flex items-center gap-1.5 sm:gap-3 z-10">
-                        {/* Mobile Onboarding Cards Trigger */}
-                        <button
-                            onClick={() => window.dispatchEvent(new Event("openMobileOnboarding"))}
-                            className="flex md:hidden items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-black text-[#6C5CE7] dark:text-[#A78BFA] bg-purple-50 dark:bg-purple-950/50 border border-purple-200/80 dark:border-purple-800/80 shadow-sm active:scale-95 transition-all cursor-pointer"
-                            title="View Onboarding Cards"
-                        >
-                            <span>✨ Tour</span>
-                        </button>
 
                         {/* Wishlist Pill (Hidden on mobile response) */}
                         <Tooltip title="Wishlist">

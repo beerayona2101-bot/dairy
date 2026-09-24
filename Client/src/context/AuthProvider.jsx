@@ -160,6 +160,13 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem("userToken");
         sessionStorage.removeItem("userRole");
         sessionStorage.removeItem("deliveryAddress");
+        if (typeof window !== "undefined" && window.FlutterAuthBridge) {
+            try {
+                window.FlutterAuthBridge.postMessage("logout");
+            } catch (e) {
+                // ignore
+            }
+        }
     }, [authUser?._id]);
 
     const handleAdminLogout = useCallback(() => {

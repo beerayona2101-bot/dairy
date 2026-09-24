@@ -82,7 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('👋 Welcome! Continuing as Guest User.'),
-        backgroundColor: Color(0xFF10B981),
+        backgroundColor: Color(0xFF0284C7),
         duration: Duration(seconds: 2),
       ),
     );
@@ -103,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

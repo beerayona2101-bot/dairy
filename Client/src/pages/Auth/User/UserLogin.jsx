@@ -6,7 +6,7 @@ import { loginUser } from "../../../services/userService";
 import { AdminAuthContext, UserAuthContext } from "../../../context/AuthProvider";
 import company from "../../../data/company.json";
 import BuffaloLoader from "../../../components/BuffaloLoader";
-import { Eye, EyeOff, ArrowLeft, Home } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Home, Mail, Lock, User, ChevronRight } from "lucide-react";
 import { ThemeContext } from "../../../context/ThemeProvider";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
 import logoLightMode from "../../../assets/logoLightMode.png";
@@ -128,84 +128,186 @@ export default function UserLogin() {
     }
   };
 
+  const handleGuestLogin = () => {
+    navigate("/home");
+  };
+
   return (
-    <div className="relative flex min-h-screen h-screen w-full bg-white dark:bg-[#161B22] transition-colors duration-300 overflow-hidden">
-      {/* Floating Top Nav Buttons */}
-      <div className="absolute top-6 left-6 right-6 sm:left-10 sm:right-10 flex items-center justify-between z-30">
+    <div className="relative flex min-h-screen w-full bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-300 overflow-y-auto">
+      {/* Floating Back Arrow */}
+      <div className="absolute top-4 left-4 z-30">
         <button
           type="button"
           onClick={handleGoBack}
-          className="flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-sm hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
+          className="p-2 text-gray-700 dark:text-gray-200 hover:text-[#0284C7] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          aria-label="Back"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <ArrowLeft className="w-6 h-6" />
         </button>
-
-        <Link
-          to="/home"
-          className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-sm hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-medium text-xs sm:text-sm backdrop-blur-md"
-        >
-          <Home className="w-4 h-4" />
-          <span>Home</span>
-        </Link>
       </div>
 
-      {/* Main Full-Width & Full-Height Split Screen Container */}
+      {/* MOBILE RESPONSE (< md): Exact matching Mobile Login Page */}
+      <div className="block md:hidden w-full max-w-md mx-auto px-6 py-8 my-auto">
+        {/* Brand Cow Logo Header */}
+        <div className="flex flex-col items-center text-center mt-6 mb-6">
+          <img
+            src={brandLogo}
+            alt={company?.name || "Madhu Dairy"}
+            className="h-24 w-auto object-contain mb-2"
+          />
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
+            Farm-fresh milk & daily needs delivered to your door
+          </p>
+        </div>
+
+        {/* Welcome Header */}
+        <div className="mb-5">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            Welcome Back! 👋
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            Sign in to access your dairy subscriptions & orders
+          </p>
+        </div>
+
+        {/* Inputs Card Container */}
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <form onSubmit={handleFormSubmit} className="space-y-4">
+            {/* Email Address */}
+            <div>
+              <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1.5">
+                Email Address
+              </label>
+              <div className="flex items-center px-3.5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus-within:border-[#0284C7] focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all">
+                <Mail className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="name@example.com"
+                  value={formData?.email}
+                  onChange={handleInputChange}
+                  className="w-full bg-transparent text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1.5">
+                Password
+              </label>
+              <div className="flex items-center px-3.5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus-within:border-[#0284C7] focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all">
+                <Lock className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
+                <input
+                  name="password"
+                  placeholder="••••••••"
+                  type={showPassword ? "text" : "password"}
+                  value={formData?.password}
+                  onChange={handleInputChange}
+                  className="w-full bg-transparent text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none font-medium"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                >
+                  {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Forgot Password Row */}
+            <div className="flex justify-end pt-0.5">
+              <Link
+                to="/login/forget-password"
+                className="text-xs font-bold text-[#0284C7] hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#5B54F2] to-[#1E88E5] hover:from-[#4B44E2] hover:to-[#1565C0] text-white font-black text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+            >
+              {isLoading ? (
+                <BuffaloLoader variant="button" text="Signing in..." />
+              ) : (
+                "Sign In"
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* OR Divider */}
+        <div className="flex items-center my-5">
+          <div className="flex-1 border-t border-slate-200 dark:border-slate-800" />
+          <span className="px-3 text-xs font-bold text-slate-400 uppercase">OR</span>
+          <div className="flex-1 border-t border-slate-200 dark:border-slate-800" />
+        </div>
+
+        {/* Continue as Guest Button Card */}
+        <button
+          type="button"
+          onClick={handleGuestLogin}
+          className="w-full p-3.5 rounded-2xl bg-white dark:bg-[#1E293B] border-1.5 border-[#0284C7]/50 hover:border-[#0284C7] shadow-sm flex items-center justify-between transition-all active:scale-[0.99] cursor-pointer text-left group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-[#0284C7]/10 border border-[#0284C7]/30 flex items-center justify-center shrink-0">
+              <User className="w-4 h-4 text-[#0284C7]" />
+            </div>
+            <div>
+              <h4 className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">
+                Continue as Guest
+              </h4>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight">
+                Browse without signing in
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[#0284C7] group-hover:translate-x-0.5 transition-transform" />
+        </button>
+
+        {/* Register Now Row */}
+        <div className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">
+          Don't have an account?{" "}
+          <Link to="/signup" className="font-extrabold text-[#0284C7] hover:underline ml-1">
+            Register Now
+          </Link>
+        </div>
+      </div>
+
+      {/* DESKTOP WEB RESPONSE (md: flex): Split Screen Layout */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full h-full flex flex-col md:flex-row overflow-hidden"
+        className="hidden md:flex w-full h-screen flex-row overflow-hidden"
       >
         {/* LEFT PANEL - Brand Color Banner with Centered Brand Logo */}
-        <div className="w-full md:w-1/2 h-full bg-gradient-to-br from-[#1565C0] via-[#1E88E5] to-[#42A5F5] p-8 sm:p-12 lg:p-16 text-white relative flex flex-col justify-between items-center text-center overflow-hidden min-h-[320px] md:min-h-full">
-          {/* Vector Graphics Background */}
+        <div className="w-1/2 h-full bg-gradient-to-br from-[#1565C0] via-[#1E88E5] to-[#42A5F5] p-8 sm:p-12 lg:p-16 text-white relative flex flex-col justify-between items-center text-center overflow-hidden">
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none opacity-25"
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              <pattern
-                id="login-full-grid"
-                width="36"
-                height="36"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 36 0 L 0 0 0 36"
-                  fill="none"
-                  stroke="rgba(255, 255, 255, 0.18)"
-                  strokeWidth="1"
-                />
+              <pattern id="login-full-grid" width="36" height="36" patternUnits="userSpaceOnUse">
+                <path d="M 36 0 L 0 0 0 36" fill="none" stroke="rgba(255, 255, 255, 0.18)" strokeWidth="1" />
               </pattern>
             </defs>
-
             <rect width="100%" height="100%" fill="url(#login-full-grid)" />
-            <circle
-              cx="80%"
-              cy="20%"
-              r="140"
-              fill="none"
-              stroke="rgba(255, 255, 255, 0.2)"
-              strokeWidth="1.5"
-            />
-            <circle
-              cx="20%"
-              cy="80%"
-              r="160"
-              fill="none"
-              stroke="rgba(255, 255, 255, 0.15)"
-              strokeWidth="1.5"
-            />
+            <circle cx="80%" cy="20%" r="140" fill="none" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1.5" />
+            <circle cx="20%" cy="80%" r="160" fill="none" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
           </svg>
 
-          {/* Top Spacer */}
           <div className="relative z-10 w-full pt-8" />
 
-          {/* Center Brand Logo & Greeting Section */}
           <div className="relative z-10 my-auto py-6 flex flex-col items-center justify-center w-full max-w-md">
-            {/* Centered Brand Logo */}
             <div className="mb-5 flex items-center justify-center">
               <img
                 src={brandLogo}
@@ -228,16 +330,14 @@ export default function UserLogin() {
             </p>
           </div>
 
-          {/* Bottom Accent Note */}
           <div className="relative z-10 text-xs text-blue-200/70 font-medium tracking-wide pb-4">
             © {new Date().getFullYear()} {company?.name}. All rights reserved.
           </div>
         </div>
 
-        {/* RIGHT PANEL - Login Form (Full Height & Centered) */}
-        <div className="w-full md:w-1/2 h-full p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-white dark:bg-[#161B22] text-gray-800 dark:text-gray-100 relative overflow-y-auto">
+        {/* RIGHT PANEL - Desktop Login Form */}
+        <div className="w-1/2 h-full p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-white dark:bg-[#161B22] text-gray-800 dark:text-gray-100 relative overflow-y-auto">
           <div className="max-w-md w-full mx-auto my-auto">
-            {/* Title Section */}
             <div className="text-center md:text-left mb-8">
               <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E88E5] dark:text-[#42A5F5] tracking-tight">
                 Login Account
@@ -247,9 +347,7 @@ export default function UserLogin() {
               </p>
             </div>
 
-            {/* Login Form */}
             <form onSubmit={handleFormSubmit} className="space-y-5">
-              {/* Email Input Field */}
               <div className="relative rounded-2xl overflow-hidden bg-[#F4F6F9] dark:bg-[#21262D] border border-gray-200/80 dark:border-gray-700/80 focus-within:border-[#1E88E5] focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition-all">
                 <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1E88E5]" />
                 <input
@@ -264,7 +362,6 @@ export default function UserLogin() {
                 />
               </div>
 
-              {/* Password Input Field */}
               <div className="relative rounded-2xl overflow-hidden bg-[#F4F6F9] dark:bg-[#21262D] border border-gray-200/80 dark:border-gray-700/80 focus-within:border-[#1E88E5] focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition-all">
                 <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#1E88E5]" />
                 <input
@@ -282,15 +379,10 @@ export default function UserLogin() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer p-1 transition-colors"
                 >
-                  {showPassword ? (
-                    <Eye className="w-5 h-5" />
-                  ) : (
-                    <EyeOff className="w-5 h-5" />
-                  )}
+                  {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
                 </button>
               </div>
 
-              {/* Keep me signed in & Forgot password row */}
               <div className="flex items-center justify-between text-xs sm:text-sm font-semibold pt-1">
                 <label className="flex items-center gap-2 text-gray-600 dark:text-gray-300 cursor-pointer hover:text-gray-800 dark:hover:text-white transition">
                   <input
@@ -314,16 +406,11 @@ export default function UserLogin() {
                 className="w-full py-4 px-6 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white font-bold text-sm tracking-widest uppercase shadow-lg shadow-blue-500/30 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer mt-6 periodic-glass-shine"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  {isLoading ? (
-                    <BuffaloLoader variant="button" text="Logging in..." />
-                  ) : (
-                    "LOG IN"
-                  )}
+                  {isLoading ? <BuffaloLoader variant="button" text="Logging in..." /> : "LOG IN"}
                 </span>
               </button>
             </form>
 
-            {/* Don't have an account link */}
             <div className="mt-8 text-center">
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
                 Don't have an account?{" "}

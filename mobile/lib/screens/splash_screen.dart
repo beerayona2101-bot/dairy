@@ -42,16 +42,30 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    _initializeApp();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _initializeApp();
+      }
+    });
   }
 
   Future<void> _initializeApp() async {
-    // 1. Initialize auth provider and restore session tokens
+    // 1. Precache onboarding slide images concurrently in parallel for instant display
+    if (mounted) {
+      Future.wait([
+        precacheImage(const AssetImage('assets/images/freshMilk.jpg'), context),
+        precacheImage(const AssetImage('assets/images/hygienicProcessing.jpg'), context),
+        precacheImage(const AssetImage('assets/images/deliveryTruck.jpg'), context),
+        precacheImage(const AssetImage('assets/images/freshProducts.jpg'), context),
+      ]).catchError((_) => []);
+    }
+
+    // 2. Initialize auth provider and restore session tokens
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.initAuth();
 
-    // 2. Keep splash visible for smooth brand hero logo animation
-    await Future.delayed(const Duration(milliseconds: 1800));
+    // 3. Fast & responsive startup delay
+    await Future.delayed(const Duration(milliseconds: 400));
 
     if (!mounted) return;
 

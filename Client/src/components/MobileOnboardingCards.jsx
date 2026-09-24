@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
+import { UserAuthContext } from "../context/AuthProvider";
 import {
   Sparkles,
   ChevronRight,
@@ -153,6 +154,8 @@ export const ONBOARDING_SLIDES = [
 
 export default function MobileOnboardingCards({ forceShow = false, onClose }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { authUser, authUserLoading } = useContext(UserAuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -160,20 +163,41 @@ export default function MobileOnboardingCards({ forceShow = false, onClose }) {
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
 
-  useEffect(() => {
-    // Check if on mobile or requested forceShow
-    const checkShouldShow = () => {
-      if (forceShow) return true;
-      const isMobileWidth = window.innerWidth <= 768;
-      // Show every time visiting on mobile screen
-      return isMobileWidth;
-    };
+  // Auth-intent paths where onboarding should never appear
+  const AUTH_PATHS = ["/login", "/signup", "/admin"];
+  const isAuthPage = AUTH_PATHS.some((p) => location.pathname.startsWith(p));
 
-    if (checkShouldShow()) {
+  useEffect(() => {
+    // Wait until auth is resolved before deciding to show
+    if (authUserLoading) return;
+
+    if (forceShow) {
+      setCurrentPage(0);
+      setIsOpen(true);
+      return;
+    }
+
+    // Never show on auth/admin pages
+    if (isAuthPage) {
+      setIsOpen(false);
+      return;
+    }
+
+    // If user is logged in, never show onboarding
+    if (authUser) {
+      setIsOpen(false);
+      return;
+    }
+
+    // Show once per browser session for unauthenticated visitors (mobile AND desktop)
+    const sessionKey = "onboarding_shown_this_session";
+    const alreadyShown = sessionStorage.getItem(sessionKey);
+    if (!alreadyShown) {
+      setCurrentPage(0);
       setIsOpen(true);
     }
 
-    // Listen to custom event so any button in the app can trigger it
+    // Listen to custom event so any button in the app can re-trigger it
     const handleOpenEvent = () => {
       setCurrentPage(0);
       setIsOpen(true);
@@ -183,7 +207,7 @@ export default function MobileOnboardingCards({ forceShow = false, onClose }) {
     return () => {
       window.removeEventListener("openMobileOnboarding", handleOpenEvent);
     };
-  }, [forceShow]);
+  }, [forceShow, authUser, authUserLoading, isAuthPage]);
 
   // Lock body scroll while onboarding is visible
   useEffect(() => {
@@ -197,7 +221,7 @@ export default function MobileOnboardingCards({ forceShow = false, onClose }) {
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  return null;
 
   const currentSlide = ONBOARDING_SLIDES[currentPage];
   const isLast = currentPage === ONBOARDING_SLIDES.length - 1;
@@ -217,6 +241,8 @@ export default function MobileOnboardingCards({ forceShow = false, onClose }) {
   };
 
   const handleComplete = (targetPath = null) => {
+    // Mark as shown for this browser session so it doesn't re-appear on navigation
+    sessionStorage.setItem("onboarding_shown_this_session", "1");
     setIsOpen(false);
     if (onClose) onClose();
     if (targetPath) {

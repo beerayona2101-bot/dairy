@@ -8,7 +8,7 @@ class AppTheme {
   static const Color accent = Color(0xFF43A047);
   static const Color darkBg = Color(0xFF0F172A);
   static const Color darkCard = Color(0xFF1E293B);
-  static const Color lightBg = Color(0xFFF8FAFC);
+  static const Color lightBg = Colors.white;
   static const Color textDark = Color(0xFF0F2742);
   static const Color textMuted = Color(0xFF64748B);
 
@@ -30,7 +30,8 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: lightBg,
+      scaffoldBackgroundColor: Colors.white,
+      cardColor: Colors.white,
       primaryColor: primary,
       colorScheme: const ColorScheme.light(
         primary: primary,

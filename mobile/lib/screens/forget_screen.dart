@@ -18,6 +18,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
   final _emailController = TextEditingController();
   final _otpController = TextEditingController();
   final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _otpSent = false;
   bool _isLoading = false;
@@ -29,6 +30,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
     _emailController.dispose();
     _otpController.dispose();
     _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -82,6 +84,16 @@ class _ForgetScreenState extends State<ForgetScreen> {
 
   Future<void> _handleResetPassword() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match. Please check and try again.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
     final res = await AuthService.verifyOtp(
@@ -192,6 +204,21 @@ class _ForgetScreenState extends State<ForgetScreen> {
                     validator: (val) {
                       if (val == null || val.isEmpty) return 'Enter new password';
                       if (val.length < 6) return 'Min 6 characters';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Confirm Password Input
+                  CustomInput(
+                    label: 'Confirm Password',
+                    hint: 'Confirm your new password',
+                    prefixIcon: Icons.lock_outline_rounded,
+                    controller: _confirmPasswordController,
+                    isPassword: true,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) return 'Confirm your new password';
+                      if (val != _newPasswordController.text) return 'Passwords do not match';
                       return null;
                     },
                   ),

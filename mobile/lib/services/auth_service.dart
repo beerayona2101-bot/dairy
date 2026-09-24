@@ -88,6 +88,38 @@ class AuthService {
     return prefs.getString(keyUserId);
   }
 
+  static Future<String?> getUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(keyUserEmail);
+  }
+
+  static Future<bool> validateSession({required String token, required String userId}) async {
+    try {
+      final response = await ApiService.get(
+        ApiConfig.getUserDataUrl(userId),
+        token: token,
+      );
+      // If server explicitly replies with an auth error, token is invalid/expired
+      if (response['success'] == false) {
+        final msg = response['message']?.toString().toLowerCase() ?? '';
+        if (msg.contains('unauthorized') ||
+            msg.contains('invalid token') ||
+            msg.contains('expired') ||
+            msg.contains('jwt') ||
+            msg.contains('not found') ||
+            msg.contains('forbidden')) {
+          return false;
+        }
+      }
+      // Server responded successfully — session is valid
+      return response['success'] == true || response.containsKey('user') || response.containsKey('data');
+    } catch (_) {
+      // Offline / network glitch — don't invalidate a previously-valid session.
+      // The user will be routed to onboarding only if there is NO saved token at all.
+      return true;
+    }
+  }
+
   static Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(keyToken);

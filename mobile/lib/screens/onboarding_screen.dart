@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'login_screen.dart';
-import 'mobile_web_view_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -23,7 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'badgeIcon': '🌿',
       'badgeText': '100% PURE A2 MILK',
       'metric': '⭐ 4.9 Farm Verified',
-      'badgeColor': const Color(0xFF10B981), // Emerald Green
+      'badgeColor': const Color(0xFF0284C7), // Dairy Blue
       'title': 'Pure & Farm-Fresh Milk',
       'subtitle':
           '100% pure, unadulterated cow & buffalo milk sourced directly from ethical village dairy farms every single morning.',
@@ -51,7 +49,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'badgeIcon': '🛡️',
       'badgeText': '4°C COLD CHAIN',
       'metric': '❄️ 24+ Lab Tests',
-      'badgeColor': const Color(0xFF0284C7), // Sky Blue
+      'badgeColor': const Color(0xFF0284C7), // Dairy Blue
       'title': 'Untouched Cold-Chain Hygiene',
       'subtitle':
           'Chilled to 4°C within 45 minutes of milking and maintained in continuous cold chain with automated packaging.',
@@ -79,7 +77,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'badgeIcon': '⚡',
       'badgeText': 'BEFORE 7:00 AM',
       'metric': '🚚 Sunrise Guarantee',
-      'badgeColor': const Color(0xFFD97706), // Amber Gold
+      'badgeColor': const Color(0xFF0284C7), // Dairy Blue
       'title': 'Guaranteed Sunrise Delivery',
       'subtitle':
           'Sunrise doorstep delivery before 7:00 AM 365 days a year so your morning chai, coffee, and breakfast are never delayed.',
@@ -101,65 +99,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         },
       ],
     },
-    {
-      'image': 'assets/images/freshProducts.jpg',
-      'category': 'ARTISAN PANTRY',
-      'badgeIcon': '🧀',
-      'badgeText': 'HANDCRAFTED DAILY',
-      'metric': '✨ Traditional Bilona',
-      'badgeColor': const Color(0xFF8B5CF6), // Royal Purple
-      'title': 'Pure Ghee, Paneer & Sweets',
-      'subtitle':
-          'Handcrafted traditional dairy products made with pure fresh cream and authentic time-honored recipes.',
-      'benefits': [
-        {
-          'icon': Icons.egg_alt_rounded,
-          'title': 'Traditional Desi Ghee',
-          'desc': 'Slow-cooked bilona aroma with golden granular texture.',
-        },
-        {
-          'icon': Icons.layers_rounded,
-          'title': 'Fresh Malai Paneer',
-          'desc': 'Super soft, melt-in-mouth paneer crafted fresh daily.',
-        },
-        {
-          'icon': Icons.cake_rounded,
-          'title': 'Curd, Chaas & Sweets',
-          'desc': 'Probiotic dahi, masala chaas, peda, and seasonal treats.',
-        },
-      ],
-    },
   ];
 
   void _goToLogin() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
-  }
-
-  Future<void> _continueAsGuest() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_guest_user', true);
-    // Note: Do NOT set has_seen_onboarding = true!
-    // Authentication status is the single source of truth for startup routing.
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('👋 Welcome! Continuing as Guest User.'),
-        backgroundColor: Color(0xFF10B981),
-        duration: Duration(seconds: 2),
-      ),
-    );
-
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(),
-        transitionsBuilder: (context, animation, secAnim, child) =>
-            FadeTransition(opacity: animation, child: child),
-        transitionDuration: const Duration(milliseconds: 400),
-      ),
     );
   }
 
@@ -187,7 +131,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0B1120) : const Color(0xFFF8FAFC),
+        backgroundColor: isDark ? const Color(0xFF0B1120) : Colors.white,
         body: SafeArea(
           child: Column(
             children: [
@@ -307,43 +251,51 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   final Color slideColor = slide['badgeColor'] as Color;
                   final List<dynamic> benefits = slide['benefits'] as List<dynamic>;
 
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 4.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                        borderRadius: BorderRadius.circular(26),
-                        border: Border.all(
-                          color: isDark
-                              ? slideColor.withValues(alpha: 0.3)
-                              : slideColor.withValues(alpha: 0.22),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: slideColor.withValues(alpha: 0.14),
-                            blurRadius: 24,
-                            offset: const Offset(0, 8),
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      final availableHeight = constraints.maxHeight;
+                      final isCompact = availableHeight < 580;
+                      final double imageHeight = isCompact
+                          ? 145.0
+                          : (availableHeight * 0.28).clamp(150.0, 192.0);
+
+                      return SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 4.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                            borderRadius: BorderRadius.circular(26),
+                            border: Border.all(
+                              color: isDark
+                                  ? slideColor.withValues(alpha: 0.3)
+                                  : slideColor.withValues(alpha: 0.22),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: slideColor.withValues(alpha: 0.14),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
+                              ),
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.04),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.04),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Hero Image Container with Rounded Corners & Floating Glass Badges
-                          Stack(
-                            clipBehavior: Clip.none,
+                          padding: EdgeInsets.all(isCompact ? 13.0 : 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: double.infinity,
-                                height: 185,
+                              // Hero Image Container with Rounded Corners & Floating Glass Badges
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height: imageHeight,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
@@ -581,6 +533,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   );
                 },
+              );
+            },
               ),
             ),
 
@@ -606,24 +560,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   const SizedBox(height: 12),
 
                   if (_currentPage == _slides.length - 1) ...[
-                    // FINAL ONBOARDING SCREEN ENTRY ACTIONS
-                    // Action 1: LOGIN (Primary Brand Button)
+                    // FINAL SLIDE: Single premium "Get Started" CTA
                     SizedBox(
                       width: double.infinity,
-                      height: 52,
+                      height: 54,
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF10B981), Color(0xFF059669)],
+                            colors: [Color(0xFF0284C7), Color(0xFF0369A1)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF10B981).withValues(alpha: 0.38),
-                              blurRadius: 14,
-                              offset: const Offset(0, 4),
+                              color: const Color(0xFF0284C7).withValues(alpha: 0.45),
+                              blurRadius: 18,
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
@@ -636,14 +589,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.login_rounded, color: Colors.white, size: 20),
-                                  const SizedBox(width: 8),
+                                  const Icon(
+                                    Icons.rocket_launch_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10),
                                   Text(
-                                    'LOGIN',
+                                    'Get Started',
                                     style: GoogleFonts.outfit(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 1.0,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0.5,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -654,51 +611,56 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
 
-                    // Action 2: CONTINUE AS GUEST (Secondary Refined Action)
+                  ] else ...[
+                    // SLIDES 1 & 2 — Full-width Continue button (no back arrow)
                     SizedBox(
                       width: double.infinity,
-                      height: 48,
                       child: Container(
+                        height: 52,
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isDark ? Colors.white24 : Colors.grey.shade300,
-                            width: 1.2,
+                          gradient: LinearGradient(
+                            colors: [currentAccent, currentAccent.withValues(alpha: 0.85)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
+                          borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                              color: currentAccent.withValues(alpha: 0.38),
+                              blurRadius: 16,
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: _continueAsGuest,
+                            onTap: () {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
                             borderRadius: BorderRadius.circular(16),
                             child: Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.person_outline_rounded,
-                                    size: 19,
-                                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                                  Text(
+                                    'Continue',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 15.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    'CONTINUE AS GUEST',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 0.8,
-                                      color: isDark ? Colors.white : const Color(0xFF0F2742),
-                                    ),
+                                  const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: Colors.white,
+                                    size: 19,
                                   ),
                                 ],
                               ),
@@ -706,102 +668,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                       ),
-                    ),
-                  ] else ...[
-                    // SLIDES 0, 1, 2: Back Button (if > 0) + Next Action
-                    Row(
-                      children: [
-                        if (_currentPage > 0) ...[
-                          Container(
-                            height: 48,
-                            width: 48,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.08)
-                                  : Colors.white,
-                              border: Border.all(
-                                color: isDark ? Colors.white12 : Colors.grey.shade300,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back_rounded,
-                                color: isDark ? Colors.white : const Color(0xFF0F2742),
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                _pageController.previousPage(
-                                  duration: const Duration(milliseconds: 280),
-                                  curve: Curves.easeInOut,
-                                );
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                        ],
-                        Expanded(
-                          child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [currentAccent, currentAccent.withValues(alpha: 0.88)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: currentAccent.withValues(alpha: 0.36),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  _pageController.nextPage(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                borderRadius: BorderRadius.circular(15),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Continue',
-                                        style: GoogleFonts.outfit(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.white,
-                                          letterSpacing: 0.4,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      const Icon(
-                                        Icons.arrow_forward_rounded,
-                                        color: Colors.white,
-                                        size: 18,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ],

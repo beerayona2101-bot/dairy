@@ -52,8 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Color(0xFF10B981),
         ),
       );
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const MobileWebViewScreen()),
+        (route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('👋 Welcome! Continuing as Guest User.'),
-        backgroundColor: Color(0xFF10B981),
+        backgroundColor: Color(0xFF0284C7),
         duration: Duration(seconds: 2),
       ),
     );
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 14.0),
@@ -104,9 +105,8 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Action Bar: Back to Onboarding & Skip as Guest
+                // Top Action Bar: Back to Onboarding
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (Navigator.of(context).canPop())
                       IconButton(
@@ -118,25 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                     else
                       const SizedBox.shrink(),
-                    TextButton.icon(
-                      onPressed: _continueAsGuest,
-                      icon: const Icon(Icons.arrow_forward_rounded, size: 16),
-                      label: Text(
-                        'Skip as Guest',
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFF10B981),
-                        backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -251,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: GoogleFonts.outfit(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF10B981),
+                              color: const Color(0xFF0284C7),
                             ),
                           ),
                         ),
@@ -262,6 +243,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       CustomButton(
                         text: 'Sign In',
                         isLoading: authProvider.isLoading,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF5B54F2), Color(0xFF1E88E5)],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
                         onPressed: _handleLogin,
                       ),
                     ],
@@ -291,34 +277,95 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 20),
 
-                // Prominent Guest User Button (Skip Login)
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: OutlinedButton.icon(
-                    onPressed: _continueAsGuest,
-                    icon: const Icon(Icons.person_outline_rounded, size: 20),
-                    label: Text(
-                      'Continue as Guest (Skip Login)',
-                      style: GoogleFonts.outfit(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.2,
+                // Premium Guest User Button
+                GestureDetector(
+                  onTap: _continueAsGuest,
+                  child: Container(
+                    width: double.infinity,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: isDark
+                            ? [
+                                const Color(0xFF1E293B),
+                                const Color(0xFF0F172A),
+                              ]
+                            : [
+                                Colors.white,
+                                const Color(0xFFF0FDF9),
+                              ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isDark ? Colors.white : const Color(0xFF0F2742),
-                      backgroundColor: isDark
-                          ? const Color(0xFF1E293B)
-                          : Colors.white,
-                      side: BorderSide(
-                        color: const Color(0xFF10B981).withValues(alpha: 0.6),
+                      border: Border.all(
+                        color: const Color(0xFF0284C7).withValues(alpha: 0.55),
                         width: 1.5,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: isDark ? 0 : 1,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF0284C7).withValues(alpha: isDark ? 0.12 : 0.08),
+                          blurRadius: 14,
+                          offset: const Offset(0, 4),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF0284C7).withValues(alpha: 0.12),
+                            border: Border.all(
+                              color: const Color(0xFF0284C7).withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.person_outline_rounded,
+                            size: 18,
+                            color: Color(0xFF0284C7),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Continue as Guest',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: isDark ? Colors.white : const Color(0xFF0F2742),
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                            Text(
+                              'Browse without signing in',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: isDark ? Colors.grey.shade400 : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 10),
+                        const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 13,
+                          color: Color(0xFF0284C7),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -347,7 +394,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF10B981),
+                          color: const Color(0xFF0284C7),
                         ),
                       ),
                     ),
