@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import '../config/app_theme.dart';
 
 class MobileWebViewScreen extends StatefulWidget {
   final String? initialUrl;
@@ -19,42 +20,60 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   int _loadingProgress = 0;
   bool _isLoading = true;
   bool _hasError = false;
-  String _errorMessage = '';
   bool _triedFallback = false;
+  Timer? _timeoutTimer;
 
-  // Primary URLs
+  // Candidate connection URLs (managed silently behind the scenes)
   static const String _wifiUrl = 'http://192.168.1.46:5173';
   static const String _usbUrl = 'http://127.0.0.1:5173';
   late String _currentUrl;
-  final TextEditingController _customUrlController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _currentUrl = widget.initialUrl ?? _usbUrl;
-    _customUrlController.text = _currentUrl;
+    _currentUrl = widget.initialUrl ?? _wifiUrl;
     _initWebView();
+    _startTimeoutTimer();
   }
 
   @override
   void dispose() {
-    _customUrlController.dispose();
+    _timeoutTimer?.cancel();
     super.dispose();
+  }
+
+  void _startTimeoutTimer() {
+    _timeoutTimer?.cancel();
+    _timeoutTimer = Timer(const Duration(seconds: 6), () {
+      if (mounted && _isLoading && !_hasError) {
+        if (!_triedFallback) {
+          _triedFallback = true;
+          final nextUrl = (_currentUrl == _wifiUrl) ? _usbUrl : _wifiUrl;
+          _loadSpecificUrl(nextUrl);
+        } else {
+          setState(() {
+            _hasError = true;
+            _isLoading = false;
+          });
+        }
+      }
+    });
   }
 
   void _initWebView() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(false)
-      ..setBackgroundColor(const Color(0xFFF9FAFB))
+      ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
             if (mounted) {
               setState(() {
                 _loadingProgress = progress;
-                if (progress == 100) {
+                if (progress >= 95) {
                   _isLoading = false;
+                  _timeoutTimer?.cancel();
                 }
               });
             }
@@ -65,36 +84,33 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                 _isLoading = true;
                 _hasError = false;
               });
+              _startTimeoutTimer();
             }
           },
           onPageFinished: (String url) {
+            _timeoutTimer?.cancel();
             if (mounted) {
               setState(() {
                 _isLoading = false;
                 _hasError = false;
-                _triedFallback = false; // Reset fallback on successful load
+                _triedFallback = false;
               });
             }
           },
           onWebResourceError: (WebResourceError error) {
             if (error.isForMainFrame ?? true) {
+              _timeoutTimer?.cancel();
               if (mounted) {
-                // If the first URL failed and we haven't tried the alternative, auto-try it!
+                // Auto-try fallback silently if first candidate fails
                 if (!_triedFallback) {
                   _triedFallback = true;
                   final nextUrl = (_currentUrl == _usbUrl) ? _wifiUrl : _usbUrl;
-                  setState(() {
-                    _currentUrl = nextUrl;
-                    _customUrlController.text = nextUrl;
-                    _isLoading = true;
-                  });
-                  _controller.loadRequest(Uri.parse(nextUrl));
+                  _loadSpecificUrl(nextUrl);
                   return;
                 }
 
                 setState(() {
                   _hasError = true;
-                  _errorMessage = error.description;
                   _isLoading = false;
                 });
               }
@@ -106,13 +122,13 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   }
 
   void _loadSpecificUrl(String url) {
+    _timeoutTimer?.cancel();
     setState(() {
       _currentUrl = url;
-      _customUrlController.text = url;
       _hasError = false;
       _isLoading = true;
-      _triedFallback = true; // Manual selection: do not auto-override
     });
+    _startTimeoutTimer();
     _controller.loadRequest(Uri.parse(url));
   }
 
@@ -120,8 +136,10 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     setState(() {
       _hasError = false;
       _isLoading = true;
+      _triedFallback = false;
     });
-    await _controller.loadRequest(Uri.parse(_currentUrl));
+    final nextUrl = (_currentUrl == _wifiUrl) ? _usbUrl : _wifiUrl;
+    _loadSpecificUrl(nextUrl);
   }
 
   @override
@@ -146,11 +164,11 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           }
         },
         child: Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: Colors.white,
           body: SafeArea(
             child: Stack(
               children: [
-                // Render WebView only when no fatal main frame error
+                // Render WebView
                 if (!_hasError)
                   Positioned.fill(
                     child: WebViewWidget(
@@ -163,150 +181,149 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                     ),
                   ),
 
-                // Linear progress indicator while loading
+                // Clean Brand Loading Screen (Zero backend URLs, IPs, or ports)
                 if (_isLoading && !_hasError)
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: LinearProgressIndicator(
-                      value: _loadingProgress > 0 ? _loadingProgress / 100 : null,
-                      backgroundColor: Colors.transparent,
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
-                      minHeight: 3,
-                    ),
-                  ),
-
-                // Connection helper screen
-                if (_hasError)
-                  Center(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.white,
+                      child: Stack(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(18),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primary.withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.wifi_off_rounded,
-                              size: 50,
-                              color: AppTheme.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Cannot Connect to Server',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.textDark,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Target URL: $_currentUrl${_errorMessage.isNotEmpty ? "\nError: $_errorMessage" : ""}',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'monospace',
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Clear instructions card
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.grey.shade300,
+                          if (_loadingProgress > 0 && _loadingProgress < 100)
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              child: LinearProgressIndicator(
+                                value: _loadingProgress / 100,
+                                backgroundColor: Colors.transparent,
+                                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+                                minHeight: 3,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                             ),
+                          Center(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text(
-                                  'How to connect:',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                // Brand Logo with Soft Glow
+                                Container(
+                                  width: 130,
+                                  height: 130,
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(0xFF10B981).withValues(alpha: 0.08),
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/cowLogo.png',
+                                    fit: BoxFit.contain,
+                                    filterQuality: FilterQuality.high,
+                                  ),
                                 ),
-                                const SizedBox(height: 8),
-                                _buildInstructionRow(
-                                  icon: Icons.wifi,
-                                  title: 'Wi-Fi Mode:',
-                                  desc: 'Turn on Wi-Fi on your phone (turn off Mobile Data). Phone and laptop must be on the same Wi-Fi.',
+                                const SizedBox(height: 22),
+                                const SizedBox(
+                                  width: 32,
+                                  height: 32,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+                                    strokeWidth: 3,
+                                  ),
                                 ),
-                                const Divider(height: 16),
-                                _buildInstructionRow(
-                                  icon: Icons.usb,
-                                  title: 'USB Mode:',
-                                  desc: 'Keep USB cable plugged into your PC with USB Debugging enabled.',
+                                const SizedBox(height: 18),
+                                Text(
+                                  'Madhu Dairy',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF0F2742),
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Delivering Farm Purity Daily...',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF64748B),
+                                  ),
                                 ),
                               ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          // Quick Action Buttons
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () => _loadSpecificUrl(_wifiUrl),
-                                  icon: const Icon(Icons.wifi, size: 16),
-                                  label: const Text('Wi-Fi Mode\n192.168.1.46', textAlign: TextAlign.center, style: TextStyle(fontSize: 11)),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppTheme.primary,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () => _loadSpecificUrl(_usbUrl),
-                                  icon: const Icon(Icons.usb, size: 16),
-                                  label: const Text('USB Mode\nlocalhost', textAlign: TextAlign.center, style: TextStyle(fontSize: 11)),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppTheme.primary,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          // Retry Button
-                          SizedBox(
-                            width: double.infinity,
-                            child: TextButton.icon(
-                              onPressed: _reload,
-                              icon: const Icon(Icons.refresh_rounded, size: 18),
-                              label: const Text('Retry Current Connection'),
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppTheme.textDark,
-                              ),
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+
+                // Clean Customer-Friendly Offline/Error Screen (Zero backend details)
+                if (_hasError)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.cloud_off_rounded,
+                                size: 40,
+                                color: Color(0xFF10B981),
+                              ),
+                            ),
+                            const SizedBox(height: 22),
+                            Text(
+                              'Unable to Connect',
+                              style: GoogleFonts.outfit(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF0F2742),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Please check your network connection and try again.',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.outfit(
+                                fontSize: 13.5,
+                                color: const Color(0xFF64748B),
+                                height: 1.4,
+                              ),
+                            ),
+                            const SizedBox(height: 26),
+                            SizedBox(
+                              width: 170,
+                              height: 46,
+                              child: ElevatedButton.icon(
+                                onPressed: _reload,
+                                icon: const Icon(Icons.refresh_rounded, size: 18),
+                                label: Text(
+                                  'Retry',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF10B981),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -315,31 +332,6 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInstructionRow({
-    required IconData icon,
-    required String title,
-    required String desc,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: AppTheme.primary),
-        const SizedBox(width: 8),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: const TextStyle(fontSize: 12, color: Color(0xFF334155), height: 1.3),
-              children: [
-                TextSpan(text: '$title ', style: const TextStyle(fontWeight: FontWeight.bold)),
-                TextSpan(text: desc),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

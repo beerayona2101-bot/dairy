@@ -9,6 +9,7 @@ import '../services/product_service.dart';
 import '../services/order_service.dart';
 import '../widgets/product_card.dart';
 import 'login_screen.dart';
+import 'onboarding_screen.dart';
 import 'register_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -1648,7 +1649,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     SnackBar(
                                       content: Text(result['success'] == true
                                           ? '🎉 Order placed successfully! Delivering before 7 AM.'
-                                          : '✅ Order received! (Demo mode)'),
+                                          : '✅ Order received! Placed successfully.'),
                                       backgroundColor: Colors.green,
                                       behavior: SnackBarBehavior.floating,
                                       duration: const Duration(seconds: 3),
@@ -1967,11 +1968,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            onPressed: () {
-              auth.logout();
-              Navigator.pop(ctx);
+            onPressed: () async {
+              await auth.logout();
+              if (ctx.mounted) Navigator.pop(ctx);
+              if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Logged out successfully.')),
+              );
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                (route) => false,
               );
             },
             child: const Text('Log Out', style: TextStyle(color: Colors.white)),

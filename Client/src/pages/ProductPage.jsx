@@ -277,7 +277,7 @@ export default function ProductPage() {
                                 <BackButton fallbackPath="/products" hideOnWeb={false} variant="glass" label="Back to Categories" title="Back to All Categories" />
                             </div>
 
-                            {/* Main Full-Bleed Category Banner Image */}
+                            {/* Main Full-Bleed Category Banner Image with Continuous Zoom In & Out Animation */}
                             <img
                                 src={categoryInfo.image}
                                 alt={categoryInfo.title}
@@ -285,7 +285,7 @@ export default function ProductPage() {
                                     e.target.onerror = null;
                                     e.target.src = getCardBackgroundImage(categoryInfo?.title);
                                 }}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                className="w-full h-full object-cover animate-banner-zoom pointer-events-none"
                             />
 
                             {/* Banner Bottom Text Gradient Overlay */}

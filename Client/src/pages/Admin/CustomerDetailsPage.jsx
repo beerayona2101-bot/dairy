@@ -30,7 +30,7 @@ export default function CustomerDetailsPage() {
   const [toDate, setToDate] = useState("");
 
   const companyName = "MADHU Dairy & Daily Needs";
-  const appLink = "http://localhost:5173";
+  const appLink = window.location.origin;
 
   useEffect(() => {
     const handleUserOrdersHistory = async () => {

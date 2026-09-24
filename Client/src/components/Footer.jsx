@@ -71,7 +71,10 @@ function Footer() {
     <footer className="relative w-full z-10 bg-[#0B121E] text-slate-300 border-t border-[#1E293B] transition-colors duration-300">
 
       {/* ─── MOBILE COMPACT LAYOUT (hidden on lg+) ─── */}
-      <div className="lg:hidden px-5 pt-7 pb-2">
+      <div 
+        className="lg:hidden px-5 pt-6"
+        style={{ paddingBottom: 'calc(58px + max(env(safe-area-inset-bottom, 0px), 6px))' }}
+      >
         {/* Top row: Logo */}
         <div className="flex items-center justify-between mb-4">
           <Link to="/" className="inline-block">
@@ -80,13 +83,13 @@ function Footer() {
               alt={company?.name || "MADHU Dairy"}
               loading="eager"
               decoding="sync"
-              className="h-8 w-auto object-contain"
+              className="h-10 w-auto object-contain"
             />
           </Link>
         </div>
 
         {/* Links: 3 columns side by side */}
-        <div className="grid grid-cols-3 gap-x-4 gap-y-1 mb-5">
+        <div className="grid grid-cols-3 gap-x-4 gap-y-1 mb-4">
           {linkSections.map((section) => (
             <div key={section.heading}>
               <p className="text-[10px] font-black uppercase tracking-wider text-white mb-2">
@@ -110,7 +113,7 @@ function Footer() {
 
         {/* Social Icons row */}
         {socialIcons.some(({ key }) => company?.socials?.[key]) && (
-          <div className="flex items-center gap-2.5 mb-5">
+          <div className="flex items-center gap-2.5 mb-4">
             {socialIcons.map(({ key, Icon, className }) =>
               company?.socials?.[key] ? (
                 <a
@@ -129,7 +132,7 @@ function Footer() {
         )}
 
         {/* Copyright */}
-        <div className="border-t border-[#1E293B] pt-3 pb-1 text-[10px] text-[#475569] font-medium text-center">
+        <div className="border-t border-[#1E293B] pt-2.5 pb-1 text-[10px] text-[#475569] font-medium text-center">
           © {new Date().getFullYear()} {company?.name || "MADHU Dairy"} · Made with ❤️ for pure living
         </div>
       </div>
@@ -151,7 +154,7 @@ function Footer() {
                 alt={company?.name || "MADHU Dairy"}
                 loading="eager"
                 decoding="sync"
-                className="h-12 w-auto object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
+                className="h-14 w-auto object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
               />
             </Link>
 

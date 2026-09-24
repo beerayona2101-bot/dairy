@@ -30,7 +30,21 @@ export const toggleGuestWishlist = (productId) => {
     return { updated, added };
 };
 
+export const setGuestWishlist = (ids) => {
+    try {
+        const clean = Array.isArray(ids)
+            ? ids.filter(id => id && id !== "null" && id !== "undefined" && String(id).trim() !== "")
+            : [];
+        localStorage.setItem("guestWishlist", JSON.stringify(clean));
+        window.dispatchEvent(new Event("guestWishlistUpdated"));
+        return clean;
+    } catch {
+        return [];
+    }
+};
+
 export const clearGuestWishlist = () => {
     localStorage.removeItem("guestWishlist");
     window.dispatchEvent(new Event("guestWishlistUpdated"));
 };
+

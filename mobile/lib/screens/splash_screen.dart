@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import 'mobile_web_view_screen.dart';
 import 'onboarding_screen.dart';
 
@@ -45,24 +46,28 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _initializeApp() async {
-    // Keep splash visible so user sees the brand logo animation
-    await Future.delayed(const Duration(milliseconds: 2300));
+    // 1. Initialize auth provider and restore session tokens
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.initAuth();
 
-    final prefs = await SharedPreferences.getInstance();
-    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    // 2. Keep splash visible for smooth brand hero logo animation
+    await Future.delayed(const Duration(milliseconds: 1800));
 
     if (!mounted) return;
 
-    final Widget nextScreen = hasSeenOnboarding
+    // Routing decision:
+    // - Authenticated: go directly to main app (MobileWebViewScreen). Skip onboarding completely!
+    // - Not authenticated (including new and guest users on restart): show onboarding flow.
+    final Widget targetScreen = authProvider.isAuthenticated
         ? const MobileWebViewScreen()
         : const OnboardingScreen();
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, anim, secAnim) => nextScreen,
+        pageBuilder: (context, anim, secAnim) => targetScreen,
         transitionsBuilder: (context, animation, secAnim, child) =>
             FadeTransition(opacity: animation, child: child),
-        transitionDuration: const Duration(milliseconds: 600),
+        transitionDuration: const Duration(milliseconds: 500),
       ),
     );
   }
@@ -133,12 +138,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                               ),
                               padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Image.asset(
-                                'assets/images/madhur_dairy_logo.png',
+                                'assets/images/cowLogo.png',
                                 fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) => Image.asset(
-                                  'assets/images/cowLogo.png',
-                                  fit: BoxFit.contain,
-                                ),
+                                filterQuality: FilterQuality.high,
                               ),
                             ),
                           ),

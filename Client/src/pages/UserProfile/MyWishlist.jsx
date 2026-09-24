@@ -12,7 +12,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { getGuestWishlist, toggleGuestWishlist, clearGuestWishlist } from "../../utils/guestWishlist";
+import { getGuestWishlist, toggleGuestWishlist, clearGuestWishlist, setGuestWishlist } from "../../utils/guestWishlist";
 import BackButton from "../../components/Common/BackButton";
 
 
@@ -49,6 +49,10 @@ export default function MyWishlist() {
           if (Array.isArray(products) && products.length > 0) {
             const matched = products.filter((p) => guestIds.includes(String(p._id)));
             setWishlist(matched);
+            // If any guest ID does not exist in products, prune it from localStorage
+            if (matched.length !== guestIds.length) {
+              setGuestWishlist(matched.map((p) => String(p._id)));
+            }
           } else {
             setWishlist([]);
           }
@@ -68,6 +72,9 @@ export default function MyWishlist() {
         if (Array.isArray(products) && products.length > 0) {
           const matched = products.filter((p) => guestIds.includes(String(p._id)));
           setWishlist(matched);
+          if (matched.length !== guestIds.length) {
+            setGuestWishlist(matched.map((p) => String(p._id)));
+          }
         } else {
           setWishlist([]);
         }

@@ -16,11 +16,11 @@ export default function HomeWelcomeHero() {
 
     return (
         <section className="relative w-full h-[22vh] min-h-[170px] sm:h-auto sm:min-h-[320px] md:h-[calc(100vh-56px)] md:min-h-[calc(100vh-56px)] overflow-hidden text-white bg-slate-900 dark:bg-slate-950 flex items-center">
-            {/* 1. Full-Width Background Image */}
+            {/* 1. Full-Width Background Image with Continuous Zoom In & Out Animation */}
             <img
-                src={homeHeroBg}
+                src={pageContent?.heroBannerImage || homeHeroBg}
                 alt="MADHU Dairy Home Welcome Hero"
-                className="absolute inset-0 w-full h-full object-cover object-[center_25%] md:object-right z-0 brightness-105 contrast-105 saturate-105"
+                className="absolute inset-0 w-full h-full object-cover object-[center_25%] md:object-right z-0 brightness-105 contrast-105 saturate-105 animate-banner-zoom-hero pointer-events-none"
             />
 
             {/* 2. Soft Gradient Overlay for Pristine Image Clarity & Legibility */}

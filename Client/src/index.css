@@ -590,8 +590,52 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .periodic-glass-shine::before,
   .btn-reflection::before,
-  .glass-shine-card::before {
+  .glass-shine-card::before,
+  .animate-banner-zoom,
+  .animate-banner-zoom-hero {
     animation: none !important;
     display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Continuous Banner Zoom In & Out Animation (Ken Burns Breathing Effect)
+   Buttery smooth GPU-accelerated 60fps infinite breathing zoom across all screen sizes
+   ========================================================================== */
+@keyframes bannerZoomInOut {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-banner-zoom {
+  animation: bannerZoomInOut 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite !important;
+  transform-origin: center center;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Home Welcome Hero Banner with focal point preservation across responsive breakpoints */
+.animate-banner-zoom-hero {
+  animation: bannerZoomInOut 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite !important;
+  transform-origin: 50% 25%;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+@media (min-width: 768px) {
+  .animate-banner-zoom-hero {
+    animation-duration: 14s !important;
+    transform-origin: 80% 50%;
   }
 }

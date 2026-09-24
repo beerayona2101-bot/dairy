@@ -48,13 +48,6 @@ export default function Layout({ children }) {
 
             {/* Footer sits naturally at the bottom of page content — NEVER sticky or in initial fold */}
             {!hideFooter && <Footer />}
-
-            {/* Transparent spacer: clears the fixed mobile bottom nav bar (64px + safe-area) */}
-            <div
-                className="lg:hidden shrink-0 w-full"
-                style={{ height: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
-                aria-hidden="true"
-            />
         </div>
     );
 }

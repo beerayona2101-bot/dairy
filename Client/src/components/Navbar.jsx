@@ -39,7 +39,8 @@ import logoLightMode from "../assets/logoLightMode.png";
 import cowLogoImg from "../assets/cow.png";
 import brandNameTxtImg from "../assets/brand name txt.png";
 
-import { getGuestWishlist } from '../utils/guestWishlist';
+import { ProductContext } from '../context/ProductProvider';
+import { getGuestWishlist, setGuestWishlist } from '../utils/guestWishlist';
 import { prefetchProducts, prefetchPageContent } from '../utils/prefetch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -61,26 +62,45 @@ export default function Navbar() {
     const { authAdmin, setAuthAdmin, authAdminLoading, handleAdminLogout } = useContext(AdminAuthContext);
     const { cartItems } = useContext(CartContext);
     const { notification, setNotification, unreadCount } = useContext(UserOrderContext);
+    const { products } = useContext(ProductContext);
 
     const [guestWishlistCount, setGuestWishlistCount] = useState(() => getGuestWishlist().length);
 
     useEffect(() => {
-        const updateGuestCount = () => setGuestWishlistCount(getGuestWishlist().length);
+        const updateGuestCount = () => {
+            const raw = getGuestWishlist();
+            if (Array.isArray(products) && products.length > 0) {
+                const valid = raw.filter(id => products.some(p => String(p._id) === String(id)));
+                if (valid.length !== raw.length) {
+                    setGuestWishlist(valid);
+                }
+                setGuestWishlistCount(valid.length);
+            } else {
+                setGuestWishlistCount(raw.length);
+            }
+        };
+
+        updateGuestCount();
         window.addEventListener("guestWishlistUpdated", updateGuestCount);
         return () => window.removeEventListener("guestWishlistUpdated", updateGuestCount);
-    }, []);
+    }, [products]);
 
     const activeWishlist = authUser?.wishlistedProducts || authAdmin?.wishlistedProducts || null;
     const wishlistCount = activeWishlist !== null
         ? (Array.isArray(activeWishlist)
             ? activeWishlist.filter(item => {
                 if (!item) return false;
-                if (typeof item === "string") return Boolean(item.trim() && item !== "null" && item !== "undefined");
-                if (typeof item === "object") return Boolean(item._id);
-                return false;
+                const id = typeof item === "string" ? item.trim() : (item?._id ? String(item._id) : "");
+                if (!id || id === "null" || id === "undefined") return false;
+                if (Array.isArray(products) && products.length > 0) {
+                    return products.some(p => String(p._id) === id);
+                }
+                return true;
               }).length
             : 0)
-        : guestWishlistCount;
+        : (Array.isArray(products) && products.length > 0
+            ? getGuestWishlist().filter(id => products.some(p => String(p._id) === String(id))).length
+            : guestWishlistCount);
 
     const [isScrolling, setIsScrolling] = useState(false);
     const scrollTimeoutRef = useRef(null);
@@ -426,7 +446,16 @@ export default function Navbar() {
                     )}
 
                     {/* Right Action Icons: ♡, 🛍️, 🔔 */}
-                    <div className="flex items-center gap-2 sm:gap-3 z-10">
+                    <div className="flex items-center gap-1.5 sm:gap-3 z-10">
+                        {/* Mobile Onboarding Cards Trigger */}
+                        <button
+                            onClick={() => window.dispatchEvent(new Event("openMobileOnboarding"))}
+                            className="flex md:hidden items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-black text-[#6C5CE7] dark:text-[#A78BFA] bg-purple-50 dark:bg-purple-950/50 border border-purple-200/80 dark:border-purple-800/80 shadow-sm active:scale-95 transition-all cursor-pointer"
+                            title="View Onboarding Cards"
+                        >
+                            <span>✨ Tour</span>
+                        </button>
+
                         {/* Wishlist Pill (Hidden on mobile response) */}
                         <Tooltip title="Wishlist">
                             <button
@@ -599,6 +628,17 @@ export default function Navbar() {
                         <MenuItem
                             onClick={() => {
                                 handleProfileMenuClose();
+                                window.dispatchEvent(new Event("openMobileOnboarding"));
+                            }}
+                            className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-purple-600 dark:text-purple-400 hover:!bg-purple-50 dark:hover:!bg-gray-800"
+                        >
+                            <span className="text-sm">✨</span>
+                            <span>Onboarding Cards</span>
+                        </MenuItem>
+
+                        <MenuItem
+                            onClick={() => {
+                                handleProfileMenuClose();
                                 handleUserLogout();
                                 enqueueSnackbar("Logged Out Successfully", { variant: "success" });
                                 navigate("/");
@@ -614,13 +654,13 @@ export default function Navbar() {
 
             {/* Mobile Bottom Navigation Bar */}
             {!location.pathname.startsWith('/product-details') && !isCheckoutPage && (
-                <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 pb-[env(safe-area-inset-bottom)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-2 transition-transform duration-300 ease-in-out ${
+                <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 min-h-[58px] pt-1 pb-[max(env(safe-area-inset-bottom,0px),4px)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-2 transition-transform duration-300 ease-in-out ${
                     isScrolling ? "translate-y-full" : "translate-y-0"
                 }`}>
                     {/* 1. Products */}
                     <Link
                         to="/products"
-                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all ${
+                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all ${
                             location.pathname.startsWith('/products')
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
@@ -629,13 +669,13 @@ export default function Navbar() {
                         <ShoppingBag className={`w-5 h-5 transition-all duration-200 ${
                             location.pathname.startsWith('/products') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                         }`} />
-                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Products</span>
+                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Products</span>
                     </Link>
 
                     {/* 2. Wishlist */}
                     <button
                         onClick={handleUserWishlist}
-                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.includes('/wishlist')
                                 ? "text-[#FF385C] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#FF385C]"
@@ -651,22 +691,22 @@ export default function Navbar() {
                                 </span>
                             )}
                         </div>
-                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Wishlist</span>
+                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Wishlist</span>
                     </button>
 
                     {/* 3. Centralized Home Button */}
                     <Link
                         to="/home"
-                        className="flex flex-col items-center justify-center -mt-6 group cursor-pointer"
+                        className="flex flex-col items-center justify-center -mt-5 group cursor-pointer"
                     >
-                        <div className={`p-3 rounded-full border-4 border-white dark:border-slate-900 shadow-xl transition-all duration-300 ${
+                        <div className={`p-2.5 rounded-full border-4 border-white dark:border-slate-900 shadow-xl transition-all duration-300 ${
                             location.pathname === '/home' || location.pathname === '/'
                                 ? "bg-gradient-to-tr from-[#6C5CE7] to-[#805AD5] text-white scale-110 shadow-[0_4px_20px_rgba(108,92,231,0.5)] ring-2 ring-[#6C5CE7]/30"
                                 : "bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-[#A78BFA] border border-purple-200/80 dark:border-purple-800/80 group-hover:scale-105"
                         }`}>
-                            <Home className="w-6 h-6 stroke-[2.2]" />
+                            <Home className="w-5 h-5 stroke-[2.2]" />
                         </div>
-                        <span className={`text-[11px] font-extrabold mt-0.5 ${
+                        <span className={`text-[10px] leading-none font-extrabold mt-1 ${
                             location.pathname === '/home' || location.pathname === '/'
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black"
                                 : "text-slate-800 dark:text-slate-200"
@@ -678,7 +718,7 @@ export default function Navbar() {
                     {/* 4. Cart */}
                     <button
                         onClick={handleUserCart}
-                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname === '/cart'
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
@@ -694,13 +734,13 @@ export default function Navbar() {
                                 </span>
                             )}
                         </div>
-                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Cart</span>
+                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Cart</span>
                     </button>
 
                     {/* 5. Profile (Right-most) */}
                     <button
                         onClick={handleProfileClick}
-                        className={`flex flex-col items-center justify-center w-14 py-1 text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
@@ -710,14 +750,14 @@ export default function Navbar() {
                             <Avatar
                                 alt={authUser?.firstName}
                                 src={authUser?.photo}
-                                sx={{ width: 22, height: 22, border: "1.5px solid #6C5CE7" }}
+                                sx={{ width: 20, height: 20, border: "1.5px solid #6C5CE7" }}
                             />
                         ) : (
                             <User className={`w-5 h-5 transition-all duration-200 ${
                                 location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                             }`} />
                         )}
-                        <span className="text-[11px] mt-1 font-extrabold tracking-tight">Profile</span>
+                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Profile</span>
                     </button>
                 </nav>
             )}

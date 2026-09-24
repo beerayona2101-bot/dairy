@@ -86,18 +86,18 @@ export default function DairyShowcaseBanner() {
         </motion.div>
       </div>
 
-      {/* ── FULL-WIDTH PRODUCT IMAGE (breaks out of any container) ── */}
+      {/* ── FULL-WIDTH PRODUCT IMAGE WITH CONTINUOUS ZOOM (breaks out of any container) ── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false, amount: 0.15 }}
         transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full mt-0"
+        className="w-full mt-0 overflow-hidden"
       >
         <img
           src={madhuLineupFullwidth}
           alt="Madhu Dairy Wide Range of Products - A2 Milk, Milk, Cow Ghee, Paneer, Curd, Butter, Lassi, Sweet Peda with milk splash"
-          className="w-full h-auto object-cover object-center block"
+          className="w-full h-auto object-cover object-center block animate-banner-zoom pointer-events-none"
           style={{ maxHeight: "clamp(220px, 38vw, 560px)" }}
           loading="lazy"
         />
