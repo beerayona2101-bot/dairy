@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'config/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
@@ -15,10 +16,15 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     HttpOverrides.global = MyHttpOverrides();
+  }
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint("Firebase init notice: $e");
   }
   runApp(const MadhuDairyApp());
 }

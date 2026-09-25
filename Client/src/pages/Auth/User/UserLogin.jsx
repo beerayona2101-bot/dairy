@@ -178,7 +178,7 @@ export default function UserLogin() {
               <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1.5">
                 Email Address
               </label>
-              <div className="flex items-center px-3.5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus-within:border-[#0284C7] focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all">
+              <div className="flex items-center px-3.5 py-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 transition-all">
                 <Mail className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
                 <input
                   type="email"
@@ -197,7 +197,7 @@ export default function UserLogin() {
               <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1.5">
                 Password
               </label>
-              <div className="flex items-center px-3.5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus-within:border-[#0284C7] focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all">
+              <div className="flex items-center px-3.5 py-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 transition-all">
                 <Lock className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
                 <input
                   name="password"

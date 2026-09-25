@@ -1,75 +1,10 @@
 import React from "react";
 import { Sparkles, Image as ImageIcon } from "lucide-react";
+import { generateAiNutritionalProfile } from "../../../utils/nutritionUtils";
 
-export const generateAiNutritionalProfile = (title) => {
-  const lower = (title || "").toLowerCase();
-  
-  if (lower.includes("cream")) {
-    return [
-      { label: "Milk Fat & Creaminess", percent: 96, val: "40% Pure Milk Fat", color: "#6C5CE7" },
-      { label: "Energy & Calories", percent: 92, val: "340 kcal / 100g", color: "#8B5CF6" },
-      { label: "Calcium & Minerals", percent: 85, val: "95mg Calcium", color: "#A78BFA" },
-      { label: "Natural Protein", percent: 78, val: "2.1g Protein", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 98, val: "4.9★ Whipping Grade", color: "#3B0764" }
-    ];
-  } else if (lower.includes("paneer")) {
-    return [
-      { label: "Protein Content", percent: 98, val: "18.3g / 100g", color: "#6C5CE7" },
-      { label: "Calcium Level", percent: 94, val: "480mg DV", color: "#8B5CF6" },
-      { label: "Healthy Dairy Fat", percent: 90, val: "20.8% A2 Fat", color: "#A78BFA" },
-      { label: "Sugar Content", percent: 99, val: "0.2g Low Sugar", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 97, val: "4.9★ Verified", color: "#3B0764" }
-    ];
-  } else if (lower.includes("ghee")) {
-    return [
-      { label: "Pure Healthy Fat", percent: 99, val: "99.7% A2 Ghee", color: "#6C5CE7" },
-      { label: "Energy Boost", percent: 96, val: "897 kcal/100g", color: "#8B5CF6" },
-      { label: "Vitamin A & E", percent: 94, val: "Rich Antioxidants", color: "#A78BFA" },
-      { label: "Lactose & Sugar", percent: 100, val: "0% Lactose Free", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 98, val: "5.0★ Rating", color: "#3B0764" }
-    ];
-  } else if (lower.includes("curd") || lower.includes("dahi")) {
-    return [
-      { label: "Probiotics & Gut Health", percent: 97, val: "Live Cultures", color: "#6C5CE7" },
-      { label: "Protein Content", percent: 90, val: "4.2g / 100g", color: "#8B5CF6" },
-      { label: "Calcium Level", percent: 93, val: "150mg DV", color: "#A78BFA" },
-      { label: "Natural Sugar", percent: 86, val: "3.2g Natural", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 95, val: "4.8★ Choice", color: "#3B0764" }
-    ];
-  } else if (lower.includes("butter")) {
-    return [
-      { label: "Pure Dairy Fat", percent: 97, val: "82% Milk Fat", color: "#6C5CE7" },
-      { label: "Vitamin A & D", percent: 92, val: "Essential Vitamins", color: "#8B5CF6" },
-      { label: "Natural Moisture", percent: 88, val: "16% Natural Water", color: "#A78BFA" },
-      { label: "Sodium / Salt", percent: 84, val: "1.2% Balanced Salt", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 96, val: "4.9★ Creamy", color: "#3B0764" }
-    ];
-  } else if (lower.includes("lassi") || lower.includes("chaas") || lower.includes("buttermilk")) {
-    return [
-      { label: "Hydration & Coolant", percent: 96, val: "Natural Coolant", color: "#6C5CE7" },
-      { label: "Probiotics", percent: 92, val: "Active Cultures", color: "#8B5CF6" },
-      { label: "Protein Content", percent: 85, val: "2.8g / 100ml", color: "#A78BFA" },
-      { label: "Sugar Content", percent: 84, val: "Balanced Taste", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 94, val: "4.8★ Refreshing", color: "#3B0764" }
-    ];
-  } else if (lower.includes("sweet") || lower.includes("ped") || lower.includes("jamun") || lower.includes("rasgulla") || lower.includes("shrikhand") || lower.includes("basundi")) {
-    return [
-      { label: "Rich Milk Solids", percent: 94, val: "100% Pure Khoya", color: "#6C5CE7" },
-      { label: "Natural Energy", percent: 90, val: "Instant Energy", color: "#8B5CF6" },
-      { label: "Calcium & Minerals", percent: 88, val: "Dairy Minerals", color: "#A78BFA" },
-      { label: "Sweetness Balance", percent: 92, val: "Pure Cane Sugar", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 99, val: "5.0★ Traditional", color: "#3B0764" }
-    ];
-  } else {
-    return [
-      { label: "Protein Content", percent: 92, val: "3.4g / 100ml", color: "#6C5CE7" },
-      { label: "Calcium & Minerals", percent: 95, val: "120mg DV", color: "#8B5CF6" },
-      { label: "Healthy Milk Fat", percent: 88, val: "3.8% Pure Fat", color: "#A78BFA" },
-      { label: "Natural Sugar Content", percent: 82, val: "4.7g Natural", color: "#6D28D9" },
-      { label: "Customer Approval", percent: 96, val: "4.9★ Favorite", color: "#3B0764" }
-    ];
-  }
-};
+export { generateAiNutritionalProfile };
+
+
 
 export default function ShowcaseProfileEditor({
   productName,

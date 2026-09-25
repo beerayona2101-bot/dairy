@@ -17,9 +17,11 @@ router.post("/login", wrapAsync(loginUser));
 
 router.post("/google-login", wrapAsync(loginWithGoogle));
 
-router.post ("/verify-email", wrapAsync(verifyUser))
+router.post("/verify-email", wrapAsync(verifyUser));
 
-router.post("/reset-password", wrapAsync(resetPassword))
+router.post("/reset-password", wrapAsync(resetPassword));
+
+router.post("/verify-otp", wrapAsync(resetPassword));
 
 router.post("/signup/otp-verification", wrapAsync(verifyOtp));
 

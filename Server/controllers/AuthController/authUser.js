@@ -344,21 +344,22 @@ export const loginWithGoogle = async (req, res) => {
 export const verifyUser = async (req, res) => {
   const { email } = req.body;
 
-  if (!email) {
+  if (!email || !email.trim()) {
     return res
       .status(400)
-      .json({ success: false, message: "Email not found." });
+      .json({ success: false, message: "Please enter your registered email address." });
   }
 
-  const user = await User.findOne({ email: email });
+  const cleanEmail = email.trim().toLowerCase();
+  const user = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
 
   if (!user) {
-    return res.status(400).json({ success: false, message: "User not found" });
+    return res.status(404).json({ success: false, message: "No account registered with this email address." });
   }
 
   res
     .status(200)
-    .json({ success: true, message: "User verified", email: user?.email });
+    .json({ success: true, message: "User verified successfully.", email: user?.email });
 };
 
 export const verifyOtp = async (req, res) => {

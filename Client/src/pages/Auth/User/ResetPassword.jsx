@@ -65,10 +65,6 @@ export default function ResetPassword() {
       </div>
 
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition mt-12 sm:mt-0">
-        <div className="mb-4">
-          <BackButton fallbackPath="/login" label="Back to Login Page" />
-        </div>
-
         <h2 className="text-3xl font-semibold text-[#1E88E5] dark:text-white mb-6">Reset Password</h2>
         <p className="text-sm mb-4 text-gray-600 dark:text-gray-300">
           Set a new password for your account <span className="font-medium">{email}</span>

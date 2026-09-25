@@ -20,115 +20,16 @@ import { getProductImage, getDiscountedPrice } from "../../utils/helper";
 import { formatNumberWithCommas } from "../../utils/format";
 import { useSnackbar } from "notistack";
 import { getGuestWishlist, toggleGuestWishlist } from "../../utils/guestWishlist";
+import { generateAiNutritionalProfile, getNormalizedNutritionMetrics } from "../../utils/nutritionUtils";
 
 // High quality transparent cow cutout illustration fallback
 const COW_ILLUSTRATION = "https://res.cloudinary.com/cf1z70hh/image/upload/v1786969548/MADHU_dairy_products/tpk19n9emretjunded8t.jpg";
 
-// Smart AI Nutritional & Health Profile Generator
-export const generateAiNutritionalProfile = (title) => {
-    const lower = (title || "").toLowerCase();
-    
-    if (lower.includes("cream")) {
-        return [
-            { label: "Milk Fat & Creaminess", percent: 96, val: "40% Pure Milk Fat", color: "#6C5CE7" },
-            { label: "Energy & Calories", percent: 92, val: "340 kcal / 100g", color: "#F59E0B" },
-            { label: "Calcium & Minerals", percent: 85, val: "95mg Calcium", color: "#00ACC1" },
-            { label: "Natural Protein", percent: 78, val: "2.1g Protein", color: "#00B894" },
-            { label: "Customer Approval", percent: 98, val: "4.9★ Whipping Grade", color: "#FF7675" }
-        ];
-    } else if (lower.includes("paneer")) {
-        return [
-            { label: "Protein Content", percent: 98, val: "18.3g / 100g", color: "#00B894" },
-            { label: "Calcium Level", percent: 94, val: "480mg DV", color: "#00ACC1" },
-            { label: "Healthy Dairy Fat", percent: 90, val: "20.8% A2 Fat", color: "#6C5CE7" },
-            { label: "Sugar Content", percent: 99, val: "0.2g Low Sugar", color: "#F59E0B" },
-            { label: "Customer Approval", percent: 97, val: "4.9★ Verified", color: "#FF7675" }
-        ];
-    } else if (lower.includes("ghee")) {
-        return [
-            { label: "Pure Healthy Fat", percent: 99, val: "99.7% A2 Ghee", color: "#6C5CE7" },
-            { label: "Energy Boost", percent: 96, val: "897 kcal/100g", color: "#F59E0B" },
-            { label: "Vitamin A & E", percent: 94, val: "Rich Antioxidants", color: "#00B894" },
-            { label: "Lactose & Sugar", percent: 100, val: "0% Lactose Free", color: "#00ACC1" },
-            { label: "Customer Approval", percent: 98, val: "5.0★ Rating", color: "#FF7675" }
-        ];
-    } else if (lower.includes("curd") || lower.includes("dahi")) {
-        return [
-            { label: "Probiotics & Gut Health", percent: 97, val: "Live Cultures", color: "#00B894" },
-            { label: "Protein Content", percent: 90, val: "4.2g / 100g", color: "#00ACC1" },
-            { label: "Calcium Level", percent: 93, val: "150mg DV", color: "#6C5CE7" },
-            { label: "Natural Sugar", percent: 86, val: "3.2g Natural", color: "#F59E0B" },
-            { label: "Customer Approval", percent: 95, val: "4.8★ Choice", color: "#FF7675" }
-        ];
-    } else if (lower.includes("butter")) {
-        return [
-            { label: "Pure Dairy Fat", percent: 97, val: "82% Milk Fat", color: "#6C5CE7" },
-            { label: "Vitamin A & D", percent: 92, val: "Essential Vitamins", color: "#F59E0B" },
-            { label: "Natural Moisture", percent: 88, val: "16% Natural Water", color: "#00ACC1" },
-            { label: "Sodium / Salt", percent: 84, val: "1.2% Balanced Salt", color: "#00B894" },
-            { label: "Customer Approval", percent: 96, val: "4.9★ Creamy", color: "#FF7675" }
-        ];
-    } else if (lower.includes("lassi") || lower.includes("chaas") || lower.includes("buttermilk")) {
-        return [
-            { label: "Hydration & Coolant", percent: 96, val: "Natural Coolant", color: "#00ACC1" },
-            { label: "Probiotics", percent: 92, val: "Active Cultures", color: "#00B894" },
-            { label: "Protein Content", percent: 85, val: "2.8g / 100ml", color: "#6C5CE7" },
-            { label: "Sugar Content", percent: 84, val: "Balanced Taste", color: "#F59E0B" },
-            { label: "Customer Approval", percent: 94, val: "4.8★ Refreshing", color: "#FF7675" }
-        ];
-    } else if (lower.includes("sweet") || lower.includes("ped") || lower.includes("jamun") || lower.includes("rasgulla") || lower.includes("shrikhand") || lower.includes("basundi")) {
-        return [
-            { label: "Rich Milk Solids", percent: 94, val: "100% Pure Khoya", color: "#6C5CE7" },
-            { label: "Natural Energy", percent: 90, val: "Instant Energy", color: "#F59E0B" },
-            { label: "Calcium & Minerals", percent: 88, val: "Dairy Minerals", color: "#00B894" },
-            { label: "Sweetness Balance", percent: 92, val: "Pure Cane Sugar", color: "#00ACC1" },
-            { label: "Customer Approval", percent: 99, val: "5.0★ Traditional", color: "#FF7675" }
-        ];
-    } else {
-        return [
-            { label: "Protein Content", percent: 92, val: "3.4g / 100ml", color: "#00B894" },
-            { label: "Calcium & Minerals", percent: 95, val: "120mg DV", color: "#00ACC1" },
-            { label: "Healthy Milk Fat", percent: 88, val: "3.8% Pure Fat", color: "#6C5CE7" },
-            { label: "Natural Sugar Content", percent: 82, val: "4.7g Natural", color: "#F59E0B" },
-            { label: "Customer Approval", percent: 96, val: "4.9★ Favorite", color: "#FF7675" }
-        ];
-    }
-};
 
-export const getNormalizedNutritionMetrics = (item, title) => {
-    const defaultMetrics = generateAiNutritionalProfile(title);
-
-    let rawMetrics = item?.nutritionMetrics || item?.nutrition?.nutritionMetrics;
-    if (Array.isArray(rawMetrics) && rawMetrics.length > 0) {
-        return rawMetrics.map((m, idx) => ({
-            label: m.label || m.name || `Metric ${idx + 1}`,
-            percent: Number(m.percent) || (92 - idx * 3),
-            val: m.val || m.value || `${m.percent || 90}%`,
-            color: m.color || (idx === 0 ? "#00B894" : idx === 1 ? "#00ACC1" : idx === 2 ? "#6C5CE7" : idx === 3 ? "#F59E0B" : "#FF7675")
-        }));
-    }
-
-    if (Array.isArray(item?.nutrition) && item.nutrition.length > 0) {
-        return item.nutrition.map((str, idx) => {
-            const parts = String(str).split(":");
-            const label = parts[0]?.trim() || "Nutrient";
-            const val = parts[1]?.trim() || String(str);
-            const defaultM = defaultMetrics[idx] || defaultMetrics[0];
-            return {
-                label: label,
-                percent: defaultM.percent || (92 - idx * 3),
-                val: val,
-                color: defaultM.color || "#00B894"
-            };
-        });
-    }
-
-    return defaultMetrics;
-};
-
-// 3D Studio Product Bottle Render with Custom Labels & Liquid Themes
-const MADHUStudioProductRender = ({ title, image, transparentUrl }) => {
-    const imgSrc = transparentUrl || image || "/assets/showcase/milk_hd.png";
+// 3D Studio Product Render — images already have proper PNG transparency,
+// rendered with a clean drop-shadow so they float perfectly on the purple circle.
+const MADHUStudioProductRender = ({ title, image }) => {
+    const imgSrc = image || "/assets/showcase/milk_hd.png";
 
     return (
         <img
@@ -136,7 +37,7 @@ const MADHUStudioProductRender = ({ title, image, transparentUrl }) => {
             alt={title}
             loading="lazy"
             decoding="async"
-            className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.3)] transition-transform duration-200"
+            className="max-h-[110px] sm:max-h-[270px] w-auto object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)] transition-transform duration-200 select-none"
         />
     );
 };
@@ -161,7 +62,7 @@ export default function ProductShowcase3D() {
         if (lower.includes("butter")) return "/assets/showcase/butter_hd.png";
         if (lower.includes("khoya") || lower.includes("mawa")) return "/assets/showcase/khoya_hd.png";
         if (lower.includes("shrikhand")) return "/assets/showcase/shrikhand_hd.png";
-        if (lower.includes("basundi")) return "/assets/showcase/shrikhand_hd.png";
+        if (lower.includes("basundi")) return "/assets/showcase/basundi_hd.png";
         if (lower.includes("cheese")) return "/assets/showcase/cheese_hd.png";
         if (lower.includes("sweet") || lower.includes("mithai") || lower.includes("ped") || lower.includes("jamun") || lower.includes("rasgulla")) return "/assets/showcase/sweets_hd.png";
         if (lower.includes("cream")) return "/assets/showcase/cream_hd.png";
@@ -209,7 +110,7 @@ export default function ProductShowcase3D() {
     const [isSaved, setIsSaved] = useState(false);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isHoveringCard, setIsHoveringCard] = useState(false);
-    const [transparentImgMap, setTransparentImgMap] = useState({});
+
     const cardRef = useRef(null);
 
     // Touch Swipe State for Mobile
@@ -218,78 +119,7 @@ export default function ProductShowcase3D() {
 
     const currentSlide = showcaseSlides[activeIndex] || showcaseSlides[0];
 
-    // Dynamic Outer BFS Flood-Fill: Removes ONLY outer background pixels starting from edges, preserving 100% solid opacity for product text & graphics
-    useEffect(() => {
-        if (!currentSlide?.image) return;
-        const imgUrl = currentSlide.image;
-        if (transparentImgMap[imgUrl]) return;
 
-        // Skip SVG or already Base64 PNGs if not cross-origin canvas convertible
-        if (imgUrl.startsWith("data:image/png")) {
-            setTransparentImgMap((prev) => ({ ...prev, [imgUrl]: imgUrl }));
-            return;
-        }
-
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = imgUrl;
-        img.onload = () => {
-            try {
-                const canvas = document.createElement("canvas");
-                const width = img.width;
-                const height = img.height;
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0);
-                const imgData = ctx.getImageData(0, 0, width, height);
-                const data = imgData.data;
-
-                const visited = new Uint8Array(width * height);
-                const queue = [];
-
-                // Push all 4 border edges
-                for (let x = 0; x < width; x++) {
-                    queue.push(x, 0);
-                    queue.push(x, height - 1);
-                }
-                for (let y = 0; y < height; y++) {
-                    queue.push(0, y);
-                    queue.push(width - 1, y);
-                }
-
-                while (queue.length > 0) {
-                    const py = queue.pop();
-                    const px = queue.pop();
-                    const idx = py * width + px;
-
-                    if (px < 0 || px >= width || py < 0 || py >= height || visited[idx]) continue;
-                    visited[idx] = 1;
-
-                    const pByte = idx * 4;
-                    const r = data[pByte];
-                    const g = data[pByte + 1];
-                    const b = data[pByte + 2];
-
-                    if (r > 200 && g > 200 && b > 200) {
-                        data[pByte + 3] = 0; // Make outer background transparent
-
-                        if (px > 0) queue.push(px - 1, py);
-                        if (px < width - 1) queue.push(px + 1, py);
-                        if (py > 0) queue.push(px, py - 1);
-                        if (py < height - 1) queue.push(px, py + 1);
-                    }
-                }
-
-                ctx.putImageData(imgData, 0, 0);
-                const transparentUrl = canvas.toDataURL("image/png");
-                setTransparentImgMap((prev) => ({ ...prev, [imgUrl]: transparentUrl }));
-            } catch (e) {
-                // Fallback to original image if cross-origin or canvas restricted
-            }
-        };
-    }, [currentSlide?.image, transparentImgMap]);
 
     // Fast Auto-play Carousel Timer (Slides to next item every 3s, pauses on hover)
     useEffect(() => {
@@ -551,7 +381,6 @@ export default function ProductShowcase3D() {
                                         <MADHUStudioProductRender
                                             title={currentSlide.title}
                                             image={currentSlide.image}
-                                            transparentUrl={transparentImgMap[currentSlide.image]}
                                         />
                                     </motion.div>
                                 </AnimatePresence>

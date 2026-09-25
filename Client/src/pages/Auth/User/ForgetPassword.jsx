@@ -63,7 +63,11 @@ export default function ForgetPassword() {
         }
       }
     } catch (error) {
-      enqueueSnackbar(error?.response?.data?.message || "Something went wrong", { variant: "error" });
+      const serverMsg = error?.response?.data?.message;
+      const fallbackMsg = error?.message?.includes("Network Error")
+        ? "Network Error: Could not connect to backend server. Please verify backend is running."
+        : "Something went wrong. Please check your internet or try again.";
+      enqueueSnackbar(serverMsg || fallbackMsg, { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -95,11 +99,7 @@ export default function ForgetPassword() {
       </div>
 
       <div className="w-full md:w-[40%] bg-white dark:bg-gray-500/20 rounded-2xl shadow-2xl p-8 max-w-md transition mt-12 md:mt-0">
-        <div className="mb-4">
-          <BackButton fallbackPath="/login" label="Back to Login Page" />
-        </div>
-
-        <h1 className="text-3xl font-semibold mt-6 text-[#1E88E5] dark:text-white">Forgot your password ?</h1>
+        <h1 className="text-3xl font-semibold text-[#1E88E5] dark:text-white">Forgot your password ?</h1>
 
         <p className="text-sm mt-4 mb-4 text-gray-600 dark:text-gray-300">
           {showOtpInput ? "An authentication code has been sent to your email. Enter the 5-digit OTP below to verify." : "Don’t worry, happens to all of us. Enter your verified email below to recover your password"}

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 import '../services/auth_service.dart';
@@ -24,6 +25,8 @@ class _ForgetScreenState extends State<ForgetScreen> {
   bool _isLoading = false;
   int _resendCountdown = 60;
   Timer? _timer;
+  String _generatedOtp = '';
+
 
   @override
   void dispose() {
@@ -58,7 +61,8 @@ class _ForgetScreenState extends State<ForgetScreen> {
     }
 
     setState(() => _isLoading = true);
-    final res = await AuthService.sendOtp(_emailController.text.trim(), '492015');
+    _generatedOtp = (10000 + Random().nextInt(90000)).toString();
+    final res = await AuthService.sendOtp(_emailController.text.trim(), _generatedOtp);
     setState(() => _isLoading = false);
 
     if (!mounted) return;

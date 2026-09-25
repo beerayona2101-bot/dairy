@@ -59,6 +59,7 @@ class _CustomInputState extends State<CustomInput> {
             hintStyle: TextStyle(
               fontSize: 13,
               color: Colors.grey.shade400,
+              fontWeight: FontWeight.w400,
             ),
             prefixIcon: Icon(
               widget.prefixIcon,
@@ -79,26 +80,32 @@ class _CustomInputState extends State<CustomInput> {
                     },
                   )
                 : null,
-            filled: true,
-            fillColor: isDark ? AppTheme.darkCard : Colors.white,
+            filled: false,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide(
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
-                color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                width: 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+              borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Colors.redAccent),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
             ),
           ),
         ),

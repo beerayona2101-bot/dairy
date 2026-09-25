@@ -63,65 +63,65 @@ export const generateOrderBillPDF = async (req, res) => {
     const lineDividerColor = "#E2E8F0";
 
     // 1. HEADER (LOGO + ADDRESS + TAX INVOICE BADGE)
-    const logoPath = path.resolve(__dirname, "../../Client/src/assets/logoDarkMode.png");
-    const logoBadgePath = path.resolve(__dirname, "../../Client/src/assets/logoBadge.png");
+    const logoPath = path.resolve(__dirname, "../../Client/src/assets/cowLogo.png");
+    const logoFallbackPath = path.resolve(__dirname, "../../Client/src/assets/logoDarkMode.png");
 
     let hasLogo = false;
     try {
       if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, 36, 32, { width: 145 });
+        doc.image(logoPath, 36, 28, { height: 44 });
         hasLogo = true;
-      } else if (fs.existsSync(logoBadgePath)) {
-        doc.image(logoBadgePath, 36, 32, { width: 65 });
+      } else if (fs.existsSync(logoFallbackPath)) {
+        doc.image(logoFallbackPath, 36, 28, { height: 44 });
         hasLogo = true;
       }
     } catch (imgErr) {
       console.warn("PDF Logo render fallback:", imgErr.message);
     }
 
-    if (!hasLogo) {
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(22)
-        .fillColor(primaryBlue)
-        .text("MADHU Dairy", 36, 32);
-    }
+    // Company Header Title & Tagline Next to Logo
+    const textStartX = hasLogo ? 135 : 36;
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(15)
+      .fillColor(darkTextColor)
+      .text("MADHU Dairy & Daily Needs", textStartX, 30);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(8.5)
+      .fillColor(primaryBlue)
+      .text("Pure, Fresh & Natural Dairy Delivered Daily", textStartX, 49);
 
     // TAX INVOICE BADGE (RIGHT ALIGNED)
     doc
-      .roundedRect(365, 32, 195, 30, 4)
+      .roundedRect(385, 28, 175, 28, 4)
       .fill(primaryBlue);
     doc
       .font("Helvetica-Bold")
-      .fontSize(12)
+      .fontSize(11)
       .fillColor("#FFFFFF")
-      .text("OFFICIAL TAX INVOICE", 365, 41, { width: 195, align: "center" });
+      .text("OFFICIAL TAX INVOICE", 385, 37, { width: 175, align: "center" });
 
-    // Company Address Details Under Logo (Start at y = 90)
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(9.5)
-      .fillColor(darkTextColor)
-      .text("MADHU Dairy & Daily Needs", 36, 90);
-
+    // Company Address Details Under Header (Start at y = 80)
     doc
       .font("Helvetica")
       .fontSize(8.5)
       .fillColor(lightTextColor)
-      .text("Shed no. A-31, Datri Mala, Ambad, MIDC Ambad, Nashik, MH 422010", 36, 102)
-      .text("Phone: +91 92091 43657 | Email: contact@MADHUdairy.com", 36, 114)
-      .text("FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB", 36, 126);
+      .text("Shed no. A-31, Datri Mala, Ambad, MIDC Ambad, Nashik, MH 422010", 36, 80)
+      .text("Phone: +91 92091 43657 | Email: contact@MADHUdairy.com", 36, 92)
+      .text("FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB", 36, 104);
 
     // Top Divider Line
     doc
-      .moveTo(36, 142)
-      .lineTo(560, 142)
+      .moveTo(36, 120)
+      .lineTo(560, 120)
       .strokeColor(lineDividerColor)
       .lineWidth(1)
       .stroke();
 
     // 2. TWO METADATA CARDS (BILLED TO & INVOICE DETAILS)
-    const metaY = 152;
+    const metaY = 130;
     const addr = order.address || {};
     const customerName = addr.name || order.user?.firstName || "sd";
     const fullAddressStr =
@@ -255,7 +255,7 @@ export const generateOrderBillPDF = async (req, res) => {
       .text(`${order.status === "Out for Delivery" ? "Ready to Deliver" : order.status || "Delivered"}`, 405, metaY + 84);
 
     // 3. PRODUCTS TABLE
-    let tableTop = 272;
+    let tableTop = 250;
     const colX = {
       no: 36,
       name: 65,
@@ -365,41 +365,73 @@ export const generateOrderBillPDF = async (req, res) => {
       .text(`INR ${grandTotal.toFixed(2)}`, totalBoxX + 85, summaryY + 57, { width: 120, align: "right" });
 
     // 5. SIGNATURE & STAMP BLOCK (LEFT ALIGNED)
-    const signY = summaryY + 90;
+    const signY = summaryY + 80;
 
-    // Cursive Signature (Left Aligned)
+    // Cursive Signature & Label
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(7.5)
+      .fillColor(lightTextColor)
+      .text("FOR MADHU DAIRY & DAILY NEEDS", 36, signY);
+
     doc
       .font("Helvetica-BoldOblique")
-      .fontSize(20)
+      .fontSize(18)
       .fillColor("#0F2742")
-      .text("MADHU Dairy", 36, signY, { align: "left", width: 170 });
-
-    // Circular Stamp Vector Graphics (Left Aligned)
-    const stampCx = 90;
-    const stampCy = signY + 65;
-    const stampR = 30;
+      .text("MADHU Dairy", 36, signY + 12, { align: "left", width: 170 });
 
     doc
+      .font("Helvetica-Bold")
+      .fontSize(7.5)
+      .fillColor(primaryBlue)
+      .text("Authorized Signatory", 36, signY + 34);
+
+    // Circular Stamp Vector Graphics
+    const stampCx = 90;
+    const stampCy = signY + 75;
+    const stampR = 32;
+
+    // Outer & inner circles
+    doc
       .circle(stampCx, stampCy, stampR)
-      .lineWidth(1.5)
+      .lineWidth(2)
       .strokeColor(primaryBlue)
       .stroke();
 
     doc
       .circle(stampCx, stampCy, stampR - 4)
-      .lineWidth(0.8)
+      .lineWidth(1)
       .strokeColor(primaryBlue)
       .stroke();
 
+    // Top Arc Text
     doc
       .font("Helvetica-Bold")
       .fontSize(5.5)
       .fillColor(primaryBlue)
-      .text("★ MADHU DAIRY ★", stampCx - 25, stampCy - 20, { width: 50, align: "center" })
-      .text("& DAILY NEEDS", stampCx - 25, stampCy + 14, { width: 50, align: "center" });
+      .text("★ MADHU DAIRY PRODUCTS ★", stampCx - 32, stampCy - 22, { width: 64, align: "center" });
+
+    // Center solid badge box with white text
+    doc
+      .roundedRect(stampCx - 26, stampCy - 6, 52, 12, 2)
+      .fill(primaryBlue);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(6.5)
+      .fillColor("#FFFFFF")
+      .text("AUTHENTICATED", stampCx - 26, stampCy - 3, { width: 52, align: "center" });
+
+    // Stars & Bottom Text
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(5.5)
+      .fillColor(primaryBlue)
+      .text("★ ★ ★ ★ ★", stampCx - 30, stampCy + 8, { width: 60, align: "center" })
+      .text("OFFICIAL TAX SEAL", stampCx - 30, stampCy + 17, { width: 60, align: "center" });
 
     // 6. TERMS & CONDITIONS SINGLE LINE
-    const termsY = signY + 115;
+    const termsY = signY + 122;
     doc
       .font("Helvetica-Bold")
       .fontSize(7.5)
@@ -525,10 +557,14 @@ export const printOrderBillHTML = async (req, res) => {
       `;
     }).join("");
 
+    const cowLogoPath = path.resolve(__dirname, "../../Client/src/assets/cowLogo.png");
     const logoPath = path.resolve(__dirname, "../../Client/src/assets/logoDarkMode.png");
     let logoBase64 = "";
     try {
-      if (fs.existsSync(logoPath)) {
+      if (fs.existsSync(cowLogoPath)) {
+        const logoBuf = fs.readFileSync(cowLogoPath);
+        logoBase64 = `data:image/png;base64,${logoBuf.toString("base64")}`;
+      } else if (fs.existsSync(logoPath)) {
         const logoBuf = fs.readFileSync(logoPath);
         logoBase64 = `data:image/png;base64,${logoBuf.toString("base64")}`;
       }
@@ -570,7 +606,7 @@ export const printOrderBillHTML = async (req, res) => {
       flex-direction: column;
     }
     
-    .header-row { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 8px; }
+    .header-row { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
     .badge-tax { background: #1084F6; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 10.5px; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
     
     .company-info { font-size: 9.5px; color: #475569; line-height: 1.45; margin-bottom: 14px; border-bottom: 1.5px solid #bfdbfe; padding-bottom: 10px; }
@@ -637,20 +673,23 @@ export const printOrderBillHTML = async (req, res) => {
 
   <div class="invoice-card">
     <div class="header-row">
-      <div>
+      <div style="display: flex; align-items: center; gap: 14px; min-width: 0;">
         ${
           logoBase64
-            ? `<img src="${logoBase64}" alt="MADHU Dairy Logo" style="height: 48px; sm:height: 64px; width: auto; object-fit: contain; display: block; margin-bottom: 2px;" />`
-            : `<div style="font-size: 20px; font-weight: 900; color: #0F172A;">MADHU Dairy & Daily Needs</div>`
+            ? `<img src="${logoBase64}" alt="MADHU Dairy Logo" style="height: 52px; width: auto; object-fit: contain; display: block; flex-shrink: 0;" />`
+            : `<div style="font-size: 22px; font-weight: 900; color: #1084F6; flex-shrink: 0;">MADHU Dairy</div>`
         }
+        <div style="border-left: 2px solid #bfdbfe; padding-left: 12px; display: flex; flex-direction: column; justify-content: center;">
+          <div style="font-size: 18px; font-weight: 900; color: #0f172a; line-height: 1.2; letter-spacing: -0.2px;">MADHU Dairy & Daily Needs</div>
+          <div style="font-size: 10.5px; font-weight: 700; color: #1084F6; margin-top: 2px;">Pure, Fresh & Natural Dairy Delivered Daily</div>
+        </div>
       </div>
       <div class="badge-tax">OFFICIAL TAX INVOICE</div>
     </div>
 
-    <div class="company-info">
+    <div class="company-info" style="margin-top: 10px;">
       Shed no. A-31, Datri Mala, Ambad, MIDC Ambad, Nashik, MH 422010<br>
-      Phone: +91 92091 43657 | Email: contact@MADHUdairy.com<br>
-      FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB
+      Phone: +91 92091 43657 | Email: contact@MADHUdairy.com | FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB
     </div>
 
     <div class="grid-meta">
@@ -706,22 +745,42 @@ export const printOrderBillHTML = async (req, res) => {
     </div>
 
     <div class="signature-area">
-      <div style="text-align: left; display: flex; flex-direction: column; align-items: flex-start;">
-        <div class="signature-text">MADHU Dairy</div>
-        <div style="position: relative; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">
-          <svg width="56" height="56" viewBox="0 0 100 100" style="position: absolute; inset: 0;">
-            <circle cx="50" cy="50" r="46" fill="none" stroke="#1084F6" stroke-width="2.5"/>
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#1084F6" stroke-width="1.2"/>
-            <path id="stampTextTop" d="M 12 50 A 38 38 0 0 1 88 50" fill="none" />
-            <text font-size="7.5" font-weight="900" fill="#1084F6">
-              <textPath href="#stampTextTop" startOffset="50%" text-anchor="middle">★ MADHU DAIRY ★</textPath>
+      <div style="display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap;">
+        <div style="text-align: left;">
+          <div style="font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">For MADHU Dairy & Daily Needs</div>
+          <div class="signature-text">MADHU Dairy</div>
+          <div style="font-size: 9px; font-weight: 700; color: #1084F6; margin-top: 2px;">Authorized Signatory</div>
+        </div>
+
+        <!-- Authentic Official Stamp Seal -->
+        <div style="transform: rotate(-4deg); margin-top: 4px;">
+          <svg width="90" height="90" viewBox="0 0 100 100" style="display: block;">
+            <defs>
+              <path id="stampTopPath" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" />
+              <path id="stampBotPath" d="M 85 50 A 35 35 0 0 1 15 50" fill="none" />
+            </defs>
+
+            <!-- Circular Stamp Background & Double Ring -->
+            <circle cx="50" cy="50" r="47" fill="#F0F7FF" stroke="#1084F6" stroke-width="2.5"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#1084F6" stroke-width="1.2" stroke-dasharray="3.5,1.5"/>
+
+            <!-- Curved Top Text -->
+            <text font-size="6.8" font-weight="900" fill="#1084F6">
+              <textPath href="#stampTopPath" startOffset="50%" text-anchor="middle">★ MADHU DAIRY PRODUCTS ★</textPath>
             </text>
-            <path id="stampTextBot" d="M 88 50 A 38 38 0 0 1 12 50" fill="none" />
-            <text font-size="7" font-weight="800" fill="#1084F6">
-              <textPath href="#stampTextBot" startOffset="50%" text-anchor="middle">& DAILY NEEDS</textPath>
+
+            <!-- 5-Star Rating Graphic -->
+            <text x="50" y="36" font-size="7.5" font-weight="900" fill="#1084F6" text-anchor="middle">★ ★ ★ ★ ★</text>
+
+            <!-- Center Solid Banner -->
+            <rect x="15" y="41" width="70" height="18" rx="3" fill="#1084F6"/>
+            <text x="50" y="53.5" font-size="8.5" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">AUTHENTICATED</text>
+
+            <!-- Curved Bottom Text -->
+            <text font-size="6.2" font-weight="800" fill="#1084F6">
+              <textPath href="#stampBotPath" startOffset="50%" text-anchor="middle">OFFICIAL TAX INVOICE SEAL</textPath>
             </text>
           </svg>
-          ${logoBase64 ? `<img src="${logoBase64}" style="height: 22px; width: auto; object-fit: contain; margin-top: 2px;" />` : `<div style="font-weight:900; color:#1084F6; font-size:9px;">MD</div>`}
         </div>
       </div>
     </div>

@@ -143,7 +143,9 @@ export const getProductImage = (item, fallbackName = "") => {
         cleanImg = "/" + cleanImg;
       }
       if (cleanImg.startsWith("/uploads")) {
-        const backendHost = "http://localhost:9000";
+        const backendHost = typeof window !== "undefined" && window.location?.hostname
+          ? `${window.location.protocol}//${window.location.hostname}:9000`
+          : "http://localhost:9000";
         return `${backendHost}${cleanImg}`;
       }
       if (

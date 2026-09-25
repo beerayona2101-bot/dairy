@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAmJj2KYyin6VQG4bt5ygA1x7pNup05Uqc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>969162800042</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>site.speshway.dairy</string>
+	<key>PROJECT_ID</key>
+	<string>dairyapp-7712b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>dairyapp-7712b.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:969162800042:ios:dac67eb0f32e0880f909d3</string>
+</dict>
+</plist>
