@@ -6,7 +6,30 @@ const defaultInitialContent = {
   companyTagline: "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep",
   companyDescription:
     "MADHU Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
-  heroBannerImage: "/assets/home_welcome_hero_bg.png",
+  heroBannerImage: "/assets/hero_carousel_slide_1.png",
+  heroCarouselSlides: [
+    {
+      image: "/assets/hero_carousel_slide_1.png",
+      title: "Welcome to MADHU Dairy & Daily Needs",
+      subtitle: "Experience 100% unadulterated farm-fresh milk, ghee, paneer, and sweets sourced directly from ethical farms.",
+      buttonText: "Explore Products",
+      buttonLink: "/products",
+    },
+    {
+      image: "/assets/hero_carousel_slide_2.png",
+      title: "100% Pure, Organic & Farm-Fresh A2 Milk",
+      subtitle: "Delivered fresh to your doorstep every morning with zero preservatives and pristine hygiene.",
+      buttonText: "Order Fresh Milk",
+      buttonLink: "/products",
+    },
+    {
+      image: "/assets/hero_carousel_slide_3.png",
+      title: "Traditional Ghee, Artisanal Paneer & Delicacies",
+      subtitle: "Crafted with pure whole milk and traditional recipes for authentic nutrition, rich aroma and taste.",
+      buttonText: "Shop Dairy Products",
+      buttonLink: "/products",
+    },
+  ],
   landingHeroImage: "/assets/landing_hero_bg_hd.png",
   homeCategoryCards: [
     {
@@ -156,8 +179,14 @@ export const getPageContent = async (req, res) => {
     let content = await PageContent.findOne().lean();
     if (!content) {
       content = await PageContent.create(defaultInitialContent);
+    } else if (!content.heroCarouselSlides || content.heroCarouselSlides.length === 0) {
+      content.heroCarouselSlides = defaultInitialContent.heroCarouselSlides;
+      await PageContent.updateOne({ _id: content._id }, { $set: { heroCarouselSlides: defaultInitialContent.heroCarouselSlides } });
     }
-    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+    // Remove aggressive caching so saved changes are immediately visible
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
     return res.status(200).json({ success: true, pageContent: content });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -168,18 +197,54 @@ export const updatePageContent = async (req, res) => {
   try {
     const { _id, __v, createdAt, updatedAt, ...cleanUpdateData } = req.body;
 
+    // Helper: only upload if it's a base64 data URL, otherwise keep existing URL as-is
+    const smartUpload = async (imageData, folder = "dairy_app") => {
+      if (!imageData || typeof imageData !== "string") return imageData;
+      // Already a hosted URL or local path — no upload needed
+      if (
+        imageData.startsWith("http://") ||
+        imageData.startsWith("https://") ||
+        imageData.startsWith("/uploads/") ||
+        imageData.startsWith("/assets/")
+      ) {
+        return imageData;
+      }
+      // Base64 — upload to Cloudinary / disk
+      if (imageData.startsWith("data:image")) {
+        try {
+          const uploaded = await uploadToCloudinary(imageData, folder);
+          return uploaded || imageData;
+        } catch (err) {
+          console.error("Image upload failed, keeping raw data:", err.message);
+          return imageData;
+        }
+      }
+      return imageData;
+    };
+
     if (cleanUpdateData.heroBannerImage) {
-      cleanUpdateData.heroBannerImage = await uploadToCloudinary(cleanUpdateData.heroBannerImage, "dairy_app");
+      cleanUpdateData.heroBannerImage = await smartUpload(cleanUpdateData.heroBannerImage, "dairy_app");
+    }
+    if (Array.isArray(cleanUpdateData.heroCarouselSlides)) {
+      cleanUpdateData.heroCarouselSlides = await Promise.all(
+        cleanUpdateData.heroCarouselSlides.map(async (slide) => ({
+          image: await smartUpload(slide.image || "", "dairy_app"),
+          title: slide.title || "",
+          subtitle: slide.subtitle || "",
+          buttonText: slide.buttonText || "Explore Products",
+          buttonLink: slide.buttonLink || "/products",
+        }))
+      );
     }
     if (cleanUpdateData.landingHeroImage) {
-      cleanUpdateData.landingHeroImage = await uploadToCloudinary(cleanUpdateData.landingHeroImage, "dairy_app");
+      cleanUpdateData.landingHeroImage = await smartUpload(cleanUpdateData.landingHeroImage, "dairy_app");
     }
 
     if (Array.isArray(cleanUpdateData.homeCategoryCards)) {
       cleanUpdateData.homeCategoryCards = await Promise.all(
         cleanUpdateData.homeCategoryCards.map(async (item) => ({
           title: item.title || "",
-          image: await uploadToCloudinary(item.image || "", "dairy_app"),
+          image: await smartUpload(item.image || "", "dairy_app"),
         }))
       );
     }
@@ -189,7 +254,7 @@ export const updatePageContent = async (req, res) => {
         cleanUpdateData.landingShowcaseCards.map(async (item) => ({
           title: item.title || "",
           description: item.description || "",
-          image: await uploadToCloudinary(item.image || "", "dairy_app"),
+          image: await smartUpload(item.image || "", "dairy_app"),
           features: Array.isArray(item.features) ? item.features : [],
         }))
       );
@@ -200,7 +265,7 @@ export const updatePageContent = async (req, res) => {
         cleanUpdateData.goodnessOfferings.map(async (item) => ({
           title: item.title || "",
           description: item.description || "",
-          image: await uploadToCloudinary(item.image || "", "dairy_app"),
+          image: await smartUpload(item.image || "", "dairy_app"),
         }))
       );
     }
@@ -212,12 +277,42 @@ export const updatePageContent = async (req, res) => {
       }));
     }
 
+    // Process showcase3DCards — upload pngImage if it's a new base64
+    if (Array.isArray(cleanUpdateData.showcase3DCards)) {
+      cleanUpdateData.showcase3DCards = await Promise.all(
+        cleanUpdateData.showcase3DCards.map(async (item, idx) => ({
+          title: item.title || "",
+          description: item.description || "",
+          pngImage: await smartUpload(item.pngImage || "", "dairy_app_3d"),
+          badge: item.badge || "✨ FRESH DAILY",
+          price: Number(item.price) || 60,
+          discount: Number(item.discount) || 10,
+          enabled: item.enabled !== false,
+          sortOrder: typeof item.sortOrder === "number" ? item.sortOrder : idx,
+        }))
+      );
+    }
+
+    // Process nested aboutUs stats (no images, just text)
+    if (cleanUpdateData.aboutUs && Array.isArray(cleanUpdateData.aboutUs.stats)) {
+      cleanUpdateData.aboutUs.stats = cleanUpdateData.aboutUs.stats.map((s) => ({
+        value: s.value || "",
+        label: s.label || "",
+        icon: s.icon || "",
+        color: s.color || "#6C5CE7",
+      }));
+    }
+
     let content = await PageContent.findOne();
 
     if (!content) {
       content = await PageContent.create({ ...defaultInitialContent, ...cleanUpdateData });
     } else {
-      content = await PageContent.findByIdAndUpdate(content._id, { $set: cleanUpdateData }, { new: true });
+      content = await PageContent.findByIdAndUpdate(
+        content._id,
+        { $set: cleanUpdateData },
+        { new: true, runValidators: false }
+      );
     }
 
     return res.status(200).json({

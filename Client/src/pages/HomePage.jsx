@@ -1,342 +1,288 @@
-import { lazy, Suspense, useContext, useEffect, useState, useMemo, useRef } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import heroImage from "../assets/heroImage.png";
 import { faqs, products } from "../data/products";
-import { UserAuthContext } from "../context/AuthProvider";
 import { PageContentContext } from "../context/PageContentProvider";
-import OfferingProductCard from "../components/HomeComponents/OfferingProductCard";
-import ProductCard from "../components/LandingComponents/ProductCard";
-import company from "../data/company.json";
-import { getProductImage, getCardBackgroundImage } from "../utils/helper";
-import ProductShowcase3D from "../components/HomeComponents/ProductShowcase3D";
-import { DairyPromiseCardsSection } from "../components/HomeComponents/MilkHealthBenefitsSection";
+import { ProductContext } from "../context/ProductProvider";
+import { CartContext } from "../context/CartProvider";
+import { getCardBackgroundImage, getProductImage, getDiscountedPrice } from "../utils/helper";
+import { slugify } from "../utils/slugify";
+import { formatNumberWithCommas } from "../utils/format";
 import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
+import { useSnackbar } from "notistack";
 
-import AnimatedHeading from "../components/Common/AnimatedHeading";
-import DairyShowcaseBanner from "../components/Common/DairyShowcaseBanner";
+// ── Category emoji map ──────────────────────────────────
+const CATEGORY_EMOJIS = {
+    milk: "🥛", paneer: "🧀", ghee: "🫙", curd: "🍶",
+    butter: "🧈", lassi: "🥤", chaas: "🥤", sweets: "🍮",
+    khoya: "🍯", cream: "🍦", cheese: "🧀", powder: "🥛",
+};
+function getCategoryEmoji(title) {
+    const lower = (title || "").toLowerCase();
+    for (const [key, emoji] of Object.entries(CATEGORY_EMOJIS)) {
+        if (lower.includes(key)) return emoji;
+    }
+    return "🥛";
+}
 
-import ProductCategoriesSection from "../components/HomeComponents/ProductCategoriesSection";
-import ScrollReveal from "../components/Common/ScrollReveal";
-const Marquee = lazy(() => import("react-fast-marquee"));
-const DairyProductsCarousel = lazy(() => import("../components/HomeComponents/DairyProductsCarousel"));
-const QuestionAnswer = lazy(() => import("../components/LandingComponents/QuestionAnswer"));
+// ── FAQ Item ─────────────────────────────────────────────
+function FaqItem({ question, answer }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="border-b border-gray-100">
+            <button
+                onClick={() => setOpen(!open)}
+                className="w-full flex items-center justify-between py-4 px-0 text-left cursor-pointer"
+            >
+                <span className="text-sm font-semibold text-gray-800 pr-4 leading-snug">{question}</span>
+                <span className="text-gray-400 text-xl shrink-0">{open ? "−" : "+"}</span>
+            </button>
+            {open && (
+                <div className="pb-4">
+                    <p className="text-sm text-gray-500 leading-relaxed">{answer}</p>
+                </div>
+            )}
+        </div>
+    );
+}
 
+// ── Main Page ─────────────────────────────────────────────
 export default function HomePage() {
-
-    const { authUser } = useContext(UserAuthContext);
+    const { enqueueSnackbar } = useSnackbar();
     const { pageContent } = useContext(PageContentContext);
-    const [visibleCount, setVisibleCount] = useState(() => (typeof window !== "undefined" && window.innerWidth < 640 ? 8 : 9));
-    const [openFaqIndex, setOpenFaqIndex] = useState(null);
-    const [shuffledCategories, setShuffledCategories] = useState([]);
+    const { products: liveProducts } = useContext(ProductContext);
+    const { addToCart } = useContext(CartContext);
+    const [addedIds, setAddedIds] = useState(new Set());
+    const [visibleCount, setVisibleCount] = useState(8);
 
-    const displayHeroImage = pageContent?.heroBannerImage || heroImage;
-    const displayCompanyName = pageContent?.companyName || company?.name;
-    const displayTagline = pageContent?.companyTagline || company?.tagline;
+    // ── Data ──
+    const displayFaqs = (pageContent?.faqs?.length > 0) ? pageContent.faqs : faqs;
 
-    const displayFaqs = (pageContent?.faqs && pageContent.faqs.length > 0)
-        ? pageContent.faqs
-        : faqs;
-
-    const displayCategories = (pageContent?.landingShowcaseCards && pageContent.landingShowcaseCards.length > 0)
-        ? pageContent.landingShowcaseCards
-        : ((pageContent?.landingCategories && pageContent.landingCategories.length > 0)
-            ? pageContent.landingCategories
-            : products);
-
-    const displayHomeCategoryCards = useMemo(() => {
+    const categories = useMemo(() => {
         const cardMap = new Map();
-
-        // 1. Add all 16 base categories from products data
         products.forEach((p) => {
             const title = p.title || p.name;
-            if (title) {
-                const key = title.toLowerCase().trim();
-                cardMap.set(key, {
-                    title,
-                    image: getCardBackgroundImage(p, title),
-                    description: p.description,
-                    features: p.features,
-                });
-            }
+            if (title) cardMap.set(title.toLowerCase().trim(), { title });
         });
-
-        // 2. Merge with admin homeCategoryCards
         if (Array.isArray(pageContent?.homeCategoryCards)) {
             pageContent.homeCategoryCards.forEach((c) => {
                 const title = c?.title || c?.name;
-                if (title) {
-                    const key = title.toLowerCase().trim();
-                    const existing = cardMap.get(key) || {};
-                    cardMap.set(key, {
-                        ...existing,
-                        title,
-                        image: getCardBackgroundImage(c, title),
-                        description: c.description || existing.description,
-                        features: c.features || existing.features,
-                    });
-                }
+                if (title) cardMap.set(title.toLowerCase().trim(), { title });
             });
         }
+        return Array.from(cardMap.values()).slice(0, 12);
+    }, [pageContent]);
 
-        // 3. Merge with admin landingShowcaseCards
-        if (Array.isArray(pageContent?.landingShowcaseCards)) {
-            pageContent.landingShowcaseCards.forEach((sc) => {
-                if (sc?.title) {
-                    const key = sc.title.toLowerCase().trim();
-                    const existing = cardMap.get(key) || {};
-                    cardMap.set(key, {
-                        ...existing,
-                        title: sc.title,
-                        image: getCardBackgroundImage(sc, sc.title),
-                        description: sc.description || existing.description,
-                        features: sc.features || existing.features,
-                    });
-                }
+    const productGrid = useMemo(() => {
+        const cardMap = new Map();
+        products.forEach((p) => {
+            const title = p.title || p.name;
+            if (title) cardMap.set(title.toLowerCase().trim(), {
+                title, image: getCardBackgroundImage(p, title),
+            });
+        });
+        if (Array.isArray(pageContent?.homeCategoryCards)) {
+            pageContent.homeCategoryCards.forEach((c) => {
+                const title = c?.title || c?.name;
+                if (title) cardMap.set(title.toLowerCase().trim(), {
+                    title, image: getCardBackgroundImage(c, title),
+                });
             });
         }
-
         return Array.from(cardMap.values());
     }, [pageContent]);
 
+    const featuredProducts = (liveProducts || []).slice(0, 8);
 
-
-    const categoriesSectionRef = useRef(null);
-    const [catScrollProgress, setCatScrollProgress] = useState(0);
-
-    const goodnessSectionRef = useRef(null);
-    const [goodnessScrollProgress, setGoodnessScrollProgress] = useState(0);
-
-    useEffect(() => {
-        if (displayCategories && displayCategories.length > 0) {
-            const arrayToShuffle = [...displayCategories];
-            for (let i = arrayToShuffle.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arrayToShuffle[i], arrayToShuffle[j]] = [arrayToShuffle[j], arrayToShuffle[i]];
-            }
-            setShuffledCategories(arrayToShuffle.slice(0, 4));
-        }
-    }, [displayCategories]);
-
-    useEffect(() => {
-        let ticking = false;
-        let lastCatProgress = -1;
-        const handleCatScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    if (categoriesSectionRef.current) {
-                        const rect = categoriesSectionRef.current.getBoundingClientRect();
-                        const windowHeight = window.innerHeight;
-                        // Only compute scroll progress when section is visible in viewport
-                        if (rect.bottom > 0 && rect.top < windowHeight) {
-                            const totalScrollable = rect.height - windowHeight;
-                            if (totalScrollable > 0) {
-                                const scrolled = -rect.top;
-                                const rawProgress = Math.max(0, Math.min(1, scrolled / totalScrollable));
-                                const roundedProgress = Math.round(rawProgress * 100) / 100; // Step by 1%
-                                if (Math.abs(roundedProgress - lastCatProgress) >= 0.01) {
-                                    lastCatProgress = roundedProgress;
-                                    setCatScrollProgress(roundedProgress);
-                                }
-                            }
-                        }
-                    }
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-
-        window.addEventListener("scroll", handleCatScroll, { passive: true });
-        handleCatScroll();
-        return () => window.removeEventListener("scroll", handleCatScroll);
-    }, [shuffledCategories.length]);
-
-    useEffect(() => {
-        let ticking = false;
-        let lastGoodnessProgress = -1;
-        const handleGoodnessScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    if (goodnessSectionRef.current) {
-                        const rect = goodnessSectionRef.current.getBoundingClientRect();
-                        const windowHeight = window.innerHeight;
-                        if (rect.bottom > 0 && rect.top < windowHeight) {
-                            const totalScrollable = rect.height - windowHeight;
-                            if (totalScrollable > 0) {
-                                const scrolled = -rect.top;
-                                const rawProgress = Math.max(0, Math.min(1, scrolled / totalScrollable));
-                                const roundedProgress = Math.round(rawProgress * 100) / 100;
-                                if (Math.abs(roundedProgress - lastGoodnessProgress) >= 0.01) {
-                                    lastGoodnessProgress = roundedProgress;
-                                    setGoodnessScrollProgress(roundedProgress);
-                                }
-                            }
-                        }
-                    }
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-
-        window.addEventListener("scroll", handleGoodnessScroll, { passive: true });
-        handleGoodnessScroll();
-        return () => window.removeEventListener("scroll", handleGoodnessScroll);
-    }, [visibleCount]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            const isMobile = window.innerWidth < 640;
-            setVisibleCount((prev) => {
-                if (isMobile && prev === 9) return 8;
-                if (!isMobile && prev === 8) return 9;
-                return prev;
-            });
-        };
-        window.addEventListener("resize", handleResize, { passive: true });
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    const handleViewMore = () => {
-        const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
-        setVisibleCount((prev) => prev + (isMobile ? 8 : 9));
+    // ── Cart ──
+    const handleAddToCart = (product) => {
+        if (!product?._id) return;
+        const rawPrice = Number(product.price) || 0;
+        const rawDiscount = Number(product.discount) || 0;
+        const { discountedPrice } = getDiscountedPrice(rawPrice, rawDiscount);
+        const finalPrice = discountedPrice > 0 ? discountedPrice : rawPrice;
+        addToCart(product._id, 1, finalPrice);
+        enqueueSnackbar(`${product.name || "Product"} added!`, { variant: "success" });
+        setAddedIds((prev) => new Set([...prev, String(product._id)]));
+        setTimeout(() => {
+            setAddedIds((prev) => { const n = new Set(prev); n.delete(String(product._id)); return n; });
+        }, 1800);
     };
 
-    const visibleCards = displayHomeCategoryCards.slice(0, visibleCount);
-
-
-
     return (
-        <>
-            {/* 1. Personalized Home Welcome Hero Banner */}
+        <div className="bg-gray-50 min-h-screen">
+
+            {/* ── HERO BANNER ─────────────────────────────── */}
             <HomeWelcomeHero />
 
-            {/* 2. Interactive 3D Product Showcase Hero Section */}
-            <ProductShowcase3D />
+            {/* ── PAGE BODY ────────────────────────────────── */}
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
 
-            {/* 3. Discover Our Delicious Dairy Range Carousel Section (Full-Width Edge-to-Edge) */}
-            <ScrollReveal yOffset={50} duration={0.85}>
-                <section className="w-full py-8 md:py-12 overflow-hidden">
-                    <div className="max-w-7xl mx-auto px-4 text-center mb-6 sm:mb-8">
-                        <AnimatedHeading
-                            blackText="Discover Our"
-                            violetText="Delicious"
-                            suffixText="Dairy Range"
-                            className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
-                        />
+                {/* ① SHOP BY CATEGORY */}
+                <section className="pt-2 pb-2">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-base font-bold text-violet-700">Shop by Category</h2>
+                        <Link to="/products" className="text-sm text-violet-500 font-semibold">
+                            See All →
+                        </Link>
                     </div>
-
-                    <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
-                        <Marquee speed={75} gradient={false} pauseOnHover={true} className="w-full overflow-hidden">
-                            <DairyProductsCarousel half="first" />
-                        </Marquee>
-                    </Suspense>
-
-                    <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
-                        <Marquee speed={65} gradient={false} direction="right" className="mt-6 w-full overflow-hidden" pauseOnHover={true}>
-                            <DairyProductsCarousel half={"second"} />
-                        </Marquee>
-                    </Suspense>
-                </section>
-            </ScrollReveal>
-
-            {/* 4. Our Product Categories Section - STICKY STACKING CARDS DECK */}
-            <ProductCategoriesSection displayCategories={displayCategories} />
-
-            {/* 5. Our Goodness Grid Section (Mobile Sticky Stacking Cards Transition & Desktop Grid) */}
-            <section ref={goodnessSectionRef} className="py-10 sm:py-16 px-3 sm:px-6 lg:px-10 max-w-7xl mx-auto">
-                <ScrollReveal yOffset={40} duration={0.8}>
-                    <div className="text-center mb-8 sm:mb-12">
-                        <AnimatedHeading
-                            blackText="Our"
-                            violetText="Goodness"
-                            className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
-                        />
-                        <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm md:text-base font-medium">
-                            Comes in many forms — all pure, nutritious, and farm-fresh.
-                        </p>
-                    </div>
-                </ScrollReveal>
-
-                {/* 2-Column Mobile & Multi-Column Desktop Grid View */}
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8 max-w-6xl mx-auto">
-                    {visibleCards.map((product, index) => (
-                        <ScrollReveal
-                            key={`home-cat-${index}-${product?.title || product?.name}`}
-                            delay={(index % 3) * 0.1}
-                            yOffset={50}
-                            duration={0.8}
-                        >
-                            <OfferingProductCard
-                                title={product?.title || product?.name}
-                                image={getCardBackgroundImage(product, product?.title || product?.name)}
-                            />
-                        </ScrollReveal>
-                    ))}
-                </div>
-
-                <ScrollReveal yOffset={30} duration={0.7} delay={0.2}>
-                    <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                        {visibleCount < displayHomeCategoryCards.length ? (
-                            <button
-                                onClick={handleViewMore}
-                                className="bg-[#1E88E5] hover:bg-[#1565C0] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
+                    {/* Mobile: horizontal scroll | Desktop: wrap grid */}
+                    <div className="flex gap-5 overflow-x-auto no-scrollbar sm:flex-wrap sm:overflow-visible">
+                        {categories.map((cat, idx) => (
+                            <Link
+                                key={`cat-${idx}`}
+                                to={`/products/${slugify(cat.title)}`}
+                                className="shrink-0 flex flex-col items-center gap-2"
                             >
-                                <span className="relative z-10">View More</span>
+                                <div className="w-16 h-16 rounded-full bg-violet-50 flex items-center justify-center border border-violet-100 hover:border-violet-400 hover:bg-violet-100 transition-colors">
+                                    <span className="text-2xl">{getCategoryEmoji(cat.title)}</span>
+                                </div>
+                                <span className="text-[11px] text-violet-700 font-semibold text-center w-16 truncate">
+                                    {cat.title}
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+
+                {/* ② FEATURED PRODUCTS */}
+                {featuredProducts.length > 0 && (
+                    <section className="pt-2 pb-2">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-base font-bold text-violet-700">Featured Products</h2>
+                            <Link to="/products" className="text-sm text-violet-500 font-semibold">
+                                View All →
+                            </Link>
+                        </div>
+                        {/* Mobile: horizontal scroll | Desktop: 4-col grid */}
+                        <div className="flex gap-4 overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3 md:grid-cols-4 sm:overflow-visible">
+                            {featuredProducts.map((product, idx) => {
+                                const rawPrice = Number(product?.price) || 0;
+                                const rawDiscount = Number(product?.discount) || 0;
+                                const { discountedPrice } = getDiscountedPrice(rawPrice, rawDiscount);
+                                const finalPrice = discountedPrice > 0 ? discountedPrice : rawPrice;
+                                const isAdded = addedIds.has(String(product._id));
+
+                                return (
+                                    <div
+                                        key={`fp-${idx}`}
+                                        className="shrink-0 w-44 sm:w-auto rounded-xl border border-violet-100 bg-white overflow-hidden flex flex-col hover:border-violet-300 hover:shadow-[0_4px_20px_rgba(108,92,231,0.18)] transition-all duration-200"
+                                    >
+                                        {/* Image */}
+                                        <div className="relative h-48 bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50">
+                                            <img
+                                                src={getProductImage(product)}
+                                                alt={product?.name}
+                                                loading="lazy"
+                                                className="w-full h-full object-cover"
+                                            />
+                                            {/* Violet gradient overlay at bottom */}
+                                            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-violet-900/20 to-transparent pointer-events-none" />
+                                            {rawDiscount > 0 && (
+                                                <span className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                                    -{rawDiscount}%
+                                                </span>
+                                            )}
+                                        </div>
+                                        {/* Info */}
+                                        <div className="p-3 flex flex-col gap-2 flex-1">
+                                            <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">
+                                                {product?.name}
+                                            </p>
+                                            <div className="flex items-baseline gap-1.5">
+                                                <span className="text-sm font-bold text-gray-900">
+                                                    ₹{formatNumberWithCommas(finalPrice)}
+                                                </span>
+                                                {rawDiscount > 0 && (
+                                                    <span className="text-[10px] text-gray-400 line-through">
+                                                        ₹{formatNumberWithCommas(rawPrice)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={() => handleAddToCart(product)}
+                                                className={`w-full py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer mt-auto ${
+                                                    isAdded ? "bg-green-500 text-white" : "bg-violet-600 text-white hover:bg-violet-700"
+                                                }`}
+                                            >
+                                                {isAdded ? "✓ Added" : "+ Add to Cart"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+
+                {/* ③ OUR PRODUCTS GRID */}
+                <section className="pt-2 pb-2">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-base font-bold text-violet-700">Our Products</h2>
+                        <Link to="/products" className="text-sm text-violet-500 font-semibold">
+                            View All →
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        {productGrid.slice(0, visibleCount).map((product, index) => (
+                            <Link
+                                key={`pg-${index}`}
+                                to={`/products/${slugify(product?.title || product?.name || "")}`}
+                                className="block rounded-xl overflow-hidden border border-violet-100 bg-white hover:border-violet-300 hover:shadow-[0_4px_20px_rgba(108,92,231,0.18)] transition-all duration-200"
+                            >
+                                <div className="relative h-48 bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 overflow-hidden">
+                                    <img
+                                        src={getCardBackgroundImage(product, product?.title || product?.name)}
+                                        alt={product?.title || product?.name}
+                                        loading="lazy"
+                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                    />
+                                    {/* Violet gradient overlay at bottom */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-violet-900/20 to-transparent pointer-events-none" />
+                                </div>
+                                <div className="px-3 py-2.5">
+                                    <p className="text-xs font-bold text-violet-700 truncate">
+                                        {product?.title || product?.name}
+                                    </p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Load More / Explore All */}
+                    <div className="mt-5 flex justify-center">
+                        {visibleCount < productGrid.length ? (
+                            <button
+                                onClick={() => setVisibleCount((p) => p + 8)}
+                                className="border border-violet-600 text-violet-600 hover:bg-violet-600 hover:text-white text-sm font-bold px-8 py-2.5 rounded-full transition-colors cursor-pointer"
+                            >
+                                Load More
                             </button>
                         ) : (
                             <Link
                                 to="/products"
-                                className="bg-[#213448] hover:bg-[#162331] text-white px-8 py-3 rounded-full shadow-md font-bold text-sm transition-all duration-300 cursor-pointer hover:scale-105 periodic-glass-shine btn-reflection"
+                                className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-8 py-2.5 rounded-full transition-colors"
                             >
-                                <span className="relative z-10">Explore All Products</span>
+                                Explore All Products
                             </Link>
                         )}
                     </div>
-                </ScrollReveal>
-            </section>
+                </section>
 
-            {/* 6. Our Promise of Dairy Excellence Cards */}
-            <DairyPromiseCardsSection />
-
-            {/* 7. Frequently Asked Questions */}
-            <ScrollReveal yOffset={50} duration={0.85}>
-                <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-                    <div className="flex flex-col items-center text-center mb-8">
-                        <span className="text-xs font-bold uppercase tracking-wider text-[#1E88E5] dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/60 px-3.5 py-1 rounded-full border border-blue-100 dark:border-blue-900/40 mb-2">
-                            GOT QUESTIONS? WE'VE GOT ANSWERS
-                        </span>
-                        <AnimatedHeading
-                            blackText="Frequently Asked"
-                            violetText="Questions"
-                            className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight justify-center"
-                        />
-                        <div className="w-12 h-1 bg-[#1E88E5] rounded-full mt-3"></div>
-                    </div>
-
-                    <div className="space-y-3">
-                        <Suspense fallback={<div className="text-center text-gray-600 dark:text-gray-300 py-6">Loading FAQs...</div>}>
-                            {displayFaqs.map((faq, index) => (
-                                <ScrollReveal key={faq?._id || faq?.question || `faq-item-${index}`} delay={(index % 4) * 0.08} yOffset={30}>
-                                    <QuestionAnswer
-                                        question={faq.question}
-                                        answer={faq.answer}
-                                        isOpen={openFaqIndex === index}
-                                        onToggle={() => setOpenFaqIndex((prev) => (prev === index ? null : index))}
-                                    />
-                                </ScrollReveal>
-                            ))}
-                        </Suspense>
+                {/* ④ FAQ */}
+                <section className="pt-2 pb-4">
+                    <h2 className="text-base font-bold text-violet-700 mb-1">Frequently Asked Questions</h2>
+                    <p className="text-xs text-gray-400 mb-4">Everything you need to know about our products.</p>
+                    <div>
+                        {displayFaqs.slice(0, 8).map((faq, i) => (
+                            <FaqItem key={i} question={faq.question} answer={faq.answer} />
+                        ))}
                     </div>
                 </section>
-            </ScrollReveal>
 
-            {/* 8. Madhu Dairy Wide Range of Products Banner */}
-            <ScrollReveal yOffset={50} duration={0.85}>
-                <DairyShowcaseBanner />
-            </ScrollReveal>
-        </>
+            </div>
+
+            {/* Bottom spacing for mobile nav bar */}
+            <div className="h-24 lg:h-10" />
+        </div>
     );
 }
-

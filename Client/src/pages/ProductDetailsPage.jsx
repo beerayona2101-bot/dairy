@@ -21,6 +21,7 @@ import { getProductImage } from "../utils/helper";
 import { products as fallbackProducts } from "../data/products";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
 import BackButton from "../components/Common/BackButton";
+import FloatingCart from "../components/Common/FloatingCart";
 
 export default function ProductDetailsPage() {
 
@@ -194,6 +195,9 @@ export default function ProductDetailsPage() {
                     </div>
                 )}
             </section>
+
+            {/* Floating Cart Button (Right Side) */}
+            <FloatingCart />
         </>
     )
 }

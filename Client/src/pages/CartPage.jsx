@@ -7,7 +7,6 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider"
 import { CartContext } from "../context/CartProvider";
-import BackButton from "../components/Common/BackButton";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
 import { getCartProductDetails, calculateCartTotals } from "../utils/cartUtils";
 import { getDiscountedPrice } from "../utils/helper";
@@ -114,24 +113,20 @@ export default function CartPage() {
 
     if (cartItems?.length === 0) {
         return (
-            <div className="w-full max-w-5xl mx-auto px-4 py-4">
-                {/* Mobile Top Back Button Only (Left Top) */}
-                <div className="md:hidden flex items-center justify-start mb-2">
-                    <BackButton fallbackPath="/home" />
-                </div>
-
-                <div className="px-3 py-10 text-center">
-                    <ShoppingCartIcon className="mx-auto text-4xl text-gray-400 mb-4" />
-                    <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <div className="w-full max-w-5xl mx-auto px-4 py-8 sm:py-14 flex flex-col items-center justify-center min-h-[55vh]">
+                <div className="w-full max-w-md px-4 py-8 text-center">
+                    <div className="w-16 h-16 bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-[#A78BFA] rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100 dark:border-purple-900/50 shadow-xs">
+                        <ShoppingCartIcon sx={{ fontSize: "2rem" }} />
+                    </div>
+                    <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2">Your cart is empty</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-xs mx-auto">
                         Could not find matching products in your cart.
                     </p>
                     <Link
                         to="/products"
-                        className="inline-flex items-center px-4 py-2 bg-primary-500 text-blue-500 hover:text-blue-600 rounded hover:bg-primary-600 transition"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] hover:from-[#5b4cc4] hover:to-[#6f48c4] text-white text-sm font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
                     >
-                        <ArrowBackIcon className="mr-2" sx={{ fontSize: "1.3rem" }} />
-                        Continue Shopping
+                        <span>Continue Shopping</span>
                     </Link>
                 </div>
             </div>
@@ -140,11 +135,6 @@ export default function CartPage() {
 
     return (
         <>
-            {/* Mobile Top Back Button Only (Shown on Mobile Response Only - Left Top) */}
-            <div className="md:hidden w-full px-4 pt-3 pb-1 flex items-center justify-start">
-                <BackButton fallbackPath="/home" />
-            </div>
-
             {/* Delivery Address Section (Logged-in User Only) */}
             {currentUser && (
                 <section className="w-full max-w-5xl mx-auto pt-1 sm:pt-4 pb-2 px-0 md:px-6">

@@ -1,48 +1,56 @@
-import { Button } from "@mui/material";
-import { useSnackbar } from "notistack";
-import { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import { motion } from "framer-motion";
 import { generateOtp, verifyUserByEmail } from "../../../services/userService";
 import { sendOtpEmail } from "../../../services/sentOtp";
-import { Home } from "lucide-react";
-import BackButton from "../../../components/Common/BackButton";
+import BuffaloLoader from "../../../components/BuffaloLoader";
+import { ArrowLeft, Home, Mail, KeyRound, ShieldCheck, User, ChevronRight } from "lucide-react";
+import { ThemeContext } from "../../../context/ThemeProvider";
+import company from "../../../data/company.json";
+import logoDarkMode from "../../../assets/logoDarkMode.png";
+import logoLightMode from "../../../assets/logoLightMode.png";
 
 export default function ForgetPassword() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const { theme } = useContext(ThemeContext) || {};
+
   const [email, setEmail] = useState("");
   const [disableInput, setDisableInput] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
-
-  function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
   const [otp, setOtp] = useState(["", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
+  const [sentOTP, setSentOTP] = useState("");
   const inputRefs = useRef([]);
 
-  const handleChange = (index, value) => {
+  const brandLogo = theme === "dark" ? logoDarkMode : logoLightMode;
+
+  function isValidEmail(val) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(val);
+  }
+
+  const handleOtpChange = (index, value) => {
     if (/^\d?$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-      if (value && index < 4) inputRefs.current[index + 1].focus();
+      if (value && index < 4 && inputRefs.current[index + 1]) {
+        inputRefs.current[index + 1].focus();
+      }
     }
   };
 
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
+  const handleOtpKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0 && inputRefs.current[index - 1]) {
       inputRefs.current[index - 1].focus();
     }
   };
 
-  const [sentOTP, setSentOTP] = useState("");
-
   const verifyEmail = async () => {
     if (!isValidEmail(email)) {
-      return enqueueSnackbar("Invalid email format", { variant: "warning" });
+      return enqueueSnackbar("Please enter a valid email format.", { variant: "warning" });
     }
 
     const otpGenerated = generateOtp();
@@ -53,20 +61,20 @@ export default function ForgetPassword() {
       if (res?.success) {
         setDisableInput(true);
 
-        const response = await sendOtpEmail(res?.email, otpGenerated); 
+        const response = await sendOtpEmail(res?.email, otpGenerated);
         if (response?.success) {
-          enqueueSnackbar("Otp sent successfully", { variant: "success" });
+          enqueueSnackbar("OTP sent successfully to your email!", { variant: "success" });
           setSentOTP(otpGenerated);
           setShowOtpInput(true);
         } else {
-          enqueueSnackbar("Failed to send OTP", { variant: "error" });
+          enqueueSnackbar("Failed to send OTP email. Please try again.", { variant: "error" });
         }
       }
     } catch (error) {
       const serverMsg = error?.response?.data?.message;
       const fallbackMsg = error?.message?.includes("Network Error")
-        ? "Network Error: Could not connect to backend server. Please verify backend is running."
-        : "Something went wrong. Please check your internet or try again.";
+        ? "Network Error: Could not reach backend server."
+        : "Something went wrong. Please check your internet connection.";
       enqueueSnackbar(serverMsg || fallbackMsg, { variant: "error" });
     } finally {
       setLoading(false);
@@ -76,100 +84,181 @@ export default function ForgetPassword() {
   const verifyOtp = () => {
     const enteredOtp = otp.join("");
     if (enteredOtp.length !== 5) {
-      return enqueueSnackbar("Please enter a valid 5-digit OTP", { variant: "error" });
+      return enqueueSnackbar("Please enter a valid 5-digit OTP.", { variant: "error" });
     } else if (enteredOtp !== sentOTP) {
-      return enqueueSnackbar("Please enter a correct otp.", { variant: "error" });
+      return enqueueSnackbar("Invalid OTP code. Please enter the correct OTP.", { variant: "error" });
     }
 
-    navigate("/login/reset-password", { state: { email: email } });
+    enqueueSnackbar("Email verified successfully!", { variant: "success" });
+    navigate("/login/reset-password", { state: { email } });
+  };
+
+  const handleGoBack = () => {
+    if (window.history.length > 1 && window.history.state?.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/login");
+    }
   };
 
   return (
-    <div className={`relative flex flex-col md:flex-row min-h-screen transition bg-[#f5f5f5] dark:bg-[#121212] items-center justify-center px-4 py-10`}>
-      {/* Floating Top Nav Buttons */}
-      <div className="absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex items-center justify-between z-30">
-        <BackButton fallbackPath="/login" label="Back" />
-        <Link
-          to="/home"
-          className="flex items-center gap-2 px-3.5 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-extrabold text-xs backdrop-blur-md"
+    <div className="relative min-h-screen w-full bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-300 flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto">
+      {/* Top Navigation Bar: Back & Home */}
+      <div className="absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex items-center justify-between z-30 pointer-events-none">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="pointer-events-auto p-2 sm:px-3 sm:py-2 text-gray-700 dark:text-gray-200 hover:text-[#0284C7] dark:hover:text-[#38BDF8] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
+          aria-label="Back"
         >
-          <Home className="w-4 h-4" />
-          <span>Home</span>
-        </Link>
+          <ArrowLeft className="w-5 h-5" />
+          <span className="hidden sm:inline text-xs font-bold">Back</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/home")}
+          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
+          title="Continue as Guest"
+        >
+          <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0284C7]" />
+          <span>Guest</span>
+          <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:translate-x-0.5 transition-transform -ml-0.5" />
+        </button>
       </div>
 
-      <div className="w-full md:w-[40%] bg-white dark:bg-gray-500/20 rounded-2xl shadow-2xl p-8 max-w-md transition mt-12 md:mt-0">
-        <h1 className="text-3xl font-semibold text-[#1E88E5] dark:text-white">Forgot your password ?</h1>
+      {/* Main Unified Card Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="w-full max-w-[440px] mx-auto py-8 sm:py-10"
+      >
+        {/* Brand Cow Logo Header */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <img
+            src={brandLogo}
+            alt={company?.name || "Madhu Dairy"}
+            className="h-20 sm:h-24 w-auto object-contain mb-2 drop-shadow-xs transition-transform duration-300 hover:scale-105"
+          />
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
+            Farm-fresh milk & daily needs delivered to your door
+          </p>
+        </div>
 
-        <p className="text-sm mt-4 mb-4 text-gray-600 dark:text-gray-300">
-          {showOtpInput ? "An authentication code has been sent to your email. Enter the 5-digit OTP below to verify." : "Don’t worry, happens to all of us. Enter your verified email below to recover your password"}
-        </p>
+        {/* Welcome Header */}
+        <div className="mb-5 text-left">
+          <h1 className="text-2xl sm:text-[26px] font-black text-slate-900 dark:text-white tracking-tight">
+            Forgot Password? 🔐
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            {showOtpInput
+              ? "Enter the 5-digit verification code sent to your email"
+              : "Enter your registered email address to recover your password"}
+          </p>
+        </div>
 
+        {/* Inputs Card Container */}
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-sm">
+          <div className="space-y-4">
+            {/* Email Address */}
+            <div>
+              <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1.5">
+                Registered Email
+              </label>
+              <div className={`group flex items-center px-4 py-3.5 rounded-xl border transition-all shadow-xs ${
+                disableInput
+                  ? "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 opacity-80"
+                  : "bg-slate-50/80 dark:bg-slate-900/60 border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#1E88E5] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#1E88E5]/20"
+              }`}>
+                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#1E88E5] mr-3 shrink-0 transition-colors" />
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  disabled={disableInput}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium disabled:cursor-not-allowed"
+                  required
+                />
+              </div>
+            </div>
 
+            {/* OTP Section (Shown after email verification) */}
+            {showOtpInput && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="pt-2"
+              >
+                <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-2">
+                  5-Digit Verification Code
+                </label>
+                <div className="flex justify-between gap-2">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={`forget-otp-${index}`}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                      ref={(el) => (inputRefs.current[index] = el)}
+                      className="w-12 h-13 text-center text-lg font-black rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-white focus:border-[#1E88E5] focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#1E88E5]/20 outline-none transition-all shadow-xs"
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Enter your email address"
-          // value={formData?.email}
-          disabled={disableInput}
-          onChange={(e) => {
-            setEmail(e?.target?.value)
-          }}
-          className={`w-full px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 ${showOtpInput ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-white  text-gray-800 dark:text-gray-200"} dark:bg-gray-800  focus:outline-none focus:ring-2 focus:ring-[#1E88E5]`}
-          required
-        />
-
-        {showOtpInput ? (
-          <div id="otp-input" className="flex justify-between mt-8 space-x-2">
-            {otp.map((digit, index) => (
-              <input
-                key={`forget-otp-${index}`}
-                type="text"
-                maxLength="1"
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                ref={(el) => (inputRefs.current[index] = el)}
-                className={`${loading ? "cursor-not-allowed" : "cursor-text"} h-14 w-12 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-center text-xl focus:outline-none focus:ring-2 focus:ring-[#1E88E5] transition`}
-              />
-            ))}
-          </div>
-        ) : null}
-
-
-        {(() => {
-          let buttonText;
-          if (showOtpInput) {
-            buttonText = loading ? "Verifying..." : "Verify OTP";
-          } else {
-            buttonText = loading ? "Sending..." : "Send OTP";
-          }
-          return (
-            <Button
-              variant="contained"
-              onClick={showOtpInput ? () => {
-                verifyOtp()
-              } : () => {
-                verifyEmail()
-              }}
-              // disabled={loading}
-              className="w-full !mt-6 font-semibold !bg-[#1E88E5] hover:!bg-[#6f3260] transition"
+            {/* Action Button */}
+            <button
+              type="button"
+              disabled={loading}
+              onClick={showOtpInput ? verifyOtp : verifyEmail}
+              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#5B54F2] to-[#1E88E5] hover:from-[#4B44E2] hover:to-[#1565C0] text-white font-black text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
             >
-              {buttonText}
-            </Button>
-          );
-        })()}
-      </div>
+              {loading ? (
+                <BuffaloLoader
+                  variant="button"
+                  text={showOtpInput ? "Verifying OTP..." : "Sending OTP..."}
+                />
+              ) : showOtpInput ? (
+                "Verify Code & Continue"
+              ) : (
+                "Send Verification Code"
+              )}
+            </button>
+          </div>
+        </div>
 
-      <div className="hidden md:flex w-[50%] h-full justify-center items-center">
-        <img
-          src="https://img.freepik.com/free-vector/otp-concept-illustration_114360-7882.jpg"
-          alt="OTP Illustration"
-          className="w-[80%] max-h-[400px] object-contain dark:invert"
-        />
-      </div>
+        {/* Back to Login Footer */}
+        <div className="mt-5 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">
+          Remember your password?{" "}
+          <Link to="/login" className="font-extrabold text-[#0284C7] hover:underline ml-1">
+            Back to Sign In
+          </Link>
+        </div>
+
+        {/* Terms and Conditions Note */}
+        <p className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">
+          Protected by Madhu Dairy's{" "}
+          <Link
+            to="/about"
+            className="font-bold text-slate-600 dark:text-slate-300 hover:text-[#0284C7] dark:hover:text-[#38BDF8] underline decoration-slate-300 dark:decoration-slate-600 underline-offset-2 transition-colors"
+          >
+            Terms of Service
+          </Link>{" "}
+          &{" "}
+          <Link
+            to="/about"
+            className="font-bold text-slate-600 dark:text-slate-300 hover:text-[#0284C7] dark:hover:text-[#38BDF8] underline decoration-slate-300 dark:decoration-slate-600 underline-offset-2 transition-colors"
+          >
+            Privacy Policy
+          </Link>.
+        </p>
+      </motion.div>
     </div>
   );
 }

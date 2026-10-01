@@ -375,10 +375,8 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 left-0 w-full z-50 py-1.5 sm:py-2 px-4 sm:px-8 lg:px-12 transition-transform duration-300 ease-in-out glass-navbar rounded-none border-none shadow-none ${
+            <nav className={`fixed top-0 left-0 w-full z-50 py-3 sm:py-2 px-4 sm:px-8 lg:px-12 glass-navbar rounded-none border-none shadow-none translate-y-0 ${
                 (isProductsPage || isCartPage || isCheckoutPage) ? "hidden md:block" : ""
-            } ${
-                isScrolling ? "-translate-y-full lg:translate-y-0" : "translate-y-0"
             }`}>
                 <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
                     {/* Desktop View Brand Logo */}
@@ -397,7 +395,7 @@ export default function Navbar() {
                         <img
                             src={cowLogoImg}
                             alt="Madhu Dairy Cow Logo"
-                            className="h-8 w-auto object-contain drop-shadow-sm"
+                            className="h-10 w-auto object-contain drop-shadow-sm"
                         />
                     </Link>
 
@@ -406,10 +404,10 @@ export default function Navbar() {
                         to="/"
                         className="md:hidden absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 no-underline cursor-pointer select-none"
                     >
-                        <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
+                        <span className="font-black text-sm sm:text-base tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
                             Madhu Dairy
                         </span>
-                        <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-widest uppercase leading-tight mt-0.5">
+                        <span className="text-[10px] sm:text-[11px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-widest uppercase leading-tight mt-0.5">
                             &amp; Daily Needs
                         </span>
                     </Link>
@@ -486,19 +484,20 @@ export default function Navbar() {
                             </button>
                         </Tooltip>
 
-                        {/* Notifications Pill (Visible on both Mobile & Desktop) */}
-                        {(authUser || authAdmin) && !isCheckoutPage && (
+                        {/* Notifications Pill (Visible on both Mobile & Desktop at top right) */}
+                        {!isCheckoutPage && (
                             <Tooltip title="Notifications">
                                 <button
                                     ref={bellBtnRef}
                                     onClick={() => setNotificationDialog((p) => !p)}
-                                    className={`flex w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
+                                    aria-label="Notifications"
+                                    className={`flex w-9 h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-105 active:scale-95 shadow-xs border ${
                                         notificationDialog
-                                            ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.3)]"
-                                            : "text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                                            ? "bg-amber-100/90 dark:bg-amber-950/80 text-amber-500 border-amber-300 dark:border-amber-700 shadow-[0_0_12px_rgba(245,158,11,0.35)]"
+                                            : "bg-slate-100/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-slate-700/80 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
                                     }`}
                                 >
-                                    <Bell className="w-4.5 h-4.5 sm:w-4 sm:h-4 transition-colors duration-300" />
+                                    <Bell className="w-4.5 h-4.5 transition-colors duration-300" />
                                     {(unreadCount > 0 || notification?.length > 0) && (
                                         <span className="absolute -top-1 -right-1 font-bold px-1.5 py-0.2 bg-amber-500 text-white rounded-full text-[10px] shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse">
                                             {unreadCount > 0 ? unreadCount : notification.length}
@@ -646,35 +645,33 @@ export default function Navbar() {
 
             {/* Mobile Bottom Navigation Bar */}
             {!location.pathname.startsWith('/product-details') && !isCheckoutPage && (
-                <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 min-h-[58px] pt-1 pb-[max(env(safe-area-inset-bottom,0px),4px)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-2 transition-transform duration-300 ease-in-out ${
-                    isScrolling ? "translate-y-full" : "translate-y-0"
-                }`}>
+                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 min-h-[72px] pt-2 pb-[max(env(safe-area-inset-bottom,4px),8px)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-3 translate-y-0">
                     {/* 1. Products */}
                     <Link
                         to="/products"
-                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all ${
+                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all ${
                             location.pathname.startsWith('/products')
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
                         }`}
                     >
-                        <ShoppingBag className={`w-5 h-5 transition-all duration-200 ${
+                        <ShoppingBag className={`w-6 h-6 transition-all duration-200 ${
                             location.pathname.startsWith('/products') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                         }`} />
-                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Products</span>
+                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Products</span>
                     </Link>
 
                     {/* 2. Wishlist */}
                     <button
                         onClick={handleUserWishlist}
-                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.includes('/wishlist')
                                 ? "text-[#FF385C] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#FF385C]"
                         }`}
                     >
                         <div className="relative">
-                            <Heart className={`w-5 h-5 transition-all duration-200 ${
+                            <Heart className={`w-6 h-6 transition-all duration-200 ${
                                 location.pathname.includes('/wishlist') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(255,56,92,0.4)] fill-[#FF385C]' : 'stroke-[1.8]'
                             }`} />
                             {wishlistCount > 0 && (
@@ -683,22 +680,22 @@ export default function Navbar() {
                                 </span>
                             )}
                         </div>
-                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Wishlist</span>
+                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Wishlist</span>
                     </button>
 
                     {/* 3. Centralized Home Button */}
                     <Link
                         to="/home"
-                        className="flex flex-col items-center justify-center -mt-5 group cursor-pointer"
+                        className="flex flex-col items-center justify-center -mt-6 group cursor-pointer"
                     >
-                        <div className={`p-2.5 rounded-full border-4 border-white dark:border-slate-900 shadow-xl transition-all duration-300 ${
+                        <div className={`p-3 rounded-full border-4 border-white dark:border-slate-900 shadow-xl transition-all duration-300 ${
                             location.pathname === '/home' || location.pathname === '/'
                                 ? "bg-gradient-to-tr from-[#6C5CE7] to-[#805AD5] text-white scale-110 shadow-[0_4px_20px_rgba(108,92,231,0.5)] ring-2 ring-[#6C5CE7]/30"
                                 : "bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-[#A78BFA] border border-purple-200/80 dark:border-purple-800/80 group-hover:scale-105"
                         }`}>
-                            <Home className="w-5 h-5 stroke-[2.2]" />
+                            <Home className="w-6 h-6 stroke-[2.2]" />
                         </div>
-                        <span className={`text-[10px] leading-none font-extrabold mt-1 ${
+                        <span className={`text-[11px] leading-none font-bold mt-1.5 ${
                             location.pathname === '/home' || location.pathname === '/'
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black"
                                 : "text-slate-800 dark:text-slate-200"
@@ -710,14 +707,14 @@ export default function Navbar() {
                     {/* 4. Cart */}
                     <button
                         onClick={handleUserCart}
-                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname === '/cart'
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
                         }`}
                     >
                         <div className="relative">
-                            <ShoppingCart className={`w-5 h-5 transition-all duration-200 ${
+                            <ShoppingCart className={`w-6 h-6 transition-all duration-200 ${
                                 location.pathname === '/cart' ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                             }`} />
                             {(cartItems?.length || 0) > 0 && (
@@ -726,13 +723,13 @@ export default function Navbar() {
                                 </span>
                             )}
                         </div>
-                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Cart</span>
+                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Cart</span>
                     </button>
 
                     {/* 5. Profile (Right-most) */}
                     <button
                         onClick={handleProfileClick}
-                        className={`flex flex-col items-center justify-center w-14 py-0.5 text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
                                 ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
@@ -742,14 +739,14 @@ export default function Navbar() {
                             <Avatar
                                 alt={authUser?.firstName}
                                 src={authUser?.photo}
-                                sx={{ width: 20, height: 20, border: "1.5px solid #6C5CE7" }}
+                                sx={{ width: 24, height: 24, border: "1.5px solid #6C5CE7" }}
                             />
                         ) : (
-                            <User className={`w-5 h-5 transition-all duration-200 ${
+                            <User className={`w-6 h-6 transition-all duration-200 ${
                                 location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                             }`} />
                         )}
-                        <span className="text-[10px] leading-none mt-1 font-extrabold tracking-tight">Profile</span>
+                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Profile</span>
                     </button>
                 </nav>
             )}

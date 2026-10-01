@@ -1,4 +1,4 @@
-import { useState, useRef, useContext, useEffect } from "react";
+import { useState, useRef, useContext, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -14,6 +14,7 @@ import { ProductContext } from "../../context/ProductProvider";
 import { CartContext } from "../../context/CartProvider";
 import { UserAuthContext, AdminAuthContext } from "../../context/AuthProvider";
 import { addToWishlist, removeProductFromWishList } from "../../services/userProfileService";
+import { PageContentContext } from "../../context/PageContentProvider";
 
 import { products as fallbackProducts } from "../../data/products";
 import { getProductImage, getDiscountedPrice } from "../../utils/helper";
@@ -46,6 +47,7 @@ export default function ProductShowcase3D() {
     const { enqueueSnackbar } = useSnackbar();
     const productCtx = useContext(ProductContext);
     const cartCtx = useContext(CartContext);
+    const { pageContent } = useContext(PageContentContext);
 
     const realProducts = productCtx?.products && productCtx.products.length > 0 ? productCtx.products : [];
     const rawItems = realProducts.length > 0 ? realProducts : fallbackProducts;
@@ -71,39 +73,86 @@ export default function ProductShowcase3D() {
         return originalImage;
     };
 
-    // Build showcase slides dynamically for all products available
-    const showcaseSlides = rawItems.map((item, idx) => {
-        const title = item.name || item.title || "Organic Dairy Product";
-        const rawImg = getProductImage(item);
-        const cutoutFromItem = item.pngImage || item.showcaseCutout;
-        const image = (cutoutFromItem && typeof cutoutFromItem === "string" && cutoutFromItem.trim()) ? cutoutFromItem : getIsolatedProductCutout(title, rawImg);
-        const rawPrice = Number(item.price) || 60;
-        const rawDiscount = Number(item.discount) || (idx % 2 === 0 ? 15 : 10);
-        const { discountedPrice } = getDiscountedPrice(rawPrice, rawDiscount);
-        const uniqueId = item._id || item.id || `slide-${idx}-${title.replace(/[^a-zA-Z0-9]/g, '')}`;
+    // Build showcase slides from admin-configured 3D cards if available, else fall back to product catalog
+    const adminCards = pageContent?.showcase3DCards?.filter(c => c.enabled !== false) || [];
 
-        // Custom 5 Nutritional Metrics per Product set by Admin or AI
-        const finalNutritionMetrics = getNormalizedNutritionMetrics(item, title);
+    const showcaseSlides = useMemo(() => {
+        // If admin has configured showcase3DCards, use those with priority
+        if (adminCards.length > 0) {
+            return adminCards.map((card, idx) => {
+                const title = card.title || "Organic Dairy Product";
+                const rawPrice = Number(card.price) || 60;
+                const rawDiscount = Number(card.discount) || 10;
+                const { discountedPrice } = getDiscountedPrice(rawPrice, rawDiscount);
 
-        return {
-            id: uniqueId,
-            rawProduct: item,
-            title: title,
-            description: item.description || "Farm-fresh, 100% pure & natural A2 dairy product rich in essential calcium, vitamins, and minerals. Delivered daily to your doorstep.",
-            price: `$${(discountedPrice > 0 ? discountedPrice : rawPrice).toFixed(2)}`,
-            priceInr: `₹${formatNumberWithCommas(discountedPrice > 0 ? discountedPrice : rawPrice)}`,
-            originalPrice: rawPrice,
-            discount: rawDiscount,
-            discountCode: idx % 2 === 0 ? "ORGANIC15" : "MADHU20",
-            image: image,
-            rating: item.rating || (4.7 + (idx % 3) * 0.1).toFixed(1),
-            reviewsCount: 120 + idx * 25,
-            nutritionMetrics: finalNutritionMetrics,
-            direction: item.direction || "Store at 4°C cold refrigeration. Shake well before use. Consume within 3-4 days of opening for peak fresh taste.",
-            ingredients: item.ingredients || (item.features ? item.features.join(", ") : "100% Pure A2 Dairy Milk, Vitamin D3, Calcium, Natural Minerals, Zero Chemical Preservatives."),
-            details: item.details || `Category: ${item.category || "Dairy"} | Net Vol: ${item.quantity || "1 Litre"} | 100% Grass-Fed Farm Sourced | Cold-Chain Quality Assured.`
-        };
-    });
+                // Try to find matching real product for extra data (nutrition, wishlist etc.)
+                const matchedRealProduct = rawItems.find(
+                    (p) => (p.name || p.title || "").toLowerCase() === title.toLowerCase()
+                );
+
+                const image = card.pngImage && card.pngImage.trim()
+                    ? card.pngImage
+                    : getIsolatedProductCutout(title, matchedRealProduct ? getProductImage(matchedRealProduct) : "");
+
+                const finalNutritionMetrics = getNormalizedNutritionMetrics(matchedRealProduct || { title }, title);
+
+                return {
+                    id: `admin-3d-${idx}-${title.replace(/[^a-zA-Z0-9]/g, "")}`,
+                    rawProduct: matchedRealProduct || { title, price: rawPrice, discount: rawDiscount },
+                    title,
+                    description: card.description || matchedRealProduct?.description || "Farm-fresh, 100% pure & natural dairy product.",
+                    price: `$${(discountedPrice > 0 ? discountedPrice : rawPrice).toFixed(2)}`,
+                    priceInr: `₹${formatNumberWithCommas(discountedPrice > 0 ? discountedPrice : rawPrice)}`,
+                    originalPrice: rawPrice,
+                    discount: rawDiscount,
+                    discountCode: idx % 2 === 0 ? "ORGANIC15" : "MADHU20",
+                    badge: card.badge || "",
+                    image,
+                    rating: matchedRealProduct?.rating || (4.7 + (idx % 3) * 0.1).toFixed(1),
+                    reviewsCount: 120 + idx * 25,
+                    nutritionMetrics: finalNutritionMetrics,
+                    direction: matchedRealProduct?.direction || "Store at 4°C cold refrigeration. Consume within 3-4 days of opening.",
+                    ingredients: matchedRealProduct?.ingredients || (matchedRealProduct?.features ? matchedRealProduct.features.join(", ") : "100% Pure A2 Dairy, Natural Minerals, Zero Preservatives."),
+                    details: matchedRealProduct?.details || `Category: Dairy | 100% Grass-Fed Farm Sourced | Cold-Chain Quality Assured.`,
+                };
+            });
+        }
+
+        // Default: Build showcase slides dynamically for all products available
+        return rawItems.map((item, idx) => {
+            const title = item.name || item.title || "Organic Dairy Product";
+            const rawImg = getProductImage(item);
+            const cutoutFromItem = item.pngImage || item.showcaseCutout;
+            const image = (cutoutFromItem && typeof cutoutFromItem === "string" && cutoutFromItem.trim()) ? cutoutFromItem : getIsolatedProductCutout(title, rawImg);
+            const rawPrice = Number(item.price) || 60;
+            const rawDiscount = Number(item.discount) || (idx % 2 === 0 ? 15 : 10);
+            const { discountedPrice } = getDiscountedPrice(rawPrice, rawDiscount);
+            const uniqueId = item._id || item.id || `slide-${idx}-${title.replace(/[^a-zA-Z0-9]/g, "")}`;
+
+            // Custom 5 Nutritional Metrics per Product set by Admin or AI
+            const finalNutritionMetrics = getNormalizedNutritionMetrics(item, title);
+
+            return {
+                id: uniqueId,
+                rawProduct: item,
+                title: title,
+                description: item.description || "Farm-fresh, 100% pure & natural A2 dairy product rich in essential calcium, vitamins, and minerals. Delivered daily to your doorstep.",
+                price: `$${(discountedPrice > 0 ? discountedPrice : rawPrice).toFixed(2)}`,
+                priceInr: `₹${formatNumberWithCommas(discountedPrice > 0 ? discountedPrice : rawPrice)}`,
+                originalPrice: rawPrice,
+                discount: rawDiscount,
+                discountCode: idx % 2 === 0 ? "ORGANIC15" : "MADHU20",
+                image: image,
+                rating: item.rating || (4.7 + (idx % 3) * 0.1).toFixed(1),
+                reviewsCount: 120 + idx * 25,
+                nutritionMetrics: finalNutritionMetrics,
+                direction: item.direction || "Store at 4°C cold refrigeration. Shake well before use. Consume within 3-4 days of opening for peak fresh taste.",
+                ingredients: item.ingredients || (item.features ? item.features.join(", ") : "100% Pure A2 Dairy Milk, Vitamin D3, Calcium, Natural Minerals, Zero Chemical Preservatives."),
+                details: item.details || `Category: ${item.category || "Dairy"} | Net Vol: ${item.quantity || "1 Litre"} | 100% Grass-Fed Farm Sourced | Cold-Chain Quality Assured.`
+            };
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [adminCards.length, rawItems.length, pageContent?.showcase3DCards]);
 
     const [activeIndex, setActiveIndex] = useState(0);
     const [direction, setDirection] = useState(1); // 1 = next, -1 = prev
@@ -292,7 +341,7 @@ export default function ProductShowcase3D() {
     const translateY = isHoveringCard ? mousePos.y * 12 : 0;
 
     return (
-        <section className="w-full pt-1 sm:pt-3 pb-3 sm:pb-6 px-2 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
+        <section className="hidden md:block w-full pt-1 sm:pt-3 pb-3 sm:pb-6 px-2 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
             {/* Outer Showcase Container */}
             <div className="relative rounded-[16px] sm:rounded-[36px] bg-white/50 dark:bg-slate-900/65 backdrop-blur-2xl border border-white/80 dark:border-white/15 shadow-[0_15px_35px_rgba(0,0,0,0.06)] p-2.5 sm:p-6 lg:p-8 transition-all duration-300">
                 {/* 2-Column Asymmetric Split Layout: 380px | 1fr */}

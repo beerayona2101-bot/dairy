@@ -10,6 +10,15 @@ const PageContentSchema = new mongoose.Schema(
         "MADHU Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
     },
     heroBannerImage: { type: String, default: "" },
+    heroCarouselSlides: [
+      {
+        image: { type: String, default: "" },
+        title: { type: String, default: "" },
+        subtitle: { type: String, default: "" },
+        buttonText: { type: String, default: "Explore Products" },
+        buttonLink: { type: String, default: "/products" },
+      },
+    ],
     landingHeroImage: { type: String, default: "https://res.cloudinary.com/dyahibuzy/image/upload/v1750157405/happyFamily_uuyftj.png" },
     homeCategoryCards: [
       {
@@ -36,6 +45,18 @@ const PageContentSchema = new mongoose.Schema(
       {
         question: { type: String },
         answer: { type: String },
+      },
+    ],
+    showcase3DCards: [
+      {
+        title: { type: String },
+        description: { type: String },
+        pngImage: { type: String },
+        badge: { type: String, default: "⭐ BESTSELLER" },
+        price: { type: Number, default: 60 },
+        discount: { type: Number, default: 10 },
+        enabled: { type: Boolean, default: true },
+        sortOrder: { type: Number, default: 0 },
       },
     ],
     aboutUs: {

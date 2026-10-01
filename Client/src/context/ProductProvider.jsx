@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import { getProducts } from "../services/productServices";
+import { fallbackProducts } from "../data/fallbackProducts";
 import wsManager from "../socket/WebSocketManager";
 
 export const ProductContext = createContext();
@@ -14,17 +15,22 @@ export const ProductProvider = ({ children }) => {
     const [showHeaderExtras, setShowHeaderExtras] = useState(false);
     const [localProducts, setLocalProducts] = useState(null);
 
-    const { data: queryProducts = [], isLoading: queryLoading, isError, error } = useQuery({
+    const { data: queryProducts = fallbackProducts, isLoading: queryLoading, isError, error } = useQuery({
         queryKey: ['products'],
         queryFn: async () => {
-            const data = await getProducts();
-            if (data?.success) {
-                return data.products || [];
+            try {
+                const data = await getProducts();
+                if (data?.success && Array.isArray(data.products) && data.products.length > 0) {
+                    return data.products;
+                }
+            } catch (err) {
+                console.warn("Product API fetch issue, utilizing fallback catalog:", err);
             }
-            return [];
+            return fallbackProducts;
         },
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 30,
+        retry: 2,
     });
 
     useEffect(() => {

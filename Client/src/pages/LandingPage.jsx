@@ -92,13 +92,13 @@ export default function LandingPage() {
                     </h2>
 
                     <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
-                        <Marquee speed={75} gradient={false} pauseOnHover={true}>
+                        <Marquee speed={25} gradient={false} pauseOnHover={true}>
                             <DairyProductsCarousel half="first" />
                         </Marquee>
                     </Suspense>
 
                     <Suspense fallback={<div className="text-center py-5 text-gray-400">Loading carousel...</div>}>
-                        <Marquee speed={65} gradient={false} direction="right" className="mt-6" pauseOnHover={true}>
+                        <Marquee speed={22} gradient={false} direction="right" className="mt-6" pauseOnHover={true}>
                             <DairyProductsCarousel half={"second"} />
                         </Marquee>
                     </Suspense>

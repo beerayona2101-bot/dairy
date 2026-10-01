@@ -1,4 +1,4 @@
-import { slugify } from "./slugify";
+import { slugify } from "./slugify.js";
 
 export const searchProducts = (products, productId) => {
   if (!productId || !Array.isArray(products)) return products ?? [];
@@ -25,9 +25,8 @@ export const searchProducts = (products, productId) => {
     if (c.includes("shrikhand")) return "shrikhand";
     if (c.includes("cream") || c.includes("rabri")) return "cream";
     if (c.includes("powder")) return "milk-powder";
-    if (c.includes("flavor") || c.includes("flavoured")) return "flavored-milk";
+    if (c.includes("flavor") || c.includes("flavoured") || c.includes("badham") || c.includes("badam")) return "flavored-milk";
     if (c.includes("sweet") || c.includes("jamun") || c.includes("rasgulla") || c.includes("peda") || c.includes("mithai")) return "dairy-sweets";
-    if (c.includes("badham") || c.includes("badam")) return "badham";
     return slugify(c);
   };
 
@@ -48,11 +47,17 @@ export const searchProducts = (products, productId) => {
     return categoryMatches;
   }
 
+  const cleanKeywords = keyword.split(/[\s-]+/).filter(Boolean);
   return products.filter((product) => {
-    const nameMatch = product?.name?.toLowerCase()?.includes(keyword) ?? false;
-    const categoryMatch = product?.category?.toLowerCase()?.includes(keyword) ?? false;
-    const priceMatch = String(product?.price || "")?.includes(keyword) || false;
-    return nameMatch || categoryMatch || priceMatch;
+    const nameStr = (product?.name || "").toLowerCase();
+    const catStr = (product?.category || "").toLowerCase();
+    const descStr = (product?.description || "").toLowerCase();
+    const priceStr = String(product?.price || "");
+
+    if (nameStr.includes(keyword) || catStr.includes(keyword) || priceStr.includes(keyword)) {
+      return true;
+    }
+    return cleanKeywords.some(w => w.length >= 3 && (nameStr.includes(w) || catStr.includes(w) || descStr.includes(w)));
   });
 };
 

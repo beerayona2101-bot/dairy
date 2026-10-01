@@ -43,6 +43,15 @@ html {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Hide scrollbar but keep scrolling functional */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   background-color: #FFFFFF;
@@ -93,44 +102,69 @@ a, button, input, select, textarea, [role="button"] {
 }
 
 
-/* Global Form Input & Select Thin, Sleek Styling (No Double Borders) */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="tel"],
-input[type="number"],
-select,
-textarea {
+/* Global Form Input & Select Thin, Sleek Styling (Exclude custom-wrapped & transparent inputs) */
+input[type="text"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="email"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="password"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="tel"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="number"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+select:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+textarea:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input) {
   border: 1px solid #cbd5e1;
   border-radius: 0.5rem;
   transition: all 0.2s ease-in-out;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="tel"]:focus,
-input[type="number"]:focus,
-select:focus,
-textarea:focus {
+input[type="text"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="email"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="password"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="tel"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="number"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+select:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+textarea:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus {
   border-color: #1E88E5;
   box-shadow: 0 0 0 2px rgba(0, 80, 158, 0.15);
   outline: none;
 }
 
-/* Disable inner border only on explicitly designated borderless inputs */
+/* Disable inner border completely on borderless and custom-wrapped transparent inputs */
 .no-border-input,
 .composite-input-wrapper > input,
-input[type="text"].border-none,
-input[type="text"].border-0,
+.composite-input-wrapper input,
 input.border-none,
-input.border-0 {
+input.border-0,
+input[class*="border-none"],
+input[class*="border-0"],
+input[class*="bg-transparent"],
+textarea.border-none,
+textarea.border-0,
+textarea[class*="border-none"],
+textarea[class*="border-0"],
+textarea[class*="bg-transparent"] {
   border: none !important;
   border-style: none !important;
   border-width: 0 !important;
   outline: none !important;
   box-shadow: none !important;
   -webkit-appearance: none !important;
+}
+
+.no-border-input:focus,
+.composite-input-wrapper > input:focus,
+.composite-input-wrapper input:focus,
+input.border-none:focus,
+input.border-0:focus,
+input[class*="border-none"]:focus,
+input[class*="border-0"]:focus,
+input[class*="bg-transparent"]:focus,
+textarea.border-none:focus,
+textarea.border-0:focus,
+textarea[class*="border-none"]:focus,
+textarea[class*="border-0"]:focus,
+textarea[class*="bg-transparent"]:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Material UI Outlined Inputs Thin Single Border */

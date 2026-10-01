@@ -25,6 +25,7 @@ import { getProductImage, getCardBackgroundImage } from "../utils/helper";
 import { products as baseCategories } from "../data/products";
 import BackButton from "../components/Common/BackButton";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
+import FloatingCart from "../components/Common/FloatingCart";
 
 export default function ProductPage() {
 
@@ -345,12 +346,10 @@ export default function ProductPage() {
                                 {/* Mobile Header, Search Bar & Filter Options Bar (Full Width Edge-to-Edge) */}
                                 <div className="md:hidden sticky top-0 z-30 w-[calc(100%+1.5rem)] sm:w-[calc(100%+3rem)] -mx-3 sm:-mx-6 px-3.5 sm:px-6 py-2.5 space-y-2.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs transition-colors">
                                     {/* Top Navigation Row */}
-                                    <div className="flex items-center justify-between">
-                                        <BackButton fallbackPath="/home" />
-
-                                        <div className="flex flex-col items-center justify-center">
-                                            <AnimatedHeading blackText="Products" violetText="Collection" as="h1" className="text-sm font-black tracking-tight text-gray-900 dark:text-white" />
-                                            <span className="text-[10px] font-bold text-[#6C5CE7] dark:text-purple-400">
+                                    <div className="flex items-center justify-between px-0.5">
+                                        <div className="flex flex-col items-start justify-center">
+                                            <AnimatedHeading blackText="Products" violetText="Collection" as="h1" className="text-base font-black tracking-tight text-gray-900 dark:text-white" />
+                                            <span className="text-[11px] font-bold text-[#6C5CE7] dark:text-purple-400">
                                                 {filteredMobileCategoryCards.length} Categories Available
                                             </span>
                                         </div>
@@ -593,6 +592,9 @@ export default function ProductPage() {
 
                 </div>
             </div>
+
+            {/* Floating Cart Button (Right Side) - Show only when viewing products in a category, not on all-categories overview */}
+            {productId && <FloatingCart />}
         </>
     );
 }

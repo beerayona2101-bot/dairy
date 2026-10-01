@@ -13,7 +13,6 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { getGuestWishlist, toggleGuestWishlist, clearGuestWishlist, setGuestWishlist } from "../../utils/guestWishlist";
-import BackButton from "../../components/Common/BackButton";
 
 
 export default function MyWishlist() {
@@ -375,10 +374,6 @@ export default function MyWishlist() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 md:pt-6 pb-6 flex flex-col h-full overflow-hidden">
-      {/* Mobile Top Back Button Only (Shown on Mobile Response Only - Left Top) */}
-      <div className="md:hidden w-full pb-2 mb-2 flex items-center justify-start shrink-0">
-        <BackButton fallbackPath={activeUser ? "/user-profile" : "/home"} />
-      </div>
 
       {/* Mobile Actions Bar (Shown on Mobile Response when items exist) */}
       {wishlist.length > 0 && (

@@ -10,7 +10,30 @@ const defaultInitialContent = {
   companyTagline: "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep",
   companyDescription:
     "MADHU Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
-  heroBannerImage: "/assets/home_welcome_hero_bg.png",
+  heroBannerImage: "/assets/hero_carousel_slide_1.png",
+  heroCarouselSlides: [
+    {
+      image: "/assets/hero_carousel_slide_1.png",
+      title: "Welcome to MADHU Dairy & Daily Needs",
+      subtitle: "Experience 100% unadulterated farm-fresh milk, ghee, paneer, and sweets sourced directly from ethical farms.",
+      buttonText: "Explore Products",
+      buttonLink: "/products",
+    },
+    {
+      image: "/assets/hero_carousel_slide_2.png",
+      title: "100% Pure, Organic & Farm-Fresh A2 Milk",
+      subtitle: "Delivered fresh to your doorstep every morning with zero preservatives and pristine hygiene.",
+      buttonText: "Order Fresh Milk",
+      buttonLink: "/products",
+    },
+    {
+      image: "/assets/hero_carousel_slide_3.png",
+      title: "Traditional Ghee, Artisanal Paneer & Delicacies",
+      subtitle: "Crafted with pure whole milk and traditional recipes for authentic nutrition, rich aroma and taste.",
+      buttonText: "Shop Dairy Products",
+      buttonLink: "/products",
+    },
+  ],
   landingHeroImage: "/assets/landing_hero_bg_hd.png",
   goodnessOfferings: [],
   landingCategories: [],
@@ -30,8 +53,9 @@ export const PageContentProvider = ({ children }) => {
       }
       return defaultInitialContent;
     },
-    staleTime: 1000 * 60 * 10,
-    gcTime: 1000 * 60 * 60,
+    staleTime: 0,           // Always considered stale — refetch always fetches fresh from server
+    gcTime: 1000 * 60 * 5, // Keep in memory for 5 min (was 1 hour — reduce memory pressure)
+    refetchOnWindowFocus: false,
   });
 
   const pageContent = localPageContent ?? queryPageContent ?? defaultInitialContent;
