@@ -35,7 +35,7 @@ export default function PageTransition({ children, className = "" }) {
       animate="animate"
       exit="exit"
       variants={pageVariants}
-      className={`w-full flex-1 ${className}`}
+      className={`w-full flex-1 flex flex-col ${className}`}
     >
       {children}
     </motion.div>

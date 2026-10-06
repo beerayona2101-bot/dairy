@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Dialog, Slide, Tooltip } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, X, CheckCheck } from "lucide-react";
+import { Bell, X, CheckCheck, ArrowLeft } from "lucide-react";
 import { enqueueSnackbar } from "notistack";
 import { removeAdminNotification } from "../../services/adminService";
 import { removeUserNotification } from "../../services/userProfileService";
@@ -64,7 +64,7 @@ export default function AdminNavbar() {
         return () => document.removeEventListener("mousedown", handleOutside);
     }, [notificationOpen]);
 
-    const handleRemoveNotification = async (index, mode) => {
+    const handleRemoveNotification = async (index, mode, notificationId = null) => {
         const adminId = authAdmin?._id;
         const userId = authUser?._id;
 
@@ -78,9 +78,9 @@ export default function AdminNavbar() {
         try {
             let res;
             if (adminId) {
-                res = await removeAdminNotification(adminId, mode, index);
+                res = await removeAdminNotification(adminId, mode, index, notificationId);
             } else {
-                res = await removeUserNotification(userId, mode, index);
+                res = await removeUserNotification(userId, mode, index, notificationId);
             }
 
             if (res?.success) {
@@ -90,9 +90,9 @@ export default function AdminNavbar() {
                     if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: [] } : null);
                     enqueueSnackbar("All notifications cleared.", { variant: "success" });
                 } else if (mode === "index") {
-                    setNotification((prev) => prev.filter((_, i) => i !== index));
-                    if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((_, i) => i !== index) } : null);
-                    if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((_, i) => i !== index) } : null);
+                    setNotification((prev) => prev.filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index));
+                    if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index) } : null);
+                    if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index) } : null);
                 }
             } else {
                 enqueueSnackbar(res?.message || "Failed to remove notification.", { variant: "error" });
@@ -192,52 +192,53 @@ export default function AdminNavbar() {
                 </div>
             </div>
 
-            {/* Notification Panel — Dropdown (no Dialog backdrop) */}
+            {/* Admin Notification Panel — Full screen on Mobile (< sm), Floating Dropdown on Desktop (sm+) */}
             {notificationOpen && (
                 <div
                     ref={panelRef}
-                    className="fixed z-[9999]"
-                    style={{
-                        top: 70,
-                        right: 16,
-                        width: 'min(400px, calc(100vw - 24px)',
-                    }}
+                    className="fixed inset-0 sm:inset-auto sm:top-[70px] sm:right-[16px] z-[9999] w-full h-full sm:w-[400px] sm:h-auto sm:max-h-[520px] flex flex-col bg-white dark:bg-gray-900 sm:rounded-[20px] overflow-hidden shadow-2xl border-0 sm:border sm:border-gray-200 dark:sm:border-gray-800 transition-all duration-200"
                 >
-                    <div
-                        className="flex flex-col rounded-[20px] overflow-hidden"
-                        style={{
-                            maxHeight: '520px',
-                            background: isDark ? '#111827' : '#ffffff',
-                            boxShadow: isDark
-                                ? '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.07)'
-                                : '0 20px 60px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.07)',
-                        }}
-                    >
+                    <div className="flex flex-col w-full h-full sm:max-h-[520px] overflow-hidden bg-white dark:bg-gray-900">
                         {/* Header */}
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+                        <div className="flex items-center justify-between px-4 py-3.5 sm:py-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
                             <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-full bg-[#6C5CE7]/12 dark:bg-[#6C5CE7]/20 flex items-center justify-center">
+                                {/* Back Button for Mobile Viewports (< sm) */}
+                                <button
+                                    onClick={() => setNotificationOpen(false)}
+                                    className="sm:hidden w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition cursor-pointer shrink-0"
+                                    aria-label="Go Back"
+                                    title="Back"
+                                >
+                                    <ArrowLeft size={18} strokeWidth={2.5} />
+                                </button>
+
+                                {/* Bell Icon for Desktop Viewports (sm+) */}
+                                <div className="hidden sm:flex w-8 h-8 rounded-full bg-[#6C5CE7]/12 dark:bg-[#6C5CE7]/20 items-center justify-center shrink-0">
                                     <Bell className="w-[15px] h-[15px] text-[#6C5CE7]" strokeWidth={2.2} />
                                 </div>
+
                                 <div>
-                                    <h2 className="text-[13px] font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                                    <h2 className="text-base sm:text-[13px] font-black text-gray-900 dark:text-white leading-none tracking-tight">
                                         Notifications
                                     </h2>
-                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
+                                    <p className="text-[11px] sm:text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
                                         {notification.length === 0
                                             ? 'All caught up'
                                             : `${notification.length} notification${notification.length !== 1 ? 's' : ''}`}
                                     </p>
                                 </div>
+
                                 {unreadCount > 0 && (
-                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-[#6C5CE7] text-white shadow-[0_2px_8px_rgba(108,92,231,0.4)]">
+                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-[#6C5CE7] text-white shadow-[0_2px_8px_rgba(108,92,231,0.4)] ml-1">
                                         {unreadCount} new
                                     </span>
                                 )}
                             </div>
+
+                            {/* Close Button for Desktop Viewports */}
                             <button
                                 onClick={() => setNotificationOpen(false)}
-                                className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
+                                className="hidden sm:flex w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
                             >
                                 <X size={13} />
                             </button>
@@ -325,7 +326,7 @@ export default function AdminNavbar() {
                                                         disabled={notificationLoadingIndex !== null}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handleRemoveNotification(idx, "index");
+                                                            handleRemoveNotification(idx, "index", item?._id);
                                                         }}
                                                         className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-[#6C5CE7] hover:bg-purple-50 dark:hover:bg-purple-900/40 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
                                                         title="Dismiss"

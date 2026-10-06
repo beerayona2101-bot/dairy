@@ -32,7 +32,7 @@ export default function MyOrders() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const { userOrders = [], orderLoading } = useContext(UserOrderContext);
+  const { userOrders = [], orderLoading, fetchOrders } = useContext(UserOrderContext);
   const { addToCart } = useContext(CartContext);
   const { authUser } = useContext(UserAuthContext);
   const { authAdmin } = useContext(AdminAuthContext);
@@ -47,6 +47,13 @@ export default function MyOrders() {
   const urlOrderId = searchParams.get("orderId") || location.state?.orderId;
 
   const [activeTab, setActiveTab] = useState(urlStatus);
+
+  // Fetch orders on mount
+  useEffect(() => {
+    if (fetchOrders) {
+      fetchOrders();
+    }
+  }, [fetchOrders]);
 
   // Sync state when URL status changes
   useEffect(() => {

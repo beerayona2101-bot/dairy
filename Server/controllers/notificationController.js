@@ -21,11 +21,56 @@ export const getUserNotifications = async (req, res) => {
     }
 
     const notifications = account.notifications || [];
-    const unreadCount = notifications.filter((n) => !n.isRead).length;
+    let hasDuplicates = false;
+
+    // Deduplicate: Keep only the latest login notification, and prune identical duplicates
+    const seenLogin = new Set();
+    const seenContent = new Set();
+    const seenIds = new Set();
+    const cleaned = [];
+
+    for (const notif of notifications) {
+      if (!notif) continue;
+      const notifId = notif._id ? String(notif._id) : null;
+      if (notifId && seenIds.has(notifId)) {
+        hasDuplicates = true;
+        continue;
+      }
+
+      const isLogin =
+        notif.type === "login" ||
+        (typeof notif.title === "string" && notif.title.toLowerCase().includes("login"));
+
+      if (isLogin) {
+        // Keep only the single latest login notification
+        if (seenLogin.has("login")) {
+          hasDuplicates = true;
+          continue;
+        }
+        seenLogin.add("login");
+      }
+
+      const contentKey = `${(notif.title || "").trim()}|${(notif.description || "").trim()}|${String(notif.orderId || "")}`;
+      if (seenContent.has(contentKey)) {
+        hasDuplicates = true;
+        continue;
+      }
+
+      if (notifId) seenIds.add(notifId);
+      seenContent.add(contentKey);
+      cleaned.push(notif);
+    }
+
+    if (hasDuplicates) {
+      account.notifications = cleaned;
+      await account.save();
+    }
+
+    const unreadCount = cleaned.filter((n) => !n.isRead).length;
 
     return res.status(200).json({
       success: true,
-      notifications,
+      notifications: cleaned,
       unreadCount,
     });
   } catch (error) {

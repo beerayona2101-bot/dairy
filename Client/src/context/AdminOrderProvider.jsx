@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { AdminAuthContext } from "./AuthProvider";
 import { getAdminOrders, getAllOrders } from "../services/orderService";
 import { getUserNotifications } from "../services/notificationService";
+import { deduplicateNotifications } from "../utils/notificationUtils";
 import wsManager from "../socket/WebSocketManager";
 
 export const AdminOrderContext = createContext();
@@ -15,6 +16,13 @@ export default function AdminOrderProvider({ children }) {
     const [orderLoading, setOrderLoading] = useState(true);
     const [allOrdersLoading, setAllOrdersLoading] = useState(true);
     const [notification, setNotification] = useState([]);
+
+    const setSafeNotification = useCallback((updater) => {
+        setNotification((prev) => {
+            const next = typeof updater === "function" ? updater(prev) : updater;
+            return deduplicateNotifications(next);
+        });
+    }, []);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -33,10 +41,10 @@ export default function AdminOrderProvider({ children }) {
         const adminId = authAdmin?._id;
 
         if (adminId) {
-            setNotification(authAdmin?.notifications || []);
+            setNotification(deduplicateNotifications(authAdmin?.notifications || []));
             getUserNotifications(adminId).then((res) => {
                 if (res?.success && Array.isArray(res.notifications)) {
-                    setNotification(res.notifications);
+                    setNotification(deduplicateNotifications(res.notifications));
                 }
             }).catch(() => {});
 
@@ -74,7 +82,7 @@ export default function AdminOrderProvider({ children }) {
             type: notifPayload.type || "system",
             _id: notifPayload._id || `admin-notif-${Date.now()}-${Math.random()}`,
         };
-        setNotification((prev) => [newNotif, ...prev]);
+        setNotification((prev) => deduplicateNotifications([newNotif, ...(prev || [])]));
     }, []);
 
     const handleNewPendingOrder = useCallback(({ order }) => {
@@ -150,8 +158,8 @@ export default function AdminOrderProvider({ children }) {
         setAllOrders,
         setOrderLoading,
         setAllOrdersLoading,
-        setNotification
-    }), [adminOrders, orderLoading, allOrders, notification, allOrdersLoading, fetchAllOrders]);
+        setNotification: setSafeNotification
+    }), [adminOrders, orderLoading, allOrders, notification, allOrdersLoading, fetchAllOrders, setSafeNotification]);
 
     return (
         <AdminOrderContext.Provider value={value}>

@@ -85,9 +85,35 @@ app.get("*", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  return res.status(err.status || 500).json({
+  console.error("Global Server Error:", err?.message || err);
+
+  const isDbTimeoutOrTechnical =
+    err?.name === "MongooseError" ||
+    err?.name === "MongoNetworkError" ||
+    err?.name === "MongoServerSelectionError" ||
+    err?.message?.includes("buffering timed out") ||
+    err?.message?.includes("findOne") ||
+    err?.message?.includes("ECONN") ||
+    err?.message?.includes("connect ETIMEDOUT");
+
+  if (isDbTimeoutOrTechnical) {
+    return res.status(503).json({
+      success: false,
+      statusCode: 503,
+      message: "503 Error: Server not responding. Please try again shortly.",
+    });
+  }
+
+  const status = err.status || err.statusCode || 500;
+  const message =
+    status === 500
+      ? "500 Error: Server error occurred. Please try again later."
+      : (err.message || `${status} Error: Request failed.`);
+
+  return res.status(status).json({
     success: false,
-    message: err.message || "Internal Server Error",
+    statusCode: status,
+    message,
   });
 });
 

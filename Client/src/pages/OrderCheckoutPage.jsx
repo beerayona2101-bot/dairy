@@ -45,6 +45,7 @@ export default function OrderCheckoutPage() {
   const currentUser = authUser || authAdmin;
   const { cartItems, clearCart } = useContext(CartContext);
   const { products, productLoading } = useContext(ProductContext);
+  const { fetchOrders } = useContext(UserOrderContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,8 +97,9 @@ export default function OrderCheckoutPage() {
     clearCart();
     setOpen(false);
     setOrderLoading(false);
+    fetchOrders?.();
     navigate(`/user-profile/orders`, { replace: true });
-  }, [clearCart, navigate, enqueueSnackbar]);
+  }, [clearCart, navigate, enqueueSnackbar, fetchOrders]);
 
   const orderPlaceFailed = useCallback((error) => {
     setOrderLoading(false);
@@ -217,6 +219,7 @@ export default function OrderCheckoutPage() {
           }
           setOpen(false);
           clearCart();
+          fetchOrders?.();
           alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
           enqueueSnackbar("Order placed successfully!", { variant: 'success' });
           navigate(`/user-profile/orders`, { replace: true });
@@ -243,6 +246,7 @@ export default function OrderCheckoutPage() {
             }
             setOpen(false);
             clearCart();
+            fetchOrders?.();
             alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
             enqueueSnackbar("Payment successful! Order placed successfully.", { variant: 'success' });
             navigate(`/user-profile/orders`, { replace: true });
@@ -287,6 +291,7 @@ export default function OrderCheckoutPage() {
             }
             setOpen(false);
             clearCart();
+            fetchOrders?.();
             alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
             enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
             navigate(`/user-profile/orders`, { replace: true });
@@ -423,228 +428,232 @@ export default function OrderCheckoutPage() {
         </div>
       </div>
 
-      {/* Checkout Container */}
-      <section className="max-w-5xl mx-auto pt-1 sm:pt-4 pb-12 px-4 sm:px-6">
-        {/* Desktop Header Bar (Shown on Desktop) */}
-        <div className="hidden md:flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <BackButton fallbackPath="/cart" hideOnWeb={false} label="Back to Cart" title="Back to Cart" />
-            <motion.h1
-              initial={{ opacity: 0, y: -15 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 tracking-tight"
-            >
-              Confirm Order & Payment
-            </motion.h1>
-          </div>
-        </div>
-
-        {/* Delivery Address Location Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="px-4 py-3 sm:p-5 md:rounded-[24px] md:bg-white/85 md:dark:bg-gray-800/85 md:backdrop-blur-[16px] md:border md:border-white/90 md:dark:border-gray-700/80 md:shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-4 md:mb-6 transition-colors duration-300 border-b md:border-b-0 border-gray-200/60 dark:border-gray-700/60 pb-4"
-        >
-          {deliveryAddress ? (
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-black uppercase text-[#6C5CE7] tracking-wider">DELIVERING TO</span>
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20 uppercase">
-                  {deliveryAddress?.addressType || "Home"}
-                </span>
-              </div>
-              <h3 className="text-base font-extrabold text-[#2D3748] dark:text-white">
-                {[deliveryAddress?.hno, deliveryAddress?.village || deliveryAddress?.streetAddress].filter(Boolean).join(", ") || deliveryAddress?.streetAddress || "Selected Delivery Location"}
-              </h3>
-              <p className="text-xs text-[#718096] dark:text-gray-300">
-                {[deliveryAddress?.city || deliveryAddress?.district, `${deliveryAddress?.state || ""} - ${deliveryAddress?.pincode || ""}`].filter(Boolean).join(", ")} &bull; <span className="font-semibold text-gray-500">{deliveryAddress?.name} ({deliveryAddress?.phone || "N/A"})</span>
-              </p>
-            </div>
-          ) : (
-            <div className="text-center py-2">
-              <p className="text-sm font-extrabold text-[#2D3748] dark:text-white mb-2">
-                No delivery address selected.
-              </p>
-              <Link
-                to="/cart"
-                className="inline-block bg-[#6C5CE7] text-white px-5 py-2 rounded-full font-bold text-xs hover:bg-[#5b4cc4] shadow-md transition cursor-pointer"
+      {/* Main Full Viewport Checkout Container */}
+      <div className="w-full min-h-[calc(100vh-60px)] flex flex-col justify-between bg-slate-50/50 dark:bg-slate-950/40">
+        <section className="w-full max-w-7xl mx-auto pt-2 sm:pt-6 pb-12 px-3 sm:px-6 lg:px-8 flex-1">
+          {/* Desktop Header Bar (Shown on Desktop) */}
+          <div className="hidden md:flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <BackButton fallbackPath="/cart" hideOnWeb={false} label="Back to Cart" title="Back to Cart" />
+              <motion.h1
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 tracking-tight"
               >
-                Select Address in Cart &rarr;
-              </Link>
+                Confirm Order & Payment
+              </motion.h1>
             </div>
-          )}
-        </motion.div>
+          </div>
 
-
-
-        {/* Order Summary & Price Details Glass Box */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="px-4 py-3 sm:p-6 md:rounded-[28px] md:bg-white/85 md:dark:bg-gray-800/85 md:backdrop-blur-[16px] md:border md:border-white/90 md:dark:border-gray-700/80 md:shadow-[0_10px_30px_rgba(0,0,0,0.04)] mb-4 md:mb-6 space-y-4 border-b md:border-b-0 border-gray-200/60 dark:border-gray-700/60 pb-4"
-        >
-          <AnimatedHeading
-            blackText="Order"
-            violetText="Summary"
-            className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700"
-          />
-
-          <div className="space-y-3">
-            {cartDetails.map((item, idx) => {
-              const { discountedPrice, saved } = getDiscountedPrice(item.price, item.discount);
-              const itemTotal = discountedPrice * item.selectedQuantity;
-              const itemSaved = saved * item.selectedQuantity;
-              const shouldAnimate = highlightedItems?.includes(item?.id);
-
-              return (
-                <div
-                  key={item.id || idx}
-                  className={`pb-3 border-b border-dashed border-gray-200 dark:border-gray-700/80 space-y-1 transition rounded-xl p-2.5 ${
-                    shouldAnimate ? "animate-pulse ring-2 ring-red-500 bg-red-500/10" : ""
-                  }`}
-                >
-                  <div className="flex justify-between items-start gap-2">
-                    <h4 className="font-extrabold text-sm text-[#2D3748] dark:text-white leading-tight">
-                      {item.name}
-                    </h4>
-                    <p className="font-black text-sm text-[#2D3748] dark:text-white shrink-0">
-                      &#8377;{formatNumberWithCommas(itemTotal)}
+          {/* Responsive Layout Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 lg:items-start">
+            {/* Left Column: Delivery Address + Order Summary */}
+            <div className="lg:col-span-7 space-y-4 lg:space-y-6">
+              {/* Delivery Address Location Banner */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="px-4 py-3.5 sm:p-5 rounded-2xl md:rounded-[24px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-[16px] border border-gray-200/80 dark:border-gray-700/80 shadow-xs"
+              >
+                {deliveryAddress ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-black uppercase text-[#6C5CE7] tracking-wider">DELIVERING TO</span>
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20 uppercase">
+                        {deliveryAddress?.addressType || "Home"}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-extrabold text-[#2D3748] dark:text-white">
+                      {[deliveryAddress?.hno, deliveryAddress?.village || deliveryAddress?.streetAddress].filter(Boolean).join(", ") || deliveryAddress?.streetAddress || "Selected Delivery Location"}
+                    </h3>
+                    <p className="text-xs text-[#718096] dark:text-gray-300">
+                      {[deliveryAddress?.city || deliveryAddress?.district, `${deliveryAddress?.state || ""} - ${deliveryAddress?.pincode || ""}`].filter(Boolean).join(", ")} &bull; <span className="font-semibold text-gray-500">{deliveryAddress?.name} ({deliveryAddress?.phone || "N/A"})</span>
                     </p>
                   </div>
+                ) : (
+                  <div className="text-center py-2">
+                    <p className="text-sm font-extrabold text-[#2D3748] dark:text-white mb-2">
+                      No delivery address selected.
+                    </p>
+                    <Link
+                      to="/cart"
+                      className="inline-block bg-[#6C5CE7] text-white px-5 py-2 rounded-full font-bold text-xs hover:bg-[#5b4cc4] shadow-md transition cursor-pointer"
+                    >
+                      Select Address in Cart &rarr;
+                    </Link>
+                  </div>
+                )}
+              </motion.div>
 
-                  <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                    <span>
-                      {item.selectedQuantity} {item.quantityUnit} ×{" "}
-                      {item.discount > 0 && (
-                        <span className="line-through text-gray-400 mr-1">
-                          &#8377;{formatNumberWithCommas(item?.price)}
+              {/* Order Summary & Price Details Glass Box */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="px-4 py-3.5 sm:p-6 rounded-2xl md:rounded-[28px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-[16px] border border-gray-200/80 dark:border-gray-700/80 shadow-xs space-y-4"
+              >
+                <AnimatedHeading
+                  blackText="Order"
+                  violetText="Summary"
+                  className="text-xl font-black text-[#2D3748] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700"
+                />
+
+                <div className="space-y-3">
+                  {cartDetails.map((item, idx) => {
+                    const { discountedPrice, saved } = getDiscountedPrice(item.price, item.discount);
+                    const itemTotal = discountedPrice * item.selectedQuantity;
+                    const itemSaved = saved * item.selectedQuantity;
+                    const shouldAnimate = highlightedItems?.includes(item?.id);
+
+                    return (
+                      <div
+                        key={item.id || idx}
+                        className={`pb-3 border-b border-dashed border-gray-200 dark:border-gray-700/80 space-y-1 transition rounded-xl p-2.5 ${
+                          shouldAnimate ? "animate-pulse ring-2 ring-red-500 bg-red-500/10" : ""
+                        }`}
+                      >
+                        <div className="flex justify-between items-start gap-2">
+                          <h4 className="font-extrabold text-sm text-[#2D3748] dark:text-white leading-tight">
+                            {item.name}
+                          </h4>
+                          <p className="font-black text-sm text-[#2D3748] dark:text-white shrink-0">
+                            &#8377;{formatNumberWithCommas(itemTotal)}
+                          </p>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+                          <span>
+                            {item.selectedQuantity} {item.quantityUnit} ×{" "}
+                            {item.discount > 0 && (
+                              <span className="line-through text-gray-400 mr-1">
+                                &#8377;{formatNumberWithCommas(item?.price)}
+                              </span>
+                            )}
+                            <span className="text-[#00B894] font-bold">
+                              &#8377;{formatNumberWithCommas(discountedPrice)}
+                            </span>
+                          </span>
+                          {item.discount > 0 && (
+                            <span className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 px-1.5 py-0.5 rounded font-bold">
+                              {item.discount}% OFF
+                            </span>
+                          )}
+                        </div>
+
+                        {itemSaved > 0 && (
+                          <div className="flex justify-between items-center text-[11px] text-[#00B894] font-bold pt-0.5">
+                            <span>Product Discount:</span>
+                            <span>- &#8377;{formatNumberWithCommas(itemSaved)}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Column: Bill Summary + Sticky Place Order CTA */}
+            <div className="lg:col-span-5 space-y-4 lg:space-y-6 lg:sticky lg:top-20">
+              {/* Bill Summary Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="px-4 py-3.5 sm:p-6 rounded-2xl md:rounded-[24px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-[16px] border border-gray-200/80 dark:border-gray-700/80 shadow-xs space-y-4"
+              >
+                {/* Header: Receipt Icon + Bill Summary */}
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-700/80">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-100 dark:bg-gray-700/60 flex items-center justify-center text-gray-700 dark:text-gray-200 shrink-0 border border-gray-200/60 dark:border-gray-600/60">
+                    <Receipt className="w-5 h-5 text-gray-800 dark:text-gray-100" />
+                  </div>
+                  <AnimatedHeading
+                    blackText="Bill"
+                    violetText="Summary"
+                    className="text-base sm:text-lg font-black text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Line Items Breakdown */}
+                <div className="space-y-3 text-xs sm:text-sm">
+                  {/* Item Total Row */}
+                  <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
+                    <span className="font-medium text-gray-500 dark:text-gray-400">Item Total</span>
+                    <div className="flex items-center gap-2">
+                      {totalSaving > 0 && (
+                        <span className="line-through text-gray-400 font-semibold">
+                          &#8377;{formatNumberWithCommas(subtotal)}
                         </span>
                       )}
-                      <span className="text-[#00B894] font-bold">
-                        &#8377;{formatNumberWithCommas(discountedPrice)}
+                      <span className="font-black text-gray-900 dark:text-white">
+                        &#8377;{formatNumberWithCommas(itemTotalDiscounted)}
                       </span>
-                    </span>
-                    {item.discount > 0 && (
-                      <span className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 px-1.5 py-0.5 rounded font-bold">
-                        {item.discount}% OFF
-                      </span>
-                    )}
+                    </div>
                   </div>
 
-                  {itemSaved > 0 && (
-                    <div className="flex justify-between items-center text-[11px] text-[#00B894] font-bold pt-0.5">
-                      <span>Product Discount:</span>
-                      <span>- &#8377;{formatNumberWithCommas(itemSaved)}</span>
+                  {/* Delivery Fee Row */}
+                  <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
+                    <span className="font-medium text-gray-500 dark:text-gray-400">Delivery Fee</span>
+                    <div className="flex items-center gap-2">
+                      <span className="line-through text-gray-400 font-semibold">
+                        &#8377;{deliverySavings}
+                      </span>
+                      <span className="font-black text-emerald-600 dark:text-emerald-400 uppercase">
+                        FREE
+                      </span>
                     </div>
-                  )}
+                  </div>
+
+                  {/* Handling Fee Row */}
+                  <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
+                    <span className="font-medium text-gray-500 dark:text-gray-400">Handling Fee</span>
+                    <div className="flex items-center gap-2">
+                      <span className="line-through text-gray-400 font-semibold">
+                        &#8377;{handlingSavings}
+                      </span>
+                      <span className="font-black text-emerald-600 dark:text-emerald-400 uppercase">
+                        FREE
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-        </motion.div>
 
-        {/* Bill Summary Card (Matching Reference Design 2) */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="px-4 py-3 sm:p-6 md:rounded-[24px] md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-[16px] md:border md:border-gray-100 md:dark:border-gray-700/80 md:shadow-xs mb-6 space-y-4"
-        >
-          {/* Header: Receipt Icon + Bill Summary */}
-          <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-700/80">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-100 dark:bg-gray-700/60 flex items-center justify-center text-gray-700 dark:text-gray-200 shrink-0 border border-gray-200/60 dark:border-gray-600/60">
-              <Receipt className="w-5 h-5 text-gray-800 dark:text-gray-100" />
-            </div>
-            <AnimatedHeading
-              blackText="Bill"
-              violetText="Summary"
-              className="text-base sm:text-lg font-black text-gray-900 dark:text-white"
-            />
-          </div>
+                {/* Divider */}
+                <div className="border-t border-gray-100 dark:border-gray-700/80 pt-3" />
 
-          {/* Line Items Breakdown */}
-          <div className="space-y-3 text-xs sm:text-sm">
-            {/* Item Total Row */}
-            <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
-              <span className="font-medium text-gray-500 dark:text-gray-400">Item Total</span>
-              <div className="flex items-center gap-2">
-                {totalSaving > 0 && (
-                  <span className="line-through text-gray-400 font-semibold">
-                    &#8377;{formatNumberWithCommas(subtotal)}
+                {/* Final Row: To Pay */}
+                <div className="flex justify-between items-center text-sm sm:text-base">
+                  <span className="font-black text-gray-900 dark:text-white">
+                    To Pay
                   </span>
-                )}
-                <span className="font-black text-gray-900 dark:text-white">
-                  &#8377;{formatNumberWithCommas(itemTotalDiscounted)}
-                </span>
-              </div>
-            </div>
+                  <div className="flex items-center gap-2">
+                    {totalOrderSavings > 0 && (
+                      <span className="line-through text-gray-400 font-semibold text-xs sm:text-sm">
+                        &#8377;{formatNumberWithCommas(totalMRPWithFees)}
+                      </span>
+                    )}
+                    <span className="text-base sm:text-xl font-black text-gray-900 dark:text-white">
+                      &#8377;{formatNumberWithCommas(totalAmount)}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Delivery Fee Row */}
-            <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
-              <span className="font-medium text-gray-500 dark:text-gray-400">Delivery Fee</span>
-              <div className="flex items-center gap-2">
-                <span className="line-through text-gray-400 font-semibold">
-                  &#8377;{deliverySavings}
-                </span>
-                <span className="font-black text-emerald-600 dark:text-emerald-400 uppercase">
-                  FREE
-                </span>
-              </div>
-            </div>
-
-            {/* Handling Fee Row */}
-            <div className="flex justify-between items-center text-gray-600 dark:text-gray-300">
-              <span className="font-medium text-gray-500 dark:text-gray-400">Handling Fee</span>
-              <div className="flex items-center gap-2">
-                <span className="line-through text-gray-400 font-semibold">
-                  &#8377;{handlingSavings}
-                </span>
-                <span className="font-black text-emerald-600 dark:text-emerald-400 uppercase">
-                  FREE
-                </span>
-              </div>
+                {/* Place Order CTA Button */}
+                <div className="pt-2">
+                  <button
+                    disabled={orderLoading}
+                    onClick={handlePaymentMode}
+                    className="w-full text-center py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-[#6C5CE7] to-[#5b4cc4] hover:brightness-105 active:scale-98 text-white font-black text-sm sm:text-base shadow-[0_10px_25px_rgba(108,92,231,0.35)] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Place Order →
+                  </button>
+                </div>
+              </motion.div>
             </div>
           </div>
-
-          {/* Divider */}
-          <div className="border-t border-gray-100 dark:border-gray-700/80 pt-3" />
-
-          {/* Final Row: To Pay */}
-          <div className="flex justify-between items-center text-sm sm:text-base">
-            <span className="font-black text-gray-900 dark:text-white">
-              To Pay
-            </span>
-            <div className="flex items-center gap-2">
-              {totalOrderSavings > 0 && (
-                <span className="line-through text-gray-400 font-semibold text-xs sm:text-sm">
-                  &#8377;{formatNumberWithCommas(totalMRPWithFees)}
-                </span>
-              )}
-              <span className="text-base sm:text-xl font-black text-gray-900 dark:text-white">
-                &#8377;{formatNumberWithCommas(totalAmount)}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Bottom Place Order CTA Bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.22, delay: 0.1 }}
-          className="w-full flex items-center justify-center pt-2"
-        >
-          <button
-            disabled={orderLoading}
-            onClick={handlePaymentMode}
-            className="w-full max-w-md text-center py-3.5 sm:py-4 px-8 rounded-full bg-[#6C5CE7] hover:bg-[#5b4cc4] active:scale-95 text-white font-black text-xs sm:text-sm shadow-[0_10px_25px_rgba(108,92,231,0.4)] hover:scale-102 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Place Order →
-          </button>
-        </motion.div>
-      </section>
+        </section>
+      </div>
 
       {/* Payment Selection Modal Dialog */}
       <Dialog

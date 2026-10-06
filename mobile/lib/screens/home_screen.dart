@@ -323,55 +323,62 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildHomeTab(bool isDark, CartProvider cartProvider) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Hero Banner
-          _buildHeroBanner(),
-          const SizedBox(height: 24),
+          // Flush Full-Width Welcome Banner right under AppBar (Zero Gap)
+          _buildWelcomeBanner(isDark),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Carousel Banner Section Title
+                Row(
+                  children: [
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: AppTheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '100% PURE & FARM-FRESH DAIRY',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                        color: isDark ? Colors.white70 : AppTheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Hero Banner Carousel (Clickable to open Products tab)
+                GestureDetector(
+                  onTap: () => setState(() => _selectedNavIndex = 1),
+                  child: _buildHeroBanner(),
+                ),
+                const SizedBox(height: 24),
 
           // Offers Row
           _buildOffersRow(isDark),
           const SizedBox(height: 24),
 
-          // Categories
+
+
+          // Fresh Products Header
           Text(
-            'Explore Categories',
+            'Fresh Products',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
               color: isDark ? Colors.white : AppTheme.textDark,
             ),
-          ),
-          const SizedBox(height: 12),
-          _buildCategoryPills(isDark),
-          const SizedBox(height: 24),
-
-          // Fresh Products Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Fresh Products',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: isDark ? Colors.white : AppTheme.textDark,
-                ),
-              ),
-              GestureDetector(
-                onTap: () => setState(() => _selectedNavIndex = 1),
-                child: Text(
-                  'See All →',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primary,
-                  ),
-                ),
-              ),
-            ],
           ),
           const SizedBox(height: 12),
 
@@ -405,61 +412,214 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 24),
         ],
       ),
+    ),
+  ],
+),
+    );
+  }
+
+  Widget _buildWelcomeBanner(bool isDark) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isLoggedIn = authProvider.isAuthenticated;
+    final user = authProvider.currentUser;
+
+    final hour = DateTime.now().hour;
+    String greeting;
+    String emoji;
+    Color accentColor;
+    Color badgeBg;
+
+    if (hour >= 5 && hour < 12) {
+      greeting = "Good Morning";
+      emoji = "☀️";
+      accentColor = const Color(0xFFD97706);
+      badgeBg = const Color(0xFFFEF3C7);
+    } else if (hour >= 12 && hour < 17) {
+      greeting = "Good Afternoon";
+      emoji = "🌤️";
+      accentColor = const Color(0xFFEA580C);
+      badgeBg = const Color(0xFFFFEDD5);
+    } else {
+      greeting = "Good Evening";
+      emoji = "🌙";
+      accentColor = const Color(0xFF4F46E5);
+      badgeBg = const Color(0xFFEEF2FF);
+    }
+
+    String userName = "Yona";
+    if (user != null) {
+      if (user.firstName != null && user.firstName!.isNotEmpty) {
+        userName = user.firstName!;
+      } else if (user.displayName.isNotEmpty) {
+        userName = user.displayName;
+      }
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white, // STRICT WHITE BACKGROUND ONLY
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade200),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: badgeBg,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Center(
+              child: Text(
+                emoji,
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  greeting.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.8,
+                    color: accentColor,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isLoggedIn
+                      ? "Welcome back, $userName! 👋"
+                      : "Welcome to Madhu Dairy 🥛",
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF1E293B),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildHeroBanner() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primary.withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              '✨ 100% PURE & FARM-FRESH',
-              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Fresh Milk & Pure Ghee\nDelivered Daily Before 7 AM',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              height: 1.3,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
-            ),
-            onPressed: () => setState(() => _selectedNavIndex = 1),
-            child: const Text('Order Now 🥛', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
-          ),
-        ],
+    final List<Map<String, String>> categorySlides = [
+      {
+        'title': 'Milk',
+        'image': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        'title': 'Paneer',
+        'image': 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        'title': 'Ghee',
+        'image': 'https://images.unsplash.com/photo-1627581977797-1f196942c262?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        'title': 'Curd',
+        'image': 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        'title': 'Butter',
+        'image': 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        'title': 'Sweets',
+        'image': 'https://images.unsplash.com/photo-1599785209707-a456fc1337cc?auto=format&fit=crop&w=800&q=80',
+      },
+    ];
+
+    return SizedBox(
+      height: 190,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: PageView.builder(
+          itemCount: categorySlides.length,
+          itemBuilder: (context, index) {
+            final cat = categorySlides[index];
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedCategory = cat['title']!;
+                  _selectedNavIndex = 1;
+                });
+              },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Plain Category Image
+                  Image.network(
+                    cat['image']!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, _, __) => Container(
+                      color: AppTheme.primary,
+                      child: const Center(
+                        child: Icon(Icons.category, color: Colors.white, size: 40),
+                      ),
+                    ),
+                  ),
+
+                  // Bottom Gradient Shadow Overlay (Background Shadow for Text)
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.2),
+                            Colors.black.withValues(alpha: 0.8),
+                          ],
+                          stops: const [0.5, 0.75, 1.0],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Category Name at Bottom Center - Plain Light Text, No Card
+                  Positioned(
+                    bottom: 16,
+                    left: 16,
+                    right: 16,
+                    child: Text(
+                      cat['title']!.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black50,
+                            offset: Offset(0, 2),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

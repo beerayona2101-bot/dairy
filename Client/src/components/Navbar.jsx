@@ -26,7 +26,7 @@ import { ThemeContext } from '../context/ThemeProvider';
 import { AdminAuthContext, UserAuthContext } from "../context/AuthProvider"
 import { CartContext } from '../context/CartProvider';
 import { UserOrderContext } from '../context/UserOrderProvider';
-import { Bell, X, ShoppingBag, Info, Home, Headphones, User, Heart, ShoppingCart, CheckCheck } from 'lucide-react';
+import { Bell, X, ShoppingBag, Info, Home, Headphones, User, Heart, ShoppingCart, CheckCheck, ArrowLeft } from 'lucide-react';
 import Slide from '@mui/material/Slide';
 import { removeUserNotification } from '../services/userProfileService';
 import { removeAdminNotification } from '../services/adminService';
@@ -203,7 +203,7 @@ export default function Navbar() {
         navigate(authUser || authAdmin ? "/user-profile/wishlist" : "/wishlist");
     }
 
-    const handleRemoveNotification = async (index, mode) => {
+    const handleRemoveNotification = async (index, mode, notificationId = null) => {
         const userId = authUser?._id;
         const adminId = authAdmin?._id;
 
@@ -221,9 +221,9 @@ export default function Navbar() {
         try {
             let res;
             if (adminId) {
-                res = await removeAdminNotification(adminId, mode, index);
+                res = await removeAdminNotification(adminId, mode, index, notificationId);
             } else {
-                res = await removeUserNotification(userId, mode, index);
+                res = await removeUserNotification(userId, mode, index, notificationId);
             }
 
             if (res?.success) {
@@ -233,9 +233,9 @@ export default function Navbar() {
                     if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: [] } : null);
                     enqueueSnackbar(res?.message || "Notifications cleared successfully.", { variant: "success" });
                 } else if (mode === "index") {
-                    setNotification((prev) => prev.filter((_, i) => i !== index));
-                    if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((_, i) => i !== index) } : null);
-                    if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((_, i) => i !== index) } : null);
+                    setNotification((prev) => prev.filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index));
+                    if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index) } : null);
+                    if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index) } : null);
                     enqueueSnackbar(res?.message || "Notification removed successfully.", { variant: "success" });
                 }
             } else {
@@ -375,7 +375,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 left-0 w-full z-50 py-3 sm:py-2 px-4 sm:px-8 lg:px-12 glass-navbar rounded-none border-none shadow-none translate-y-0 ${
+            <nav className={`fixed top-0 left-0 w-full z-50 pt-[max(env(safe-area-inset-top,0px),8px)] pb-2.5 sm:py-2 px-3.5 sm:px-8 lg:px-12 glass-navbar rounded-none border-none shadow-none translate-y-0 ${
                 (isProductsPage || isCartPage || isCheckoutPage) ? "hidden md:block" : ""
             }`}>
                 <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
@@ -390,26 +390,21 @@ export default function Navbar() {
                         />
                     </Link>
 
-                    {/* Mobile View Brand Logo: Cow Logo on Left */}
-                    <Link to="/" className="flex md:hidden items-center hover:scale-105 transition-transform py-0.5 z-10">
+                    {/* Mobile View Brand Logo & Text Unified on Left (Leaves Center Clear for Phone Notch / Dynamic Island) */}
+                    <Link to="/" className="flex md:hidden items-center gap-2 hover:scale-105 transition-transform py-0.5 z-10 no-underline">
                         <img
                             src={cowLogoImg}
                             alt="Madhu Dairy Cow Logo"
-                            className="h-10 w-auto object-contain drop-shadow-sm"
+                            className="h-9 w-auto object-contain drop-shadow-sm shrink-0"
                         />
-                    </Link>
-
-                    {/* Mobile View Centered Madhu Dairy Name (Only Name, No Cow Image) */}
-                    <Link
-                        to="/"
-                        className="md:hidden absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 no-underline cursor-pointer select-none"
-                    >
-                        <span className="font-black text-sm sm:text-base tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
-                            Madhu Dairy
-                        </span>
-                        <span className="text-[10px] sm:text-[11px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-widest uppercase leading-tight mt-0.5">
-                            &amp; Daily Needs
-                        </span>
+                        <div className="flex flex-col items-start justify-center leading-none">
+                            <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-tight">
+                                Madhu Dairy
+                            </span>
+                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-wider uppercase leading-tight mt-0.5">
+                                &amp; Daily Needs
+                            </span>
+                        </div>
                     </Link>
 
 
@@ -752,47 +747,49 @@ export default function Navbar() {
             )}
 
             {/* User Notification Panel — Native Dropdown (no Dialog backdrop) */}
+            {/* User Notification Panel — Full screen on Mobile (< sm), Floating Dropdown on Desktop (sm+) */}
             {notificationDialog && (
                 <div
                     ref={notifPanelRef}
-                    className="fixed z-[9999]"
-                    style={{
-                        top: 70,
-                        right: 16,
-                        width: 'min(390px, calc(100vw - 24px))',
-                    }}
+                    className="fixed inset-0 sm:inset-auto sm:top-[70px] sm:right-[16px] z-[9999] w-full h-full sm:w-[390px] sm:h-auto sm:max-h-[520px] flex flex-col bg-white dark:bg-gray-900 sm:rounded-[20px] overflow-hidden shadow-2xl border-0 sm:border sm:border-gray-200 dark:sm:border-gray-800 transition-all duration-200"
                 >
-                    <div
-                        className="flex flex-col rounded-[20px] overflow-hidden"
-                        style={{
-                            maxHeight: '520px',
-                            background: theme === 'dark' ? '#111827' : '#ffffff',
-                            boxShadow: theme === 'dark'
-                                ? '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.07)'
-                                : '0 20px 60px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.07)',
-                        }}
-                    >
+                    <div className="flex flex-col w-full h-full sm:max-h-[520px] overflow-hidden bg-white dark:bg-gray-900">
                         {/* Header */}
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+                        <div className="flex items-center justify-between px-4 py-3.5 sm:py-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
                             <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                {/* Back Button for Mobile Viewports (< sm) */}
+                                <button
+                                    onClick={() => setNotificationDialog(false)}
+                                    className="sm:hidden w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition cursor-pointer shrink-0"
+                                    aria-label="Go Back"
+                                    title="Back"
+                                >
+                                    <ArrowLeft size={18} strokeWidth={2.5} />
+                                </button>
+
+                                {/* Bell Icon for Desktop Viewports (sm+) */}
+                                <div className="hidden sm:flex w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 items-center justify-center shrink-0">
                                     <Bell className="w-[15px] h-[15px] text-amber-500" strokeWidth={2.2} />
                                 </div>
+
                                 <div>
-                                    <h2 className="text-[13px] font-black text-gray-900 dark:text-white leading-none tracking-tight">Notifications</h2>
-                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
+                                    <h2 className="text-base sm:text-[13px] font-black text-gray-900 dark:text-white leading-none tracking-tight">Notifications</h2>
+                                    <p className="text-[11px] sm:text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
                                         {notification.length === 0 ? 'All caught up' : `${notification.length} notification${notification.length !== 1 ? 's' : ''}`}
                                     </p>
                                 </div>
+
                                 {unreadCount > 0 && (
                                     <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-amber-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.4)] ml-1">
                                         {unreadCount} new
                                     </span>
                                 )}
                             </div>
+
+                            {/* Close Button for Desktop Viewports */}
                             <button
                                 onClick={() => setNotificationDialog(false)}
-                                className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
+                                className="hidden sm:flex w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
                             >
                                 <X size={13} />
                             </button>
@@ -878,7 +875,7 @@ export default function Navbar() {
                                                         disabled={notificationLoadingIndex !== null}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handleRemoveNotification(idx, 'index');
+                                                            handleRemoveNotification(idx, 'index', item?._id);
                                                         }}
                                                         className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
                                                         title="Dismiss"

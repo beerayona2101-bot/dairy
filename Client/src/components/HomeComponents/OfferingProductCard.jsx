@@ -68,16 +68,13 @@ export default function OfferingProductCard({ image, title, hideNameOnWeb = fals
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
 
-                {/* On-Image Category Title Overlay */}
-                <div
-                    style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 30 }}
-                    className={`w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-8 pb-3 sm:pb-4 px-2 flex items-center justify-center pointer-events-none ${
-                        hideNameOnWeb ? "flex md:hidden" : "flex"
-                    }`}
-                >
-                    <h3 className="w-full text-center text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] group-hover:scale-105 transition-transform duration-300 line-clamp-1 px-1">
-                        {title}
-                    </h3>
+                {/* On-Image Category Title Overlay - Bottom Center Glass Pill */}
+                <div className="absolute bottom-3 sm:bottom-4 left-0 right-0 z-30 w-full flex items-center justify-center pointer-events-none px-2">
+                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 sm:px-5 py-1.5 sm:py-2 rounded-full shadow-md border border-white/80 dark:border-slate-700/80 transition-transform duration-300 group-hover:scale-105 group-hover:bg-white dark:group-hover:bg-slate-900">
+                        <h3 className="text-xs sm:text-sm md:text-base font-black text-slate-900 dark:text-white tracking-tight leading-none text-center whitespace-nowrap">
+                            {title}
+                        </h3>
+                    </div>
                 </div>
             </motion.div>
         </Link>

@@ -132,7 +132,7 @@ export default function RecommendedCard({ product }) {
           <div className="w-full h-full flex flex-col items-center justify-center gap-1">
             <EmojiFoodBeverageIcon className="text-gray-400 dark:text-gray-300 text-3xl" />
             <Link to={`/product-details/${slugify(name)}`}>
-              <span className="text-gray-500 dark:text-gray-300 text-xs font-medium hover:text-blue-500 line-clamp-1">
+              <span className="text-gray-500 dark:text-gray-300 text-xs font-medium hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] line-clamp-1">
                 {name}
               </span>
             </Link>
@@ -177,7 +177,7 @@ export default function RecommendedCard({ product }) {
         <div>
           <Link
             to={`/product-details/${slugify(name)}`}
-            className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white hover:text-[#1E88E5] dark:hover:text-pink-400 line-clamp-1 transition-colors block"
+            className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] line-clamp-1 transition-colors block"
             title={name}
           >
             {name}
@@ -202,7 +202,7 @@ export default function RecommendedCard({ product }) {
         <div className="pt-1.5 flex justify-end">
           <Link
             to={`/product-details/${slugify(name)}`}
-            className="text-[11px] sm:text-xs border border-[#1E88E5] text-[#1E88E5] dark:border-pink-400 dark:text-pink-400 hover:bg-[#1E88E5] hover:text-white dark:hover:bg-pink-500 dark:hover:text-white px-2.5 py-0.5 rounded-full transition-colors font-medium"
+            className="text-[11px] sm:text-xs border border-[#6C5CE7] text-[#6C5CE7] dark:border-[#A78BFA] dark:text-[#A78BFA] hover:bg-[#6C5CE7] hover:text-white dark:hover:bg-[#6C5CE7] dark:hover:text-white px-2.5 py-0.5 rounded-full transition-colors font-medium shadow-sm hover:shadow"
           >
             View
           </Link>

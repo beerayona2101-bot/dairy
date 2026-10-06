@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Product from "../models/ProductSchema.js";
 import Admin from "../models/AdminSchema.js";
 
@@ -110,6 +111,45 @@ export const emitAdminOrderNotifications = (
 };
 
 export const addNotification = async (target, notification) => {
+  if (!target || !notification) return;
+  if (!Array.isArray(target.notifications)) {
+    target.notifications = [];
+  }
+
+  // Ensure notification has an _id for clean tracking and deduplication
+  if (!notification._id) {
+    notification._id = new mongoose.Types.ObjectId();
+  }
+
+  const isLoginNotification =
+    notification.type === "login" ||
+    (typeof notification.title === "string" &&
+      notification.title.toLowerCase().includes("login"));
+
+  if (isLoginNotification) {
+    // Only keep the latest login notification; remove any prior login notifications
+    target.notifications = target.notifications.filter((n) => {
+      if (!n) return false;
+      const isPastLogin =
+        n.type === "login" ||
+        (typeof n.title === "string" && n.title.toLowerCase().includes("login"));
+      return !isPastLogin;
+    });
+  } else {
+    // For other notifications, prevent identical duplicate entries
+    const existingIndex = target.notifications.findIndex((n) => {
+      if (!n) return false;
+      const sameTitle = (n.title || "").trim() === (notification.title || "").trim();
+      const sameDesc = (n.description || "").trim() === (notification.description || "").trim();
+      const sameOrder = String(n.orderId || "") === String(notification.orderId || "");
+      return sameTitle && sameDesc && sameOrder;
+    });
+
+    if (existingIndex !== -1) {
+      target.notifications.splice(existingIndex, 1);
+    }
+  }
+
   target.notifications.unshift(notification);
   target.notifications = target.notifications.slice(0, 50);
   await target.save();

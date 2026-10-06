@@ -2,6 +2,7 @@ import React, { createContext, useState, useMemo, useEffect, useContext, useCall
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserOrders } from "../services/orderService";
 import { getUserNotifications } from "../services/notificationService";
+import { deduplicateNotifications } from "../utils/notificationUtils";
 import { UserAuthContext } from "./AuthProvider";
 import wsManager from "../socket/WebSocketManager";
 
@@ -27,7 +28,7 @@ export default function UserOrderProvider({ children }) {
         gcTime: 1000 * 60 * 20,
     });
 
-    const userOrders = localOrders ?? queryOrders;
+    const userOrders = (localOrders !== null && Array.isArray(localOrders)) ? localOrders : queryOrders;
     const orderLoading = queryLoading && !userOrders.length;
 
     const setUserOrders = useCallback((updater) => {
@@ -41,16 +42,23 @@ export default function UserOrderProvider({ children }) {
         });
     }, [queryOrders, queryClient, userId]);
 
+    const setSafeNotification = useCallback((updater) => {
+        setNotification((prev) => {
+            const next = typeof updater === 'function' ? updater(prev) : updater;
+            return deduplicateNotifications(next);
+        });
+    }, []);
+
     useEffect(() => {
         if (userId) {
-            setNotification(authUser?.notifications || []);
+            setNotification(deduplicateNotifications(authUser?.notifications || []));
             getUserNotifications(userId).then((res) => {
                 if (res?.success && Array.isArray(res.notifications)) {
-                    setNotification(res.notifications);
+                    setNotification(deduplicateNotifications(res.notifications));
                 }
             }).catch(() => {});
         } else {
-            setLocalOrders([]);
+            setLocalOrders(null);
             setNotification([]);
         }
     }, [userId, authUser?.notifications]);
@@ -66,7 +74,7 @@ export default function UserOrderProvider({ children }) {
             type: notifPayload.type || "order",
             _id: notifPayload._id || `notif-${Date.now()}-${Math.random()}`,
         };
-        setNotification((prev) => [newNotif, ...prev]);
+        setNotification((prev) => deduplicateNotifications([newNotif, ...(prev || [])]));
     }, []);
 
     const handlePlaceNewOrder = useCallback(({ newOrder }) => {
@@ -111,6 +119,11 @@ export default function UserOrderProvider({ children }) {
         return (notification || []).filter((n) => !n.isRead).length;
     }, [notification]);
 
+    const refetchUserOrders = useCallback(async () => {
+        setLocalOrders(null);
+        return await fetchOrders();
+    }, [fetchOrders]);
+
     const value = useMemo(() => ({
         userOrders,
         orderLoading,
@@ -118,9 +131,9 @@ export default function UserOrderProvider({ children }) {
         unreadCount,
         setUserOrders,
         setOrderLoading: () => {},
-        setNotification,
-        fetchOrders,
-    }), [userOrders, orderLoading, notification, unreadCount, fetchOrders, setUserOrders]);
+        setNotification: setSafeNotification,
+        fetchOrders: refetchUserOrders,
+    }), [userOrders, orderLoading, notification, unreadCount, refetchUserOrders, setUserOrders, setSafeNotification]);
 
     return (
         <UserOrderContext.Provider value={value}>

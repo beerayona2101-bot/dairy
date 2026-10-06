@@ -80,12 +80,13 @@ export const submitSignupForm = async (formData) => {
   return res?.data;
 };
 
-export const removeUserNotification = async (userId, mode, index) => {
+export const removeUserNotification = async (userId, mode, index, notificationId = null) => {
   const res = await api.delete("/u/delete-notification", {
     data: {
       userId,
       mode,
       index,
+      notificationId,
     },
   });
   return res?.data;

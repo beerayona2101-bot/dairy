@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getFriendlyErrorMessage } from "../utils/errorHelper";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined" && window.location && window.location.hostname) {
@@ -9,9 +10,9 @@ const getBaseUrl = () => {
 };
 
 const api = axios.create({
-  baseURL: getBaseUrl()
+  baseURL: getBaseUrl(),
+  timeout: 15000,
 });
-
 
 api.interceptors.request.use(
   (config) => {
@@ -40,6 +41,18 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const friendly = getFriendlyErrorMessage(error);
+    error.friendlyMessage = friendly;
+    if (error.response?.data) {
+      error.response.data.message = friendly;
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api;

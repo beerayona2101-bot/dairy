@@ -14,12 +14,11 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { getGuestWishlist, toggleGuestWishlist, clearGuestWishlist, setGuestWishlist } from "../../utils/guestWishlist";
 
-
 export default function MyWishlist() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const { authUser, setAuthUser } = useContext(UserAuthContext);
-  const { authAdmin, setAuthAdmin } = useContext(AdminAuthContext);
+  const { authUser, setAuthUser, authUserLoading } = useContext(UserAuthContext);
+  const { authAdmin, setAuthAdmin, authAdminLoading } = useContext(AdminAuthContext);
   const activeUser = authUser || authAdmin;
   const setCurUser = authUser ? setAuthUser : setAuthAdmin;
   const { addToCart } = useContext(CartContext);
@@ -32,6 +31,8 @@ export default function MyWishlist() {
   const [movingId, setMovingId] = useState(null);
 
   useEffect(() => {
+    if (authUserLoading || authAdminLoading) return;
+
     const fetchWishlist = async () => {
       try {
         if (activeUser?._id) {
@@ -46,12 +47,10 @@ export default function MyWishlist() {
         } else {
           const guestIds = getGuestWishlist().map(String);
           if (Array.isArray(products) && products.length > 0) {
-            const matched = products.filter((p) => guestIds.includes(String(p._id)));
+            const matched = products.filter((p) => guestIds.includes(String(p._id || p.id)));
             setWishlist(matched);
-            // If any guest ID does not exist in products, prune it from localStorage
-            if (matched.length !== guestIds.length) {
-              setGuestWishlist(matched.map((p) => String(p._id)));
-            }
+          } else if (guestIds.length > 0) {
+            // Keep existing state while products load
           } else {
             setWishlist([]);
           }
@@ -69,12 +68,9 @@ export default function MyWishlist() {
       if (!activeUser?._id) {
         const guestIds = getGuestWishlist().map(String);
         if (Array.isArray(products) && products.length > 0) {
-          const matched = products.filter((p) => guestIds.includes(String(p._id)));
+          const matched = products.filter((p) => guestIds.includes(String(p._id || p.id)));
           setWishlist(matched);
-          if (matched.length !== guestIds.length) {
-            setGuestWishlist(matched.map((p) => String(p._id)));
-          }
-        } else {
+        } else if (guestIds.length === 0) {
           setWishlist([]);
         }
       }
@@ -82,14 +78,14 @@ export default function MyWishlist() {
 
     window.addEventListener("guestWishlistUpdated", handleGuestUpdate);
     return () => window.removeEventListener("guestWishlistUpdated", handleGuestUpdate);
-  }, [activeUser?._id, authUser, authAdmin, setCurUser, products]);
+  }, [activeUser?._id, authUserLoading, authAdminLoading, authUser, authAdmin, setCurUser, products]);
 
   const handleRemove = async (productId) => {
     if (deleteLoading) return;
 
     if (!activeUser?._id) {
       toggleGuestWishlist(productId);
-      setWishlist((prev) => prev.filter((item) => String(item._id) !== String(productId)));
+      setWishlist((prev) => prev.filter((item) => String(item._id || item.id) !== String(productId)));
       enqueueSnackbar("Removed from wishlist", { variant: "success" });
       return;
     }
@@ -98,7 +94,7 @@ export default function MyWishlist() {
       setDeleteLoading(productId);
       const data = await removeProductFromWishList(activeUser._id, productId);
       if (data?.success) {
-        setWishlist((prev) => prev.filter((item) => item._id !== productId));
+        setWishlist((prev) => prev.filter((item) => (item._id || item.id) !== productId));
         enqueueSnackbar("Removed from wishlist", { variant: "success" });
         setCurUser((prev) => {
           if (!prev) return prev;
@@ -250,193 +246,179 @@ export default function MyWishlist() {
     }
   };
 
-  let content;
-
-  if (loading) {
-    content = <BuffaloLoader variant="inline" text="Loading your wishlist..." />;
-  } else if (wishlist.length === 0) {
-    content = (
-      <div className="text-center py-16 px-4 bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
-        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <FavoriteIcon sx={{ fontSize: "2rem" }} />
-        </div>
-        <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">Your wishlist is empty</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-          Explore our fresh dairy products and click the heart icon to save your favorites for later!
-        </p>
-        <Link
-          to="/products"
-          className="inline-flex items-center gap-2 bg-[#1E88E5] hover:bg-[#1565C0] text-white text-sm font-semibold px-5 py-2.5 rounded-lg shadow transition"
-        >
-          <span>Explore Products</span>
-          <ArrowForwardIcon sx={{ fontSize: "1.1rem" }} />
-        </Link>
-      </div>
-    );
-  } else {
-    content = (
-      <div className="space-y-4">
-        <ul className="space-y-3">
-          {wishlist.map((product) => {
-            const { discountedPrice } = getDiscountedPrice(product?.price, product?.discount);
-            const isMoving = movingId === product._id;
-            const isDeleting = deleteLoading === product._id;
-
-            return (
-              <li
-                key={product?._id}
-                className="w-full rounded-xl bg-white dark:bg-gray-800/80 border border-gray-200/80 dark:border-gray-700/80 shadow-xs overflow-hidden transition hover:shadow-md"
-              >
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center">
-                  <div className="w-full sm:w-28 h-32 sm:h-28 flex-shrink-0 bg-gray-100 dark:bg-gray-700 overflow-hidden flex justify-center items-center relative">
-                    <img
-                      src={getProductImage(product)}
-                      alt={product?.name || "Product"}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/images/madhu_cow_milk.png";
-                      }}
-                      className="w-full h-full object-cover"
-                    />
-                    {product?.discount > 0 && (
-                      <span className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-                        {product.discount}% OFF
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between flex-1 gap-3">
-                    <div className="space-y-1">
-                      <Link
-                        to={`/product-details/${slugify(product?.name)}`}
-                        className="font-bold text-gray-800 dark:text-white hover:text-[#1E88E5] transition line-clamp-1 text-base"
-                      >
-                        {product?.name || "Unnamed Product"}
-                      </Link>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Category: {product?.category || "General"} &bull; Unit: {product?.quantityUnit || "Unit"}
-                      </p>
-
-                      <div className="flex items-center gap-2 pt-1">
-                        <span className="text-[#1E88E5] dark:text-blue-400 font-bold text-base">
-                          &#8377;{discountedPrice}
-                        </span>
-                        {product?.discount > 0 && (
-                          <span className="text-xs line-through text-gray-400">
-                            &#8377;{product?.price}
-                          </span>
-                        )}
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                          (product?.stock ?? 1) > 0 
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" 
-                            : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
-                        }`}>
-                          {(product?.stock ?? 1) > 0 ? "In Stock" : "Out of Stock"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 self-end sm:self-center">
-                      <button
-                        onClick={(e) => handleMoveToCart(e, product)}
-                        disabled={isMoving || (product?.stock ?? 1) <= 0}
-                        className="flex items-center gap-1.5 bg-[#1E88E5] hover:bg-[#1565C0] text-white text-xs font-bold px-3.5 py-2 rounded-lg transition disabled:opacity-50 cursor-pointer shadow-xs"
-                      >
-                        {isMoving ? (
-                          <div className="w-3.5 h-3.5 border-2 border-t-transparent border-white rounded-full animate-spin" />
-                        ) : (
-                          <ShoppingCartIcon sx={{ fontSize: "1rem" }} />
-                        )}
-                        <span>Move to Cart</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleRemove(product?._id)}
-                        disabled={isDeleting}
-                        className="flex items-center gap-1 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer"
-                      >
-                        {isDeleting ? (
-                          <div className="w-3.5 h-3.5 border-2 border-t-transparent border-red-600 rounded-full animate-spin" />
-                        ) : (
-                          "Remove"
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 md:pt-6 pb-6 flex flex-col h-full overflow-hidden">
-
-      {/* Mobile Actions Bar (Shown on Mobile Response when items exist) */}
-      {wishlist.length > 0 && (
-        <div className="md:hidden flex items-center gap-2 mb-3 pb-2 border-b border-gray-100 dark:border-gray-800/80 shrink-0">
-          <button
-            onClick={handleMoveAllToCart}
-            disabled={clearLoading}
-            className="flex-1 bg-[#1E88E5] hover:bg-[#1565C0] text-white text-xs font-bold py-2 px-3 rounded-xl transition cursor-pointer shadow-xs flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
-          >
-            <ShoppingCartIcon sx={{ fontSize: "0.95rem" }} />
-            <span>Move All to Cart</span>
-          </button>
-
-          <button
-            onClick={handleClearAll}
-            disabled={clearLoading}
-            className="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-bold py-2 px-3 rounded-xl transition cursor-pointer active:scale-95 border border-red-200/60 dark:border-red-800/60 disabled:opacity-50"
-          >
-            {clearLoading ? "Clearing..." : "Clear All"}
-          </button>
-        </div>
-      )}
-
-      {/* Desktop Top Header (Hidden on Mobile) */}
-      <div className="hidden md:flex shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 items-center justify-between gap-3">
-        <div>
-          <h2 className="font-bold text-xl text-gray-800 dark:text-white flex items-center gap-2">
-            <span>My Wishlist</span>
-            {wishlist.length > 0 && (
-              <span className="text-xs bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 font-bold px-2.5 py-0.5 rounded-full">
-                {wishlist.length} {wishlist.length === 1 ? "item" : "items"}
-              </span>
-            )}
-          </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            Manage your saved favorite items and move them to cart anytime.
-          </p>
+    <div className="w-full max-w-5xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-2 sm:pt-4 pb-28 md:pb-12 flex-1 flex flex-col">
+      {/* ── Unified Page Header (Mobile & Desktop) ── */}
+      <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-3 pb-3 sm:pb-4 mb-4 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#6C5CE7] to-[#5B54F2] text-white flex items-center justify-center shadow-xs shrink-0">
+            <FavoriteIcon sx={{ fontSize: "1.25rem" }} />
+          </div>
+          <div>
+            <h1 className="font-black text-base sm:text-2xl text-slate-900 dark:text-white leading-tight">
+              My Wishlist
+            </h1>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium">
+              {wishlist.length} {wishlist.length === 1 ? "item" : "items"} saved
+            </p>
+          </div>
         </div>
 
         {wishlist.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleMoveAllToCart}
               disabled={clearLoading}
-              className="bg-[#1E88E5] hover:bg-[#1565C0] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition cursor-pointer shadow-xs flex items-center gap-1.5"
+              className="bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl transition cursor-pointer shadow-md shadow-indigo-500/20 flex items-center gap-1.5 active:scale-95 disabled:opacity-50 whitespace-nowrap"
             >
               <ShoppingCartIcon sx={{ fontSize: "0.95rem" }} />
-              <span>Move All to Cart</span>
+              <span className="hidden sm:inline">Move All to Cart</span>
+              <span className="sm:hidden">Move All</span>
             </button>
 
             <button
               onClick={handleClearAll}
               disabled={clearLoading}
-              className="bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition cursor-pointer"
+              className="bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 text-xs font-bold py-2 sm:py-2.5 px-2.5 sm:px-3 rounded-xl transition cursor-pointer border border-slate-200/80 dark:border-slate-700/80 hover:border-rose-200 active:scale-95 disabled:opacity-50 whitespace-nowrap"
             >
-              {clearLoading ? "Clearing..." : "Clear Wishlist"}
+              {clearLoading ? "..." : "Clear"}
             </button>
           </div>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-hide pr-1">
-        {content}
+      {/* ── Page Content (Loader / Empty / Cards Grid) ── */}
+      <div className="flex-1 w-full">
+        {loading ? (
+          <div className="py-12 flex justify-center">
+            <BuffaloLoader variant="inline" text="Loading your wishlist..." />
+          </div>
+        ) : wishlist.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center py-12 sm:py-16 px-4 bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs max-w-md mx-auto my-6 sm:my-10">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-100 to-indigo-100 dark:from-violet-950/60 dark:to-indigo-950/60 text-[#6C5CE7] dark:text-[#a78bfa] flex items-center justify-center mb-4 shadow-xs">
+              <FavoriteIcon sx={{ fontSize: "2rem" }} />
+            </div>
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-1">
+              Your wishlist is empty
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-xs font-medium leading-relaxed">
+              Explore our fresh farm dairy products and tap the heart icon to save your favorites!
+            </p>
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs sm:text-sm font-bold px-6 py-3 rounded-xl shadow-md shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              <span>Explore Products</span>
+              <ArrowForwardIcon sx={{ fontSize: "1.1rem" }} />
+            </Link>
+          </div>
+        ) : (
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+            {wishlist.map((product) => {
+              const targetId = product?._id || product?.id;
+              const { discountedPrice } = getDiscountedPrice(product?.price, product?.discount);
+              const isMoving = movingId === targetId;
+              const isDeleting = deleteLoading === targetId;
+              const inStock = (product?.stock ?? 1) > 0;
+
+              return (
+                <li
+                  key={targetId}
+                  className="w-full rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between"
+                >
+                  {/* ── ROW 1: Image & Text in ONE Row ── */}
+                  <div className="p-3.5 sm:p-4 flex items-center gap-3.5 sm:gap-4 flex-1">
+                    {/* Left: Product Image Box */}
+                    <Link
+                      to={`/product-details/${slugify(product?.name || "")}`}
+                      className="relative w-22 h-22 sm:w-26 sm:h-26 shrink-0 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 flex items-center justify-center p-2 group cursor-pointer"
+                    >
+                      <img
+                        src={getProductImage(product)}
+                        alt={product?.name || "Product"}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/images/madhu_cow_milk.png";
+                        }}
+                        className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      />
+                      {product?.discount > 0 && (
+                        <span className="absolute top-1.5 left-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-xs">
+                          {product.discount}% OFF
+                        </span>
+                      )}
+                    </Link>
+
+                    {/* Right: Product Text & Info */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider truncate mb-0.5">
+                        {product?.category || "Dairy"} &bull; {product?.quantityUnit || "1 Unit"}
+                      </p>
+
+                      <Link
+                        to={`/product-details/${slugify(product?.name || "")}`}
+                        className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white hover:text-[#5B54F2] dark:hover:text-[#a78bfa] transition-colors line-clamp-2 leading-snug"
+                      >
+                        {product?.name || "Unnamed Product"}
+                      </Link>
+
+                      {/* Pricing & Stock Status */}
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        <span className="text-[#5B54F2] dark:text-[#a78bfa] font-black text-base sm:text-lg">
+                          &#8377;{discountedPrice}
+                        </span>
+                        {product?.discount > 0 && (
+                          <span className="text-xs line-through text-slate-400 font-medium">
+                            &#8377;{product?.price}
+                          </span>
+                        )}
+                        <span
+                          className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold ${
+                            inStock
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60"
+                              : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60"
+                          }`}
+                        >
+                          {inStock ? "In Stock" : "Out of Stock"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── ROW 2: Move to Cart and Remove Buttons at the Bottom of the Card ── */}
+                  <div className="px-3.5 pb-3.5 sm:px-4 sm:pb-4 pt-2.5 flex items-center gap-2.5 border-t border-slate-100 dark:border-slate-800/80 mt-auto">
+                    <button
+                      onClick={(e) => handleMoveToCart(e, product)}
+                      disabled={isMoving || !inStock}
+                      className="flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-indigo-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      {isMoving ? (
+                        <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                      ) : (
+                        <ShoppingCartIcon sx={{ fontSize: "1.05rem" }} />
+                      )}
+                      <span>Move to Cart</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleRemove(targetId)}
+                      disabled={isDeleting}
+                      className="py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 text-xs sm:text-sm font-bold border border-slate-200/80 dark:border-slate-700/80 hover:border-rose-200 dark:hover:border-rose-800 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50 shrink-0"
+                      title="Remove from wishlist"
+                    >
+                      {isDeleting ? (
+                        <div className="w-3.5 h-3.5 border-2 border-t-transparent border-rose-500 rounded-full animate-spin" />
+                      ) : (
+                        <DeleteOutlineIcon sx={{ fontSize: "1.05rem" }} />
+                      )}
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );

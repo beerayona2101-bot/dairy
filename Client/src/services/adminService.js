@@ -10,12 +10,13 @@ export const getAdminById = async (adminId) => {
   return res?.data;
 };
 
-export const removeAdminNotification = async (adminId, mode, index) => {
+export const removeAdminNotification = async (adminId, mode, index, notificationId = null) => {
   const res = await api.delete("/admin/delete-notification", {
     data: {
       adminId,
       mode,
       index,
+      notificationId,
     },
   });
   return res?.data;

@@ -145,8 +145,13 @@ export default function Routers() {
                 <Route path="/order-checkout" element={<Layout><OrderCheckoutPage /></Layout>} />
 
                 <Route path="/contact-us" element={<Layout><ContactPage /></Layout>} />
+                <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+                <Route path="/contactus" element={<Layout><ContactPage /></Layout>} />
+                <Route path="/product" element={<Navigate to="/products" replace />} />
+                <Route path="/product/:productId?" element={<Navigate to="/products" replace />} />
+                <Route path="/product-detail/:productId?" element={<Navigate to="/product-details" replace />} />
 
-                <Route path="*" element={<Navigate to={authAdmin ? "/admin/dashboard" : authUser ? "/home" : "/login"} replace />} />
+                <Route path="*" element={<Navigate to={authAdmin ? "/admin/dashboard" : "/home"} replace />} />
             </Routes>
             <LoginDialog />
         </Suspense>

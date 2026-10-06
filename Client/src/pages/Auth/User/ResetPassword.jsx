@@ -75,26 +75,26 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-300 flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto">
-      {/* Top Navigation Bar: Back & Home */}
-      <div className="absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex items-center justify-between z-30 pointer-events-none">
+    <div className="relative min-h-screen lg:h-screen w-full bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center justify-center p-3 sm:p-4 overflow-y-auto lg:overflow-hidden">
+      {/* Top Navigation Bar: Back & Guest */}
+      <div className="absolute top-3 left-4 right-4 sm:top-5 sm:left-6 sm:right-6 flex items-center justify-between z-30 pointer-events-none">
         <button
           type="button"
           onClick={handleGoBack}
-          className="pointer-events-auto p-2 sm:px-3 sm:py-2 text-gray-700 dark:text-gray-200 hover:text-[#0284C7] dark:hover:text-[#38BDF8] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
+          className="pointer-events-auto p-1.5 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#6C5CE7] dark:text-[#A78BFA]" />
           <span className="hidden sm:inline text-xs font-bold">Back</span>
         </button>
 
         <button
           type="button"
           onClick={() => navigate("/home")}
-          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#1E88E5] dark:hover:text-[#1E88E5] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
           title="Continue as Guest"
         >
-          <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0284C7]" />
+          <User className="w-3.5 h-3.5 text-[#6C5CE7] dark:text-[#A78BFA]" />
           <span>Guest</span>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:translate-x-0.5 transition-transform -ml-0.5" />
         </button>
@@ -102,32 +102,32 @@ export default function ResetPassword() {
 
       {/* Main Unified Card Container */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="w-full max-w-[440px] mx-auto py-8 sm:py-10"
+        className="w-full max-w-[420px] mx-auto my-auto py-2 sm:py-3 flex flex-col justify-center"
       >
         {/* Brand Cow Logo Header */}
-        <div className="flex flex-col items-center text-center mb-6">
+        <div className="flex flex-col items-center text-center mb-2 sm:mb-2.5">
           <img
             src={brandLogo}
             alt={company?.name || "Madhu Dairy"}
-            className="h-20 sm:h-24 w-auto object-contain mb-2 drop-shadow-xs transition-transform duration-300 hover:scale-105"
+            className="h-12 sm:h-14 w-auto object-contain mb-1 drop-shadow-xs transition-transform duration-300 hover:scale-105"
           />
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
             Farm-fresh milk & daily needs delivered to your door
           </p>
         </div>
 
         {/* Welcome Header */}
-        <div className="mb-5 text-left">
-          <h1 className="text-2xl sm:text-[26px] font-black text-slate-900 dark:text-white tracking-tight">
+        <div className="mb-2.5 sm:mb-3 text-left">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             Reset Password 🔑
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
             {email ? (
               <>
-                Create a new secure password for <span className="font-bold text-[#1E88E5]">{email}</span>
+                Create a new secure password for <span className="font-bold text-[#6C5CE7]">{email}</span>
               </>
             ) : (
               "Create a strong, new password for your account"
@@ -136,27 +136,27 @@ export default function ResetPassword() {
         </div>
 
         {/* Inputs Card Container */}
-        <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-sm">
-          <form onSubmit={handleReset} className="space-y-4">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-md">
+          <form onSubmit={handleReset} className="space-y-3">
             {/* New Password */}
             <div>
-              <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1.5">
+              <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 New Password
               </label>
-              <div className="group flex items-center px-4 py-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#1E88E5] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#1E88E5] mr-3 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#6C5CE7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition-all shadow-xs">
+                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#6C5CE7] mr-2.5 shrink-0 transition-colors" />
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="At least 8 chars with a number"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 ml-2 transition-colors cursor-pointer"
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1.5 transition-colors cursor-pointer"
                 >
                   {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
@@ -165,23 +165,23 @@ export default function ResetPassword() {
 
             {/* Confirm New Password */}
             <div>
-              <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1.5">
+              <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Confirm New Password
               </label>
-              <div className="group flex items-center px-4 py-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#1E88E5] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#1E88E5]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#1E88E5] mr-3 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#6C5CE7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition-all shadow-xs">
+                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#6C5CE7] mr-2.5 shrink-0 transition-colors" />
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Re-enter your new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 ml-2 transition-colors cursor-pointer"
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1.5 transition-colors cursor-pointer"
                 >
                   {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
@@ -190,7 +190,7 @@ export default function ResetPassword() {
 
             {/* Password Hint */}
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 pt-0.5">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#1E88E5]" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#6C5CE7]" />
               Must be at least 8 characters and contain at least 1 number
             </p>
 
@@ -198,7 +198,7 @@ export default function ResetPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#5B54F2] to-[#1E88E5] hover:from-[#4B44E2] hover:to-[#1565C0] text-white font-black text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5B4BC4] hover:to-[#4D44DB] text-white font-black text-xs sm:text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
             >
               {loading ? (
                 <BuffaloLoader variant="button" text="Resetting password..." />
@@ -210,9 +210,9 @@ export default function ResetPassword() {
         </div>
 
         {/* Back to Login Footer */}
-        <div className="mt-5 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <div className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">
           Remember your password?{" "}
-          <Link to="/login" className="font-extrabold text-[#0284C7] hover:underline ml-1">
+          <Link to="/login" className="font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] hover:text-[#5B54F2] hover:underline ml-1">
             Back to Sign In
           </Link>
         </div>

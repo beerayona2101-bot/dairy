@@ -9,6 +9,7 @@ import StarIcon from "@mui/icons-material/Star";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import BoltIcon from "@mui/icons-material/Bolt";
 import EmojiFoodBeverageIcon from '@mui/icons-material/EmojiFoodBeverage';
 import { Tooltip } from "@mui/material";
 
@@ -51,7 +52,7 @@ export default function ProductVarietyCard(props) {
     const stock = props.stock ?? productObj.stock ?? 10;
     const minQty = Number(props.minQuantity ?? productObj.minQuantity ?? 1) || 1;
     const minQuantity = minQty;
-    const type = props.type || productObj.type || "Unknown";
+    const type = props.type || productObj.type || productObj.category || "Unknown";
     const rating = props.rating ?? productObj.rating ?? 4.9;
     const quantityUnit = props.quantityUnit || productObj.quantityUnit || "unit";
 
@@ -89,6 +90,26 @@ export default function ProductVarietyCard(props) {
         }
         addToCart(id, qtyToAdd, discountedPrice);
         showSnackbar("Product added to cart!", "success");
+    };
+
+    const handleBuyNow = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        if (stock <= 0) {
+            showSnackbar("Stock not available!", "error");
+            return;
+        }
+        if (!existing) {
+            const qtyToAdd = localQty > 0 ? localQty : minQty;
+            if (qtyToAdd > stock) {
+                showSnackbar("Stock not available!", "error");
+                return;
+            }
+            addToCart(id, qtyToAdd, discountedPrice);
+        }
+        navigate("/order-checkout");
     };
 
     const handleIncrementCart = () => {
@@ -185,7 +206,7 @@ export default function ProductVarietyCard(props) {
 
     return (
         <motion.div
-            className="relative rounded-[16px] sm:rounded-[20px] overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/80 dark:border-gray-700/80 p-0 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+            className={`relative rounded-[16px] sm:rounded-[20px] overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/80 dark:border-gray-700/80 p-0 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between ${props.className || ""}`}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
@@ -216,6 +237,15 @@ export default function ProductVarietyCard(props) {
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 block p-0 m-0 border-0"
                         />
                     </Link>
+                )}
+
+                {/* Floating Top-Left Discount Badge */}
+                {discountPercent > 0 && (
+                    <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 z-10 pointer-events-none select-none">
+                        <span className="inline-flex items-center justify-center bg-[#FEF9C3] dark:bg-yellow-400/95 text-[#854D0E] dark:text-yellow-950 font-black text-[10px] sm:text-xs px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full border border-[#FDE047] shadow-xs tracking-wide">
+                            {discountPercent}% OFF
+                        </span>
+                    </div>
                 )}
 
                 {/* Floating Top-Right Wishlist Heart Circle Button */}
@@ -270,18 +300,12 @@ export default function ProductVarietyCard(props) {
                 </div>
 
                 <div>
-                    {/* Stock & Savings Info */}
-                    <div className="flex items-center justify-between text-xs sm:text-xs mb-1.5 text-slate-700 dark:text-slate-300 font-semibold">
+                    {/* Stock Info */}
+                    <div className="flex items-center text-xs mb-1.5 text-slate-700 dark:text-slate-300 font-semibold">
                         {stock === 0 ? (
                             <span className="text-red-500 font-extrabold">Out of Stock</span>
                         ) : (
                             <span>Available: <strong className="text-slate-900 dark:text-white font-extrabold">{stock} {quantityUnit}</strong></span>
-                        )}
-
-                        {discountPercent > 0 && (
-                            <span className="bg-[#FEF9C3] text-[#854D0E] font-black text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full border border-[#FDE047]">
-                                {discountPercent}% OFF
-                            </span>
                         )}
                     </div>
 
@@ -304,39 +328,51 @@ export default function ProductVarietyCard(props) {
                             )}
                         </div>
 
-                        {existing ? (
-                            <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-700/80 p-0.5 rounded-full border border-gray-200 dark:border-gray-600 shrink-0">
-                                <Tooltip title="Decrease quantity" arrow placement="top">
-                                    <button
-                                        onClick={handleDecrementCart}
-                                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 text-red-500 font-bold shadow-xs hover:scale-105 cursor-pointer transition"
-                                    >
-                                        <RemoveIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
-                                    </button>
-                                </Tooltip>
-                                <span className="w-4 sm:w-5 text-center text-xs sm:text-xs font-black text-slate-900 dark:text-white">
-                                    {inCartQty}
-                                </span>
-                                <Tooltip title={inCartQty >= stock ? "No more stock" : "Increase quantity"} arrow placement="top">
-                                    <button
-                                        onClick={handleIncrementCart}
-                                        disabled={inCartQty >= stock}
-                                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center bg-[#6C5CE7] text-white font-bold shadow-xs hover:scale-105 disabled:opacity-50 cursor-pointer transition"
-                                    >
-                                        <AddIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
-                                    </button>
-                                </Tooltip>
-                            </div>
-                        ) : (
+                        <div className="flex items-center gap-1 shrink-0">
                             <button
-                                onClick={handleAddInitialToCart}
+                                onClick={handleBuyNow}
                                 disabled={stock <= 0}
-                                className="flex items-center justify-center gap-1 px-2.5 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#4C1D95] hover:from-[#5b21b6] hover:to-[#3b0764] text-white text-[11px] sm:text-xs font-black shadow-xs hover:shadow-md hover:scale-105 transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
+                                className="flex items-center justify-center gap-0.5 sm:gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 active:scale-95 text-white text-[10px] sm:text-xs font-black shadow-2xs hover:shadow-xs transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
+                                title="Buy Now - Direct Checkout"
                             >
-                                <ShoppingCartIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
-                                <span>Add</span>
+                                <BoltIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
+                                <span>Buy</span>
                             </button>
-                        )}
+
+                            {existing ? (
+                                <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-700/80 p-0.5 rounded-full border border-gray-200 dark:border-gray-600 shrink-0">
+                                    <Tooltip title="Decrease quantity" arrow placement="top">
+                                        <button
+                                            onClick={handleDecrementCart}
+                                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 text-red-500 font-bold shadow-xs hover:scale-105 cursor-pointer transition"
+                                        >
+                                            <RemoveIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
+                                        </button>
+                                    </Tooltip>
+                                    <span className="w-4 sm:w-5 text-center text-xs sm:text-xs font-black text-slate-900 dark:text-white">
+                                        {inCartQty}
+                                    </span>
+                                    <Tooltip title={inCartQty >= stock ? "No more stock" : "Increase quantity"} arrow placement="top">
+                                        <button
+                                            onClick={handleIncrementCart}
+                                            disabled={inCartQty >= stock}
+                                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center bg-[#6C5CE7] text-white font-bold shadow-xs hover:scale-105 disabled:opacity-50 cursor-pointer transition"
+                                        >
+                                            <AddIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
+                                        </button>
+                                    </Tooltip>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleAddInitialToCart}
+                                    disabled={stock <= 0}
+                                    className="flex items-center justify-center gap-0.5 sm:gap-1 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#4C1D95] hover:from-[#5b21b6] hover:to-[#3b0764] text-white text-[10px] sm:text-xs font-black shadow-xs hover:shadow-md hover:scale-105 transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
+                                >
+                                    <ShoppingCartIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
+                                    <span>Add</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -345,15 +381,17 @@ export default function ProductVarietyCard(props) {
 }
 
 ProductVarietyCard.propTypes = {
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    image: PropTypes.string,
-    discount: PropTypes.number.isRequired,
-    minQuantity: PropTypes.number.isRequired,
-    rating: PropTypes.number.isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    name: PropTypes.string,
+    image: PropTypes.any,
+    discount: PropTypes.number,
+    minQuantity: PropTypes.number,
+    rating: PropTypes.number,
     stock: PropTypes.number,
-    price: PropTypes.number.isRequired,
+    price: PropTypes.number,
     likes: PropTypes.arrayOf(PropTypes.string),
-    quantityUnit: PropTypes.string.isRequired,
+    quantityUnit: PropTypes.string,
     type: PropTypes.string,
+    product: PropTypes.object,
+    className: PropTypes.string,
 };

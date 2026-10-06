@@ -17,8 +17,9 @@ import BuffaloLoader from "../components/BuffaloLoader";
 import { slugify, unslugify } from "../utils/slugify";
 import { recommendProducts } from "../utils/filterData";
 import { getProductImage } from "../utils/helper";
+import { formatNumberWithCommas } from "../utils/format";
 
-import { products as fallbackProducts } from "../data/products";
+import { fallbackProducts } from "../data/fallbackProducts";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
 import BackButton from "../components/Common/BackButton";
 import FloatingCart from "../components/Common/FloatingCart";
@@ -34,9 +35,22 @@ export default function ProductDetailsPage() {
     const [relatedProducts, setRelatedProducts] = useState([]);
 
     useEffect(() => {
-        if (!productId) return;
+        window.scrollTo({ top: 0, behavior: "instant" });
+    }, [productId]);
 
+    useEffect(() => {
         const allAvailable = Array.isArray(products) && products.length > 0 ? products : fallbackProducts;
+
+        if (!productId) {
+            const fallbackProd = allAvailable[0] || null;
+            setSelectedProduct(fallbackProd);
+            if (fallbackProd) {
+                const currRelated = recommendProducts(allAvailable, fallbackProd._id || fallbackProd.id);
+                setRelatedProducts(currRelated);
+            }
+            return;
+        }
+
         const searchSlug = slugify(productId).replace(/[^a-z0-9]/g, "");
         const searchClean = (productId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -80,7 +94,7 @@ export default function ProductDetailsPage() {
                 </p>
                 <Link
                     to="/products"
-                    className="mt-4 px-4 py-2 bg-[#1E88E5] text-white rounded hover:bg-[#1E88E5] transition"
+                    className="mt-4 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white rounded-full font-bold shadow-md shadow-violet-500/25 transition inline-block"
                 >
                     Go to Products
                 </Link>
@@ -102,7 +116,7 @@ export default function ProductDetailsPage() {
                             title="Back to Products"
                         />
                         <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
-                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 capitalize">
+                        <span className="text-xs font-extrabold text-violet-700 dark:text-violet-400 capitalize">
                             {selectedProduct?.category || "Dairy"}
                         </span>
                         <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
@@ -120,45 +134,83 @@ export default function ProductDetailsPage() {
             </section>
 
             <section className="px-4 md:px-6 pb-6 md:pb-10 md:max-w-6xl mx-auto">
-                <AnimatedHeading
-                    blackText="Related"
-                    violetText="Products"
-                    className="text-xl font-black text-[#2D3748] dark:text-white border-t border-gray-200/60 dark:border-gray-800 pb-3 pt-6 mb-4"
-                />
+                <div className="flex items-center justify-between border-t border-violet-100 dark:border-slate-800 pb-3 pt-6 mb-4">
+                    <div>
+                        <AnimatedHeading
+                            blackText="Related"
+                            violetText="Products"
+                            className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white"
+                            violetClassName="text-violet-600 dark:text-violet-400"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Handpicked dairy essentials from the same category</p>
+                    </div>
+                    <Link to="/products" className="text-xs sm:text-sm font-bold text-violet-600 dark:text-violet-400 hover:underline">
+                        View All →
+                    </Link>
+                </div>
 
                 {relatedProducts?.length > 0 ? (
                     <>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full">
-                            {currentItems.map((product, idx) => (
-                                <motion.div
-                                    key={product?._id || idx}
-                                    initial={{ opacity: 0, scale: 0.96 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: idx * 0.02, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                                    className="bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 transition-all duration-200 rounded-[20px] shadow-sm overflow-hidden hover:shadow-md hover:scale-102 flex flex-col justify-between"
-                                >
-                                    <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-40 overflow-hidden bg-gray-100 dark:bg-gray-700/50">
-                                        <img
-                                            src={getProductImage(product)}
-                                            alt={product?.name}
-                                            className="w-full h-full object-cover hover:scale-108 transition-transform duration-300 ease-out"
-                                        />
-                                    </Link>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4 w-full">
+                            {currentItems.map((product, idx) => {
+                                const prodPrice = Number(product?.price) || 0;
+                                const prodDiscount = Number(product?.discount) || 0;
+                                const discounted = prodDiscount > 0 ? prodPrice - (prodPrice * prodDiscount) / 100 : prodPrice;
 
-                                    <div className="p-3.5">
-                                        <Link
-                                            to={`/product-details/${slugify(product?.name)}`}
-                                            className="text-xs sm:text-sm font-extrabold text-[#2D3748] dark:text-white truncate hover:text-[#6C5CE7] line-clamp-1 transition-colors"
-                                        >
-                                            {product?.name}
+                                return (
+                                    <motion.div
+                                        key={product?._id || idx}
+                                        initial={{ opacity: 0, scale: 0.96 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: idx * 0.02, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                                        className="bg-white dark:bg-slate-800/90 border border-violet-100 dark:border-slate-800 hover:border-violet-300 dark:hover:border-violet-700 transition-all duration-200 rounded-2xl shadow-xs hover:shadow-[0_8px_25px_rgba(108,92,231,0.18)] hover:-translate-y-1 flex flex-col justify-between overflow-hidden group"
+                                    >
+                                        <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-44 overflow-hidden bg-gradient-to-br from-violet-50/50 via-purple-50/20 to-indigo-50/30 dark:from-slate-800 dark:to-slate-900 relative">
+                                            <img
+                                                src={getProductImage(product)}
+                                                alt={product?.name}
+                                                className="w-full h-full object-contain p-2.5 group-hover:scale-108 transition-transform duration-300 ease-out"
+                                            />
+                                            {prodDiscount > 0 && (
+                                                <span className="absolute top-2 right-2 bg-violet-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-xs">
+                                                    {prodDiscount}% OFF
+                                                </span>
+                                            )}
                                         </Link>
 
-                                        <p className="text-[11px] text-[#718096] dark:text-gray-300 mt-1 line-clamp-2 leading-relaxed">
-                                            {product?.description || ""}
-                                        </p>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                        <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1">
+                                            <div>
+                                                <Link
+                                                    to={`/product-details/${slugify(product?.name)}`}
+                                                    className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white truncate group-hover:text-violet-600 dark:group-hover:text-violet-400 line-clamp-1 transition-colors block"
+                                                >
+                                                    {product?.name}
+                                                </Link>
+
+                                                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1 leading-relaxed">
+                                                    {product?.description || ""}
+                                                </p>
+                                            </div>
+
+                                            <div className="mt-2.5 flex items-baseline justify-between pt-2 border-t border-violet-50 dark:border-slate-700/60">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-sm sm:text-base font-black text-violet-700 dark:text-violet-400">
+                                                        &#8377;{formatNumberWithCommas(discounted)}
+                                                    </span>
+                                                    {prodDiscount > 0 && (
+                                                        <span className="text-[11px] text-gray-400 dark:text-gray-500 line-through">
+                                                            &#8377;{formatNumberWithCommas(prodPrice)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">
+                                                    {product?.quantityUnit || "1 Litre"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
 
                         {totalPages > 1 && (
@@ -172,14 +224,15 @@ export default function ProductDetailsPage() {
                                     sx={{
                                         '& .MuiPaginationItem-root': {
                                             color: theme === 'dark' ? '#ffffff' : '#000000',
-                                            borderColor: theme === 'dark' ? '#555' : '#ccc',
+                                            borderColor: theme === 'dark' ? '#555' : '#e2e8f0',
                                         },
                                         '& .Mui-selected': {
-                                            backgroundColor: '#1E88E5',
+                                            backgroundColor: '#6C5CE7',
                                             color: '#ffffff',
-                                            borderColor: '#1E88E5',
+                                            borderColor: '#6C5CE7',
+                                            fontWeight: 800,
                                             '&:hover': {
-                                                backgroundColor: '#1E88E5',
+                                                backgroundColor: '#5844D8',
                                             },
                                         },
                                     }}
@@ -188,7 +241,7 @@ export default function ProductDetailsPage() {
                         )}
                     </>
                 ) : (
-                    <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/60 text-center">
+                    <div className="bg-violet-50/50 dark:bg-slate-800/40 p-6 rounded-2xl border border-violet-100 dark:border-slate-700/60 text-center">
                         <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
                             No related products found in this category ({selectedProduct?.category || selectedProduct?.type || "Category"}).
                         </p>

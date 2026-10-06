@@ -72,8 +72,8 @@ function Footer() {
 
       {/* ─── MOBILE COMPACT LAYOUT (hidden on lg+) ─── */}
       <div 
-        className="lg:hidden px-5 pt-6"
-        style={{ paddingBottom: 'calc(58px + max(env(safe-area-inset-bottom, 0px), 6px))' }}
+        className="lg:hidden px-5 pt-6 pb-28 sm:pb-32"
+        style={{ paddingBottom: 'calc(98px + max(env(safe-area-inset-bottom, 0px), 10px))' }}
       >
         {/* Top row: Logo */}
         <div className="flex items-center justify-between mb-4">

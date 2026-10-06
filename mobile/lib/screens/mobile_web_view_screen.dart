@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../providers/auth_provider.dart';
 import 'onboarding_screen.dart';
@@ -22,20 +23,46 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
   bool _hasError = false;
-  bool _triedFallback = false;
   Timer? _timeoutTimer;
 
-  // Candidate connection URLs (managed silently behind the scenes)
-  static const String _wifiUrl = 'http://192.168.1.46:5173';
-  static const String _usbUrl = 'http://127.0.0.1:5173';
+  // Candidate connection URLs ordered by likelihood
+  static const String _primaryLanUrl = 'http://192.168.1.39:5173';
+  static final List<String> _candidateUrls = [
+    _primaryLanUrl,
+    'http://10.0.2.2:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:5173',
+  ];
+
+  int _candidateIndex = 0;
   late String _currentUrl;
 
   @override
   void initState() {
     super.initState();
-    _currentUrl = widget.initialUrl ?? _wifiUrl;
-    _initWebView();
-    _startTimeoutTimer();
+    _currentUrl = widget.initialUrl ?? _candidateUrls[0];
+    _initPreferencesAndLoad();
+  }
+
+  Future<void> _initPreferencesAndLoad() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
+      if (savedUrl != null && savedUrl.isNotEmpty && widget.initialUrl == null) {
+        if (!_candidateUrls.contains(savedUrl)) {
+          _candidateUrls.insert(0, savedUrl);
+        } else {
+          _candidateUrls.remove(savedUrl);
+          _candidateUrls.insert(0, savedUrl);
+        }
+        _currentUrl = savedUrl;
+      }
+    } catch (_) {}
+
+    if (mounted) {
+      _initWebView();
+      _startTimeoutTimer();
+    }
   }
 
   @override
@@ -46,20 +73,26 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
 
   void _startTimeoutTimer() {
     _timeoutTimer?.cancel();
-    _timeoutTimer = Timer(const Duration(milliseconds: 2500), () {
+    // 7 seconds gives Vite dev server ample time to transform and send modules
+    _timeoutTimer = Timer(const Duration(milliseconds: 7000), () {
       if (mounted && _isLoading && !_hasError) {
-        if (!_triedFallback) {
-          _triedFallback = true;
-          final nextUrl = (_currentUrl == _wifiUrl) ? _usbUrl : _wifiUrl;
-          _loadSpecificUrl(nextUrl);
-        } else {
-          setState(() {
-            _hasError = true;
-            _isLoading = false;
-          });
-        }
+        _tryNextCandidateOrShowError();
       }
     });
+  }
+
+  void _tryNextCandidateOrShowError() {
+    if (_candidateIndex + 1 < _candidateUrls.length) {
+      _candidateIndex++;
+      _loadSpecificUrl(_candidateUrls[_candidateIndex]);
+    } else {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   void _initWebView() {
@@ -85,13 +118,12 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            if (mounted) {
-              if (progress >= 95) {
-                setState(() {
-                  _isLoading = false;
-                  _timeoutTimer?.cancel();
-                });
-              }
+            if (mounted && progress >= 90) {
+              setState(() {
+                _isLoading = false;
+                _hasError = false;
+                _timeoutTimer?.cancel();
+              });
             }
           },
           onPageStarted: (String url) {
@@ -109,7 +141,10 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               setState(() {
                 _isLoading = false;
                 _hasError = false;
-                _triedFallback = false;
+              });
+              // Persist confirmed responsive URL for next launch
+              SharedPreferences.getInstance().then((prefs) {
+                prefs.setString('working_web_url', _currentUrl);
               });
             }
           },
@@ -117,18 +152,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
             if (error.isForMainFrame ?? true) {
               _timeoutTimer?.cancel();
               if (mounted) {
-                // Auto-try fallback silently if first candidate fails
-                if (!_triedFallback) {
-                  _triedFallback = true;
-                  final nextUrl = (_currentUrl == _usbUrl) ? _wifiUrl : _usbUrl;
-                  _loadSpecificUrl(nextUrl);
-                  return;
-                }
-
-                setState(() {
-                  _hasError = true;
-                  _isLoading = false;
-                });
+                _tryNextCandidateOrShowError();
               }
             }
           },
@@ -139,11 +163,13 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
 
   void _loadSpecificUrl(String url) {
     _timeoutTimer?.cancel();
-    setState(() {
-      _currentUrl = url;
-      _hasError = false;
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _currentUrl = url;
+        _hasError = false;
+        _isLoading = true;
+      });
+    }
     _startTimeoutTimer();
     _controller.loadRequest(Uri.parse(url));
   }
@@ -152,10 +178,100 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     setState(() {
       _hasError = false;
       _isLoading = true;
-      _triedFallback = false;
+      _candidateIndex = 0;
     });
-    final nextUrl = (_currentUrl == _wifiUrl) ? _usbUrl : _wifiUrl;
-    _loadSpecificUrl(nextUrl);
+    _loadSpecificUrl(_candidateUrls[0]);
+  }
+
+  void _showConfigureHostDialog() {
+    final TextEditingController hostController = TextEditingController(text: _currentUrl);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Configure Server URL',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Enter your local machine IP or dev server URL:',
+              style: GoogleFonts.outfit(fontSize: 13, color: const Color(0xFF64748B)),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: hostController,
+              decoration: InputDecoration(
+                hintText: 'e.g. http://192.168.1.39:5173',
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              ),
+              style: GoogleFonts.outfit(fontSize: 14),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'Quick Select:',
+              style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF475569)),
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                _buildQuickChip('Wi-Fi LAN', 'http://192.168.1.39:5173', hostController),
+                _buildQuickChip('Emulator', 'http://10.0.2.2:5173', hostController),
+                _buildQuickChip('USB / Local', 'http://127.0.0.1:5173', hostController),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel', style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF6C5CE7),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () async {
+              final newUrl = hostController.text.trim();
+              if (newUrl.isNotEmpty) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('custom_web_url', newUrl);
+                await prefs.setString('working_web_url', newUrl);
+                if (ctx.mounted) Navigator.pop(ctx);
+                _candidateUrls.remove(newUrl);
+                _candidateUrls.insert(0, newUrl);
+                _candidateIndex = 0;
+                _loadSpecificUrl(newUrl);
+              }
+            },
+            child: Text('Save & Connect', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickChip(String label, String url, TextEditingController controller) {
+    return ActionChip(
+      label: Text(label, style: GoogleFonts.outfit(fontSize: 11.5, fontWeight: FontWeight.w600)),
+      backgroundColor: const Color(0xFFF1F5F9),
+      onPressed: () {
+        controller.text = url;
+      },
+    );
   }
 
   @override
@@ -197,7 +313,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                     ),
                   ),
 
-                // Clean Brand Loading Screen (Zero backend URLs, IPs, or ports)
+                // Clean Brand Loading Screen
                 if (_isLoading && !_hasError)
                   Positioned.fill(
                     child: Container(
@@ -206,19 +322,23 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Brand Logo with Soft Glow
                             Container(
                               width: 130,
                               height: 130,
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(0xFF0284C7).withValues(alpha: 0.08),
+                                color: const Color(0xFF6C5CE7).withValues(alpha: 0.08),
                               ),
                               child: Image.asset(
                                 'assets/images/cowLogo.png',
                                 fit: BoxFit.contain,
                                 filterQuality: FilterQuality.high,
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.eco_rounded,
+                                  size: 60,
+                                  color: Color(0xFF6C5CE7),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 22),
@@ -226,41 +346,41 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                               width: 32,
                               height: 32,
                               child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0284C7)),
+                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
                                 strokeWidth: 3,
                               ),
                             ),
-                                const SizedBox(height: 18),
-                                Text(
-                                  'Madhu Dairy',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF0F2742),
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'Delivering Farm Purity Daily...',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ],
+                            const SizedBox(height: 18),
+                            Text(
+                              'Madhu Dairy',
+                              style: GoogleFonts.outfit(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF0F2742),
+                                letterSpacing: 0.5,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Opening Fresh Storefront...',
+                              style: GoogleFonts.outfit(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                    ),
+                  ),
 
-                // Clean Customer-Friendly Offline/Error Screen (Zero backend details)
+                // Clean Customer-Friendly Offline/Error Screen with auto-retry and configure option
                 if (_hasError)
                   Positioned.fill(
                     child: Container(
                       color: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 28.0),
                       child: Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -269,27 +389,27 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                                color: const Color(0xFF6C5CE7).withValues(alpha: 0.12),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
-                                Icons.cloud_off_rounded,
+                                Icons.wifi_off_rounded,
                                 size: 40,
-                                color: Color(0xFF10B981),
+                                color: Color(0xFF6C5CE7),
                               ),
                             ),
-                            const SizedBox(height: 22),
+                            const SizedBox(height: 20),
                             Text(
-                              'Unable to Connect',
+                              'Unable to Open Page',
                               style: GoogleFonts.outfit(
-                                fontSize: 20,
+                                fontSize: 21,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF0F2742),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 8),
                             Text(
-                              'Please check your network connection and try again.',
+                              'Could not connect to the local store server.\nMake sure the dev server is active on your Wi-Fi network.',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.outfit(
                                 fontSize: 13.5,
@@ -297,30 +417,70 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                                 height: 1.4,
                               ),
                             ),
-                            const SizedBox(height: 26),
-                            SizedBox(
-                              width: 170,
-                              height: 46,
-                              child: ElevatedButton.icon(
-                                onPressed: _reload,
-                                icon: const Icon(Icons.refresh_rounded, size: 18),
-                                label: Text(
-                                  'Retry',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF10B981),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 2,
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                _currentUrl,
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11,
+                                  color: const Color(0xFF475569),
                                 ),
                               ),
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 44,
+                                  child: ElevatedButton.icon(
+                                    onPressed: _reload,
+                                    icon: const Icon(Icons.refresh_rounded, size: 18),
+                                    label: Text(
+                                      'Retry Now',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF6C5CE7),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 2,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                SizedBox(
+                                  height: 44,
+                                  child: OutlinedButton.icon(
+                                    onPressed: _showConfigureHostDialog,
+                                    icon: const Icon(Icons.settings_rounded, size: 18),
+                                    label: Text(
+                                      'Edit IP',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF6C5CE7),
+                                      ),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(color: Color(0xFF6C5CE7)),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

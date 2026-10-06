@@ -27,20 +27,24 @@ export default function Layout({ children }) {
         }
     }, [location.pathname]);
 
-    if (isValidAdmin && !authAdminLoading) {
-        return <Navigate to="/admin/dashboard" replace />;
-    }
-
     const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
     const isCartPage = location.pathname.includes("cart");
     const isCheckoutPage = location.pathname.includes("checkout");
-    const hideFooter = isProductsPage || location.pathname.startsWith("/product-details") || location.pathname.includes("product-details") || location.pathname.includes("checkout") || location.pathname.includes("cart");
-    const hideNavbar = (location.pathname.startsWith("/products/") && location.pathname !== "/products") || location.pathname.startsWith("/product-details");
+    const isWishlistPage = location.pathname.includes("wishlist");
+    const hideFooter = isProductsPage || isWishlistPage || location.pathname.startsWith("/product-details") || location.pathname.includes("product-details") || location.pathname.includes("checkout") || location.pathname.includes("cart");
+    // Only hide navbar on specific category full-screen hero pages
+    const hideNavbar = location.pathname.startsWith("/products/") && location.pathname !== "/products";
 
     return (
         <div ref={scrollRef} className="min-h-screen w-full max-w-full flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">
             {!hideNavbar && <Navbar />}
-            <main className={`flex-1 min-h-[100dvh] flex flex-col w-full max-w-full overflow-x-clip ${hideNavbar ? 'pt-0' : (isProductsPage || isCartPage || isCheckoutPage) ? 'pt-0 md:pt-[56px]' : 'pt-[48px] sm:pt-[52px] md:pt-[56px]'} ${hideFooter ? 'pb-20 lg:pb-0' : ''}`}>
+            <main className={`flex-1 min-h-[100dvh] flex flex-col w-full max-w-full overflow-x-clip ${
+                hideNavbar
+                    ? 'pt-0'
+                    : (isProductsPage || isCartPage || isCheckoutPage)
+                        ? 'pt-0 md:pt-[60px]'
+                        : 'pt-[calc(66px+env(safe-area-inset-top,0px))] sm:pt-[72px] md:pt-[60px]'
+            } ${hideFooter ? 'pb-24 lg:pb-0' : ''}`}>
                 <PageTransition key={location.pathname}>
                     {children}
                 </PageTransition>

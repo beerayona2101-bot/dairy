@@ -484,6 +484,16 @@ export const connectDB = async () => {
 
   const dbCandidates = [primaryDbUrl, directAtlasUrl, "mongodb://127.0.0.1:27017/milkapp"].filter(Boolean);
 
+  mongoose.connection.on("disconnected", () => {
+    console.warn("⚠️ MongoDB connection disconnected. Auto-reconnecting...");
+  });
+  mongoose.connection.on("reconnected", () => {
+    console.log("✅ MongoDB reconnected successfully!");
+  });
+  mongoose.connection.on("error", (err) => {
+    console.warn("⚠️ MongoDB connection notice:", err.message);
+  });
+
   for (const url of dbCandidates) {
     try {
       const conn = await mongoose.connect(url, {

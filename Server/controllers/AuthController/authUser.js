@@ -106,123 +106,159 @@ export const sendOtpController = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Missing fields." });
-  }
-
-  const cleanEmail = email.trim().toLowerCase();
-  const cleanPassword = password.trim();
-
-  // 1. Check if login credentials belong to an Admin account
-  let admin = await Admin.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
-  if (!admin && (cleanEmail === "admin@MADHUdairy.com" || cleanEmail.startsWith("admin"))) {
-    try {
-      const defaultHashedPassword = await bcryptjs.hash("Admin@12345", 10);
-      admin = await Admin.create({
-        name: "MADHU Admin",
-        username: "admin_MADHU",
-        email: cleanEmail === "admin@MADHUdairy.com" ? "admin@MADHUdairy.com" : cleanEmail,
-        password: defaultHashedPassword,
-        mobileNo: "9876543210",
-        factoryAddress: {
-          street: "Dairy Road",
-          city: "Mumbai",
-          state: "Maharashtra",
-          pincode: "400001",
-        },
-      });
-    } catch (createErr) {
-      console.warn("Auto-create admin notice:", createErr.message);
-    }
-  }
-
-  if (admin) {
-    let isAdminMatched = await bcryptjs.compare(cleanPassword, admin.password);
-    if (!isAdminMatched && (cleanPassword === "Admin@12345" || cleanPassword === "admin")) {
-      isAdminMatched = true;
-    }
-    if (isAdminMatched) {
-      const adminToken = jwt.sign(
-        { id: admin._id, role: "admin", email: admin.email },
-        JWT_SECRET,
-        { expiresIn: "1d" }
-      );
-      return res.status(200).json({
-        success: true,
-        isAdmin: true,
-        message: "Admin Login Successful",
-        adminToken,
-        admin: {
-          _id: admin._id,
-          name: admin.name,
-          username: admin.username,
-          email: admin.email,
-          mobileNo: admin.mobileNo,
-        },
-      });
-    }
-  }
-
-  let user = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
-
-  if (!user) {
-    return res.status(400).json({
-      success: false,
-      message: "User account not found. Please register an account first.",
-    });
-  }
-
-  let isMatched = false;
-  if (user.password) {
-    isMatched = await bcryptjs.compare(cleanPassword, user.password);
-  }
-
-  if (!isMatched) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid email or password.",
-    });
-  }
-
-  const userToken = jwt.sign(
-    { id: user._id, role: "user", email: user.email },
-    JWT_SECRET,
-    { expiresIn: "1d" }
-  );
-
-  // Trigger login notification
   try {
-    const notifObj = {
-      title: "Login Successful 🔐",
-      description: `You logged in to your account (${user?.email || cleanEmail}) successfully.`,
-      date: new Date(),
-      isRead: false,
-      type: "login",
-    };
-    await addNotification(user, notifObj);
-    const io = req.app.get("io");
-    if (io) {
-      io.to(`user:${String(user._id)}`).emit("user:notification", notifObj);
-    }
-  } catch (notifErr) {
-    console.warn("Login notification notice:", notifErr?.message);
-  }
+    const { email, password } = req.body;
 
-  res.status(200).json({
-    success: true,
-    message: "Login Successful",
-    userToken,
-    user: {
-      _id: user?._id,
-      email: user?.email || cleanEmail,
-      firstName: user?.firstName || "Valued",
-      lastName: user?.lastName || "Customer",
-      mobileNo: user?.mobileNo || "9876543210",
-    },
-    filledBasicInfo: true,
-  });
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: "400 Error: Invalid input. Please enter both email and password.",
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    // 1. Check if login credentials belong to an Admin account
+    let admin = null;
+    try {
+      admin = await Admin.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
+    } catch (dbErr) {
+      console.warn("Admin lookup warning:", dbErr.message);
+    }
+
+    if (!admin && (cleanEmail === "admin@MADHUdairy.com" || cleanEmail.startsWith("admin"))) {
+      try {
+        const defaultHashedPassword = await bcryptjs.hash("Admin@12345", 10);
+        admin = await Admin.create({
+          name: "MADHU Admin",
+          username: "admin_MADHU",
+          email: cleanEmail === "admin@MADHUdairy.com" ? "admin@MADHUdairy.com" : cleanEmail,
+          password: defaultHashedPassword,
+          mobileNo: "9876543210",
+          factoryAddress: {
+            street: "Dairy Road",
+            city: "Mumbai",
+            state: "Maharashtra",
+            pincode: "400001",
+          },
+        });
+      } catch (createErr) {
+        console.warn("Auto-create admin notice:", createErr.message);
+      }
+    }
+
+    if (admin) {
+      let isAdminMatched = await bcryptjs.compare(cleanPassword, admin.password);
+      if (!isAdminMatched && (cleanPassword === "Admin@12345" || cleanPassword === "admin")) {
+        isAdminMatched = true;
+      }
+      if (isAdminMatched) {
+        const adminToken = jwt.sign(
+          { id: admin._id, role: "admin", email: admin.email },
+          JWT_SECRET,
+          { expiresIn: "1d" }
+        );
+        return res.status(200).json({
+          success: true,
+          isAdmin: true,
+          message: "Admin Login Successful",
+          adminToken,
+          admin: {
+            _id: admin._id,
+            name: admin.name,
+            username: admin.username,
+            email: admin.email,
+            mobileNo: admin.mobileNo,
+          },
+        });
+      }
+    }
+
+    let user = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "404 Error: User account not found. Please register an account first.",
+      });
+    }
+
+    let isMatched = false;
+    if (user.password) {
+      isMatched = await bcryptjs.compare(cleanPassword, user.password);
+    }
+
+    if (!isMatched) {
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: "401 Error: Invalid email or password.",
+      });
+    }
+
+    const userToken = jwt.sign(
+      { id: user._id, role: "user", email: user.email },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    // Trigger login notification (replaces any previous login notification)
+    try {
+      const notifObj = {
+        _id: new mongoose.Types.ObjectId(),
+        title: "Login Successful 🔐",
+        description: `You logged in to your account (${user?.email || cleanEmail}) successfully.`,
+        date: new Date(),
+        isRead: false,
+        type: "login",
+      };
+      await addNotification(user, notifObj);
+      const io = req.app.get("io");
+      if (io) {
+        io.to(`user:${String(user._id)}`).emit("user:notification", user?.notifications?.[0] || notifObj);
+      }
+    } catch (notifErr) {
+      console.warn("Login notification notice:", notifErr?.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Login Successful",
+      userToken,
+      user: {
+        _id: user?._id,
+        email: user?.email || cleanEmail,
+        firstName: user?.firstName || "Valued",
+        lastName: user?.lastName || "Customer",
+        mobileNo: user?.mobileNo || "9876543210",
+      },
+      filledBasicInfo: true,
+    });
+  } catch (err) {
+    console.error("Login server error:", err);
+    const isTimeout =
+      err?.name === "MongooseError" ||
+      err?.message?.includes("buffering timed out") ||
+      err?.name === "MongoNetworkError" ||
+      err?.name === "MongoServerSelectionError";
+
+    if (isTimeout) {
+      return res.status(503).json({
+        success: false,
+        statusCode: 503,
+        message: "503 Error: Server not responding. Please try again shortly.",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "500 Error: Server error. Please try again later.",
+    });
+  }
 };
 
 export const verifyUserSession = async (req, res) => {
@@ -314,9 +350,10 @@ export const loginWithGoogle = async (req, res) => {
     { expiresIn: "1d" }
   );
 
-  // Trigger login notification
+  // Trigger login notification (replaces any previous login notification)
   try {
     const notifObj = {
+      _id: new mongoose.Types.ObjectId(),
       title: "Google Login Successful 🔐",
       description: `Welcome back! You logged in via Google (${email}).`,
       date: new Date(),
@@ -326,7 +363,7 @@ export const loginWithGoogle = async (req, res) => {
     await addNotification(user, notifObj);
     const io = req.app.get("io");
     if (io) {
-      io.to(`user:${String(user._id)}`).emit("user:notification", notifObj);
+      io.to(`user:${String(user._id)}`).emit("user:notification", user?.notifications?.[0] || notifObj);
     }
   } catch (notifErr) {
     console.warn("Google login notification notice:", notifErr?.message);
@@ -513,7 +550,7 @@ export const getUser = async (req, res) => {
 };
 
 export const removeUserNotification = async (req, res) => {
-  const { userId, mode, index } = req.body;
+  const { userId, mode, index, notificationId } = req.body;
 
   if (!userId || !mode) {
     return res
@@ -527,17 +564,23 @@ export const removeUserNotification = async (req, res) => {
   }
 
   switch (mode) {
+    case "single":
     case "index":
-      if (
-        typeof index !== "number" ||
-        index < 0 ||
-        index >= user.notifications.length
+      if (notificationId) {
+        user.notifications = user.notifications.filter(
+          (n) => String(n._id) !== String(notificationId)
+        );
+      } else if (
+        typeof index === "number" &&
+        index >= 0 &&
+        index < user.notifications.length
       ) {
+        user.notifications.splice(index, 1);
+      } else {
         return res
           .status(400)
-          .json({ success: false, message: "Invalid index." });
+          .json({ success: false, message: "Invalid index or notificationId." });
       }
-      user.notifications.splice(index, 1);
       break;
 
     case "all":
