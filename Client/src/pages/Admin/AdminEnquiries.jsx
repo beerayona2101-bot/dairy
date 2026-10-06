@@ -150,16 +150,16 @@ export default function AdminEnquiries() {
         <div className="flex items-start sm:items-center gap-3">
           <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider">
+            <span className="text-xs font-black uppercase text-[#075C2A] tracking-wider">
               ADMIN MAIL CENTER
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2 mt-1">
-              <Mail className="w-7 h-7 text-[#6C5CE7]" />
+              <Mail className="w-7 h-7 text-[#075C2A]" />
               <span>Customer Enquiries & SMTP Mail</span>
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
               Send 1-click emails to users from official admin mail (
-              <code className="text-[#6C5CE7] font-bold">beerayona143@gmail.com</code>)
+              <code className="text-[#075C2A] font-bold">beerayona143@gmail.com</code>)
             </p>
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function AdminEnquiries() {
         <button
           onClick={loadEnquiries}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 dark:bg-gray-700 text-[#6C5CE7] dark:text-purple-300 rounded-full font-bold text-xs hover:bg-purple-100 transition cursor-pointer border border-purple-100 dark:border-gray-600"
+          className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 dark:bg-gray-700 text-[#075C2A] dark:text-purple-300 rounded-full font-bold text-xs hover:bg-purple-100 transition cursor-pointer border border-purple-100 dark:border-gray-600"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           <span>Refresh Enquiries</span>
@@ -182,7 +182,7 @@ export default function AdminEnquiries() {
           onClick={() => setStatusFilter("All")}
           className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border flex items-center justify-between relative overflow-hidden ${
             statusFilter === "All"
-              ? "bg-purple-50/90 dark:bg-purple-950/40 border-[#6C5CE7] ring-2 ring-[#6C5CE7] shadow-md scale-[1.02]"
+              ? "bg-purple-50/90 dark:bg-purple-950/40 border-[#075C2A] ring-2 ring-[#075C2A] shadow-md scale-[1.02]"
               : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-purple-300 hover:shadow-xs"
           }`}
         >
@@ -190,7 +190,7 @@ export default function AdminEnquiries() {
             <div className="flex items-center gap-2">
               <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Total Enquiries</p>
               {statusFilter === "All" && (
-                <span className="text-[10px] font-black text-[#6C5CE7] bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full border border-purple-200">
+                <span className="text-[10px] font-black text-[#075C2A] bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full border border-purple-200">
                   ✓ Active View
                 </span>
               )}
@@ -199,7 +199,7 @@ export default function AdminEnquiries() {
               {enquiries.length}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] flex items-center justify-center shadow-xs">
             <MessageSquare className="w-5 h-5" />
           </div>
         </button>
@@ -210,7 +210,7 @@ export default function AdminEnquiries() {
           onClick={() => setStatusFilter("Pending")}
           className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border flex items-center justify-between relative overflow-hidden ${
             statusFilter === "Pending"
-              ? "bg-purple-100/90 dark:bg-purple-900/40 border-[#8B5CF6] ring-2 ring-[#8B5CF6] shadow-md scale-[1.02]"
+              ? "bg-purple-100/90 dark:bg-purple-900/40 border-[#3F9E18] ring-2 ring-[#3F9E18] shadow-md scale-[1.02]"
               : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-purple-300 hover:shadow-xs"
           }`}
         >
@@ -227,7 +227,7 @@ export default function AdminEnquiries() {
               {pendingCount}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-[#8B5CF6] flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-[#3F9E18] flex items-center justify-center shadow-xs">
             <Clock className="w-5 h-5" />
           </div>
         </button>
@@ -270,7 +270,7 @@ export default function AdminEnquiries() {
             {statusFilter === "Replied" && "Showing Replied Customer Enquiries"}
           </span>
         </h2>
-        <span className="text-xs font-extrabold text-[#6C5CE7] bg-purple-50 dark:bg-gray-800 px-3 py-1 rounded-full border border-purple-200 dark:border-gray-700">
+        <span className="text-xs font-extrabold text-[#075C2A] bg-purple-50 dark:bg-gray-800 px-3 py-1 rounded-full border border-purple-200 dark:border-gray-700">
           {filteredEnquiries.length} Enquiries
         </span>
       </div>
@@ -280,7 +280,7 @@ export default function AdminEnquiries() {
       {/* Enquiries Grid / List */}
       {loading ? (
         <div className="py-16 text-center">
-          <div className="w-8 h-8 border-4 border-[#6C5CE7] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-4 border-[#075C2A] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs font-semibold text-gray-500">Loading enquiries...</p>
         </div>
       ) : filteredEnquiries.length === 0 ? (
@@ -300,7 +300,7 @@ export default function AdminEnquiries() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-base font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
-                      <User className="w-4 h-4 text-[#6C5CE7]" />
+                      <User className="w-4 h-4 text-[#075C2A]" />
                       <span>{enquiry.fullName}</span>
                     </h3>
                     <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -361,7 +361,7 @@ export default function AdminEnquiries() {
 
                 <button
                   onClick={() => handleOpenReplyModal(enquiry)}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white rounded-full font-bold text-xs shadow-md transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-[#075C2A] hover:bg-[#054593] text-white rounded-full font-bold text-xs shadow-md transition cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>1-Click Email Reply</span>
@@ -387,7 +387,7 @@ export default function AdminEnquiries() {
       >
         <DialogTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Mail className="w-6 h-6 text-[#6C5CE7]" />
+            <Mail className="w-6 h-6 text-[#075C2A]" />
             <span className="font-black text-lg text-gray-900">
               Send 1-Click SMTP Email
             </span>
@@ -425,7 +425,7 @@ export default function AdminEnquiries() {
             <select
               value={template}
               onChange={handleTemplateChange}
-              className="w-full px-3 py-2 text-xs font-semibold border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]"
+              className="w-full px-3 py-2 text-xs font-semibold border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#075C2A]"
             >
               <option value="">-- Custom Message / Write Your Own --</option>
               <option value="received">1. Enquiry Received & Processing</option>
@@ -444,7 +444,7 @@ export default function AdminEnquiries() {
               value={replyMessage}
               onChange={(e) => setReplyMessage(e.target.value)}
               placeholder="Type your official email response here..."
-              className="w-full p-3 text-xs font-medium border border-gray-200 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]"
+              className="w-full p-3 text-xs font-medium border border-gray-200 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#075C2A]"
             />
           </div>
         </DialogContent>
@@ -456,7 +456,7 @@ export default function AdminEnquiries() {
           <button
             onClick={handleSendReply}
             disabled={sendingReply}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white rounded-full font-bold text-xs shadow-md transition cursor-pointer disabled:opacity-60"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#075C2A] hover:bg-[#054593] text-white rounded-full font-bold text-xs shadow-md transition cursor-pointer disabled:opacity-60"
           >
             {sendingReply ? (
               <>

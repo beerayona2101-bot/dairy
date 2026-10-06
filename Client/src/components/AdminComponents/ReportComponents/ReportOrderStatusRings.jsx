@@ -13,18 +13,18 @@ export default function ReportOrderStatusRings({ orderStatusData = {} }) {
       title: "Delivered Orders",
       pct: delivered.pct || 92,
       count: delivered.count || 108,
-      color: "#6C5CE7",
+      color: "#075C2A",
       bgColor: "bg-purple-600",
-      stroke: "stroke-[#6C5CE7]",
+      stroke: "stroke-[#075C2A]",
       bgStroke: "stroke-purple-100 dark:stroke-purple-950",
       badge: "bg-purple-100 text-purple-900 border border-purple-300 dark:bg-purple-950 dark:text-purple-200",
-      icon: <AssignmentTurnedInIcon className="text-[#6C5CE7] dark:text-purple-300" />,
+      icon: <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-purple-300" />,
     },
     {
       title: "Active / Shipping",
       pct: pending.pct || 6,
       count: pending.count || 7,
-      color: "#8B5CF6",
+      color: "#3F9E18",
       bgColor: "bg-purple-500",
       stroke: "stroke-purple-500",
       bgStroke: "stroke-purple-100 dark:stroke-purple-950",
@@ -49,7 +49,7 @@ export default function ReportOrderStatusRings({ orderStatusData = {} }) {
       <div className="border-b border-gray-100 dark:border-gray-700/60 pb-3 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <AssignmentTurnedInIcon className="text-[#6C5CE7] dark:text-purple-300" />
+            <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-purple-300" />
             Order Fulfillment Circular Progress
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

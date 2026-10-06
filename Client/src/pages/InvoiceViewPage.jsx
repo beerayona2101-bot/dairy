@@ -35,7 +35,7 @@ export default function InvoiceViewPage() {
           <BackButton fallbackPath="/user-profile/orders" />
 
           <div className="hidden sm:flex items-center gap-2 border-l border-slate-200 dark:border-slate-700 pl-3">
-            <FileText className="w-4 h-4 text-[#6C5CE7]" />
+            <FileText className="w-4 h-4 text-[#075C2A]" />
             <span className="text-sm font-extrabold text-slate-900 dark:text-white">
               Official Tax Invoice
             </span>
@@ -47,7 +47,7 @@ export default function InvoiceViewPage() {
           <button
             type="button"
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white font-extrabold text-xs transition shadow-sm cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#075C2A] hover:bg-[#054593] text-white font-extrabold text-xs transition shadow-sm cursor-pointer active:scale-95"
           >
             <Printer className="w-4 h-4" />
             <span>Print Invoice</span>
@@ -70,7 +70,7 @@ export default function InvoiceViewPage() {
       <main className="flex-1 w-full max-w-5xl mx-auto p-2 sm:p-6 flex flex-col">
         {loading && (
           <div className="flex items-center justify-center p-8 text-xs font-bold text-slate-500 gap-2">
-            <RefreshCw className="w-4 h-4 animate-spin text-[#6C5CE7]" />
+            <RefreshCw className="w-4 h-4 animate-spin text-[#075C2A]" />
             <span>Loading invoice document...</span>
           </div>
         )}

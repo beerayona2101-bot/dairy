@@ -183,14 +183,14 @@ export default function SavedAddressList({ open, handleDialogStatus }) {
               onClick={() => handleSelectAddress(addr)}
               className={`rounded-2xl p-4 flex flex-col justify-between transition-all cursor-pointer border ${
                 isSelected
-                  ? "bg-purple-50/80 dark:bg-purple-950/40 border-[#6C5CE7] shadow-md ring-1 ring-[#6C5CE7]/30"
+                  ? "bg-purple-50/80 dark:bg-purple-950/40 border-[#075C2A] shadow-md ring-1 ring-[#075C2A]/30"
                   : "bg-white dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 shadow-xs"
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <LocationOnIcon sx={{ fontSize: "1.1rem" }} className="text-[#6C5CE7]" />
-                  <span className="text-xs font-black uppercase text-[#6C5CE7] tracking-wider px-2 py-0.5 rounded bg-purple-100/70 dark:bg-purple-900/50">
+                  <LocationOnIcon sx={{ fontSize: "1.1rem" }} className="text-[#075C2A]" />
+                  <span className="text-xs font-black uppercase text-[#075C2A] tracking-wider px-2 py-0.5 rounded bg-purple-100/70 dark:bg-purple-900/50">
                     {addr.addressType || "Home"}
                   </span>
                 </div>
@@ -221,7 +221,7 @@ export default function SavedAddressList({ open, handleDialogStatus }) {
                       setSelectedAddress(addr);
                       setEditModal(true);
                     }}
-                    className="flex items-center gap-1 text-xs font-bold text-[#6C5CE7] hover:bg-purple-100 dark:hover:bg-purple-950/40 px-2.5 py-1 rounded-full transition cursor-pointer"
+                    className="flex items-center gap-1 text-xs font-bold text-[#075C2A] hover:bg-purple-100 dark:hover:bg-purple-950/40 px-2.5 py-1 rounded-full transition cursor-pointer"
                   >
                     <Edit2 size={13} /> Edit
                   </button>
@@ -247,7 +247,7 @@ export default function SavedAddressList({ open, handleDialogStatus }) {
                   className={`px-4 py-1.5 rounded-full text-xs font-extrabold transition cursor-pointer ${
                     isSelected
                       ? "bg-emerald-600 text-white"
-                      : "bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white shadow-xs"
+                      : "bg-[#075C2A] hover:bg-[#054593] text-white shadow-xs"
                   }`}
                 >
                   {isSelected ? "Delivering Here" : "Select Address"}

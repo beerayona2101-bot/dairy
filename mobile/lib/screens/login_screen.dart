@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('🎉 Login Successful! Welcome to Madhur Dairy.'),
+          content: Text('🎉 Login Successful! Welcome to Natural Milk Dairy.'),
           backgroundColor: Color(0xFF10B981),
         ),
       );

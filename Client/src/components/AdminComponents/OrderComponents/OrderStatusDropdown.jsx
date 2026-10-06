@@ -74,12 +74,12 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
         type="button"
         onClick={handleClick}
         disabled={isProcessing || currentStatus === "Delivered" || currentStatus === "Cancelled"}
-        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl border border-purple-200 dark:border-gray-700 shadow-xs hover:border-[#6C5CE7] dark:hover:border-purple-400 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
+        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl border border-purple-200 dark:border-gray-700 shadow-xs hover:border-[#075C2A] dark:hover:border-purple-400 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
       >
-        <span className="text-[#6C5CE7] dark:text-purple-300">{currentOption.icon}</span>
+        <span className="text-[#075C2A] dark:text-purple-300">{currentOption.icon}</span>
         <span>{currentOption.label}</span>
         <KeyboardArrowDownIcon
-          className={`transition-transform duration-200 text-gray-400 group-hover:text-[#6C5CE7] ${isOpen ? "rotate-180" : ""}`}
+          className={`transition-transform duration-200 text-gray-400 group-hover:text-[#075C2A] ${isOpen ? "rotate-180" : ""}`}
           sx={{ fontSize: "1.1rem" }}
         />
       </button>
@@ -110,27 +110,27 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
               disabled={disabled}
               className={`!text-xs !font-bold !py-2.5 !px-3 !rounded-xl !my-0.5 !flex !items-center !justify-between !gap-3 !transition-all ${
                 isCurrent
-                  ? "!bg-purple-50 dark:!bg-purple-950/60 !text-[#6C5CE7] dark:!text-purple-300 !font-black"
+                  ? "!bg-purple-50 dark:!bg-purple-950/60 !text-[#075C2A] dark:!text-purple-300 !font-black"
                   : isCancel
                   ? "!text-gray-600 dark:!text-gray-300 hover:!bg-purple-50 dark:hover:!bg-purple-950/40"
                   : "!text-gray-900 dark:!text-gray-200 hover:!bg-purple-50 dark:hover:!bg-purple-950/40"
               } ${disabled ? "!opacity-50 !cursor-not-allowed !bg-gray-50/50 dark:!bg-gray-800/30" : ""}`}
             >
               <div className="flex items-center gap-2.5">
-                <span className={isCurrent ? "text-[#6C5CE7]" : "text-gray-400"}>
+                <span className={isCurrent ? "text-[#075C2A]" : "text-gray-400"}>
                   {opt.icon}
                 </span>
-                <span className={isCurrent ? "font-black text-[#6C5CE7]" : "font-bold text-gray-900 dark:text-white"}>{opt.label}</span>
+                <span className={isCurrent ? "font-black text-[#075C2A]" : "font-bold text-gray-900 dark:text-white"}>{opt.label}</span>
               </div>
 
               {isPassed && (
-                <span className="text-[10px] font-black uppercase text-[#6C5CE7] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
+                <span className="text-[10px] font-black uppercase text-[#075C2A] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
                   ✓ Passed
                 </span>
               )}
 
               {isCurrent && (
-                <span className="text-[10px] font-black uppercase text-[#6C5CE7] dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full border border-purple-200">
+                <span className="text-[10px] font-black uppercase text-[#075C2A] dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full border border-purple-200">
                   Current
                 </span>
               )}

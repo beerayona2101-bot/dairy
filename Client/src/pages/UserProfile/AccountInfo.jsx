@@ -320,7 +320,7 @@ export default function AccountInfo() {
             {/* Person Profile Header Card */}
             <div className="p-4 sm:p-5 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-blue-50/60 dark:from-purple-950/40 dark:via-slate-900 dark:to-slate-900 border border-purple-100 dark:border-purple-800/40 rounded-2xl sm:rounded-3xl flex items-center justify-between gap-4 shadow-xs">
               <div className="flex items-center gap-3.5 sm:gap-4">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-full bg-gradient-to-tr from-[#6C5CE7] to-[#1E88E5] text-white flex items-center justify-center font-black text-xl sm:text-2xl shadow-md border-2 sm:border-3 border-white dark:border-slate-700 select-none">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-xl sm:text-2xl shadow-md border-2 sm:border-3 border-white dark:border-slate-700 select-none">
                   {(dbData?.firstName || authUser?.firstName || dbData?.username || authUser?.username || "U").charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -342,7 +342,7 @@ export default function AccountInfo() {
               <button
                 type="button"
                 onClick={() => setEdit(true)}
-                className="shrink-0 p-2 sm:px-4 sm:py-2 bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 text-[#6C5CE7] dark:text-purple-300 hover:bg-[#6C5CE7] hover:text-white rounded-xl font-bold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="shrink-0 p-2 sm:px-4 sm:py-2 bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 text-[#075C2A] dark:text-purple-300 hover:bg-[#075C2A] hover:text-white rounded-xl font-bold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
                 <FaEdit />
                 <span className="hidden sm:inline">Edit Profile</span>
@@ -392,7 +392,7 @@ export default function AccountInfo() {
             {/* Account Quick Options Menu Cards (Prominent on Mobile) */}
             <div>
               <h4 className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5">
-                <Sparkles size={14} className="text-[#6C5CE7]" />
+                <Sparkles size={14} className="text-[#075C2A]" />
                 Account Menu Options
               </h4>
 
@@ -401,14 +401,14 @@ export default function AccountInfo() {
                 {/* My Orders Menu Option */}
                 <div
                   onClick={() => navigate("/user-profile/orders")}
-                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-[#6C5CE7] dark:hover:border-purple-500 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
+                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-[#075C2A] dark:hover:border-purple-500 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="w-11 h-11 rounded-2xl bg-purple-100 dark:bg-purple-950/70 text-[#6C5CE7] dark:text-purple-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <div className="w-11 h-11 rounded-2xl bg-purple-100 dark:bg-purple-950/70 text-[#075C2A] dark:text-purple-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                       <ShoppingBag size={22} />
                     </div>
                     <div>
-                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-[#6C5CE7] dark:group-hover:text-purple-300 transition-colors">
+                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-[#075C2A] dark:group-hover:text-purple-300 transition-colors">
                         My Orders
                       </h5>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -416,7 +416,7 @@ export default function AccountInfo() {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight size={20} className="text-gray-400 group-hover:text-[#6C5CE7] group-hover:translate-x-1 transition-all" />
+                  <ChevronRight size={20} className="text-gray-400 group-hover:text-[#075C2A] group-hover:translate-x-1 transition-all" />
                 </div>
 
                 {/* Saved Addresses Menu Option */}
@@ -568,7 +568,7 @@ export default function AccountInfo() {
 
             {/* Initial Letter Profile Avatar Header */}
             <div className="flex items-center gap-3.5 p-3.5 bg-gradient-to-r from-purple-50/80 to-blue-50/80 dark:from-purple-950/30 dark:to-slate-900 border border-purple-100 dark:border-purple-900/40 rounded-2xl mb-4 shadow-xs">
-              <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-[#6C5CE7] to-[#1E88E5] text-white flex items-center justify-center font-black text-lg shadow-md border-2 border-white dark:border-slate-700 select-none">
+              <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-lg shadow-md border-2 border-white dark:border-slate-700 select-none">
                 {(dbData?.firstName || authUser?.firstName || dbData?.username || authUser?.username || "U").charAt(0).toUpperCase()}
               </div>
               <div>
@@ -969,7 +969,7 @@ export default function AccountInfo() {
       <div className="hidden md:flex shrink-0 pb-4 mb-4 border-b border-gray-200/80 dark:border-gray-700/80 justify-between items-center">
         <div>
           <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <FaUser className="text-[#6C5CE7]" />
+            <FaUser className="text-[#075C2A]" />
             {edit ? "Edit Personal Details" : "Account Information"}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

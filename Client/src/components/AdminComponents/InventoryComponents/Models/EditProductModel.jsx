@@ -265,7 +265,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
           <div className="p-4 bg-gray-50 dark:bg-gray-800/40 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
             <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
               <h3 className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-white flex items-center gap-2">
-                <Image className="w-4 h-4 text-[#6C5CE7]" />
+                <Image className="w-4 h-4 text-[#075C2A]" />
                 Product Images (2 Image Options)
               </h3>
               <span className="text-[11px] font-bold text-gray-500">Normal JPG + Cutout PNG</span>
@@ -286,7 +286,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
                     className="absolute bottom-0 right-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-1.5 rounded-full cursor-pointer shadow-sm hover:scale-105 transition"
                     title="Upload normal photo"
                   >
-                    <Image className="w-3.5 h-3.5 text-[#6C5CE7] dark:text-purple-400" />
+                    <Image className="w-3.5 h-3.5 text-[#075C2A] dark:text-purple-400" />
                   </label>
                   <input
                     type="file"
@@ -309,13 +309,13 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
                     setProductDetails((prev) => ({ ...prev, image: url }));
                   }}
                   disabled={isUpdating}
-                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:border-[#6C5CE7]"
+                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:border-[#075C2A]"
                 />
               </div>
 
               {/* Option 2: Transparent Cutout Image (PNG Only for 3D Showcase Card) */}
               <div className="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-purple-200 dark:border-gray-700">
-                <span className="text-xs font-bold text-[#6C5CE7] dark:text-purple-300">2. Transparent Cutout (PNG Only)</span>
+                <span className="text-xs font-bold text-[#075C2A] dark:text-purple-300">2. Transparent Cutout (PNG Only)</span>
                 <div className="relative w-20 h-20">
                   <img
                     src={pngImagePreview || productDetails?.pngImage || productDetails?.image || "/assets/showcase/milk_hd.png"}
@@ -324,7 +324,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
                   />
                   <label
                     htmlFor="editPngPhotoInput"
-                    className="absolute bottom-0 right-0 bg-[#6C5CE7] text-white p-1.5 rounded-full cursor-pointer shadow-sm hover:scale-105 transition"
+                    className="absolute bottom-0 right-0 bg-[#075C2A] text-white p-1.5 rounded-full cursor-pointer shadow-sm hover:scale-105 transition"
                     title="Upload transparent PNG cutout"
                   >
                     <Image className="w-3.5 h-3.5 text-white" />
@@ -350,7 +350,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
                     setProductDetails((prev) => ({ ...prev, pngImage: url }));
                   }}
                   disabled={isUpdating}
-                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:border-[#6C5CE7]"
+                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:border-[#075C2A]"
                 />
               </div>
             </div>
@@ -387,7 +387,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
                   disabled={isUpdating}
                   className={`pl-9 pr-3 py-2.5 w-full rounded-xl border border-gray-300 dark:border-gray-600 
                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-medium
-                    focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/20 transition ${
+                    focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/20 transition ${
                       isUpdating ? "cursor-not-allowed opacity-60" : ""
                     }`}
                 >
@@ -416,7 +416,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
             <label htmlFor="description" className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">
               Description
             </label>
-            <div className="flex items-start gap-2 border border-gray-300 dark:border-gray-600 rounded-xl p-2.5 bg-white dark:bg-gray-800 focus-within:border-[#6C5CE7] focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition">
+            <div className="flex items-start gap-2 border border-gray-300 dark:border-gray-600 rounded-xl p-2.5 bg-white dark:bg-gray-800 focus-within:border-[#075C2A] focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition">
               <DescriptionIcon className="text-gray-400 !text-lg mt-0.5" />
               <textarea
                 id="description"
@@ -519,7 +519,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
                     disabled={isUpdating}
                     className={`pl-9 pr-3 py-2.5 w-full rounded-xl border border-gray-300 dark:border-gray-600 
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-medium
-                      focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/20 transition ${
+                      focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/20 transition ${
                         isUpdating ? "cursor-not-allowed opacity-60" : ""
                       }`}
                   >
@@ -577,7 +577,7 @@ export default function EditProductModel({ open, onClose, selectedProduct }) {
         <button
           onClick={handleEditProduct}
           disabled={isUpdating}
-          className="px-5 py-2 rounded-xl text-xs font-bold bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition cursor-pointer shadow-xs"
+          className="px-5 py-2 rounded-xl text-xs font-bold bg-[#075C2A] hover:bg-[#054593] text-white transition cursor-pointer shadow-xs"
         >
           {isUpdating ? "Saving Changes..." : "Save Product Details"}
         </button>
@@ -596,7 +596,7 @@ function InputWithLabel({ label, name, placeholder, icon, onChange, disabled, va
       <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">
         {label}
       </label>
-      <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 bg-white dark:bg-gray-800 focus-within:border-[#6C5CE7] focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition">
+      <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 bg-white dark:bg-gray-800 focus-within:border-[#075C2A] focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition">
         {icon}
         <input
           type="text"

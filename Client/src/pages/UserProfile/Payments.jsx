@@ -94,7 +94,7 @@ export default function Payments() {
       {/* Responsive Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-200/80 dark:border-gray-800">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/70 text-[#6C5CE7] dark:text-purple-300 flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/70 text-[#075C2A] dark:text-purple-300 flex items-center justify-center shrink-0 shadow-xs">
             <MdAttachMoney className="text-2xl" />
           </div>
           <div>
@@ -126,15 +126,15 @@ export default function Payments() {
         </div>
 
         {/* Total Spent Card */}
-        <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-purple-50/90 to-indigo-50/60 dark:from-purple-950/40 dark:to-slate-900 border border-purple-100 dark:border-purple-800/40 flex items-center gap-3 shadow-xs">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-purple-100 dark:bg-purple-900/60 text-[#6C5CE7] dark:text-purple-300 flex items-center justify-center shrink-0 shadow-xs font-black text-lg sm:text-xl">
+        <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-purple-50/90 to-[#FFFDF7]/60 dark:from-purple-950/40 dark:to-slate-900 border border-purple-100 dark:border-purple-800/40 flex items-center gap-3 shadow-xs">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-purple-100 dark:bg-purple-900/60 text-[#075C2A] dark:text-purple-300 flex items-center justify-center shrink-0 shadow-xs font-black text-lg sm:text-xl">
             &#8377;
           </div>
           <div className="min-w-0">
             <p className="text-[10px] sm:text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">
               Total Amount
             </p>
-            <h3 className="text-base sm:text-xl font-black text-[#6C5CE7] dark:text-purple-300 truncate">
+            <h3 className="text-base sm:text-xl font-black text-[#075C2A] dark:text-purple-300 truncate">
               &#8377;{formatNumberWithCommas(totalSpent)}
             </h3>
           </div>
@@ -182,7 +182,7 @@ export default function Payments() {
               placeholder="Search by Order ID or mode..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-[#6C5CE7] text-xs font-semibold text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none transition shadow-2xs"
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-[#075C2A] text-xs font-semibold text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none transition shadow-2xs"
             />
             {searchQuery && (
               <button
@@ -202,7 +202,7 @@ export default function Payments() {
               onClick={() => setActiveFilter("all")}
               className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer whitespace-nowrap ${
                 activeFilter === "all"
-                  ? "bg-[#6C5CE7] text-white shadow-xs"
+                  ? "bg-[#075C2A] text-white shadow-xs"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
@@ -278,7 +278,7 @@ export default function Payments() {
                 setActiveFilter("all");
                 setSearchQuery("");
               }}
-              className="inline-block px-5 py-2 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-[#6C5CE7] dark:text-purple-300 text-xs font-bold transition cursor-pointer"
+              className="inline-block px-5 py-2 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-[#075C2A] dark:text-purple-300 text-xs font-bold transition cursor-pointer"
             >
               Reset Filters
             </button>
@@ -290,7 +290,7 @@ export default function Payments() {
           <div className="block md:hidden space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center justify-between gap-1.5 mb-1">
               <span className="flex items-center gap-1.5">
-                <Sparkles size={13} className="text-[#6C5CE7]" />
+                <Sparkles size={13} className="text-[#075C2A]" />
                 Recent Transactions
               </span>
               <span className="text-[10px] font-bold text-gray-400">
@@ -309,7 +309,7 @@ export default function Payments() {
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
                       Order ID
                     </span>
-                    <span className="text-xs font-mono font-bold text-[#6C5CE7] dark:text-purple-300">
+                    <span className="text-xs font-mono font-bold text-[#075C2A] dark:text-purple-300">
                       {order.orderId || `MD-ORD-${order._id?.slice(-6)}`}
                     </span>
                   </div>
@@ -364,9 +364,9 @@ export default function Payments() {
                   <button
                     type="button"
                     onClick={() => setViewInvoiceOrderId(order._id)}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 text-[#6C5CE7] dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/60 font-bold text-xs transition cursor-pointer active:scale-98"
+                    className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 text-[#075C2A] dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/60 font-bold text-xs transition cursor-pointer active:scale-98"
                   >
-                    <Eye className="w-4 h-4 text-[#6C5CE7] dark:text-purple-300" /> View Invoice
+                    <Eye className="w-4 h-4 text-[#075C2A] dark:text-purple-300" /> View Invoice
                   </button>
                 </div>
               </div>
@@ -393,7 +393,7 @@ export default function Payments() {
                       key={order._id}
                       className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition"
                     >
-                      <td className="p-3.5 font-mono font-bold text-[#6C5CE7] dark:text-purple-300">
+                      <td className="p-3.5 font-mono font-bold text-[#075C2A] dark:text-purple-300">
                         {order.orderId || `MD-ORD-${order._id?.slice(-6)}`}
                       </td>
                       <td className="p-3.5 text-gray-600 dark:text-gray-300">
@@ -429,7 +429,7 @@ export default function Payments() {
                         <button
                           type="button"
                           onClick={() => setViewInvoiceOrderId(order._id)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6C5CE7]/10 hover:bg-[#6C5CE7]/20 text-[#6C5CE7] dark:text-purple-300 border border-[#6C5CE7]/20 font-bold text-xs transition cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#075C2A]/10 hover:bg-[#075C2A]/20 text-[#075C2A] dark:text-purple-300 border border-[#075C2A]/20 font-bold text-xs transition cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" /> View Invoice
                         </button>

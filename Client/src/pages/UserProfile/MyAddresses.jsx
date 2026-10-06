@@ -161,12 +161,12 @@ export default function MyAddresses() {
               key={item._id}
               className={`rounded-2xl p-3.5 sm:p-5 shadow-xs transition-all duration-200 border ${
                 isSelected
-                  ? "bg-purple-50/90 dark:bg-purple-950/40 border-[#6C5CE7] dark:border-purple-400"
+                  ? "bg-purple-50/90 dark:bg-purple-950/40 border-[#075C2A] dark:border-purple-400"
                   : "bg-white dark:bg-slate-800/90 border-gray-200/90 dark:border-gray-700/80"
               }`}
             >
               <div className="w-full flex items-center justify-between gap-2">
-                <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-black tracking-wide bg-purple-100 dark:bg-purple-900/60 text-[#6C5CE7] dark:text-purple-300">
+                <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-black tracking-wide bg-purple-100 dark:bg-purple-900/60 text-[#075C2A] dark:text-purple-300">
                   {item.addressType || "Home"}
                 </span>
                 {isSelected ? (

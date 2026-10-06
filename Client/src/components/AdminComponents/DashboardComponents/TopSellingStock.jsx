@@ -37,7 +37,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
   const currentProducts = topSellingStocks?.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const getRankBadge = (rankIndex) => {
-    if (rankIndex === 0) return "bg-purple-100 text-[#6C5CE7] border-purple-300 dark:bg-purple-950/60 dark:text-purple-300";
+    if (rankIndex === 0) return "bg-purple-100 text-[#075C2A] border-purple-300 dark:bg-purple-950/60 dark:text-purple-300";
     if (rankIndex === 1) return "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/60 dark:text-purple-300";
     if (rankIndex === 2) return "bg-purple-900 text-purple-200 border-purple-700 dark:bg-purple-950 dark:text-purple-200";
     return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
@@ -53,7 +53,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 dark:border-gray-700/60 pb-3">
         <div>
           <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <WorkspacePremiumIcon className="text-[#6C5CE7]" />
+            <WorkspacePremiumIcon className="text-[#075C2A]" />
             Top Selling Products Overview
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -61,7 +61,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-purple-300 text-xs px-3 py-1 rounded-full font-bold">
+        <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-purple-300 text-xs px-3 py-1 rounded-full font-bold">
           <TrendingUpIcon sx={{ fontSize: "1rem" }} />
           <span>{topSellingStocks?.length || 0} Total Dairy Products</span>
         </div>
@@ -158,7 +158,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
 
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex flex-col items-end">
-                            <span className="font-extrabold text-[#6C5CE7] dark:text-purple-300">
+                            <span className="font-extrabold text-[#075C2A] dark:text-purple-300">
                               &#8377;{formatNumberWithCommas(discountedPrice)}
                             </span>
                             {hasDiscount && (
@@ -201,13 +201,13 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
                 color: "inherit",
                 transition: "all 0.2s ease",
                 "&:hover": {
-                  border: "2px solid #6C5CE7",
+                  border: "2px solid #075C2A",
                 },
               },
               "& .Mui-selected": {
-                backgroundColor: theme === "dark" ? "#6C5CE7" : "#6C5CE7",
+                backgroundColor: theme === "dark" ? "#075C2A" : "#075C2A",
                 color: "#fff",
-                borderColor: theme === "dark" ? "#6C5CE7" : "#6C5CE7",
+                borderColor: theme === "dark" ? "#075C2A" : "#075C2A",
               },
             }}
           />

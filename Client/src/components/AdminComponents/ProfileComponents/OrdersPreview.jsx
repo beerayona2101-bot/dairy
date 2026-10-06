@@ -36,17 +36,17 @@ export default function OrdersPreview() {
   const getStatusClass = (status) => {
     switch (status) {
       case "Pending":
-        return "bg-purple-100/20 text-[#6C5CE7]";
+        return "bg-purple-100/20 text-[#075C2A]";
       case "Processing":
-        return "bg-purple-100/20 text-[#8B5CF6]";
+        return "bg-purple-100/20 text-[#3F9E18]";
       case "Shipped":
-        return "bg-purple-100/20 text-[#7C3AED]";
+        return "bg-purple-100/20 text-[#0756B5]";
       case "Delivered":
-        return "bg-purple-100/20 text-[#6C5CE7]";
+        return "bg-purple-100/20 text-[#075C2A]";
       case "Cancelled":
         return "bg-zinc-900 text-white border border-zinc-700";
       case "Confirmed":
-        return "bg-purple-100/20 text-[#6C5CE7]";
+        return "bg-purple-100/20 text-[#075C2A]";
       default:
         return "bg-gray-100/10 text-gray-500";
     }
@@ -55,17 +55,17 @@ export default function OrdersPreview() {
   const getStatusIcon = (status) => {
     switch (status) {
       case "Pending":
-        return <Clock size={14} className="mr-1 text-[#6C5CE7]" />;
+        return <Clock size={14} className="mr-1 text-[#075C2A]" />;
       case "Processing":
-        return <Loader2 size={14} className="mr-1 animate-spin text-[#8B5CF6]" />;
+        return <Loader2 size={14} className="mr-1 animate-spin text-[#3F9E18]" />;
       case "Shipped":
-        return <Truck size={14} className="mr-1 text-[#7C3AED]" />;
+        return <Truck size={14} className="mr-1 text-[#0756B5]" />;
       case "Delivered":
-        return <PackageCheck size={14} className="mr-1 text-[#6C5CE7]" />;
+        return <PackageCheck size={14} className="mr-1 text-[#075C2A]" />;
       case "Cancelled":
         return <XCircle size={14} className="mr-1 text-white" />;
       case "Confirmed":
-        return <CheckCircle2 size={14} className="mr-1 text-[#6C5CE7]" />;
+        return <CheckCircle2 size={14} className="mr-1 text-[#075C2A]" />;
       default:
         return <AlertTriangle size={14} className="mr-1 text-gray-500" />;
     }
@@ -76,7 +76,7 @@ export default function OrdersPreview() {
   if (loading) {
     content = (
       <div className="flex justify-center items-center py-6">
-        <Loader className="animate-spin text-[#6C5CE7] w-6 h-6" />
+        <Loader className="animate-spin text-[#075C2A] w-6 h-6" />
       </div>
     );
   } else if (orders.length === 0) {
@@ -109,7 +109,7 @@ export default function OrdersPreview() {
 
               const paymentIcon =
                 order.paymentMode === "Online" ? (
-                  <span className="text-[#6C5CE7] font-medium">Online</span>
+                  <span className="text-[#075C2A] font-medium">Online</span>
                 ) : (
                   <span className="text-zinc-600 dark:text-zinc-300 font-medium">Cash</span>
                 );
@@ -162,7 +162,7 @@ export default function OrdersPreview() {
         {orders?.length > 0 && (
           <Link
             to="/admin/orders"
-            className="flex items-center gap-1 justify-end text-[#6C5CE7] hover:underline text-sm font-semibold"
+            className="flex items-center gap-1 justify-end text-[#075C2A] hover:underline text-sm font-semibold"
           >
             View More <ArrowRight size={16} />
           </Link>

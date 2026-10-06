@@ -230,13 +230,13 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                 const getRankBadge = (num) => {
                   if (num === 1) {
                     return (
-                      <span className="w-7 h-7 rounded-full bg-[#6C5CE7] text-white font-black text-xs flex items-center justify-center shadow-xs border border-purple-300 mx-auto">
+                      <span className="w-7 h-7 rounded-full bg-[#075C2A] text-white font-black text-xs flex items-center justify-center shadow-xs border border-purple-300 mx-auto">
                         #1
                       </span>
                     );
                   }
                   return (
-                    <span className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 font-bold text-xs flex items-center justify-center border border-purple-200 dark:border-purple-800 mx-auto">
+                    <span className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 font-bold text-xs flex items-center justify-center border border-purple-200 dark:border-purple-800 mx-auto">
                       #{num}
                     </span>
                   );
@@ -275,25 +275,25 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap text-center">
                       {Number(product?.stock || 0) === 0 ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#6C5CE7] animate-pulse" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-purple-50 text-[#075C2A] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#075C2A] animate-pulse" />
                           Out of Stock
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#6C5CE7]" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-purple-50 text-[#075C2A] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#075C2A]" />
                           {product?.stock} {product?.quantityUnit || "Units"}
                         </span>
                       )}
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap text-center">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-[#075C2A] dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200">
                         {highlightMatch(product?.category, navbarInput)}
                       </span>
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap text-center">
                       {hasDiscount ? (
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-purple-50 text-[#6C5CE7] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-purple-50 text-[#075C2A] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200">
                           {product?.discount}% OFF
                         </span>
                       ) : (
@@ -310,7 +310,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                               setSelectedProduct(product);
                               setOpenEditModal(true);
                             }}
-                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
+                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
                             title="Edit product details (Name, Category, Image, Price...)"
                           >
                             <Edit2 size={13} /> Edit
@@ -323,7 +323,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                               setSelectedProduct(product);
                               setOpenUpdateModal(true);
                             }}
-                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
+                            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
                             title="Update Stock & Expiry data"
                           >
                             <RefreshCw size={13} /> Update
@@ -347,7 +347,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                           <div className="flex items-center rounded-xl border border-purple-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xs">
                             <button
                               onClick={(e) => handleStockChange(e, product, -1)}
-                              className="w-7 h-7 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#6C5CE7] font-black text-sm flex items-center justify-center transition cursor-pointer border border-purple-200"
+                              className="w-7 h-7 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#075C2A] font-black text-sm flex items-center justify-center transition cursor-pointer border border-purple-200"
                               title="Remove stock (-1)"
                             >
                               -
@@ -357,7 +357,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                             </span>
                             <button
                               onClick={(e) => handleStockChange(e, product, 1)}
-                              className="w-7 h-7 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#6C5CE7] font-black text-sm flex items-center justify-center transition cursor-pointer border border-purple-200"
+                              className="w-7 h-7 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#075C2A] font-black text-sm flex items-center justify-center transition cursor-pointer border border-purple-200"
                               title="Add stock (+1)"
                             >
                               +
@@ -387,12 +387,12 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                 color: "inherit",
                 transition: "all 0.2s ease",
                 "&:hover": {
-                  border: "2px solid #6C5CE7",
+                  border: "2px solid #075C2A",
                 },
                 "&.Mui-selected": {
-                  backgroundColor: "#6C5CE7",
+                  backgroundColor: "#075C2A",
                   color: "#fff",
-                  borderColor: "#6C5CE7",
+                  borderColor: "#075C2A",
                   "&:hover": {
                     backgroundColor: "#5b4bc4",
                   },
@@ -416,7 +416,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
             {selectedFilter &&
               selectedFilter !== "all" &&
               selectedFilter !== "totalProducts" && (
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-purple-300 rounded-full text-xs font-semibold border border-purple-200 shadow-xs">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-purple-300 rounded-full text-xs font-semibold border border-purple-200 shadow-xs">
                   <span>
                     Filtered by: {
                       selectedFilter === "lowStock" ? "Low Stock Products" :
@@ -442,7 +442,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
               setInitialCategory(activeCategory || "");
               setOpenAddModal(true);
             }}
-            className="bg-[#6C5CE7] hover:bg-[#5b4bc4] text-white px-4 py-2 rounded-xl font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer flex items-center gap-2"
+            className="bg-[#075C2A] hover:bg-[#5b4bc4] text-white px-4 py-2 rounded-xl font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer flex items-center gap-2"
           >
             <Plus size={16} />
             Add Product

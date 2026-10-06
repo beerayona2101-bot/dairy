@@ -20,7 +20,7 @@ export default function ReportProductTable({ productGrowthData = [] }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-700/60 pb-3">
         <div>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <InventoryIcon className="text-[#6C5CE7] dark:text-purple-300" />
+            <InventoryIcon className="text-[#075C2A] dark:text-purple-300" />
             Static Data View: Product Growth & Performance Report
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -34,7 +34,7 @@ export default function ReportProductTable({ productGrowthData = [] }) {
             placeholder="Search report products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none border border-transparent focus:border-[#6C5CE7] transition"
+            className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none border border-transparent focus:border-[#075C2A] transition"
           />
           <SearchIcon className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 !text-base" />
         </div>
@@ -66,7 +66,7 @@ export default function ReportProductTable({ productGrowthData = [] }) {
                   />
                   <Link
                     to={`/product-details/${slugify(prod.name)}`}
-                    className="hover:text-[#6C5CE7] dark:hover:text-purple-300 font-semibold line-clamp-1"
+                    className="hover:text-[#075C2A] dark:hover:text-purple-300 font-semibold line-clamp-1"
                   >
                     {prod.name}
                   </Link>
@@ -82,12 +82,12 @@ export default function ReportProductTable({ productGrowthData = [] }) {
                   {prod.sold} pcs
                 </td>
 
-                <td className="py-3 px-4 text-right font-extrabold text-[#6C5CE7] dark:text-purple-300">
+                <td className="py-3 px-4 text-right font-extrabold text-[#075C2A] dark:text-purple-300">
                   ₹{formatNumberWithCommas(prod.revenue)}
                 </td>
 
                 <td className="py-3 px-4 text-center">
-                  <span className="inline-flex items-center gap-1 font-bold text-[#6C5CE7] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded-md border border-purple-200">
+                  <span className="inline-flex items-center gap-1 font-bold text-[#075C2A] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded-md border border-purple-200">
                     <TrendingUpIcon sx={{ fontSize: "0.9rem" }} />
                     +{prod.growth}%
                   </span>

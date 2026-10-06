@@ -251,7 +251,7 @@ export default function MyWishlist() {
       {/* ── Unified Page Header (Mobile & Desktop) ── */}
       <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-3 pb-3 sm:pb-4 mb-4 border-b border-slate-200/80 dark:border-slate-800">
         <div className="flex items-center gap-2.5 sm:gap-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#6C5CE7] to-[#5B54F2] text-white flex items-center justify-center shadow-xs shrink-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#075C2A] to-[#054593] text-white flex items-center justify-center shadow-xs shrink-0">
             <FavoriteIcon sx={{ fontSize: "1.25rem" }} />
           </div>
           <div>
@@ -269,7 +269,7 @@ export default function MyWishlist() {
             <button
               onClick={handleMoveAllToCart}
               disabled={clearLoading}
-              className="bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl transition cursor-pointer shadow-md shadow-indigo-500/20 flex items-center gap-1.5 active:scale-95 disabled:opacity-50 whitespace-nowrap"
+              className="bg-gradient-to-r from-[#075C2A] to-[#054593] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl transition cursor-pointer shadow-md shadow-indigo-500/20 flex items-center gap-1.5 active:scale-95 disabled:opacity-50 whitespace-nowrap"
             >
               <ShoppingCartIcon sx={{ fontSize: "0.95rem" }} />
               <span className="hidden sm:inline">Move All to Cart</span>
@@ -295,7 +295,7 @@ export default function MyWishlist() {
           </div>
         ) : wishlist.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-12 sm:py-16 px-4 bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs max-w-md mx-auto my-6 sm:my-10">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-100 to-indigo-100 dark:from-violet-950/60 dark:to-indigo-950/60 text-[#6C5CE7] dark:text-[#a78bfa] flex items-center justify-center mb-4 shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#F5E9D0] to-emerald-50 dark:from-emerald-950/60 dark:to-slate-800 text-[#0756B5] dark:text-emerald-400 flex items-center justify-center mb-4 shadow-xs">
               <FavoriteIcon sx={{ fontSize: "2rem" }} />
             </div>
             <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-1">
@@ -306,7 +306,7 @@ export default function MyWishlist() {
             </p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs sm:text-sm font-bold px-6 py-3 rounded-xl shadow-md shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#075C2A] to-[#0756B5] hover:from-[#054593] hover:to-[#063B22] text-white text-xs sm:text-sm font-bold px-6 py-3 rounded-xl shadow-md shadow-[#075C2A]/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
             >
               <span>Explore Products</span>
               <ArrowForwardIcon sx={{ fontSize: "1.1rem" }} />
@@ -357,14 +357,14 @@ export default function MyWishlist() {
 
                       <Link
                         to={`/product-details/${slugify(product?.name || "")}`}
-                        className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white hover:text-[#5B54F2] dark:hover:text-[#a78bfa] transition-colors line-clamp-2 leading-snug"
+                        className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white hover:text-[#054593] dark:hover:text-[#3F9E18] transition-colors line-clamp-2 leading-snug"
                       >
                         {product?.name || "Unnamed Product"}
                       </Link>
 
                       {/* Pricing & Stock Status */}
                       <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                        <span className="text-[#5B54F2] dark:text-[#a78bfa] font-black text-base sm:text-lg">
+                        <span className="text-[#054593] dark:text-[#3F9E18] font-black text-base sm:text-lg">
                           &#8377;{discountedPrice}
                         </span>
                         {product?.discount > 0 && (
@@ -390,7 +390,7 @@ export default function MyWishlist() {
                     <button
                       onClick={(e) => handleMoveToCart(e, product)}
                       disabled={isMoving || !inStock}
-                      className="flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-indigo-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                      className="flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-[#075C2A] to-[#054593] hover:from-[#5b4bd6] hover:to-[#4a43df] text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-indigo-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
                       {isMoving ? (
                         <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />

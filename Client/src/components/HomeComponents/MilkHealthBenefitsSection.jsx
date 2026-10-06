@@ -260,7 +260,7 @@ export function DairyPromiseCardsSection() {
         }
     });
 
-    const accentColors = ["#477A50", "#00ACC1", "#6C5CE7", "#D6A84F", "#FF7675", "#0284C7"];
+    const accentColors = ["#477A50", "#00ACC1", "#075C2A", "#D6A84F", "#FF7675", "#0284C7"];
     const sectionHeight = `${totalCards * 45}vh`;
 
     return (

@@ -57,7 +57,7 @@ export default function InvoiceModal({ open, onClose, orderId }) {
           </button>
 
           <div className="flex items-center gap-1.5 border-l border-slate-200 dark:border-slate-700 pl-2 sm:pl-3 shrink-0 whitespace-nowrap">
-            <FileText className="w-4 h-4 text-[#6C5CE7] shrink-0" />
+            <FileText className="w-4 h-4 text-[#075C2A] shrink-0" />
             <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white whitespace-nowrap">
               <span className="hidden sm:inline">Tax Invoice View</span>
               <span className="inline sm:hidden">Invoice</span>
@@ -70,7 +70,7 @@ export default function InvoiceModal({ open, onClose, orderId }) {
           <button
             type="button"
             onClick={handlePrint}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white font-extrabold text-xs transition shadow-xs cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#075C2A] hover:bg-[#054593] text-white font-extrabold text-xs transition shadow-xs cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
           >
             <Printer className="w-4 h-4 shrink-0" />
             <span className="whitespace-nowrap">Print Invoice</span>
@@ -81,7 +81,7 @@ export default function InvoiceModal({ open, onClose, orderId }) {
             href={downloadSrc}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#6C5CE7] sm:bg-slate-100 dark:sm:bg-slate-700 hover:bg-[#5b4cc4] sm:hover:bg-slate-200 dark:sm:hover:bg-slate-600 text-white sm:text-slate-800 dark:sm:text-white font-extrabold text-xs transition border-0 sm:border sm:border-slate-200 dark:sm:border-slate-600 cursor-pointer active:scale-95 shrink-0 whitespace-nowrap shadow-xs sm:shadow-none"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#075C2A] sm:bg-slate-100 dark:sm:bg-slate-700 hover:bg-[#054593] sm:hover:bg-slate-200 dark:sm:hover:bg-slate-600 text-white sm:text-slate-800 dark:sm:text-white font-extrabold text-xs transition border-0 sm:border sm:border-slate-200 dark:sm:border-slate-600 cursor-pointer active:scale-95 shrink-0 whitespace-nowrap shadow-xs sm:shadow-none"
           >
             <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white sm:text-emerald-600 dark:sm:text-emerald-400 shrink-0" />
             <span className="whitespace-nowrap">Download</span>

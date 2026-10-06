@@ -146,7 +146,7 @@ export default function AdminNavbar() {
                 {/* Left: Sidebar Toggle */}
                 <div className="flex items-center gap-2.5 sm:gap-3 z-10">
                     <button
-                        className="w-9 h-9 rounded-full bg-purple-50 dark:bg-gray-700 text-[#6C5CE7] dark:text-purple-300 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-purple-100 dark:border-gray-600 shrink-0"
+                        className="w-9 h-9 rounded-full bg-purple-50 dark:bg-gray-700 text-[#075C2A] dark:text-purple-300 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-purple-100 dark:border-gray-600 shrink-0"
                         onClick={handleSidebarToggle}
                         title="Toggle Sidebar Menu"
                     >
@@ -162,7 +162,7 @@ export default function AdminNavbar() {
                     <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
                         Madhu Dairy
                     </span>
-                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-widest uppercase leading-tight mt-0.5">
+                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#075C2A] dark:text-[#3F9E18] tracking-widest uppercase leading-tight mt-0.5">
                         &amp; Daily Needs
                     </span>
                 </Link>
@@ -175,14 +175,14 @@ export default function AdminNavbar() {
                             onClick={() => setNotificationOpen((prev) => !prev)}
                             className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer relative ${
                                 notificationOpen
-                                    ? "bg-[#6C5CE7]/15 text-[#6C5CE7] scale-105"
-                                    : "text-gray-600 dark:text-gray-300 hover:bg-[#6C5CE7]/10 hover:text-[#6C5CE7]"
+                                    ? "bg-[#075C2A]/15 text-[#075C2A] scale-105"
+                                    : "text-gray-600 dark:text-gray-300 hover:bg-[#075C2A]/10 hover:text-[#075C2A]"
                             }`}
                         >
                             <Bell className="w-[18px] h-[18px]" strokeWidth={2} />
                             {notification?.length > 0 && authAdmin && (
                                 <span
-                                    className={`absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-[#6C5CE7] text-white rounded-full text-[9px] font-black leading-none shadow-[0_2px_8px_rgba(108,92,231,0.5)] ${animate ? "animate-bounce" : ""}`}
+                                    className={`absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-[#075C2A] text-white rounded-full text-[9px] font-black leading-none shadow-[0_2px_8px_rgba(108,92,231,0.5)] ${animate ? "animate-bounce" : ""}`}
                                 >
                                     {unreadCount > 0 ? unreadCount : notification.length}
                                 </span>
@@ -213,8 +213,8 @@ export default function AdminNavbar() {
                                 </button>
 
                                 {/* Bell Icon for Desktop Viewports (sm+) */}
-                                <div className="hidden sm:flex w-8 h-8 rounded-full bg-[#6C5CE7]/12 dark:bg-[#6C5CE7]/20 items-center justify-center shrink-0">
-                                    <Bell className="w-[15px] h-[15px] text-[#6C5CE7]" strokeWidth={2.2} />
+                                <div className="hidden sm:flex w-8 h-8 rounded-full bg-[#075C2A]/12 dark:bg-[#075C2A]/20 items-center justify-center shrink-0">
+                                    <Bell className="w-[15px] h-[15px] text-[#075C2A]" strokeWidth={2.2} />
                                 </div>
 
                                 <div>
@@ -229,7 +229,7 @@ export default function AdminNavbar() {
                                 </div>
 
                                 {unreadCount > 0 && (
-                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-[#6C5CE7] text-white shadow-[0_2px_8px_rgba(108,92,231,0.4)] ml-1">
+                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-[#075C2A] text-white shadow-[0_2px_8px_rgba(108,92,231,0.4)] ml-1">
                                         {unreadCount} new
                                     </span>
                                 )}
@@ -254,7 +254,7 @@ export default function AdminNavbar() {
                                     {unreadCount > 0 && (
                                         <button
                                             onClick={handleMarkAllAsRead}
-                                            className="flex items-center gap-1 text-[11px] font-bold text-[#6C5CE7] dark:text-purple-400 hover:text-[#5b4bc4] dark:hover:text-purple-300 transition cursor-pointer"
+                                            className="flex items-center gap-1 text-[11px] font-bold text-[#075C2A] dark:text-purple-400 hover:text-[#5b4bc4] dark:hover:text-purple-300 transition cursor-pointer"
                                         >
                                             <CheckCheck size={12} strokeWidth={2.5} />
                                             <span>Mark all read</span>
@@ -263,10 +263,10 @@ export default function AdminNavbar() {
                                     <button
                                         disabled={notificationLoadingIndex !== null}
                                         onClick={() => handleRemoveNotification(-1, "all")}
-                                        className="flex items-center gap-1 text-[11px] font-bold text-purple-700 dark:text-purple-300 hover:text-[#6C5CE7] dark:hover:text-purple-200 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                        className="flex items-center gap-1 text-[11px] font-bold text-purple-700 dark:text-purple-300 hover:text-[#075C2A] dark:hover:text-purple-200 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                                     >
                                         {notificationLoadingIndex === "all" ? (
-                                            <div className="w-3 h-3 border-2 border-t-transparent border-[#6C5CE7] rounded-full animate-spin" />
+                                            <div className="w-3 h-3 border-2 border-t-transparent border-[#075C2A] rounded-full animate-spin" />
                                         ) : (
                                             <>
                                                 <X size={11} />
@@ -282,7 +282,7 @@ export default function AdminNavbar() {
                         <div className="overflow-y-auto flex-1" style={{ overscrollBehavior: 'contain' }}>
                             {notification.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
-                                    <div className="w-14 h-14 rounded-full bg-[#6C5CE7]/10 dark:bg-[#6C5CE7]/20 flex items-center justify-center text-2xl mb-3">🎉</div>
+                                    <div className="w-14 h-14 rounded-full bg-[#075C2A]/10 dark:bg-[#075C2A]/20 flex items-center justify-center text-2xl mb-3">🎉</div>
                                     <p className="font-black text-sm text-gray-800 dark:text-white">All caught up!</p>
                                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">No new notifications right now.</p>
                                 </div>
@@ -296,14 +296,14 @@ export default function AdminNavbar() {
                                                 onClick={() => handleNotificationClick(item, idx)}
                                                 className={`group relative p-3 rounded-2xl border transition-all duration-150 cursor-pointer ${
                                                     isUnread
-                                                        ? 'bg-[#6C5CE7]/06 dark:bg-[#6C5CE7]/12 border-[#6C5CE7]/20 dark:border-[#6C5CE7]/30 hover:bg-[#6C5CE7]/10 dark:hover:bg-[#6C5CE7]/20'
+                                                        ? 'bg-[#075C2A]/06 dark:bg-[#075C2A]/12 border-[#075C2A]/20 dark:border-[#075C2A]/30 hover:bg-[#075C2A]/10 dark:hover:bg-[#075C2A]/20'
                                                         : 'bg-white dark:bg-gray-800/50 border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
                                                 }`}
                                             >
                                                 <div className="flex items-start gap-2.5">
                                                     {/* Status Dot */}
                                                     <div className="mt-[5px] shrink-0">
-                                                        <span className={`block w-2 h-2 rounded-full ${isUnread ? 'bg-[#6C5CE7]' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                                                        <span className={`block w-2 h-2 rounded-full ${isUnread ? 'bg-[#075C2A]' : 'bg-gray-300 dark:bg-gray-600'}`} />
                                                     </div>
 
                                                     {/* Content */}
@@ -328,7 +328,7 @@ export default function AdminNavbar() {
                                                             e.stopPropagation();
                                                             handleRemoveNotification(idx, "index", item?._id);
                                                         }}
-                                                        className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-[#6C5CE7] hover:bg-purple-50 dark:hover:bg-purple-900/40 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
+                                                        className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-[#075C2A] hover:bg-purple-50 dark:hover:bg-purple-900/40 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
                                                         title="Dismiss"
                                                     >
                                                         {notificationLoadingIndex === idx ? (

@@ -70,7 +70,7 @@ export default function ProductCard({ item, highlightOutOfStock }) {
                 <div className="min-w-0 space-y-0.5">
                     <Link
                         to={`/product-details/${slugify(name)}`}
-                        className="text-sm sm:text-base font-bold text-gray-900 dark:text-white line-clamp-1 hover:text-[#6C5CE7] transition-colors leading-tight"
+                        className="text-sm sm:text-base font-bold text-gray-900 dark:text-white line-clamp-1 hover:text-[#075C2A] transition-colors leading-tight"
                         title={name}
                     >
                         {name}
@@ -89,7 +89,7 @@ export default function ProductCard({ item, highlightOutOfStock }) {
             {/* Right Section: Quantity Stepper Pill & Price Details */}
             <div className="flex flex-col items-end gap-1.5 shrink-0">
                 {/* Quantity Pill Box [ − 3 + ] */}
-                <div className="bg-purple-50 dark:bg-purple-950/60 border border-purple-200/80 dark:border-purple-800/80 rounded-xl px-2.5 py-1 flex items-center gap-2.5 text-[#6C5CE7] dark:text-[#A78BFA] font-black text-xs sm:text-sm shadow-2xs">
+                <div className="bg-purple-50 dark:bg-purple-950/60 border border-purple-200/80 dark:border-purple-800/80 rounded-xl px-2.5 py-1 flex items-center gap-2.5 text-[#075C2A] dark:text-[#3F9E18] font-black text-xs sm:text-sm shadow-2xs">
                     <button
                         type="button"
                         onClick={() => handleUpdateQuantity(newQty - 1)}

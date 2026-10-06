@@ -335,7 +335,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 bg-white dark:bg-gray-800 shadow-sm border border-white dark:border-gray-700 rounded-full px-3.5 py-1.5 transition hover:scale-105 cursor-pointer text-[#2D3748] dark:text-white"
                 title="Admin Dashboard"
             >
-                <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#6C5CE7]" />
+                <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#075C2A]" />
                 <span className="text-xs font-extrabold">
                     {authAdmin?.name || "Super Admin"}
                 </span>
@@ -349,7 +349,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 bg-white dark:bg-gray-800 shadow-sm border border-white dark:border-gray-700 rounded-full px-3.5 py-1.5 transition hover:scale-105 cursor-pointer text-[#2D3748] dark:text-white"
                 title="My Profile"
             >
-                <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#6C5CE7]" />
+                <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#075C2A]" />
                 <span className="text-xs font-extrabold">
                     {authUser?.firstName || "User"}
                 </span>
@@ -364,7 +364,7 @@ export default function Navbar() {
                     }
                     navigate("/login", { state: { from: location.pathname + location.search } });
                 }}
-                className="btn-reflection flex items-center gap-1.5 text-[#6C5CE7] bg-white dark:bg-gray-800 hover:bg-purple-50 font-extrabold px-4 py-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-[0_0_18px_rgba(108,92,231,0.4)] hover:scale-105 cursor-pointer border border-white dark:border-gray-700 text-xs relative overflow-hidden periodic-glass-shine"
+                className="btn-reflection flex items-center gap-1.5 text-[#075C2A] bg-white dark:bg-gray-800 hover:bg-purple-50 font-extrabold px-4 py-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-[0_0_18px_rgba(108,92,231,0.4)] hover:scale-105 cursor-pointer border border-white dark:border-gray-700 text-xs relative overflow-hidden periodic-glass-shine"
             >
                 <LoginIcon sx={{ fontSize: "1.1rem" }} />
                 <span>Login</span>
@@ -394,14 +394,14 @@ export default function Navbar() {
                     <Link to="/" className="flex md:hidden items-center gap-2 hover:scale-105 transition-transform py-0.5 z-10 no-underline">
                         <img
                             src={cowLogoImg}
-                            alt="Madhu Dairy Cow Logo"
+                            alt="Natural Milk Dairy Logo"
                             className="h-9 w-auto object-contain drop-shadow-sm shrink-0"
                         />
                         <div className="flex flex-col items-start justify-center leading-none">
                             <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-tight">
-                                Madhu Dairy
+                                Natural Milk Dairy
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] tracking-wider uppercase leading-tight mt-0.5">
+                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#075C2A] dark:text-[#3F9E18] tracking-wider uppercase leading-tight mt-0.5">
                                 &amp; Daily Needs
                             </span>
                         </div>
@@ -427,8 +427,8 @@ export default function Navbar() {
                                         }}
                                         className={`relative py-1 text-sm font-extrabold no-underline transition-all duration-300 cursor-pointer ${
                                             isActive
-                                                ? "text-[#6C5CE7] dark:text-[#A78BFA] drop-shadow-[0_0_12px_rgba(108,92,231,0.75)] scale-105"
-                                                : "text-black dark:text-white hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:drop-shadow-[0_0_8px_rgba(108,92,231,0.5)]"
+                                                ? "text-blue-700 dark:text-blue-400 drop-shadow-[0_0_12px_rgba(29,78,216,0.75)] scale-105"
+                                                : "text-black dark:text-white hover:text-blue-700 dark:hover:text-blue-400 hover:drop-shadow-[0_0_8px_rgba(29,78,216,0.5)]"
                                         }`}
                                     >
                                         {item.label}
@@ -466,13 +466,13 @@ export default function Navbar() {
                                 onClick={handleUserCart}
                                 className={`hidden md:flex w-9 h-9 rounded-full items-center justify-center transition-all duration-300 cursor-pointer relative hover:scale-110 active:scale-95 ${
                                     location.pathname === '/cart'
-                                        ? "bg-purple-100/80 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-[#A78BFA] shadow-[0_0_12px_rgba(108,92,231,0.3)]"
-                                        : "text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:bg-purple-50 dark:hover:bg-purple-950/40"
+                                        ? "bg-purple-100/80 dark:bg-purple-950/60 text-[#075C2A] dark:text-[#3F9E18] shadow-[0_0_12px_rgba(108,92,231,0.3)]"
+                                        : "text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-[#3F9E18] hover:bg-purple-50 dark:hover:bg-purple-950/40"
                                 }`}
                             >
                                 <ShoppingCartIcon sx={{ fontSize: "1.1rem" }} className="transition-colors duration-300" />
                                 {(cartItems?.length || 0) > 0 && (
-                                    <span className="absolute -top-1 -right-1 font-bold px-1.5 py-0.2 bg-[#6C5CE7] text-white rounded-full text-[10px] shadow-[0_0_8px_#6C5CE7]">
+                                    <span className="absolute -top-1 -right-1 font-bold px-1.5 py-0.2 bg-[#075C2A] text-white rounded-full text-[10px] shadow-[0_0_8px_#075C2A]">
                                         {cartItems?.length}
                                     </span>
                                 )}
@@ -535,7 +535,7 @@ export default function Navbar() {
                             <p className="text-[11px] text-gray-500 dark:text-gray-400">
                                 {authAdmin?.email || "admin@MADHUdairy.com"}
                             </p>
-                            <span className="inline-block mt-1 px-2.5 py-0.5 text-[10px] font-extrabold bg-blue-100 text-[#6C5CE7] rounded-full">
+                            <span className="inline-block mt-1 px-2.5 py-0.5 text-[10px] font-extrabold bg-blue-100 text-[#075C2A] rounded-full">
                                 Administrator & Shopper
                             </span>
                         </div>
@@ -547,7 +547,7 @@ export default function Navbar() {
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
                         >
-                            <DashboardIcon fontSize="small" className="text-[#6C5CE7]" />
+                            <DashboardIcon fontSize="small" className="text-[#075C2A]" />
                             <span>Admin Dashboard</span>
                         </MenuItem>
 
@@ -558,7 +558,7 @@ export default function Navbar() {
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
                         >
-                            <PersonIcon fontSize="small" className="text-[#6C5CE7]" />
+                            <PersonIcon fontSize="small" className="text-[#075C2A]" />
                             <span>Admin Profile</span>
                         </MenuItem>
 
@@ -596,7 +596,7 @@ export default function Navbar() {
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
                         >
-                            <PersonIcon fontSize="small" className="text-[#6C5CE7]" />
+                            <PersonIcon fontSize="small" className="text-[#075C2A]" />
                             <span>My Profile</span>
                         </MenuItem>
 
@@ -607,7 +607,7 @@ export default function Navbar() {
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:!bg-purple-50 dark:hover:!bg-gray-800"
                         >
-                            <ShoppingCartIcon fontSize="small" className="text-[#6C5CE7]" />
+                            <ShoppingCartIcon fontSize="small" className="text-[#075C2A]" />
                             <span>My Orders</span>
                         </MenuItem>
 
@@ -646,8 +646,8 @@ export default function Navbar() {
                         to="/products"
                         className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all ${
                             location.pathname.startsWith('/products')
-                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
-                                : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
+                                ? "text-[#075C2A] dark:text-[#3F9E18] font-black scale-105"
+                                : "text-slate-700 dark:text-slate-300 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                         }`}
                     >
                         <ShoppingBag className={`w-6 h-6 transition-all duration-200 ${
@@ -685,14 +685,14 @@ export default function Navbar() {
                     >
                         <div className={`p-3 rounded-full border-4 border-white dark:border-slate-900 shadow-xl transition-all duration-300 ${
                             location.pathname === '/home' || location.pathname === '/'
-                                ? "bg-gradient-to-tr from-[#6C5CE7] to-[#805AD5] text-white scale-110 shadow-[0_4px_20px_rgba(108,92,231,0.5)] ring-2 ring-[#6C5CE7]/30"
-                                : "bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-[#A78BFA] border border-purple-200/80 dark:border-purple-800/80 group-hover:scale-105"
+                                ? "bg-gradient-to-tr from-[#075C2A] to-[#054593] text-white scale-110 shadow-[0_4px_20px_rgba(108,92,231,0.5)] ring-2 ring-[#075C2A]/30"
+                                : "bg-white dark:bg-gray-800 text-[#075C2A] dark:text-[#3F9E18] border border-purple-200/80 dark:border-purple-800/80 group-hover:scale-105"
                         }`}>
                             <Home className="w-6 h-6 stroke-[2.2]" />
                         </div>
                         <span className={`text-[11px] leading-none font-bold mt-1.5 ${
                             location.pathname === '/home' || location.pathname === '/'
-                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black"
+                                ? "text-[#075C2A] dark:text-[#3F9E18] font-black"
                                 : "text-slate-800 dark:text-slate-200"
                         }`}>
                             Home
@@ -704,8 +704,8 @@ export default function Navbar() {
                         onClick={handleUserCart}
                         className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname === '/cart'
-                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
-                                : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
+                                ? "text-[#075C2A] dark:text-[#3F9E18] font-black scale-105"
+                                : "text-slate-700 dark:text-slate-300 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                         }`}
                     >
                         <div className="relative">
@@ -713,7 +713,7 @@ export default function Navbar() {
                                 location.pathname === '/cart' ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                             }`} />
                             {(cartItems?.length || 0) > 0 && (
-                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#6C5CE7] text-white rounded-full text-[9px] shadow-[0_0_6px_rgba(108,92,231,0.6)]">
+                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#075C2A] text-white rounded-full text-[9px] shadow-[0_0_6px_rgba(108,92,231,0.6)]">
                                     {cartItems?.length}
                                 </span>
                             )}
@@ -726,15 +726,15 @@ export default function Navbar() {
                         onClick={handleProfileClick}
                         className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
-                                ? "text-[#6C5CE7] dark:text-[#A78BFA] font-black scale-105"
-                                : "text-slate-700 dark:text-slate-300 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
+                                ? "text-[#075C2A] dark:text-[#3F9E18] font-black scale-105"
+                                : "text-slate-700 dark:text-slate-300 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                         }`}
                     >
                         {authUser?.photo ? (
                             <Avatar
                                 alt={authUser?.firstName}
                                 src={authUser?.photo}
-                                sx={{ width: 24, height: 24, border: "1.5px solid #6C5CE7" }}
+                                sx={{ width: 24, height: 24, border: "1.5px solid #075C2A" }}
                             />
                         ) : (
                             <User className={`w-6 h-6 transition-all duration-200 ${

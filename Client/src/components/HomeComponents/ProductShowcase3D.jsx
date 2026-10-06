@@ -364,7 +364,7 @@ export default function ProductShowcase3D() {
                             <button
                                 onClick={handlePrev}
                                 title="Previous Item"
-                                className="absolute left-1.5 sm:left-3 top-1/2 -translate-y-1/2 z-30 w-6 h-6 sm:w-9 sm:h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#6C5CE7] hover:scale-110 hover:bg-[#6C5CE7] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
+                                className="absolute left-1.5 sm:left-3 top-1/2 -translate-y-1/2 z-30 w-6 h-6 sm:w-9 sm:h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#075C2A] hover:scale-110 hover:bg-[#075C2A] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
                             >
                                 <ArrowBackIosNewIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
                             </button>
@@ -373,7 +373,7 @@ export default function ProductShowcase3D() {
                             <button
                                 onClick={handleNext}
                                 title="Next Item"
-                                className="absolute right-1.5 sm:right-3 top-1/2 -translate-y-1/2 z-30 w-6 h-6 sm:w-9 sm:h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#6C5CE7] hover:scale-110 hover:bg-[#6C5CE7] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
+                                className="absolute right-1.5 sm:right-3 top-1/2 -translate-y-1/2 z-30 w-6 h-6 sm:w-9 sm:h-9 rounded-full bg-white/90 dark:bg-gray-700/90 shadow-md border border-gray-100 dark:border-gray-600 flex items-center justify-center text-[#075C2A] hover:scale-110 hover:bg-[#075C2A] hover:text-white transition-all cursor-pointer opacity-80 group-hover/card:opacity-100"
                             >
                                 <ArrowForwardIosIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
                             </button>
@@ -400,8 +400,8 @@ export default function ProductShowcase3D() {
 
                             {/* Center Stage 3D Circle & Floating Product Cutout */}
                             <div className="relative w-full flex-1 flex items-center justify-center py-1 sm:py-6">
-                                <div className="w-[85px] h-[85px] sm:w-[250px] sm:h-[250px] rounded-full bg-[#6C5CE7] shadow-md flex items-center justify-center transition-transform duration-500 opacity-95">
-                                    <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#6C5CE7] to-[#8075e5] opacity-80" />
+                                <div className="w-[85px] h-[85px] sm:w-[250px] sm:h-[250px] rounded-full bg-[#075C2A] shadow-md flex items-center justify-center transition-transform duration-500 opacity-95">
+                                    <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#075C2A] to-[#8075e5] opacity-80" />
                                 </div>
 
                                 {/* Central 3D Product Visual with Motion Slide Transitions */}
@@ -461,7 +461,7 @@ export default function ProductShowcase3D() {
                             {/* 2. Share Button */}
                             <button
                                 onClick={handleShare}
-                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-[#718096] flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-xs hover:bg-gray-50 hover:text-[#6C5CE7] hover:scale-[1.02]"
+                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-[#718096] flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-xs hover:bg-gray-50 hover:text-[#075C2A] hover:scale-[1.02]"
                             >
                                 <ShareIcon sx={{ fontSize: { xs: "0.95rem", sm: "1.2rem" } }} />
                                 <span className="text-[10px] sm:text-xs font-bold">Share</span>
@@ -470,7 +470,7 @@ export default function ProductShowcase3D() {
                             {/* 3. Add to Cart Button */}
                             <button
                                 onClick={handlePurchase}
-                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-[0_8px_20px_rgba(108,92,231,0.35)] hover:scale-[1.02] active:scale-95 periodic-glass-shine btn-reflection"
+                                className="py-1.5 sm:py-3 px-1.5 sm:px-3 rounded-xl sm:rounded-2xl bg-[#075C2A] hover:bg-[#054593] text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all duration-300 cursor-pointer shadow-[0_8px_20px_rgba(108,92,231,0.35)] hover:scale-[1.02] active:scale-95 periodic-glass-shine btn-reflection"
                             >
                                 <span className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5">
                                     <AddIcon sx={{ fontSize: { xs: "1rem", sm: "1.3rem" } }} />
@@ -491,12 +491,12 @@ export default function ProductShowcase3D() {
                                 transition={{ duration: 0.18 }}
                                 className="space-y-1.5 sm:space-y-4"
                             >
-                                {/* Heading: Large bold title in Vibrant Purple (#6C5CE7) */}
+                                {/* Heading: Large bold title in Vibrant Purple (#075C2A) */}
                                 <motion.h1
                                     initial={{ opacity: 0, y: 15 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.2, delay: 0, ease: [0.22, 1, 0.36, 1] }}
-                                    className="text-xl sm:text-[40px] lg:text-[44px] font-[900] text-[#6C5CE7] leading-tight tracking-tight"
+                                    className="text-xl sm:text-[40px] lg:text-[44px] font-[900] text-[#075C2A] leading-tight tracking-tight"
                                 >
                                     {currentSlide.title}
                                 </motion.h1>
@@ -518,7 +518,7 @@ export default function ProductShowcase3D() {
                                     transition={{ duration: 0.2, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
                                     className="flex items-center gap-2 sm:gap-4 pt-0.5"
                                 >
-                                    <span className="text-xl sm:text-[32px] font-[900] text-[#6C5CE7] tracking-tight">
+                                    <span className="text-xl sm:text-[32px] font-[900] text-[#075C2A] tracking-tight">
                                         {currentSlide.priceInr}
                                     </span>
                                 </motion.div>
@@ -532,7 +532,7 @@ export default function ProductShowcase3D() {
                                 >
                                     <div className="flex items-center justify-between">
                                         <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#2D3748] dark:text-white flex items-center gap-1.5">
-                                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#6C5CE7]" />
+                                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#075C2A]" />
                                             Nutritional & Health Profile
                                         </h3>
                                         <span className="text-[9px] sm:text-[11px] font-bold text-[#718096] dark:text-gray-400">100% Organic A2 Dairy</span>

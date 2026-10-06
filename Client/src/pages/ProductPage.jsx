@@ -356,11 +356,11 @@ export default function ProductPage() {
                                 {/* WEB DISPLAY: Light Heading Card, Desktop Search Bar & Filter Options, Category Cards Grid */}
                                 <div className="hidden md:flex flex-col space-y-4">
                                     {/* Web Light Heading Banner Card */}
-                                    <div className="relative w-full overflow-hidden bg-gradient-to-r from-purple-50 via-indigo-50/80 to-blue-50 dark:from-slate-800 dark:via-slate-800/90 dark:to-slate-900 px-6 sm:px-8 py-5 flex items-center justify-between gap-4 text-slate-900 dark:text-white m-0 border border-purple-100/90 dark:border-slate-700/80 rounded-2xl shadow-xs flex-shrink-0">
+                                    <div className="relative w-full overflow-hidden bg-[#F5E9D0]/50 dark:bg-slate-800/90 px-6 sm:px-8 py-5 flex items-center justify-between gap-4 text-[#063B22] dark:text-white m-0 border border-[#D5A62A]/40 dark:border-slate-700/80 rounded-2xl shadow-xs flex-shrink-0">
                                         <div className="w-full flex flex-col justify-center items-start text-left space-y-1.5 overflow-hidden">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[11px] font-extrabold uppercase tracking-widest text-purple-700 dark:text-purple-300 bg-purple-100/90 dark:bg-purple-900/40 px-3 py-1 rounded-full border border-purple-200/80 dark:border-purple-800/60 shadow-2xs">
-                                                    🥛 Madhu Dairy Collection
+                                                <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#0756B5] dark:text-emerald-300 bg-[#0756B5]/10 dark:bg-emerald-900/40 px-3 py-1 rounded-full border border-[#0756B5]/20 dark:border-emerald-800/60 shadow-2xs">
+                                                    🥛 Natural Milk Dairy Collection
                                                 </span>
                                             </div>
                                             <AnimatedHeading
@@ -368,10 +368,10 @@ export default function ProductPage() {
                                                 violetText="Products"
                                                 as="h1"
                                                 align="left"
-                                                className="text-xl sm:text-2xl lg:text-3xl font-black leading-tight text-slate-900 dark:text-white justify-start text-left tracking-tight"
-                                                violetClassName="text-purple-600 dark:text-purple-400"
+                                                className="text-xl sm:text-2xl lg:text-3xl font-black leading-tight text-[#063B22] dark:text-white justify-start text-left tracking-tight"
+                                                violetClassName="text-[#0756B5] dark:text-emerald-400"
                                             />
-                                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium max-w-2xl line-clamp-1 text-left">
+                                            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium max-w-2xl line-clamp-1 text-left">
                                                 Explore our complete range of 100% pure A2 milk, ghee, paneer, curd, and daily sweets.
                                             </p>
                                         </div>
@@ -380,7 +380,7 @@ export default function ProductPage() {
                                     {/* Web Search Bar, Category Filter Pills & Sort Options */}
                                     <div className="flex flex-col md:flex-row items-center justify-between gap-3.5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-3.5 rounded-2xl border border-gray-200/90 dark:border-slate-700/80 shadow-xs">
                                         {/* Search Input Bar */}
-                                        <div className="relative flex-1 w-full flex items-center bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 px-3.5 py-2.5 transition-all focus-within:border-purple-500 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-purple-500/20">
+                                        <div className="relative flex-1 w-full flex items-center bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 px-3.5 py-2.5 transition-all focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20">
                                             <SearchIcon sx={{ fontSize: "1.3rem" }} className="text-gray-400 dark:text-gray-400 mr-2.5 shrink-0" />
                                             <input
                                                 type="text"
@@ -407,8 +407,8 @@ export default function ProductPage() {
                                                     onClick={() => setWebCategoryTag(tag)}
                                                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all shrink-0 cursor-pointer ${
                                                         webCategoryTag === tag
-                                                            ? "bg-purple-600 text-white border-purple-600 shadow-xs scale-105"
-                                                            : "bg-gray-100/90 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-purple-50 dark:hover:bg-slate-700 hover:text-purple-600"
+                                                            ? "bg-[#075C2A] text-white border-[#075C2A] shadow-xs scale-105"
+                                                            : "bg-[#F5E9D0]/40 dark:bg-slate-800 text-[#063B22] dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-[#075C2A]/10 dark:hover:bg-slate-700 hover:text-[#075C2A]"
                                                     }`}
                                                 >
                                                     {tag}
@@ -422,7 +422,7 @@ export default function ProductPage() {
                                                 onClick={() => setShowWebSortMenu(!showWebSortMenu)}
                                                 className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-between gap-2 cursor-pointer shadow-xs w-full md:w-auto ${
                                                     webSortOrder !== "default"
-                                                        ? "bg-purple-600 text-white border-purple-600 shadow-md"
+                                                        ? "bg-[#075C2A] text-white border-[#075C2A] shadow-md"
                                                         : "bg-gray-100/90 dark:bg-slate-900 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-800"
                                                 }`}
                                                 title="Filter & Sort Options"
@@ -469,12 +469,12 @@ export default function ProductPage() {
                                                                 }}
                                                                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                                                                     webSortOrder === "default"
-                                                                        ? "bg-purple-50 dark:bg-slate-800 text-purple-600 dark:text-purple-400 font-bold"
+                                                                        ? "bg-[#075C2A]/10 dark:bg-slate-800 text-[#075C2A] dark:text-blue-400 font-bold"
                                                                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800/80"
                                                                 }`}
                                                             >
                                                                 <span>Default Order</span>
-                                                                {webSortOrder === "default" && <span className="w-2 h-2 rounded-full bg-purple-600" />}
+                                                                {webSortOrder === "default" && <span className="w-2 h-2 rounded-full bg-[#075C2A]" />}
                                                             </button>
 
                                                             <button
@@ -484,12 +484,12 @@ export default function ProductPage() {
                                                                 }}
                                                                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                                                                     webSortOrder === "name-asc"
-                                                                        ? "bg-purple-50 dark:bg-slate-800 text-purple-600 dark:text-purple-400 font-bold"
+                                                                        ? "bg-[#075C2A]/10 dark:bg-slate-800 text-[#075C2A] dark:text-blue-400 font-bold"
                                                                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800/80"
                                                                 }`}
                                                             >
                                                                 <span>Name Ascending (A &rarr; Z)</span>
-                                                                {webSortOrder === "name-asc" && <span className="w-2 h-2 rounded-full bg-purple-600" />}
+                                                                {webSortOrder === "name-asc" && <span className="w-2 h-2 rounded-full bg-[#075C2A]" />}
                                                             </button>
 
                                                             <button
@@ -499,12 +499,12 @@ export default function ProductPage() {
                                                                 }}
                                                                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                                                                     webSortOrder === "name-desc"
-                                                                        ? "bg-purple-50 dark:bg-slate-800 text-purple-600 dark:text-purple-400 font-bold"
+                                                                        ? "bg-[#075C2A]/10 dark:bg-slate-800 text-[#075C2A] dark:text-blue-400 font-bold"
                                                                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800/80"
                                                                 }`}
                                                             >
                                                                 <span>Name Descending (Z &rarr; A)</span>
-                                                                {webSortOrder === "name-desc" && <span className="w-2 h-2 rounded-full bg-purple-600" />}
+                                                                {webSortOrder === "name-desc" && <span className="w-2 h-2 rounded-full bg-[#075C2A]" />}
                                                             </button>
                                                         </motion.div>
                                                     </>
@@ -540,8 +540,8 @@ export default function ProductPage() {
                                         {/* Top Navigation Row */}
                                         <div className="flex items-center justify-between px-0.5">
                                             <div className="flex flex-col items-start justify-center">
-                                                <AnimatedHeading blackText="Products" violetText="Collection" as="h1" className="text-base font-black tracking-tight text-gray-900 dark:text-white" />
-                                                <span className="text-[11px] font-bold text-[#6C5CE7] dark:text-purple-400">
+                                                <AnimatedHeading blackText="Products" violetText="Collection" as="h1" className="text-base font-black tracking-tight text-gray-900 dark:text-white" violetClassName="text-[#0756B5] dark:text-emerald-400" />
+                                                <span className="text-[11px] font-bold text-[#0756B5] dark:text-emerald-400">
                                                     {filteredMobileCategoryCards.length} Categories Available
                                                 </span>
                                             </div>
@@ -549,11 +549,11 @@ export default function ProductPage() {
                                             <Link
                                                 to="/cart"
                                                 title="View Cart"
-                                                className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] hover:bg-gray-100/80 dark:hover:bg-gray-800/80 active:scale-95 transition-all flex items-center justify-center"
+                                                className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-blue-400 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 active:scale-95 transition-all flex items-center justify-center"
                                             >
                                                 <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} />
                                                 {cartItems?.length > 0 && (
-                                                    <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
+                                                    <span className="absolute -top-0.5 -right-0.5 bg-[#075C2A] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
                                                         {cartItems.length}
                                                     </span>
                                                 )}
@@ -562,7 +562,7 @@ export default function ProductPage() {
 
                                         {/* Mobile Search Bar Row (Google Style Pill Search Bar) */}
                                         <div className="relative w-full flex items-center gap-2">
-                                            <div className="relative flex-1 flex items-center bg-white dark:bg-slate-800 rounded-full border border-gray-200/90 dark:border-slate-700/80 px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-md focus-within:shadow-md focus-within:border-[#6C5CE7] dark:focus-within:border-purple-400 transition-all duration-200">
+                                            <div className="relative flex-1 flex items-center bg-white dark:bg-slate-800 rounded-full border border-gray-200/90 dark:border-slate-700/80 px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-md focus-within:shadow-md focus-within:border-[#075C2A] dark:focus-within:border-blue-400 transition-all duration-200">
                                                 <SearchIcon sx={{ fontSize: "1.25rem" }} className="text-gray-400 dark:text-gray-400 mr-2 shrink-0" />
                                                 <input
                                                     type="text"
@@ -587,7 +587,7 @@ export default function ProductPage() {
                                                 onClick={() => setShowMobileFilterMenu(true)}
                                                 className={`p-2.5 rounded-full border transition-all flex items-center justify-center shrink-0 shadow-sm ${
                                                     showMobileFilterMenu || mobileSortOrder !== "default" || mobileCategoryTag !== "All"
-                                                        ? "bg-[#6C5CE7] text-white border-[#6C5CE7] shadow-md scale-105"
+                                                        ? "bg-[#075C2A] text-white border-[#075C2A] shadow-md scale-105"
                                                         : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200/90 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700"
                                                 }`}
                                                 title="Filter and Sort"
@@ -623,7 +623,7 @@ export default function ProductPage() {
                                                         <div className="w-12 h-1.5 bg-gray-300 dark:bg-slate-700 rounded-full mb-2" />
                                                         <div className="w-full px-5 flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
-                                                                <FilterListIcon className="text-[#6C5CE7] dark:text-purple-400" sx={{ fontSize: "1.2rem" }} />
+                                                                <FilterListIcon className="text-[#0756B5] dark:text-emerald-400" sx={{ fontSize: "1.2rem" }} />
                                                                 <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
                                                                     Filter & Sort Products
                                                                 </h3>
@@ -651,7 +651,7 @@ export default function ProductPage() {
                                                                         onClick={() => setMobileCategoryTag(tag)}
                                                                         className={`px-3 py-1.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
                                                                             mobileCategoryTag === tag
-                                                                                ? "bg-[#6C5CE7] text-white border-[#6C5CE7] shadow-sm scale-105"
+                                                                                ? "bg-[#075C2A] text-white border-[#075C2A] shadow-sm scale-105"
                                                                                 : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700"
                                                                         }`}
                                                                     >
@@ -671,7 +671,7 @@ export default function ProductPage() {
                                                                     onClick={() => setMobileSortOrder("default")}
                                                                     className={`px-3 py-2.5 rounded-xl text-xs font-black border text-center transition-all cursor-pointer ${
                                                                         mobileSortOrder === "default"
-                                                                            ? "bg-[#6C5CE7]/15 text-[#6C5CE7] dark:text-purple-400 border-[#6C5CE7]"
+                                                                            ? "bg-[#075C2A]/15 text-[#075C2A] dark:text-blue-400 border-[#075C2A]"
                                                                             : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-700"
                                                                     }`}
                                                                 >
@@ -681,7 +681,7 @@ export default function ProductPage() {
                                                                     onClick={() => setMobileSortOrder("name-asc")}
                                                                     className={`px-3 py-2.5 rounded-xl text-xs font-black border text-center transition-all cursor-pointer ${
                                                                         mobileSortOrder === "name-asc"
-                                                                            ? "bg-[#6C5CE7]/15 text-[#6C5CE7] dark:text-purple-400 border-[#6C5CE7]"
+                                                                            ? "bg-[#075C2A]/15 text-[#075C2A] dark:text-blue-400 border-[#075C2A]"
                                                                             : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-700"
                                                                     }`}
                                                                 >
@@ -691,7 +691,7 @@ export default function ProductPage() {
                                                                     onClick={() => setMobileSortOrder("name-desc")}
                                                                     className={`px-3 py-2.5 rounded-xl text-xs font-black border text-center transition-all cursor-pointer ${
                                                                         mobileSortOrder === "name-desc"
-                                                                            ? "bg-[#6C5CE7]/15 text-[#6C5CE7] dark:text-purple-400 border-[#6C5CE7]"
+                                                                            ? "bg-[#075C2A]/15 text-[#075C2A] dark:text-blue-400 border-[#075C2A]"
                                                                             : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-700"
                                                                     }`}
                                                                 >
@@ -715,7 +715,7 @@ export default function ProductPage() {
                                                         </button>
                                                         <button
                                                             onClick={() => setShowMobileFilterMenu(false)}
-                                                            className="flex-1 bg-[#6C5CE7] hover:bg-[#5b4bc4] text-white text-xs font-black py-3 rounded-2xl shadow-lg transition-all text-center cursor-pointer"
+                                                            className="flex-1 bg-[#075C2A] hover:bg-[#054593] text-white text-xs font-black py-3 rounded-2xl shadow-lg transition-all text-center cursor-pointer"
                                                         >
                                                             Apply Filters ({filteredMobileCategoryCards.length})
                                                         </button>

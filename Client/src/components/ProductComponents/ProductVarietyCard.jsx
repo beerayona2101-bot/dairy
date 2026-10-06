@@ -216,9 +216,9 @@ export default function ProductVarietyCard(props) {
             <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700/60 p-0 m-0 border-0 rounded-none transition-colors duration-300">
                 {(!finalImage || finalImage === "null") ? (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-0 m-0 border-0">
-                        <EmojiFoodBeverageIcon className="text-[#6C5CE7] text-2xl sm:text-4xl" />
+                        <EmojiFoodBeverageIcon className="text-[#075C2A] text-2xl sm:text-4xl" />
                         <Link to={`/product-details/${slugify(name)}`}>
-                            <span className="text-gray-500 dark:text-gray-300 text-[11px] sm:text-xs font-medium hover:text-[#6C5CE7]">
+                            <span className="text-gray-500 dark:text-gray-300 text-[11px] sm:text-xs font-medium hover:text-[#075C2A]">
                                 {name}
                             </span>
                         </Link>
@@ -278,7 +278,7 @@ export default function ProductVarietyCard(props) {
                 <div>
                     {/* Category Badge: Upper-case bold category pill text */}
                     <div className="mb-1">
-                        <span className="inline-block text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#6C5CE7] bg-[#6C5CE7]/10 dark:bg-[#6C5CE7]/20 px-2 py-0.5 rounded-full">
+                        <span className="inline-block text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#0756B5] dark:text-[#35A8E8] bg-[#0756B5]/10 dark:bg-[#0756B5]/20 px-2 py-0.5 rounded-full border border-[#0756B5]/20">
                             {type && type !== "Unknown" ? type : "ORGANIC DAIRY"}
                         </span>
                     </div>
@@ -287,13 +287,13 @@ export default function ProductVarietyCard(props) {
                     <div className="flex items-center justify-between gap-1 mb-1">
                         <Link
                             to={`/product-details/${slugify(name)}`}
-                            className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white hover:text-[#6C5CE7] line-clamp-1 transition-colors leading-tight"
+                            className="text-sm sm:text-base font-extrabold text-[#063B22] dark:text-white hover:text-[#0756B5] dark:hover:text-[#35A8E8] line-clamp-1 transition-colors leading-tight"
                         >
                             {name}
                         </Link>
 
-                        <div className="flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-[10px] sm:text-xs font-extrabold px-1.5 py-0.5 rounded-full shrink-0">
-                            <StarIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} className="text-amber-400" />
+                        <div className="flex items-center gap-0.5 bg-[#D5A62A]/15 dark:bg-[#D5A62A]/25 text-[#854D0E] dark:text-[#FDE047] text-[10px] sm:text-xs font-extrabold px-1.5 py-0.5 rounded-full shrink-0 border border-[#D5A62A]/30">
+                            <StarIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} className="text-[#D5A62A]" />
                             <span>{rating || "4.9"}</span>
                         </div>
                     </div>
@@ -301,11 +301,11 @@ export default function ProductVarietyCard(props) {
 
                 <div>
                     {/* Stock Info */}
-                    <div className="flex items-center text-xs mb-1.5 text-slate-700 dark:text-slate-300 font-semibold">
+                    <div className="flex items-center text-xs mb-1.5 text-[#063B22]/80 dark:text-slate-300 font-semibold">
                         {stock === 0 ? (
                             <span className="text-red-500 font-extrabold">Out of Stock</span>
                         ) : (
-                            <span>Available: <strong className="text-slate-900 dark:text-white font-extrabold">{stock} {quantityUnit}</strong></span>
+                            <span>Available: <strong className="text-[#063B22] dark:text-white font-extrabold">{stock} {quantityUnit}</strong></span>
                         )}
                     </div>
 
@@ -314,7 +314,7 @@ export default function ProductVarietyCard(props) {
                         <div className="flex flex-col min-w-0">
                             {discountPercent > 0 ? (
                                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-1">
-                                    <span className="text-xs sm:text-base font-black text-[#6C5CE7] leading-tight truncate">
+                                    <span className="text-xs sm:text-base font-black text-[#075C2A] dark:text-[#3F9E18] leading-tight truncate">
                                         &#8377;{formatNumberWithCommas(discountedPrice)}
                                     </span>
                                     <span className="text-[9px] sm:text-xs text-slate-400 line-through font-semibold leading-tight truncate">
@@ -322,7 +322,7 @@ export default function ProductVarietyCard(props) {
                                     </span>
                                 </div>
                             ) : (
-                                <span className="text-xs sm:text-base font-black text-slate-900 dark:text-white leading-tight truncate">
+                                <span className="text-xs sm:text-base font-black text-[#075C2A] dark:text-[#3F9E18] leading-tight truncate">
                                     &#8377;{formatNumberWithCommas(priceNumber)}
                                 </span>
                             )}
@@ -332,7 +332,7 @@ export default function ProductVarietyCard(props) {
                             <button
                                 onClick={handleBuyNow}
                                 disabled={stock <= 0}
-                                className="flex items-center justify-center gap-0.5 sm:gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 active:scale-95 text-white text-[10px] sm:text-xs font-black shadow-2xs hover:shadow-xs transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
+                                className="flex items-center justify-center gap-0.5 sm:gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-gradient-to-r from-[#075C2A] to-[#063B22] hover:brightness-110 active:scale-95 text-white text-[10px] sm:text-xs font-black shadow-2xs hover:shadow-xs transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
                                 title="Buy Now - Direct Checkout"
                             >
                                 <BoltIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
@@ -356,7 +356,7 @@ export default function ProductVarietyCard(props) {
                                         <button
                                             onClick={handleIncrementCart}
                                             disabled={inCartQty >= stock}
-                                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center bg-[#6C5CE7] text-white font-bold shadow-xs hover:scale-105 disabled:opacity-50 cursor-pointer transition"
+                                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center bg-[#0756B5] text-white font-bold shadow-xs hover:scale-105 disabled:opacity-50 cursor-pointer transition"
                                         >
                                             <AddIcon sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" } }} />
                                         </button>
@@ -366,7 +366,7 @@ export default function ProductVarietyCard(props) {
                                 <button
                                     onClick={handleAddInitialToCart}
                                     disabled={stock <= 0}
-                                    className="flex items-center justify-center gap-0.5 sm:gap-1 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#4C1D95] hover:from-[#5b21b6] hover:to-[#3b0764] text-white text-[10px] sm:text-xs font-black shadow-xs hover:shadow-md hover:scale-105 transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
+                                    className="flex items-center justify-center gap-0.5 sm:gap-1 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#0756B5] to-[#054593] hover:from-[#054593] hover:to-[#033470] text-white text-[10px] sm:text-xs font-black shadow-xs hover:shadow-md hover:scale-105 transition-all cursor-pointer disabled:opacity-50 shrink-0 whitespace-nowrap"
                                 >
                                     <ShoppingCartIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
                                     <span>Add</span>

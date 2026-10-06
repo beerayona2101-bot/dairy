@@ -31,7 +31,7 @@ CustomPieTooltip.propTypes = {
 
 export default function ReportCategoryPie({ categoryData = [] }) {
   // Ensure palette colors for category segments (only purple, violet, and dark slate)
-  const paletteColors = ["#6C5CE7", "#8B5CF6", "#A78BFA", "#4C1D95", "#C4B5FD", "#6D28D9", "#3B0764", "#27272A"];
+  const paletteColors = ["#075C2A", "#3F9E18", "#3F9E18", "#4C1D95", "#C4B5FD", "#6D28D9", "#3B0764", "#27272A"];
   const styledCategoryData = categoryData.map((item, index) => ({
     ...item,
     color: paletteColors[index % paletteColors.length],
@@ -42,14 +42,14 @@ export default function ReportCategoryPie({ categoryData = [] }) {
       <div className="border-b border-gray-100 dark:border-gray-700/60 pb-3 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-extrabold text-gray-900 dark:text-white flex items-center gap-2 tracking-tight">
-            <PieChartIcon className="text-[#6C5CE7] dark:text-purple-300" />
+            <PieChartIcon className="text-[#075C2A] dark:text-purple-300" />
             Product Category Market Share
           </h2>
           <p className="text-xs text-[#64748B] dark:text-gray-400 mt-0.5">
             Circular breakdown of sales distribution across dairy categories
           </p>
         </div>
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
           Live Breakdown
         </span>
       </div>

@@ -117,20 +117,20 @@ export default function UserSignUp() {
         <button
           type="button"
           onClick={handleGoBack}
-          className="pointer-events-auto p-1.5 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
+          className="pointer-events-auto p-1.5 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
           aria-label="Back"
         >
-          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#6C5CE7] dark:text-[#A78BFA]" />
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#075C2A] dark:text-[#3F9E18]" />
           <span className="hidden sm:inline text-xs font-bold">Back</span>
         </button>
 
         <button
           type="button"
           onClick={handleGuestLogin}
-          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
           title="Continue as Guest"
         >
-          <User className="w-3.5 h-3.5 text-[#6C5CE7] dark:text-[#A78BFA]" />
+          <User className="w-3.5 h-3.5 text-[#075C2A] dark:text-[#3F9E18]" />
           <span>Guest</span>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:translate-x-0.5 transition-transform -ml-0.5" />
         </button>
@@ -173,8 +173,8 @@ export default function UserSignUp() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Email Address
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#6C5CE7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition-all shadow-xs">
-                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#6C5CE7] mr-2.5 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
+                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-2.5 shrink-0 transition-colors" />
                 <input
                   type="email"
                   name="email"
@@ -192,8 +192,8 @@ export default function UserSignUp() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Password
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#6C5CE7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#6C5CE7] mr-2.5 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
+                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-2.5 shrink-0 transition-colors" />
                 <input
                   name="password"
                   placeholder="At least 8 chars with a number"
@@ -218,8 +218,8 @@ export default function UserSignUp() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Confirm Password
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#6C5CE7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#6C5CE7] mr-2.5 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
+                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-2.5 shrink-0 transition-colors" />
                 <input
                   name="confirmPassword"
                   placeholder="Re-enter your password"
@@ -241,7 +241,7 @@ export default function UserSignUp() {
 
             {/* Subtle Password Rule Guidance */}
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 pt-0.5">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#6C5CE7]" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#075C2A]" />
               Must be at least 8 characters and contain at least 1 number
             </p>
 
@@ -254,7 +254,7 @@ export default function UserSignUp() {
                   name="agreeTerms"
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="w-3.5 h-3.5 mt-0.5 rounded text-[#6C5CE7] focus:ring-[#6C5CE7] focus:ring-offset-0 border-slate-300 dark:border-slate-600 dark:bg-slate-800 accent-[#6C5CE7] cursor-pointer shrink-0 transition-all"
+                  className="w-3.5 h-3.5 mt-0.5 rounded text-[#075C2A] focus:ring-[#075C2A] focus:ring-offset-0 border-slate-300 dark:border-slate-600 dark:bg-slate-800 accent-[#075C2A] cursor-pointer shrink-0 transition-all"
                   required
                 />
                 <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-snug">
@@ -265,7 +265,7 @@ export default function UserSignUp() {
                       e.preventDefault();
                       setTermsModalTab("terms");
                     }}
-                    className="font-bold text-[#6C5CE7] dark:text-[#A78BFA] hover:underline cursor-pointer"
+                    className="font-bold text-[#075C2A] dark:text-[#3F9E18] hover:underline cursor-pointer"
                   >
                     Terms &amp; Conditions
                   </button>{" "}
@@ -276,7 +276,7 @@ export default function UserSignUp() {
                       e.preventDefault();
                       setTermsModalTab("privacy");
                     }}
-                    className="font-bold text-[#6C5CE7] dark:text-[#A78BFA] hover:underline cursor-pointer"
+                    className="font-bold text-[#075C2A] dark:text-[#3F9E18] hover:underline cursor-pointer"
                   >
                     Privacy Policy
                   </button>
@@ -288,7 +288,7 @@ export default function UserSignUp() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5B4BC4] hover:to-[#4D44DB] text-white font-black text-xs sm:text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
+              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-[#075C2A] to-[#054593] hover:from-[#5B4BC4] hover:to-[#4D44DB] text-white font-black text-xs sm:text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
             >
               {isLoading ? (
                 <BuffaloLoader variant="button" text="Creating account..." />
@@ -302,7 +302,7 @@ export default function UserSignUp() {
         {/* Already have an account Row */}
         <div className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">
           Already have an account?{" "}
-          <Link to="/login" className="font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] hover:text-[#5B54F2] hover:underline ml-1">
+          <Link to="/login" className="font-extrabold text-[#075C2A] dark:text-[#3F9E18] hover:text-[#054593] hover:underline ml-1">
             Sign In
           </Link>
         </div>

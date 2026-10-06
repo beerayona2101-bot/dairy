@@ -39,7 +39,7 @@ export default function LowQuantityStock({ fetchedProducts, loading }) {
     <div className="w-full bg-white dark:bg-gray-500/20 rounded p-3">
       <div className="flex justify-between px-2">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Low Quantity Stocks</h2>
-        <button className="text-[#6C5CE7] dark:text-purple-300 hover:underline text-sm font-bold">See all</button>
+        <button className="text-[#075C2A] dark:text-purple-300 hover:underline text-sm font-bold">See all</button>
       </div>
 
       <div className="space-y-4 mt-5">
@@ -89,7 +89,7 @@ export default function LowQuantityStock({ fetchedProducts, loading }) {
                   setSelectedProduct(product)
                   setOpenUpdateModal(true)
                 }}
-                className="absolute bottom-3 right-3 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 text-xs p-1.5 rounded shadow-md transition"
+                className="absolute bottom-3 right-3 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 text-xs p-1.5 rounded shadow-md transition"
               >
                 <Plus size={16} />
               </button>

@@ -284,7 +284,7 @@ export default function UserDashboard() {
                 className="flex items-center justify-between p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 hover:bg-purple-100/80 dark:hover:bg-purple-900/50 transition border border-purple-100 dark:border-purple-900/40 group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-purple-100 text-[#6C5CE7] dark:bg-purple-900/60 dark:text-purple-300 shrink-0">
+                  <div className="p-2.5 rounded-xl bg-purple-100 text-[#075C2A] dark:bg-purple-900/60 dark:text-purple-300 shrink-0">
                     <MdPayment className="text-xl" />
                   </div>
                   <div>
@@ -292,7 +292,7 @@ export default function UserDashboard() {
                     <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Transaction history & invoices</p>
                   </div>
                 </div>
-                <MdArrowForward className="text-gray-400 group-hover:text-[#6C5CE7] group-hover:translate-x-1 transition-transform" />
+                <MdArrowForward className="text-gray-400 group-hover:text-[#075C2A] group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>

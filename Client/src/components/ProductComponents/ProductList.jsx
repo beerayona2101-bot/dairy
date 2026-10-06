@@ -30,9 +30,9 @@ export default function ProductList() {
     return (
         <div className="flex flex-col h-full overflow-hidden">
             {/* Fixed Sidebar Header */}
-            <div className="h-[42px] pb-3 mb-3 border-b-2 border-[#6C5CE7]/20 dark:border-gray-700 flex justify-between items-center text-gray-800 dark:text-gray-100 flex-shrink-0">
+            <div className="h-[42px] pb-3 mb-3 border-b-2 border-[#075C2A]/20 dark:border-gray-700 flex justify-between items-center text-gray-800 dark:text-gray-100 flex-shrink-0">
                 <h2 className="text-xl font-bold tracking-tight">Our Categories</h2>
-                <CategoryIcon className="text-[#6C5CE7] dark:text-[#A78BFA]" sx={{ fontSize: "1.4rem" }} />
+                <CategoryIcon className="text-[#075C2A] dark:text-[#3F9E18]" sx={{ fontSize: "1.4rem" }} />
             </div>
 
             {/* Scrollable Content inside Sidebar */}
@@ -59,8 +59,8 @@ export default function ProductList() {
                                 onClick={() => navigate("/products")}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-between min-w-0 cursor-pointer ${
                                     !productId
-                                        ? "text-white bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] shadow-md shadow-indigo-500/25 scale-[1.01]"
-                                        : "text-slate-700 dark:text-slate-200 hover:bg-violet-50 dark:hover:bg-violet-950/40 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
+                                        ? "text-white bg-gradient-to-r from-[#075C2A] to-[#054593] shadow-md shadow-indigo-500/25 scale-[1.01]"
+                                        : "text-slate-700 dark:text-slate-200 hover:bg-[#F5E9D0] dark:hover:bg-violet-950/40 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                                 }`}
                             >
                                 <span className="truncate">All Products</span>
@@ -80,8 +80,8 @@ export default function ProductList() {
                                         onClick={() => navigate(`/products/${catSlug}`)}
                                         className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-between min-w-0 cursor-pointer ${
                                             isSelected
-                                                ? "text-white bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] shadow-md shadow-indigo-500/25 scale-[1.01]"
-                                                : "text-slate-700 dark:text-slate-200 hover:bg-violet-50 dark:hover:bg-violet-950/40 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA]"
+                                                ? "text-white bg-gradient-to-r from-[#075C2A] to-[#054593] shadow-md shadow-indigo-500/25 scale-[1.01]"
+                                                : "text-slate-700 dark:text-slate-200 hover:bg-[#F5E9D0] dark:hover:bg-violet-950/40 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                                         }`}
                                     >
                                         <span className="truncate">{category}</span>

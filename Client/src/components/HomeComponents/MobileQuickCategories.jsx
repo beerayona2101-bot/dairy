@@ -38,7 +38,7 @@ export default function MobileQuickCategories() {
             {/* Header */}
             <div className="px-4 mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-bold text-gray-800">Shop by Category</h2>
-                <Link to="/products" className="text-xs text-violet-600 font-semibold">
+                <Link to="/products" className="text-xs text-blue-700 dark:text-blue-400 font-semibold">
                     See All →
                 </Link>
             </div>

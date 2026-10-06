@@ -161,7 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Join Madhu Dairy Family 🥛',
+                        'Join Natural Milk Dairy Family 🥛',
                         style: GoogleFonts.outfit(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,

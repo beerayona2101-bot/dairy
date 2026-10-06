@@ -232,7 +232,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
   const getStatusTabColorClass = (status) => {
     switch (status) {
       case "All":
-        return "bg-[#6C5CE7] text-white shadow-md shadow-purple-500/20 ring-2 ring-purple-400/30";
+        return "bg-[#075C2A] text-white shadow-md shadow-purple-500/20 ring-2 ring-purple-400/30";
       case "Pending":
         return "bg-purple-600 text-white shadow-md shadow-purple-500/20 ring-2 ring-purple-400/30";
       case "Confirmed":
@@ -244,11 +244,11 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
       case "Out for Delivery":
         return "bg-purple-600 text-white shadow-md shadow-purple-500/20 ring-2 ring-purple-400/30";
       case "Delivered":
-        return "bg-[#6C5CE7] text-white shadow-md shadow-purple-600/20 ring-2 ring-purple-400/30";
+        return "bg-[#075C2A] text-white shadow-md shadow-purple-600/20 ring-2 ring-purple-400/30";
       case "Cancelled":
         return "bg-zinc-900 text-white shadow-md shadow-zinc-600/20 ring-2 ring-zinc-700";
       default:
-        return "bg-[#6C5CE7] text-white shadow-md";
+        return "bg-[#075C2A] text-white shadow-md";
     }
   };
 
@@ -279,7 +279,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
   if (loading) {
     content = (
       <div className="flex items-center justify-center py-20 text-gray-600 dark:text-white gap-3">
-        <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-[#6C5CE7]" />
+        <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-[#075C2A]" />
         <span className="text-base font-semibold">Loading orders data...</span>
       </div>
     );
@@ -307,7 +307,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                 setSelectedOrder(order);
                 setOpenDetailsModal(true);
               }}
-              className="bg-white dark:bg-gray-800/90 border border-gray-200/90 dark:border-gray-700/90 text-gray-800 dark:text-white rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-[#6C5CE7] dark:hover:border-purple-400 transition-all cursor-pointer space-y-3"
+              className="bg-white dark:bg-gray-800/90 border border-gray-200/90 dark:border-gray-700/90 text-gray-800 dark:text-white rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-[#075C2A] dark:hover:border-purple-400 transition-all cursor-pointer space-y-3"
             >
               {/* Compact Card Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 dark:border-gray-700/60 pb-3">
@@ -319,7 +319,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                         <Link
                           to={`/admin/customers/${owner._id}/orders-history`}
                           onClick={(e) => e.stopPropagation()}
-                          className="font-bold text-[#0F2742] dark:text-white hover:text-[#6C5CE7] transition text-sm sm:text-base"
+                          className="font-bold text-[#0F2742] dark:text-white hover:text-[#075C2A] transition text-sm sm:text-base"
                         >
                           {highlightMatch(displayName, navbarInput)}
                         </Link>
@@ -328,7 +328,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                           {highlightMatch(displayName, navbarInput)}
                         </span>
                       )}
-                      <span className="text-[11px] font-mono font-black text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/60 dark:text-purple-300 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
+                      <span className="text-[11px] font-mono font-black text-[#075C2A] bg-purple-50 dark:bg-purple-950/60 dark:text-purple-300 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
                         {order?.orderId || `MD-ORD-260907-0001`}
                       </span>
                     </div>
@@ -387,7 +387,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                 <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-gray-200 dark:border-gray-700">
                   <div className="text-left sm:text-right">
                     <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Total Bill</p>
-                    <p className="text-sm font-black text-[#6C5CE7] dark:text-purple-300">
+                    <p className="text-sm font-black text-[#075C2A] dark:text-purple-300">
                       &#8377;{formatNumberWithCommas(totalAmount)}
                     </p>
                   </div>
@@ -399,7 +399,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                       setSelectedOrder(order);
                       setOpenDetailsModal(true);
                     }}
-                    className="px-4 py-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-2 bg-[#075C2A] hover:bg-[#054593] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>Manage & Update Order</span>
                     <ArrowForwardIcon sx={{ fontSize: "1rem" }} />
@@ -418,7 +418,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
       {/* Header bar with Sort filter & Mobile Status Dropdown side-by-side */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-700/60 pb-3">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-          <ReceiptLongOutlinedIcon className="text-[#6C5CE7] dark:text-purple-300" />
+          <ReceiptLongOutlinedIcon className="text-[#075C2A] dark:text-purple-300" />
           Orders Management
         </h2>
 
@@ -443,7 +443,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                     handleClose();
                   }}
                   className={`text-xs hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                    sortOption === filter.value ? "font-bold text-[#6C5CE7] dark:text-purple-300" : ""
+                    sortOption === filter.value ? "font-bold text-[#075C2A] dark:text-purple-300" : ""
                   }`}
                 >
                   {filter.label}
@@ -457,10 +457,10 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
             <button
               type="button"
               onClick={handleStatusMenuClick}
-              className="flex items-center gap-1.5 bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 px-3 py-1.5 rounded-lg text-xs font-bold border border-purple-200 dark:border-purple-800 transition cursor-pointer"
+              className="flex items-center gap-1.5 bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 px-3 py-1.5 rounded-lg text-xs font-bold border border-purple-200 dark:border-purple-800 transition cursor-pointer"
             >
               <span>Status: {statusFilter}</span>
-              <span className="bg-[#6C5CE7] text-white text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">
+              <span className="bg-[#075C2A] text-white text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">
                 {filteredOrders.filter((o) => matchesStatusFilter(o.status, statusFilter)).length}
               </span>
               <span className="text-[10px]">▼</span>
@@ -490,13 +490,13 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                       handleStatusMenuClose();
                     }}
                     className={`flex items-center justify-between text-xs py-2 px-3.5 hover:bg-purple-50 dark:hover:bg-gray-800 ${
-                      isActive ? "font-black text-[#6C5CE7] dark:text-purple-300 bg-purple-50/60 dark:bg-purple-950/40" : "font-medium text-gray-700 dark:text-gray-200"
+                      isActive ? "font-black text-[#075C2A] dark:text-purple-300 bg-purple-50/60 dark:bg-purple-950/40" : "font-medium text-gray-700 dark:text-gray-200"
                     }`}
                   >
                     <span>{st}</span>
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                        isActive ? "bg-[#6C5CE7] text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                        isActive ? "bg-[#075C2A] text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                       }`}
                     >
                       {count}
@@ -576,7 +576,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                       <h3 className="font-extrabold text-xs sm:text-base text-gray-900 dark:text-white truncate">
                         {owner?.firstName} {owner?.lastName}
                       </h3>
-                      <span className="text-[10px] sm:text-xs font-mono font-black text-[#6C5CE7] bg-purple-50 dark:bg-purple-950/60 dark:text-purple-300 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
+                      <span className="text-[10px] sm:text-xs font-mono font-black text-[#075C2A] bg-purple-50 dark:bg-purple-950/60 dark:text-purple-300 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
                         {selectedOrder?.orderId || `MD-ORD-260907-0001`}
                       </span>
                     </div>
@@ -653,7 +653,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                             </td>
                             <td className="py-2 px-2 sm:py-2.5 sm:px-4 text-center font-extrabold">{qty}</td>
                             <td className="py-2 px-3 sm:py-2.5 sm:px-4 text-right whitespace-nowrap">&#8377;{formatNumberWithCommas(price)}</td>
-                            <td className="py-2 px-3 sm:py-2.5 sm:px-4 text-right font-extrabold text-[#6C5CE7] dark:text-purple-300 whitespace-nowrap">
+                            <td className="py-2 px-3 sm:py-2.5 sm:px-4 text-right font-extrabold text-[#075C2A] dark:text-purple-300 whitespace-nowrap">
                               &#8377;{formatNumberWithCommas(qty * price)}
                             </td>
                           </tr>
@@ -674,7 +674,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
 
                   <div className="text-right">
                     <span className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium mr-1.5">Total Amount:</span>
-                    <span className="text-base sm:text-lg font-black text-[#6C5CE7] dark:text-purple-300">
+                    <span className="text-base sm:text-lg font-black text-[#075C2A] dark:text-purple-300">
                       &#8377;{formatNumberWithCommas(totalAmount)}
                     </span>
                   </div>
@@ -684,7 +684,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                 <OrderStatusTracker status={status} />
 
                 {/* Status Update Options / Action Toolbar */}
-                <div className="p-3 sm:p-4 bg-[#6C5CE7]/5 dark:bg-gray-800/80 rounded-2xl border border-purple-100 dark:border-gray-700 space-y-2.5 shadow-xs">
+                <div className="p-3 sm:p-4 bg-[#075C2A]/5 dark:bg-gray-800/80 rounded-2xl border border-purple-100 dark:border-gray-700 space-y-2.5 shadow-xs">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
                       <h4 className="text-[11px] sm:text-xs font-black text-gray-900 dark:text-white uppercase tracking-wider">
@@ -713,7 +713,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                           type="button"
                           onClick={() => handleUpdateOrderStatus(_id, status, "Confirmed", owner?._id)}
                           disabled={isProcessing}
-                          className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
+                          className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold bg-[#075C2A] hover:bg-[#054593] text-white shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                           <CheckCircleIcon sx={{ fontSize: "1rem" }} /> Confirm Order
                         </button>
@@ -788,7 +788,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                           type="button"
                           onClick={() => handleUpdateOrderStatus(_id, status, "Delivered", owner?._id)}
                           disabled={isProcessing}
-                          className="px-4 py-2 rounded-xl text-xs font-extrabold bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
+                          className="px-4 py-2 rounded-xl text-xs font-extrabold bg-[#075C2A] hover:bg-[#054593] text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
                         >
                           <CheckCircleIcon sx={{ fontSize: "1rem" }} /> Mark as Delivered
                         </button>
@@ -800,7 +800,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                         type="button"
                         onClick={() => handleUpdateOrderStatus(_id, status, "Delivered", owner?._id)}
                         disabled={isProcessing}
-                        className="px-4 py-2 rounded-xl text-xs font-extrabold bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
+                        className="px-4 py-2 rounded-xl text-xs font-extrabold bg-[#075C2A] hover:bg-[#054593] text-white shadow-md transition cursor-pointer flex items-center gap-1.5"
                       >
                         <CheckCircleIcon sx={{ fontSize: "1rem" }} /> Mark as Delivered
                       </button>

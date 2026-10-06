@@ -40,7 +40,7 @@ class MadhuDairyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
-        title: 'Madhu Dairy & Daily Needs',
+        title: 'Natural Milk Dairy & Daily Needs',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

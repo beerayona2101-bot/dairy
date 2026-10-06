@@ -35,7 +35,7 @@ export default function FloatingCart() {
             whileTap={{ scale: 0.94 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             onClick={() => navigate("/cart")}
-            className="relative flex items-center justify-center w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] text-white shadow-[0_8px_25px_rgba(108,92,231,0.45)] hover:shadow-[0_12px_32px_rgba(108,92,231,0.65)] border border-white/30 dark:border-white/20 backdrop-blur-md cursor-pointer transition-shadow"
+            className="relative flex items-center justify-center w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-[#075C2A] to-[#0756B5] text-white shadow-[0_8px_25px_rgba(7,86,181,0.45)] hover:shadow-[0_12px_32px_rgba(7,86,181,0.65)] border border-white/30 dark:border-white/20 backdrop-blur-md cursor-pointer transition-shadow"
             title={`View Cart (${totalItemsCount} items)`}
             aria-label={`View Cart (${totalItemsCount} items)`}
           >
@@ -48,7 +48,7 @@ export default function FloatingCart() {
               initial={{ scale: 0.4 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 500, damping: 20 }}
-              className="absolute -top-1 -right-1 bg-[#FF385C] text-white text-[11px] font-black min-w-[21px] h-[21px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md"
+              className="absolute -top-1 -right-1 bg-[#35A8E8] text-white text-[11px] font-black min-w-[21px] h-[21px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md"
             >
               {totalItemsCount}
             </motion.span>
@@ -64,7 +64,7 @@ export default function FloatingCart() {
             whileTap={{ scale: 0.94 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             onClick={() => navigate("/cart")}
-            className="relative flex items-center justify-center w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white dark:bg-[#1E293B] text-[#6C5CE7] dark:text-[#A78BFA] border border-slate-200/90 dark:border-slate-700/80 shadow-[0_6px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_10px_28px_rgba(108,92,231,0.35)] cursor-pointer transition-all"
+            className="relative flex items-center justify-center w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white dark:bg-[#1E293B] text-[#075C2A] dark:text-blue-400 border border-slate-200/90 dark:border-slate-700/80 shadow-[0_6px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_10px_28px_rgba(7,86,181,0.35)] cursor-pointer transition-all"
             title="View Cart"
             aria-label="View Cart"
           >

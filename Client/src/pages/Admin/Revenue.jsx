@@ -142,7 +142,7 @@ export default function Revenue() {
           <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-              <TrendingUpIcon className="text-[#6C5CE7] dark:text-purple-300 !text-2xl sm:!text-3xl" />
+              <TrendingUpIcon className="text-[#075C2A] dark:text-purple-300 !text-2xl sm:!text-3xl" />
               Revenue & Financial Analytics
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mt-1 hidden sm:block">
@@ -168,7 +168,7 @@ export default function Revenue() {
 
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
+            className="flex items-center gap-2 bg-[#075C2A] hover:bg-[#054593] text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
           >
             <DownloadIcon className="!text-base" /> Export Financial Summary
           </button>
@@ -186,23 +186,23 @@ export default function Revenue() {
           onClick={() => setActiveMetricTab("revenue")}
           className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "revenue"
-              ? "bg-purple-100/90 dark:bg-purple-900/40 border-[#6C5CE7] ring-2 ring-[#6C5CE7] shadow-md"
+              ? "bg-purple-100/90 dark:bg-purple-900/40 border-[#075C2A] ring-2 ring-[#075C2A] shadow-md"
               : "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40 hover:border-purple-400 hover:shadow-xs"
           }`}
         >
           <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
             <span className="truncate">Total Gross Revenue</span>
-            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-purple-300 shadow-xs shrink-0">
+            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#075C2A] dark:text-purple-300 shadow-xs shrink-0">
               <PaidIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-sm sm:text-3xl font-extrabold text-[#6C5CE7] dark:text-white truncate">
+          <div className="text-sm sm:text-3xl font-extrabold text-[#075C2A] dark:text-white truncate">
             &#8377; {formatNumberWithCommas(totalRevenue)}
           </div>
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">From all customer orders</p>
             {activeMetricTab === "revenue" && (
-              <span className="text-[8px] sm:text-[10px] font-black text-[#6C5CE7] bg-purple-100 dark:bg-purple-950 px-1.5 py-0.5 rounded-full border border-purple-300">
+              <span className="text-[8px] sm:text-[10px] font-black text-[#075C2A] bg-purple-100 dark:bg-purple-950 px-1.5 py-0.5 rounded-full border border-purple-300">
                 ✓ Active View
               </span>
             )}
@@ -314,7 +314,7 @@ export default function Revenue() {
             {activeMetricTab === "delivered" && "Delivered Sales & Completed Orders History"}
             {activeMetricTab === "avgOrder" && "Top Revenue Generating Products & Drivers"}
           </span>
-          <span className="text-xs font-semibold text-[#6C5CE7] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-3 py-1 rounded-full border border-purple-200 dark:border-purple-800">
+          <span className="text-xs font-semibold text-[#075C2A] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-3 py-1 rounded-full border border-purple-200 dark:border-purple-800">
             {activeMetricTab === "revenue" && `${allOrders?.length || 0} Total Orders`}
             {activeMetricTab === "profit" && `${topProducts?.length || 0} Products Analyzed`}
             {activeMetricTab === "delivered" && `${deliveredOrders?.length || 0} Delivered Orders`}
@@ -343,7 +343,7 @@ export default function Revenue() {
 
                   return (
                     <tr key={order._id || idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
-                      <td className="px-4 py-3 font-mono font-bold text-xs text-[#6C5CE7] dark:text-purple-300">
+                      <td className="px-4 py-3 font-mono font-bold text-xs text-[#075C2A] dark:text-purple-300">
                         #{order._id?.slice(-8).toUpperCase()}
                       </td>
                       <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">
@@ -362,7 +362,7 @@ export default function Revenue() {
                           {order.status || "Pending"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right font-extrabold text-[#6C5CE7] dark:text-purple-300">
+                      <td className="px-4 py-3 text-right font-extrabold text-[#075C2A] dark:text-purple-300">
                         &#8377; {formatNumberWithCommas(order.totalAmount || 0)}
                       </td>
                     </tr>
@@ -453,7 +453,7 @@ export default function Revenue() {
 
                     return (
                       <tr key={order._id || idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
-                        <td className="px-4 py-3 font-mono font-bold text-xs text-[#6C5CE7] dark:text-purple-300">
+                        <td className="px-4 py-3 font-mono font-bold text-xs text-[#075C2A] dark:text-purple-300">
                           #{order._id?.slice(-8).toUpperCase()}
                         </td>
                         <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">
@@ -462,7 +462,7 @@ export default function Revenue() {
                         <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">{orderDate}</td>
                         <td className="px-4 py-3 font-medium">{order.paymentMethod || order.paymentMode || "COD"}</td>
                         <td className="px-4 py-3 text-center font-bold">{itemsCount} Items</td>
-                        <td className="px-4 py-3 text-right font-extrabold text-[#6C5CE7] dark:text-purple-300">
+                        <td className="px-4 py-3 text-right font-extrabold text-[#075C2A] dark:text-purple-300">
                           &#8377; {formatNumberWithCommas(order.totalAmount || 0)}
                         </td>
                       </tr>
@@ -522,7 +522,7 @@ export default function Revenue() {
                             : `${stockVal} Units${stockVal <= threshold ? " (Low Stock)" : ""}`}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right font-bold text-[#6C5CE7] dark:text-purple-300">
+                      <td className="px-4 py-3 text-right font-bold text-[#075C2A] dark:text-purple-300">
                         &#8377; {formatNumberWithCommas(estRevenue)}
                       </td>
                     </tr>

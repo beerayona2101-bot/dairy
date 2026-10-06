@@ -170,7 +170,7 @@ export default function Reports() {
             <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
             <div>
               <h1 className="text-xl sm:text-2xl font-extrabold text-gray-800 dark:text-white flex items-center gap-2">
-                <AssessmentOutlinedIcon className="text-[#6C5CE7] dark:text-purple-300 !text-2xl sm:!text-3xl" />
+                <AssessmentOutlinedIcon className="text-[#075C2A] dark:text-purple-300 !text-2xl sm:!text-3xl" />
                 Analytics & Reports Dashboard
               </h1>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mt-1 hidden sm:block">
@@ -182,7 +182,7 @@ export default function Reports() {
           {/* Export CSV Report Button at Top Right Corner */}
           <button
             onClick={handleExportCSV}
-            className="flex items-center justify-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition cursor-pointer self-start sm:self-center shrink-0"
+            className="flex items-center justify-center gap-2 bg-[#075C2A] hover:bg-[#054593] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition cursor-pointer self-start sm:self-center shrink-0"
           >
             <DownloadIcon className="!text-base" /> Export CSV Report
           </button>
@@ -192,7 +192,7 @@ export default function Reports() {
         <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 dark:border-gray-700/50">
           {/* Time Range Dropdown Select */}
           <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700/60 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600">
-            <CalendarTodayIcon className="!text-sm text-[#6C5CE7] dark:text-purple-300" />
+            <CalendarTodayIcon className="!text-sm text-[#075C2A] dark:text-purple-300" />
             <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Period:</span>
             <select
               value={timeRange}
@@ -217,7 +217,7 @@ export default function Reports() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="px-2 py-1 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#6C5CE7] focus:outline-none"
+                  className="px-2 py-1 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#075C2A] focus:outline-none"
                 />
               </div>
 
@@ -227,7 +227,7 @@ export default function Reports() {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="px-2 py-1 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#6C5CE7] focus:outline-none"
+                  className="px-2 py-1 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#075C2A] focus:outline-none"
                 />
               </div>
             </div>
@@ -242,15 +242,15 @@ export default function Reports() {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-200">Total Revenue</p>
-              <h3 className="text-2xl font-extrabold text-[#6C5CE7] dark:text-purple-300 mt-1">
+              <h3 className="text-2xl font-extrabold text-[#075C2A] dark:text-purple-300 mt-1">
                 ₹{formatNumberWithCommas(summaryMetrics.revenue)}
               </h3>
             </div>
-            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-800 text-[#6C5CE7] dark:text-purple-300 shadow-xs">
+            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-800 text-[#075C2A] dark:text-purple-300 shadow-xs">
               <AttachMoneyIcon />
             </div>
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#6C5CE7] dark:text-purple-300 pt-2 border-t border-purple-200/60 dark:border-gray-700/50">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#075C2A] dark:text-purple-300 pt-2 border-t border-purple-200/60 dark:border-gray-700/50">
             <TrendingUpIcon sx={{ fontSize: "1rem" }} />
             <span>+{summaryMetrics.revenueGrowth}% vs last period</span>
           </div>

@@ -2,25 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Brand Color Palette
-  static const Color primary = Color(0xFF6C5CE7);
-  static const Color secondary = Color(0xFF1E88E5);
-  static const Color accent = Color(0xFF43A047);
+  // Brand Color Palette (Derived from Natural Milk Dairy Logo)
+  static const Color brandGreen = Color(0xFF075C2A); // 🟢 Deep Forest Green - Primary brand
+  static const Color brandLeaf = Color(0xFF3F9E18);  // 🟩 Fresh Leaf Green - Secondary / highlights
+  static const Color dairyBlue = Color(0xFF0756B5);  // 🔵 Dairy Blue - Buttons / CTAs
+  static const Color skyBlue = Color(0xFF35A8E8);    // 🟦 Sky Blue - Background accents
+  static const Color premiumGold = Color(0xFFD5A62A);// 🟡 Premium Gold - Borders / rating stars
+  static const Color milkWhite = Color(0xFFFFFDF7);  // 🤍 Milk White - Main background
+  static const Color creamBg = Color(0xFFF5E9D0);    // 🥛 Cream - Cards / soft surfaces
+  static const Color darkGreenText = Color(0xFF063B22); // 🌑 Deep Green Black - Text / headings
+
+  static const Color primary = dairyBlue;
+  static const Color secondary = brandGreen;
+  static const Color accent = skyBlue;
   static const Color darkBg = Color(0xFF0F172A);
   static const Color darkCard = Color(0xFF1E293B);
-  static const Color lightBg = Colors.white;
-  static const Color textDark = Color(0xFF0F2742);
-  static const Color textMuted = Color(0xFF64748B);
+  static const Color lightBg = milkWhite;
+  static const Color textDark = darkGreenText;
+  static const Color textMuted = Color(0xFF526B5C);
 
   // Brand Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF6C5CE7), Color(0xFF1E88E5)],
+    colors: [Color(0xFF0756B5), Color(0xFF054593)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient ctaGradient = LinearGradient(
+    colors: [Color(0xFF075C2A), Color(0xFF063B22)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient accentGradient = LinearGradient(
-    colors: [Color(0xFF43A047), Color(0xFF00838F)],
+    colors: [Color(0xFF35A8E8), Color(0xFF0756B5)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -30,17 +45,17 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: Colors.white,
-      cardColor: Colors.white,
+      scaffoldBackgroundColor: milkWhite,
+      cardColor: creamBg,
       primaryColor: primary,
       colorScheme: const ColorScheme.light(
         primary: primary,
         secondary: secondary,
-        surface: Colors.white,
+        surface: creamBg,
       ),
       textTheme: GoogleFonts.outfitTextTheme(),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: milkWhite,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: textDark),
@@ -52,7 +67,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primary,
+          backgroundColor: brandGreen,
           foregroundColor: Colors.white,
           elevation: 2,
           shape: RoundedRectangleBorder(

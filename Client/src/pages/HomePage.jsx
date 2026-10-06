@@ -114,10 +114,10 @@ export default function HomePage() {
                     <section className="pt-2 pb-2">
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <h2 className="text-base sm:text-lg font-black text-violet-700 dark:text-violet-400">Featured Products</h2>
+                                <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400">Featured Products</h2>
                                 <p className="text-[11px] text-gray-500 dark:text-gray-400">Hand-picked farm favourites delivered daily</p>
                             </div>
-                            <Link to="/products" className="text-xs sm:text-sm text-violet-600 dark:text-violet-400 font-bold hover:underline">
+                            <Link to="/products" className="text-xs sm:text-sm text-[#075C2A] dark:text-blue-400 font-bold hover:underline">
                                 View All →
                             </Link>
                         </div>
@@ -138,11 +138,9 @@ export default function HomePage() {
                 {/* ③ OUR PRODUCTS (With Category Filter & Full Cart/Wishlist Buttons) */}
                 <section className="pt-2 pb-2">
                     <div className="mb-4">
-                        <h2 className="text-base sm:text-lg font-black text-violet-700 dark:text-violet-400">Our Products</h2>
+                        <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400">Our Products</h2>
                         <p className="text-[11px] text-gray-500 dark:text-gray-400">Pure, organic & farm-fresh with instant cart access</p>
                     </div>
-
-
 
                     {/* Product Cards Grid */}
                     {filteredProducts.length === 0 ? (
@@ -165,14 +163,14 @@ export default function HomePage() {
                         {visibleCount < filteredProducts.length ? (
                             <button
                                 onClick={() => setVisibleCount((p) => p + 8)}
-                                className="bg-violet-600 hover:bg-violet-700 text-white text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105"
+                                className="bg-[#075C2A] hover:bg-[#054593] text-white text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105"
                             >
                                 Load More Products ({filteredProducts.length - visibleCount} more)
                             </button>
                         ) : null}
                         <Link
                             to="/products"
-                            className="border border-violet-600 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/30 text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full transition-all hover:scale-105"
+                            className="border border-[#075C2A] text-[#075C2A] dark:text-blue-400 hover:bg-[#075C2A]/10 text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full transition-all hover:scale-105"
                         >
                             Explore All in Catalog →
                         </Link>
@@ -183,10 +181,10 @@ export default function HomePage() {
                 <section className="pt-2 pb-2">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <h2 className="text-base sm:text-lg font-black text-violet-700 dark:text-violet-400">Explore Goodness</h2>
+                            <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400">Explore Goodness</h2>
                             <p className="text-[11px] text-gray-500 dark:text-gray-400">Browse by dairy family</p>
                         </div>
-                        <Link to="/products" className="text-xs sm:text-sm text-violet-600 dark:text-violet-400 font-bold hover:underline">
+                        <Link to="/products" className="text-xs sm:text-sm text-[#075C2A] dark:text-blue-400 font-bold hover:underline">
                             View All →
                         </Link>
                     </div>
@@ -195,9 +193,9 @@ export default function HomePage() {
                             <Link
                                 key={`cat-grid-${index}`}
                                 to={`/products/${slugify(cat?.title || cat?.name || "")}`}
-                                className="block rounded-xl overflow-hidden border border-violet-100 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-violet-300 dark:hover:border-violet-700 hover:shadow-[0_4px_20px_rgba(108,92,231,0.18)] transition-all duration-200 group"
+                                className="block rounded-xl overflow-hidden border border-[#D5A62A]/30 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-[#0756B5] dark:hover:border-emerald-500 hover:shadow-[0_4px_20px_rgba(7,92,42,0.18)] transition-all duration-200 group"
                             >
-                                <div className="relative h-40 sm:h-48 bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+                                <div className="relative h-40 sm:h-48 bg-gradient-to-br from-[#F5E9D0]/50 via-emerald-50/30 to-[#FFFDF7] dark:from-slate-800 dark:to-slate-900 overflow-hidden">
                                     <img
                                         src={cat.image}
                                         alt={cat?.title || cat?.name}
@@ -219,7 +217,7 @@ export default function HomePage() {
 
                 {/* ⑤ FAQ */}
                 <section className="pt-2 pb-4">
-                    <h2 className="text-base sm:text-lg font-black text-violet-700 dark:text-violet-400 mb-1">Frequently Asked Questions</h2>
+                    <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400 mb-1">Frequently Asked Questions</h2>
                     <p className="text-xs text-gray-400 mb-4">Everything you need to know about our farm-fresh products.</p>
                     <div className="bg-white dark:bg-slate-800/80 rounded-2xl p-4 sm:p-6 border border-gray-100 dark:border-slate-800 shadow-xs">
                         {displayFaqs.slice(0, 8).map((faq, i) => (

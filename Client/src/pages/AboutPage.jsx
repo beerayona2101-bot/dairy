@@ -30,7 +30,7 @@ export default function AboutPage() {
     stats: [
       { value: "100%", label: "Pure & Fresh Milk", icon: "🥛", color: "#477A50" },
       { value: "7 AM", label: "Doorstep Delivery", icon: "🚚", color: "#00ACC1" },
-      { value: "100+", label: "Quality Tests", icon: "🔬", color: "#6C5CE7" },
+      { value: "100+", label: "Quality Tests", icon: "🔬", color: "#075C2A" },
       { value: "50,000+", label: "Happy Families", icon: "❤️", color: "#FF7675" },
     ],
   };

@@ -43,7 +43,7 @@ export default function DairyProductsCarousel({ half }) {
                         className="mx-3 sm:mx-5 text-center group/item py-2 shrink-0"
                     >
                         {/* Pristine Circular Category Orb Container */}
-                        <div className="h-24 w-24 sm:h-32 sm:w-32 mx-auto rounded-full overflow-hidden relative shadow-md hover:shadow-xl hover:shadow-[#6C5CE7]/30 group-hover/item:scale-105 transition-all duration-300 border-2 sm:border-3 border-white dark:border-gray-700/90 ring-1 ring-black/5 dark:ring-white/10 bg-gray-100 dark:bg-gray-800">
+                        <div className="h-24 w-24 sm:h-32 sm:w-32 mx-auto rounded-full overflow-hidden relative shadow-md hover:shadow-xl hover:shadow-[#075C2A]/30 group-hover/item:scale-105 transition-all duration-300 border-2 sm:border-3 border-white dark:border-gray-700/90 ring-1 ring-black/5 dark:ring-white/10 bg-gray-100 dark:bg-gray-800">
                             {/* 4K Vivid Image with High Clarity & Contrast */}
                             <img
                                 src={imgUrl}

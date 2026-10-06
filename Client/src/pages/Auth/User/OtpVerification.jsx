@@ -244,7 +244,7 @@ export default function OtpVerification() {
               type="button"
               disabled={loading}
               onClick={handleVerify}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#5B54F2] to-[#1E88E5] hover:from-[#4B44E2] hover:to-[#1565C0] text-white font-black text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#054593] to-[#1E88E5] hover:from-[#4B44E2] hover:to-[#1565C0] text-white font-black text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
             >
               {loading ? (
                 <BuffaloLoader variant="button" text="Verifying code..." />

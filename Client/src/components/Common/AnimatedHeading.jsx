@@ -14,8 +14,8 @@ export default function AnimatedHeading({
   suffixText = "",
   as = "h2",
   align = "center",
-  className = "text-3xl sm:text-4xl lg:text-5xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight",
-  violetClassName = "text-[#6C5CE7] dark:text-[#A29BFE]",
+  className = "text-3xl sm:text-4xl lg:text-5xl font-black text-[#063B22] dark:text-white tracking-tight leading-tight",
+  violetClassName = "text-[#0756B5] dark:text-emerald-400",
   children,
 }) {
   const Component = motion[as] || motion.h2;
@@ -97,12 +97,12 @@ export default function AnimatedHeading({
 
         const childClass = (typeof child === "object" && child?.props?.className) || "";
         const isViolet =
-          childClass.includes("#6C5CE7") ||
+          childClass.includes("#075C2A") ||
           childClass.includes("purple") ||
           childClass.includes("violet") ||
           childClass.includes("indigo") ||
           childClass.includes("#A29BFE") ||
-          childClass.includes("#805AD5");
+          childClass.includes("#054593");
 
         const variant = isViolet ? rightVariant : leftVariant;
 

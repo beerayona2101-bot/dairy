@@ -98,7 +98,7 @@ export default function NutritionInput({ onChange, value, isAdding }) {
       <button
         type="button"
         onClick={handleAddField}
-        className="w-fit px-4 py-1 text-sm text-white bg-[#6C5CE7] hover:bg-[#5b4cc4] font-bold rounded"
+        className="w-fit px-4 py-1 text-sm text-white bg-[#075C2A] hover:bg-[#054593] font-bold rounded"
       >
         + Add More
       </button>

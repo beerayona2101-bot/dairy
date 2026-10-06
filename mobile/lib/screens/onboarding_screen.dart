@@ -162,7 +162,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Madhu Dairy',
+                              'Natural Milk Dairy',
                               style: GoogleFonts.outfit(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w900,

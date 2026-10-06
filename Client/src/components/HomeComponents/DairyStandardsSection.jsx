@@ -42,7 +42,7 @@ export default function DairyStandardsSection({ image }) {
                     <div className="space-y-6">
                         {/* Tagline */}
                         <div>
-                            <span className="text-[12px] font-extrabold uppercase tracking-widest text-[#0284C7] dark:text-[#6C5CE7]">
+                            <span className="text-[12px] font-extrabold uppercase tracking-widest text-[#0284C7] dark:text-[#075C2A]">
                                 MADHU DAIRY STANDARDS
                             </span>
                             <AnimatedHeading

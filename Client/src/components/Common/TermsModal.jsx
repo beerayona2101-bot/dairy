@@ -51,7 +51,7 @@ export default function TermsModal({ isOpen, onClose, onAccept, initialTab = "te
               onClick={() => setActiveTab("terms")}
               className={`pb-2 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
                 activeTab === "terms"
-                  ? "border-[#6C5CE7] text-[#6C5CE7] dark:text-[#A78BFA] dark:border-[#A78BFA]"
+                  ? "border-[#075C2A] text-[#075C2A] dark:text-[#3F9E18] dark:border-[#3F9E18]"
                   : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               }`}
             >
@@ -62,7 +62,7 @@ export default function TermsModal({ isOpen, onClose, onAccept, initialTab = "te
               onClick={() => setActiveTab("privacy")}
               className={`pb-2 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
                 activeTab === "privacy"
-                  ? "border-[#6C5CE7] text-[#6C5CE7] dark:text-[#A78BFA] dark:border-[#A78BFA]"
+                  ? "border-[#075C2A] text-[#075C2A] dark:text-[#3F9E18] dark:border-[#3F9E18]"
                   : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               }`}
             >
@@ -157,7 +157,7 @@ export default function TermsModal({ isOpen, onClose, onAccept, initialTab = "te
                 if (onAccept) onAccept();
                 onClose();
               }}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5B4BC4] hover:to-[#4D44DB] rounded-xl shadow-md shadow-indigo-500/25 cursor-pointer transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#075C2A] to-[#054593] hover:from-[#5B4BC4] hover:to-[#4D44DB] rounded-xl shadow-md shadow-indigo-500/25 cursor-pointer transition-all active:scale-95"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>I Agree &amp; Accept</span>

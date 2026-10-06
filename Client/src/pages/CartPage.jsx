@@ -115,7 +115,7 @@ export default function CartPage() {
         return (
             <div className="w-full max-w-5xl mx-auto px-4 py-8 sm:py-14 flex flex-col items-center justify-center min-h-[55vh]">
                 <div className="w-full max-w-md px-4 py-8 text-center">
-                    <div className="w-16 h-16 bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-[#A78BFA] rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100 dark:border-purple-900/50 shadow-xs">
+                    <div className="w-16 h-16 bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-[#3F9E18] rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100 dark:border-purple-900/50 shadow-xs">
                         <ShoppingCartIcon sx={{ fontSize: "2rem" }} />
                     </div>
                     <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2">Your cart is empty</h2>
@@ -124,7 +124,7 @@ export default function CartPage() {
                     </p>
                     <Link
                         to="/products"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] hover:from-[#5b4cc4] hover:to-[#6f48c4] text-white text-sm font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#075C2A] to-[#054593] hover:from-[#054593] hover:to-[#6f48c4] text-white text-sm font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
                     >
                         <span>Continue Shopping</span>
                     </Link>
@@ -153,7 +153,7 @@ export default function CartPage() {
                         <button
                             type="button"
                             onClick={() => setOpen(true)}
-                            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-black text-white bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] hover:from-[#5b4cc4] hover:to-[#6f48c4] active:scale-95 rounded-xl shadow-md cursor-pointer transition-all border border-purple-400/30"
+                            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-black text-white bg-gradient-to-r from-[#075C2A] to-[#054593] hover:from-[#054593] hover:to-[#6f48c4] active:scale-95 rounded-xl shadow-md cursor-pointer transition-all border border-purple-400/30"
                         >
                             <MapPin size={13} className="text-purple-100" />
                             <span>{deliveryAddress ? "Change Address" : "Add Address"}</span>
@@ -171,9 +171,9 @@ export default function CartPage() {
                             <div className="space-y-1.5">
                                 <div className="flex items-center justify-between gap-2 mb-1">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs font-black uppercase text-[#6C5CE7] dark:text-[#A78BFA] tracking-wider">DELIVER TO</span>
+                                        <span className="text-xs font-black uppercase text-[#075C2A] dark:text-[#3F9E18] tracking-wider">DELIVER TO</span>
                                         {deliveryAddress?.addressType && (
-                                            <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] dark:bg-[#A78BFA]/20 dark:text-[#A78BFA] font-extrabold border border-[#6C5CE7]/20 dark:border-[#A78BFA]/30 uppercase">
+                                            <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#075C2A]/10 text-[#075C2A] dark:bg-[#3F9E18]/20 dark:text-[#3F9E18] font-extrabold border border-[#075C2A]/20 dark:border-[#3F9E18]/30 uppercase">
                                                 {deliveryAddress.addressType}
                                             </span>
                                         )}
@@ -183,7 +183,7 @@ export default function CartPage() {
                                     <button
                                         type="button"
                                         onClick={() => setOpen(true)}
-                                        className="md:hidden flex items-center gap-1 text-xs font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 px-3 py-1 rounded-xl border border-purple-200/80 dark:border-purple-800/80 active:scale-95 transition-all cursor-pointer shadow-2xs"
+                                        className="md:hidden flex items-center gap-1 text-xs font-extrabold text-[#075C2A] dark:text-[#3F9E18] bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 px-3 py-1 rounded-xl border border-purple-200/80 dark:border-purple-800/80 active:scale-95 transition-all cursor-pointer shadow-2xs"
                                     >
                                         <span>Select Address</span>
                                         <span className="text-sm font-black">&rsaquo;</span>
@@ -199,7 +199,7 @@ export default function CartPage() {
                         ) : (
                             <div className="flex items-center justify-between gap-3 py-1">
                                 <div className="space-y-0.5">
-                                    <span className="text-xs font-black uppercase text-[#6C5CE7] dark:text-[#A78BFA] tracking-wider">DELIVER TO</span>
+                                    <span className="text-xs font-black uppercase text-[#075C2A] dark:text-[#3F9E18] tracking-wider">DELIVER TO</span>
                                     <h2 className="text-sm font-extrabold text-[#2D3748] dark:text-white">
                                         No delivery address selected.
                                     </h2>
@@ -207,7 +207,7 @@ export default function CartPage() {
                                 <button
                                     type="button"
                                     onClick={() => setOpen(true)}
-                                    className="flex items-center gap-1 text-xs font-extrabold text-white bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] px-3.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition-all cursor-pointer shrink-0"
+                                    className="flex items-center gap-1 text-xs font-extrabold text-white bg-gradient-to-r from-[#075C2A] to-[#054593] px-3.5 py-1.5 rounded-xl shadow-sm active:scale-95 transition-all cursor-pointer shrink-0"
                                 >
                                     <span>Select Address</span>
                                     <span className="text-sm font-black">&rsaquo;</span>
@@ -237,7 +237,7 @@ export default function CartPage() {
                         {/* Footer Row: Forgot something? Add More Items */}
                         <div className="py-3 px-4 text-center text-xs text-gray-700 dark:text-gray-300 font-bold">
                             <span>Forgot something? </span>
-                            <Link to="/products" className="text-[#6C5CE7] dark:text-[#A78BFA] hover:underline font-black ml-1">
+                            <Link to="/products" className="text-[#075C2A] dark:text-[#3F9E18] hover:underline font-black ml-1">
                                 Add More Items
                             </Link>
                         </div>
@@ -336,7 +336,7 @@ export default function CartPage() {
                             <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase">FREE</span>
                         </div>
 
-                        <div className="flex justify-between text-base font-black text-[#6C5CE7] dark:text-purple-400 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700">
+                        <div className="flex justify-between text-base font-black text-[#075C2A] dark:text-purple-400 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700">
                             <span>Final Total</span>
                             <span>&#8377;{formatNumberWithCommas(totalAmount)}</span>
                         </div>
@@ -345,7 +345,7 @@ export default function CartPage() {
                     <div className="pt-2">
                         <button
                             onClick={handleProceedCheckout}
-                            className="w-full text-center bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-3 rounded-full font-extrabold text-xs shadow-[0_10px_25px_rgba(108,92,231,0.4)] hover:scale-102 transition cursor-pointer"
+                            className="w-full text-center bg-[#075C2A] hover:bg-[#054593] text-white py-3 rounded-full font-extrabold text-xs shadow-[0_10px_25px_rgba(108,92,231,0.4)] hover:scale-102 transition cursor-pointer"
                         >
                             Proceed to Checkout →
                         </button>
@@ -362,7 +362,7 @@ export default function CartPage() {
             <section className="max-w-5xl mx-auto my-8 px-4 flex justify-center">
                 <Link
                     to="/products"
-                    className="text-center bg-white dark:bg-gray-800 text-[#6C5CE7] border border-[#6C5CE7]/30 py-2.5 px-6 rounded-full font-bold text-xs shadow-sm hover:bg-purple-50 transition"
+                    className="text-center bg-white dark:bg-gray-800 text-[#075C2A] border border-[#075C2A]/30 py-2.5 px-6 rounded-full font-bold text-xs shadow-sm hover:bg-purple-50 transition"
                 >
                     + Add More Products
                 </Link>

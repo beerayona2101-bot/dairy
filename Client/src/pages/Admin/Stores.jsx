@@ -46,7 +46,7 @@ export default function Stores() {
         const gradients = [
             "from-purple-600 to-purple-800 text-white shadow-purple-500/20",
             "from-purple-700 to-zinc-900 text-white shadow-purple-900/20",
-            "from-violet-600 to-purple-900 text-white shadow-violet-500/20",
+            "from-[#075C2A] to-[#063B22] text-white shadow-violet-500/20",
             "from-zinc-800 to-purple-950 text-white shadow-zinc-800/20",
             "from-purple-500 to-violet-700 text-white shadow-purple-500/20",
             "from-zinc-900 to-purple-800 text-white shadow-purple-900/20",
@@ -75,7 +75,7 @@ export default function Stores() {
                             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Click anywhere on a customer card to open their full details page.</p>
                         </div>
                     </div>
-                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60">
                         {filteredStores?.length || 0} Registered Customers
                     </span>
                 </div>
@@ -93,7 +93,7 @@ export default function Stores() {
                                 <div
                                     key={store._id}
                                     onClick={() => navigate(`/admin/customers/${store._id}`)}
-                                    className="p-3.5 sm:p-4 rounded-xl bg-gray-50/80 dark:bg-gray-700/40 border border-gray-200/70 dark:border-gray-700 hover:border-[#6C5CE7] dark:hover:border-purple-400 hover:shadow-md hover:scale-[1.005] transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer group"
+                                    className="p-3.5 sm:p-4 rounded-xl bg-gray-50/80 dark:bg-gray-700/40 border border-gray-200/70 dark:border-gray-700 hover:border-[#075C2A] dark:hover:border-purple-400 hover:shadow-md hover:scale-[1.005] transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer group"
                                     title={`Click to view full details page for ${fullName}`}
                                 >
                                     {/* Left: First Letter Circle Avatar + Name + Email + Mobile */}
@@ -103,7 +103,7 @@ export default function Stores() {
                                         </div>
 
                                         <div className="min-w-0 space-y-0.5">
-                                            <h3 className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-[#6C5CE7] dark:group-hover:text-purple-300 transition truncate max-w-[240px] sm:max-w-xs">
+                                            <h3 className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-[#075C2A] dark:group-hover:text-purple-300 transition truncate max-w-[240px] sm:max-w-xs">
                                                 {fullName}
                                             </h3>
                                             <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-500 dark:text-gray-400">
@@ -118,16 +118,16 @@ export default function Stores() {
 
                                     {/* Right: Status Badges & Open Page Button */}
                                     <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60 dark:border-gray-700">
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#6C5CE7] animate-pulse" />
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#075C2A] animate-pulse" />
                                             Active
                                         </span>
 
-                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
+                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
                                             📦 {orderCount} {orderCount === 1 ? "Order" : "Orders"}
                                         </span>
 
-                                        <span className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-purple-300 group-hover:bg-[#6C5CE7] group-hover:text-white dark:group-hover:bg-[#6C5CE7] dark:group-hover:text-white text-xs font-extrabold transition border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
+                                        <span className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-purple-300 group-hover:bg-[#075C2A] group-hover:text-white dark:group-hover:bg-[#075C2A] dark:group-hover:text-white text-xs font-extrabold transition border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
                                             Full Profile →
                                         </span>
                                     </div>
@@ -137,7 +137,7 @@ export default function Stores() {
                     ) : (
                         <div className="text-center py-12 text-gray-500 dark:text-gray-400 text-sm font-semibold">
                             {navbarInput?.trim() ? (
-                                <>No customers found matching <span className="font-bold text-[#6C5CE7]">"{navbarInput}"</span>.</>
+                                <>No customers found matching <span className="font-bold text-[#075C2A]">"{navbarInput}"</span>.</>
                             ) : (
                                 "No customer accounts registered yet."
                             )}

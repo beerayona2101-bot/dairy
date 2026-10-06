@@ -126,7 +126,7 @@ export const ONBOARDING_SLIDES = [
     badgeIcon: "🧀",
     badgeText: "HANDCRAFTED DAILY",
     metric: "✨ Traditional Bilona",
-    badgeColor: "#8B5CF6", // Purple
+    badgeColor: "#3F9E18", // Purple
     accentLight: "rgba(139, 92, 246, 0.12)",
     accentBorder: "rgba(139, 92, 246, 0.35)",
     title: "Pure Ghee, Paneer & Sweets",

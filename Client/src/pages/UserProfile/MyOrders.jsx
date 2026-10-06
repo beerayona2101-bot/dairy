@@ -603,12 +603,12 @@ export default function MyOrders() {
 
                 <div className="pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2 flex-wrap">
                   <span className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                    <FileText className="w-3.5 h-3.5 text-[#6C5CE7]" /> Tax Invoice Receipt
+                    <FileText className="w-3.5 h-3.5 text-[#075C2A]" /> Tax Invoice Receipt
                   </span>
                   <button
                     type="button"
                     onClick={() => setViewInvoiceOrderId(activeSelectedOrder?._id)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white transition shadow-xs cursor-pointer active:scale-95"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-[#075C2A] hover:bg-[#054593] text-white transition shadow-xs cursor-pointer active:scale-95"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>View Invoice</span>

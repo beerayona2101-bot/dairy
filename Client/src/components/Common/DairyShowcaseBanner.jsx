@@ -51,7 +51,7 @@ export default function DairyShowcaseBanner() {
           blackText="Madhu Dairy"
           violetText="Wide Range of Products"
           className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.2rem] font-black text-[#1a2340] dark:text-white tracking-tight leading-tight justify-center mb-2"
-          violetClassName="bg-gradient-to-r from-[#1E88E5] to-[#6C5CE7] bg-clip-text text-transparent"
+          violetClassName="bg-gradient-to-r from-[#1E88E5] to-[#075C2A] bg-clip-text text-transparent"
         />
 
         {/* SUBTITLE */}
@@ -75,7 +75,7 @@ export default function DairyShowcaseBanner() {
         >
           {FEATURES.map((f) => (
             <div key={f.id} className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-8 h-8 rounded-full border border-[#1E88E5]/30 dark:border-[#6C5CE7]/40 text-[#1E88E5] dark:text-[#A29BFE] bg-blue-50/60 dark:bg-blue-950/20 flex-shrink-0">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full border border-[#1E88E5]/30 dark:border-[#075C2A]/40 text-[#1E88E5] dark:text-[#A29BFE] bg-blue-50/60 dark:bg-blue-950/20 flex-shrink-0">
                 {f.icon}
               </span>
               <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-semibold whitespace-nowrap">
@@ -127,7 +127,7 @@ export default function DairyShowcaseBanner() {
           }}
           whileTap={{ scale: 0.95 }}
           onClick={handleDownloadApp}
-          className="inline-flex items-center gap-3 px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base bg-gradient-to-r from-[#1E88E5] to-[#6C5CE7] hover:from-[#1565C0] hover:to-[#5b4cc4] text-white shadow-[0_8px_22px_rgba(30,136,229,0.38)] transition-all duration-300 cursor-pointer border border-white/20 focus:outline-none focus:ring-4 focus:ring-blue-300/50 select-none periodic-glass-shine btn-reflection"
+          className="inline-flex items-center gap-3 px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base bg-gradient-to-r from-[#1E88E5] to-[#075C2A] hover:from-[#1565C0] hover:to-[#054593] text-white shadow-[0_8px_22px_rgba(30,136,229,0.38)] transition-all duration-300 cursor-pointer border border-white/20 focus:outline-none focus:ring-4 focus:ring-blue-300/50 select-none periodic-glass-shine btn-reflection"
           aria-label="Download the Madhu Dairy App"
         >
           <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.4">

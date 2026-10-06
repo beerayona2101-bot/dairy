@@ -2,38 +2,53 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary-purple: #6C5CE7;
-  --color-primary-purple-dark: #6D28D9;
-  --color-emerald-green: #00B894;
-  --color-salmon-orange: #FF7675;
-  --color-bg-main: #EFF1F5;
+  --color-brand-green: #0756B5;
+  --color-brand-leaf: #35A8E8;
+  --color-dairy-blue: #075C2A;
+  --color-sky-blue: #3F9E18;
+  --color-premium-gold: #D5A62A;
+  --color-milk-white: #FFFDF7;
+  --color-cream-bg: #F5E9D0;
+  --color-dark-green-text: #063B22;
+
+  --color-primary-purple: #0756B5;
+  --color-primary-purple-dark: #063B22;
+  --color-emerald-green: #35A8E8;
+  --color-salmon-orange: #FF385C;
+  --color-bg-main: #FFFDF7;
   --color-card-white: #FFFFFF;
-  --color-text-dark: #2D3748;
-  --color-text-muted: #718096;
+  --color-text-dark: #063B22;
+  --color-text-muted: #526B5C;
   --color-discount-bg: #FEF9C3;
-  --color-discount-border: #FDE047;
+  --color-discount-border: #D5A62A;
   --color-discount-text: #854D0E;
 }
 
 :root {
-  --primary-purple: #6C5CE7;
-  --primary-purple-dark: #6D28D9;
-  --emerald-green: #00B894;
-  --salmon-orange: #FF7675;
-  --bg-main: #EFF1F5;
+  --brand-green: #0756B5;
+  --brand-leaf: #35A8E8;
+  --dairy-blue: #075C2A;
+  --sky-blue: #3F9E18;
+  --premium-gold: #D5A62A;
+  --milk-white: #FFFDF7;
+  --cream-bg: #F5E9D0;
+  --dark-green-text: #063B22;
+
+  --primary-purple: #0756B5;
+  --primary-purple-dark: #063B22;
+  --emerald-green: #35A8E8;
+  --salmon-orange: #FF385C;
+  --bg-main: #FFFDF7;
   --card-white: #FFFFFF;
-  --text-dark: #2D3748;
-  --text-muted: #718096;
-  --discount-bg: #FEF9C3;
-  --discount-border: #FDE047;
-  --discount-text: #854D0E;
+  --text-dark: #063B22;
+  --text-muted: #526B5C;
 
   /* Legacy Fallbacks */
-  --primary-blue: #6C5CE7;
-  --primary-blue-hover: #6D28D9;
-  --deep-navy: #2D3748;
-  --farm-green: #00B894;
-  --farm-green-hover: #008f72;
+  --primary-blue: #075C2A;
+  --primary-blue-hover: #054593;
+  --deep-navy: #063B22;
+  --farm-green: #0756B5;
+  --farm-green-hover: #054820;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -54,8 +69,8 @@ html {
 
 body {
   font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #FFFFFF;
-  color: #1E293B;
+  background-color: #FFFDF7;
+  color: #063B22;
   overflow-x: clip;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;

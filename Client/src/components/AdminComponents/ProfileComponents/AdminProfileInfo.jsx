@@ -260,8 +260,8 @@ export default function AdminProfileInfo() {
   if (canResend) {
     if (otpSendLoading) {
       resendSection = (
-        <div className="flex items-center justify-center text-sm text-[#6C5CE7]">
-          <div className="h-4 w-4 mr-2 border-2 border-[#6C5CE7] border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex items-center justify-center text-sm text-[#075C2A]">
+          <div className="h-4 w-4 mr-2 border-2 border-[#075C2A] border-t-transparent rounded-full animate-spin"></div>
           Sending...
         </div>
       );
@@ -270,7 +270,7 @@ export default function AdminProfileInfo() {
         <button
           onClick={generateAndSendOtp}
           disabled={otpSendLoading}
-          className="text-[#6C5CE7] hover:underline text-sm font-bold"
+          className="text-[#075C2A] hover:underline text-sm font-bold"
         >
           Resend OTP
         </button>
@@ -294,10 +294,10 @@ export default function AdminProfileInfo() {
               <Avatar
                 src={previewImage}
                 alt={formData.name || "Admin"}
-                className="!w-20 !h-20 sm:!w-24 sm:!h-24 border-2 border-[#6C5CE7] shadow-sm"
+                className="!w-20 !h-20 sm:!w-24 sm:!h-24 border-2 border-[#075C2A] shadow-sm"
               />
               {editMode && (
-                <label className="absolute bottom-0 right-0 p-1.5 bg-[#6C5CE7] text-white rounded-full cursor-pointer shadow-md hover:scale-110 transition">
+                <label className="absolute bottom-0 right-0 p-1.5 bg-[#075C2A] text-white rounded-full cursor-pointer shadow-md hover:scale-110 transition">
                   <Pencil size={14} />
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </label>
@@ -310,7 +310,7 @@ export default function AdminProfileInfo() {
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                 @{formData.username || "admin_MADHU"} • {formData.email || "admin@MADHUdairy.com"}
               </p>
-              <span className="inline-block mt-2 px-3 py-0.5 text-[10px] font-extrabold bg-purple-100 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 rounded-full">
+              <span className="inline-block mt-2 px-3 py-0.5 text-[10px] font-extrabold bg-purple-100 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 rounded-full">
                 System Administrator
               </span>
             </div>
@@ -322,7 +322,7 @@ export default function AdminProfileInfo() {
                 <button
                   type="button"
                   onClick={() => setEditMode(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold bg-[#6C5CE7] text-white rounded-xl hover:bg-[#5b4cc4] transition shadow-xs cursor-pointer active:scale-95"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold bg-[#075C2A] text-white rounded-xl hover:bg-[#054593] transition shadow-xs cursor-pointer active:scale-95"
                 >
                   <Pencil size={14} /> Edit Profile
                 </button>
@@ -353,7 +353,7 @@ export default function AdminProfileInfo() {
                   type="button"
                   onClick={handleAdminInfo}
                   disabled={loading}
-                  className="flex items-center gap-1 px-4 py-2 text-xs font-extrabold bg-[#6C5CE7] text-white rounded-xl hover:bg-[#5b4cc4] transition cursor-pointer disabled:opacity-60"
+                  className="flex items-center gap-1 px-4 py-2 text-xs font-extrabold bg-[#075C2A] text-white rounded-xl hover:bg-[#054593] transition cursor-pointer disabled:opacity-60"
                 >
                   <Save size={14} /> {loading ? "Saving..." : "Save Changes"}
                 </button>
@@ -516,7 +516,7 @@ export default function AdminProfileInfo() {
                     onChange={(e) => handleOtpChange(e.target.value, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     disabled={otpSendLoading}
-                    className="w-10 h-10 text-center text-lg border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] dark:bg-gray-700 dark:text-white"
+                    className="w-10 h-10 text-center text-lg border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-[#075C2A] dark:bg-gray-700 dark:text-white"
                   />
                 ))}
               </div>
@@ -525,7 +525,7 @@ export default function AdminProfileInfo() {
                 <button
                   onClick={handleVerifyOtp}
                   disabled={otpSendLoading}
-                  className="bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-2 rounded mb-3 disabled:opacity-60 w-80 font-bold"
+                  className="bg-[#075C2A] hover:bg-[#054593] text-white py-2 rounded mb-3 disabled:opacity-60 w-80 font-bold"
                 >
                   Verify OTP
                 </button>
@@ -581,7 +581,7 @@ export default function AdminProfileInfo() {
               <button
                 onClick={handleSubmitNewPassword}
                 disabled={updatePasswordLoading}
-                className="w-full bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-2 rounded mt-4 disabled:cursor-not-allowed font-bold"
+                className="w-full bg-[#075C2A] hover:bg-[#054593] text-white py-2 rounded mt-4 disabled:cursor-not-allowed font-bold"
               >
                 Update Password
               </button>

@@ -1,7 +1,7 @@
 export const fallbackProducts = [
   {
     "_id": "6aad10510f632ce03c9a8e2a",
-    "name": "MADHU Cow Milk (Full Cream)",
+    "name": "Natural Cow Milk (Full Cream)",
     "category": "Milk",
     "description": "Pure, unadulterated fresh cow milk rich in calcium, protein, and natural vitamins.",
     "image": [
@@ -26,7 +26,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e2b",
-    "name": "MADHU Buffalo Toned Milk",
+    "name": "Natural Buffalo Toned Milk",
     "category": "Milk",
     "description": "Rich, thick, and creamy buffalo milk—ideal for tea, coffee, curd, and sweets.",
     "image": [
@@ -50,7 +50,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e2c",
-    "name": "MADHU Toned Cow Milk",
+    "name": "Natural Toned Cow Milk",
     "category": "Milk",
     "description": "Low-fat pasteurized cow milk packed with calcium for daily balanced fitness.",
     "image": [
@@ -74,7 +74,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e2d",
-    "name": "MADHU Fresh Malai Paneer",
+    "name": "Natural Fresh Malai Paneer",
     "category": "Paneer",
     "description": "Soft, velvety fresh cottage cheese made using traditional slow curdling.",
     "image": [
@@ -98,7 +98,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e2e",
-    "name": "MADHU Organic Desi Cow Ghee",
+    "name": "Natural Organic Desi Cow Ghee",
     "category": "Ghee",
     "description": "Authentic bilona method pure cow ghee with rich granular aroma and texture.",
     "image": [
@@ -122,7 +122,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e2f",
-    "name": "MADHU Buffalo Desi Ghee",
+    "name": "Natural Buffalo Desi Ghee",
     "category": "Ghee",
     "description": "Pure white buffalo ghee cooked traditionally for high smoke point cooking.",
     "image": [
@@ -146,7 +146,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e30",
-    "name": "MADHU Natural Thick Curd (Dahi)",
+    "name": "Natural Natural Thick Curd (Dahi)",
     "category": "Curd",
     "description": "Creamy set curd naturally fermented with active probiotics for digestion.",
     "image": [
@@ -170,7 +170,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e31",
-    "name": "MADHU Cooking Butter",
+    "name": "Natural Cooking Butter",
     "category": "Butter",
     "description": "Unsalted pure cream butter perfect for baking, parathas, and gourmet dishes.",
     "image": [
@@ -194,7 +194,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e32",
-    "name": "MADHU Sweet Malai Lassi",
+    "name": "Natural Sweet Malai Lassi",
     "category": "Lassi",
     "description": "Chilled, thick sweet lassi blended with cardamom and topped with fresh malai.",
     "image": [
@@ -218,7 +218,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e33",
-    "name": "MADHU Spiced Masala Chaas",
+    "name": "Natural Spiced Masala Chaas",
     "category": "Chaas",
     "description": "Refreshing digestive buttermilk with roasted cumin, rock salt, coriander, and mint.",
     "image": [
@@ -242,7 +242,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e34",
-    "name": "MADHU Kesar Shrikhand",
+    "name": "Natural Kesar Shrikhand",
     "category": "Shrikhand",
     "description": "Traditional strained yoghurt sweet infused with pure saffron and green cardamom.",
     "image": [
@@ -266,7 +266,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e35",
-    "name": "MADHU Kesar Basundi",
+    "name": "Natural Kesar Basundi",
     "category": "Basundi",
     "description": "Rich condensed sweet milk cooked with saffron strands, almonds, and pistachios.",
     "image": [
@@ -290,7 +290,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e36",
-    "name": "MADHU Khoya (Mawa)",
+    "name": "Natural Khoya (Mawa)",
     "category": "Khoya",
     "description": "Pure evaporated solid milk dough for authentic sweet making at home.",
     "image": [
@@ -314,7 +314,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e37",
-    "name": "MADHU Mozzarella Cheese",
+    "name": "Natural Mozzarella Cheese",
     "category": "Cheese",
     "description": "Stretchable, high-melt fresh mozzarella cheese block for pizzas and pasta.",
     "image": [
@@ -338,7 +338,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e38",
-    "name": "MADHU Elaichi Shrikhand",
+    "name": "Natural Elaichi Shrikhand",
     "category": "Shrikhand",
     "description": "Creamy strained yogurt dessert flavored with freshly ground aromatic cardamom.",
     "image": [
@@ -362,7 +362,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e39",
-    "name": "MADHU Mango Malai Lassi",
+    "name": "Natural Mango Malai Lassi",
     "category": "Lassi",
     "description": "Rich blended yogurt drink infused with Alphonso mango pulp and cream.",
     "image": [
@@ -386,7 +386,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e3a",
-    "name": "MADHU Badam Flavored Milk",
+    "name": "Natural Badam Flavored Milk",
     "category": "Flavored Milk",
     "description": "Sterilized almond milk beverage with saffron bits and real crushed almonds.",
     "image": [
@@ -410,7 +410,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e3b",
-    "name": "MADHU Chocolate Flavored Milk",
+    "name": "Natural Chocolate Flavored Milk",
     "category": "Flavored Milk",
     "description": "Delicious cocoa flavored milk treat beloved by kids and adults alike.",
     "image": [
@@ -434,7 +434,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e3c",
-    "name": "MADHU Creamy Malai Rabri",
+    "name": "Natural Creamy Malai Rabri",
     "category": "Dairy Sweets",
     "description": "Rich thickened sweetened milk layered with malai, pistachios, and saffron.",
     "image": [
@@ -458,7 +458,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e3d",
-    "name": "MADHU Milk Powder (Premium)",
+    "name": "Natural Milk Powder (Premium)",
     "category": "Milk Powder",
     "description": "Spray dried instant whole milk powder for tea, coffee, and bakery recipes.",
     "image": [
@@ -482,7 +482,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e3e",
-    "name": "MADHU Mishti Doi",
+    "name": "Natural Mishti Doi",
     "category": "Curd",
     "description": "Traditional Bengali caramel sweetened thick fermented yogurt dessert.",
     "image": [
@@ -506,7 +506,7 @@ export const fallbackProducts = [
   },
   {
     "_id": "6aad10510f632ce03c9a8e3f",
-    "name": "MADHU Fresh Cream (Heavy)",
+    "name": "Natural Fresh Cream (Heavy)",
     "category": "Cream",
     "description": "Rich whipping cream with 40% fat content for desserts, soups, and gravies.",
     "image": [

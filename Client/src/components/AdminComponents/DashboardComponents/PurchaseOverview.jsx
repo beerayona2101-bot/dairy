@@ -33,7 +33,7 @@ export default function OrdersOverview({ totalOrdersRecieved, totalPendingOrders
     {
       name: "Total Orders Recieved",
       value: totalOrdersRecieved,
-      icon: <ShoppingCartIcon className="text-[#6C5CE7] dark:text-purple-300" />,
+      icon: <ShoppingCartIcon className="text-[#075C2A] dark:text-purple-300" />,
       bg: "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
       route: "/admin/orders",
     },

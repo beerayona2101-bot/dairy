@@ -352,7 +352,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                             ),
                             const SizedBox(height: 18),
                             Text(
-                              'Madhu Dairy',
+                              'Natural Milk Dairy',
                               style: GoogleFonts.outfit(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w800,

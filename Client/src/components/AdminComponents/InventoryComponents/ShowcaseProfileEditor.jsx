@@ -31,13 +31,13 @@ export default function ShowcaseProfileEditor({
   };
 
   return (
-    <div className="space-y-4 bg-[#6C5CE7]/5 dark:bg-gray-800/40 p-4 sm:p-5 rounded-2xl border border-[#6C5CE7]/20 dark:border-gray-700">
+    <div className="space-y-4 bg-[#075C2A]/5 dark:bg-gray-800/40 p-4 sm:p-5 rounded-2xl border border-[#075C2A]/20 dark:border-gray-700">
       
       {/* Nutritional & Health Profile Header & AI Button */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-purple-100 dark:border-gray-700 pb-3">
         <div>
           <h3 className="text-xs font-black uppercase tracking-wider text-[#2D3748] dark:text-white flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#6C5CE7]" />
+            <span className="w-2 h-2 rounded-full bg-[#075C2A]" />
             Nutritional & Health Profile (5 Key Metrics)
           </h3>
           <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
@@ -48,7 +48,7 @@ export default function ShowcaseProfileEditor({
           type="button"
           disabled={disabled}
           onClick={handleAiGenerate}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#6C5CE7] to-purple-800 hover:from-[#5b4cc4] hover:to-purple-900 text-white text-xs font-black shadow-xs transition-all cursor-pointer border border-purple-300"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#075C2A] to-purple-800 hover:from-[#054593] hover:to-[#063B22] text-white text-xs font-black shadow-xs transition-all cursor-pointer border border-purple-300"
         >
           <Sparkles className="w-3.5 h-3.5 text-purple-200" />
           <span>✨ AI Auto Generate Profile</span>
@@ -98,7 +98,7 @@ export default function ShowcaseProfileEditor({
                   disabled={disabled}
                   value={metric.percent}
                   onChange={(e) => handleMetricUpdate(idx, "percent", Number(e.target.value))}
-                  className="w-full accent-[#6C5CE7] mt-1"
+                  className="w-full accent-[#075C2A] mt-1"
                 />
               </div>
             </div>
@@ -106,7 +106,7 @@ export default function ShowcaseProfileEditor({
             {/* Color Swatches */}
             <div className="flex items-center gap-2 pt-0.5">
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">Color:</span>
-              {["#6C5CE7", "#8B5CF6", "#A78BFA", "#6D28D9", "#3B0764", "#27272A"].map((cHex) => (
+              {["#075C2A", "#3F9E18", "#3F9E18", "#6D28D9", "#3B0764", "#27272A"].map((cHex) => (
                 <button
                   key={cHex}
                   type="button"

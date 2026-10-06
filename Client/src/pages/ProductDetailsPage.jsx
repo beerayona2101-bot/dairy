@@ -94,7 +94,7 @@ export default function ProductDetailsPage() {
                 </p>
                 <Link
                     to="/products"
-                    className="mt-4 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white rounded-full font-bold shadow-md shadow-violet-500/25 transition inline-block"
+                    className="mt-4 px-6 py-2.5 bg-gradient-to-r from-[#075C2A] to-[#0756B5] hover:from-[#054593] hover:to-[#063B22] text-white rounded-full font-bold shadow-md shadow-[#075C2A]/25 transition inline-block"
                 >
                     Go to Products
                 </Link>
@@ -116,7 +116,7 @@ export default function ProductDetailsPage() {
                             title="Back to Products"
                         />
                         <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
-                        <span className="text-xs font-extrabold text-violet-700 dark:text-violet-400 capitalize">
+                        <span className="text-xs font-extrabold text-[#0756B5] dark:text-emerald-400 capitalize">
                             {selectedProduct?.category || "Dairy"}
                         </span>
                         <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
@@ -134,17 +134,17 @@ export default function ProductDetailsPage() {
             </section>
 
             <section className="px-4 md:px-6 pb-6 md:pb-10 md:max-w-6xl mx-auto">
-                <div className="flex items-center justify-between border-t border-violet-100 dark:border-slate-800 pb-3 pt-6 mb-4">
+                <div className="flex items-center justify-between border-t border-gray-200 dark:border-slate-800 pb-3 pt-6 mb-4">
                     <div>
                         <AnimatedHeading
                             blackText="Related"
                             violetText="Products"
                             className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white"
-                            violetClassName="text-violet-600 dark:text-violet-400"
+                            violetClassName="text-[#0756B5] dark:text-emerald-400"
                         />
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Handpicked dairy essentials from the same category</p>
                     </div>
-                    <Link to="/products" className="text-xs sm:text-sm font-bold text-violet-600 dark:text-violet-400 hover:underline">
+                    <Link to="/products" className="text-xs sm:text-sm font-bold text-[#075C2A] dark:text-blue-400 hover:underline">
                         View All →
                     </Link>
                 </div>
@@ -163,16 +163,16 @@ export default function ProductDetailsPage() {
                                         initial={{ opacity: 0, scale: 0.96 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: idx * 0.02, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                                        className="bg-white dark:bg-slate-800/90 border border-violet-100 dark:border-slate-800 hover:border-violet-300 dark:hover:border-violet-700 transition-all duration-200 rounded-2xl shadow-xs hover:shadow-[0_8px_25px_rgba(108,92,231,0.18)] hover:-translate-y-1 flex flex-col justify-between overflow-hidden group"
+                                        className="bg-white dark:bg-slate-800/90 border border-gray-200 dark:border-slate-800 hover:border-[#0756B5] dark:hover:border-emerald-500 transition-all duration-200 rounded-2xl shadow-xs hover:shadow-[0_8px_25px_rgba(7,92,42,0.18)] hover:-translate-y-1 flex flex-col justify-between overflow-hidden group"
                                     >
-                                        <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-44 overflow-hidden bg-gradient-to-br from-violet-50/50 via-purple-50/20 to-indigo-50/30 dark:from-slate-800 dark:to-slate-900 relative">
+                                        <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-44 overflow-hidden bg-gradient-to-br from-[#F5E9D0]/40 via-emerald-50/20 to-[#FFFDF7] dark:from-slate-800 dark:to-slate-900 relative">
                                             <img
                                                 src={getProductImage(product)}
                                                 alt={product?.name}
                                                 className="w-full h-full object-contain p-2.5 group-hover:scale-108 transition-transform duration-300 ease-out"
                                             />
                                             {prodDiscount > 0 && (
-                                                <span className="absolute top-2 right-2 bg-violet-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-xs">
+                                                <span className="absolute top-2 right-2 bg-[#075C2A] text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-xs">
                                                     {prodDiscount}% OFF
                                                 </span>
                                             )}
@@ -182,7 +182,7 @@ export default function ProductDetailsPage() {
                                             <div>
                                                 <Link
                                                     to={`/product-details/${slugify(product?.name)}`}
-                                                    className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white truncate group-hover:text-violet-600 dark:group-hover:text-violet-400 line-clamp-1 transition-colors block"
+                                                    className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white truncate group-hover:text-[#0756B5] dark:group-hover:text-emerald-400 line-clamp-1 transition-colors block"
                                                 >
                                                     {product?.name}
                                                 </Link>
@@ -192,9 +192,9 @@ export default function ProductDetailsPage() {
                                                 </p>
                                             </div>
 
-                                            <div className="mt-2.5 flex items-baseline justify-between pt-2 border-t border-violet-50 dark:border-slate-700/60">
+                                            <div className="mt-2.5 flex items-baseline justify-between pt-2 border-t border-gray-100 dark:border-slate-700/60">
                                                 <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-sm sm:text-base font-black text-violet-700 dark:text-violet-400">
+                                                    <span className="text-sm sm:text-base font-black text-[#075C2A] dark:text-blue-400">
                                                         &#8377;{formatNumberWithCommas(discounted)}
                                                     </span>
                                                     {prodDiscount > 0 && (
@@ -227,9 +227,9 @@ export default function ProductDetailsPage() {
                                             borderColor: theme === 'dark' ? '#555' : '#e2e8f0',
                                         },
                                         '& .Mui-selected': {
-                                            backgroundColor: '#6C5CE7',
+                                            backgroundColor: '#075C2A',
                                             color: '#ffffff',
-                                            borderColor: '#6C5CE7',
+                                            borderColor: '#075C2A',
                                             fontWeight: 800,
                                             '&:hover': {
                                                 backgroundColor: '#5844D8',
@@ -241,7 +241,7 @@ export default function ProductDetailsPage() {
                         )}
                     </>
                 ) : (
-                    <div className="bg-violet-50/50 dark:bg-slate-800/40 p-6 rounded-2xl border border-violet-100 dark:border-slate-700/60 text-center">
+                    <div className="bg-[#F5E9D0]/50 dark:bg-slate-800/40 p-6 rounded-2xl border border-[#D5A62A] dark:border-slate-700/60 text-center">
                         <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
                             No related products found in this category ({selectedProduct?.category || selectedProduct?.type || "Category"}).
                         </p>

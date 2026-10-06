@@ -148,8 +148,8 @@ export default function Sidebar() {
                                 onClick={closeSidebar}
                                 className={`flex items-center justify-between p-3 rounded-2xl transition-all font-extrabold text-xs ${
                                     isActive
-                                        ? "bg-[#6C5CE7] text-white shadow-[0_8px_20px_rgba(108,92,231,0.3)]"
-                                        : "text-[#718096] dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-[#6C5CE7]"
+                                        ? "bg-[#075C2A] text-white shadow-[0_8px_20px_rgba(108,92,231,0.3)]"
+                                        : "text-[#718096] dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-[#075C2A]"
                                 }`}
                             >
                                 <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ export default function Sidebar() {
                                 onClick={() => toggleGroup(group.key)}
                                 className={`w-full flex items-center justify-between p-3 text-xs uppercase tracking-wider font-black transition-colors cursor-pointer ${
                                     isGroupActive
-                                        ? "text-[#6C5CE7] bg-purple-50/80 dark:bg-purple-950/40"
+                                        ? "text-[#075C2A] bg-purple-50/80 dark:bg-purple-950/40"
                                         : "text-[#718096] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                                 }`}
                             >
@@ -180,7 +180,7 @@ export default function Sidebar() {
                                     {group.icon}
                                     <span>{group.label}</span>
                                     {group.badge > 0 && (
-                                        <span className="px-1.5 py-0.5 text-[10px] bg-[#6C5CE7] text-white rounded-full font-extrabold shadow-xs">
+                                        <span className="px-1.5 py-0.5 text-[10px] bg-[#075C2A] text-white rounded-full font-extrabold shadow-xs">
                                             {group.badge}
                                         </span>
                                     )}
@@ -210,13 +210,13 @@ export default function Sidebar() {
                                                         onClick={closeSidebar}
                                                         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                                                             isSubActive
-                                                                ? "bg-[#6C5CE7] text-white shadow-xs font-black"
-                                                                : "text-[#718096] dark:text-gray-300 hover:text-[#6C5CE7] hover:bg-purple-50 dark:hover:bg-purple-950/30"
+                                                                ? "bg-[#075C2A] text-white shadow-xs font-black"
+                                                                : "text-[#718096] dark:text-gray-300 hover:text-[#075C2A] hover:bg-purple-50 dark:hover:bg-purple-950/30"
                                                         }`}
                                                     >
                                                         <span>{subItem.label}</span>
                                                         {subItem?.orderCount > 0 && (
-                                                            <span className="text-[10px] bg-[#6C5CE7] px-2 py-0.5 rounded-full text-white font-bold">
+                                                            <span className="text-[10px] bg-[#075C2A] px-2 py-0.5 rounded-full text-white font-bold">
                                                                 {subItem.orderCount}
                                                             </span>
                                                         )}

@@ -12,104 +12,87 @@ export const getDiscountedPrice = (price, discountPercent) => {
 };
 
 const UNIQUE_PRODUCT_IMAGES = {
-  "Madhu Cow Milk (Full Cream)": "/images/madhu_cow_milk.png",
-  "Madhu Fresh Whole Cow Milk": "/images/madhu_cow_milk.png",
-  "Madhur Fresh Whole Cow Milk": "/images/madhu_cow_milk.png",
-  "Madhu Buffalo Toned Milk": "/images/madhu_buffalo_milk.png",
-  "Madhur Buffalo Toned Milk": "/images/madhu_buffalo_milk.png",
-  "Madhu Toned Cow Milk": "/images/madhu_cow_milk.png",
-  "Madhu Fresh Malai Paneer": "/images/madhu_malai_paneer.png",
-  "Madhur Fresh Malai Paneer": "/images/madhu_malai_paneer.png",
-  "Madhu Organic Desi Cow Ghee": "/images/madhu_desi_ghee.png",
-  "Madhur Organic Desi Cow Ghee": "/images/madhu_desi_ghee.png",
-  "Madhu Natural Thick Curd": "/images/madhu_thick_curd.png",
-  "Madhur Natural Thick Curd": "/images/madhu_thick_curd.png",
-  "Madhu Salted Cooking Butter": "/images/madhu_cooking_butter.png",
-  "Madhur Salted Cooking Butter": "/images/madhu_cooking_butter.png",
-  "Madhu Shredded Mozzarella Cheese": "/images/madhu_mozzarella_cheese.png",
-  "Madhur Shredded Mozzarella Cheese": "/images/madhu_mozzarella_cheese.png",
-  "Madhu Sweet Punjabi Malai Lassi": "/images/madhu_malai_lassi.png",
-  "Madhur Sweet Punjabi Malai Lassi": "/images/madhu_malai_lassi.png",
-  "Madhu Spiced Masala Chaas": "/images/madhu_masala_chaas.png",
-  "Madhur Spiced Masala Chaas": "/images/madhu_masala_chaas.png",
-  "Madhu Pure Fresh Khoya (Mawa)": "/images/madhu_khoya_mawa.png",
-  "Madhur Pure Fresh Khoya (Mawa)": "/images/madhu_khoya_mawa.png",
-  "Madhu Creamy Kesar Basundi": "/images/madhu_kesar_basundi.png",
-  "Madhur Creamy Kesar Basundi": "/images/madhu_kesar_basundi.png",
-  "Madhu Kesar Shrikhand": "/images/madhu_kesar_shrikhand.png",
-  "Madhur Kesar Shrikhand": "/images/madhu_kesar_shrikhand.png",
-  "Madhu Fresh Dairy Cream": "/images/madhu_dairy_cream.png",
-  "Madhur Fresh Dairy Cream": "/images/madhu_dairy_cream.png",
-  "Madhu Premium Dairy Milk Powder": "/images/madhu_milk_powder.png",
-  "Madhur Premium Dairy Milk Powder": "/images/madhu_milk_powder.png",
-  "Madhu Soft Gulab Jamun": "/images/madhu_gulab_jamun.png",
-  "Madhur Soft Gulab Jamun": "/images/madhu_gulab_jamun.png",
-  "Madhu Classic Bengali Rasgulla": "/images/madhu_bengali_rasgulla.png",
-  "Madhur Classic Bengali Rasgulla": "/images/madhu_bengali_rasgulla.png",
-  "Madhu Mathura Kesar Peda": "/images/madhu_kesar_peda.png",
-  "Madhur Mathura Kesar Peda": "/images/madhu_kesar_peda.png",
+  "Natural Cow Milk (Full Cream)": "/images/natural_cow_milk.png",
+  "Natural Fresh Whole Cow Milk": "/images/natural_cow_milk.png",
+  "Natural Buffalo Toned Milk": "/images/natural_buffalo_milk.png",
+  "Natural Toned Cow Milk": "/images/natural_cow_milk.png",
+  "Natural Fresh Malai Paneer": "/images/natural_malai_paneer.png",
+  "Natural Organic Desi Cow Ghee": "/images/natural_desi_ghee.png",
+  "Natural Thick Curd": "/images/natural_thick_curd.png",
+  "Natural Salted Cooking Butter": "/images/natural_cooking_butter.png",
+  "Natural Shredded Mozzarella Cheese": "/images/natural_mozzarella_cheese.png",
+  "Natural Sweet Punjabi Malai Lassi": "/images/natural_malai_lassi.png",
+  "Natural Spiced Masala Chaas": "/images/natural_masala_chaas.png",
+  "Natural Pure Fresh Khoya (Mawa)": "/images/natural_khoya_mawa.png",
+  "Natural Creamy Kesar Basundi": "/images/natural_kesar_basundi.png",
+  "Natural Kesar Shrikhand": "/images/natural_kesar_shrikhand.png",
+  "Natural Fresh Dairy Cream": "/images/natural_dairy_cream.png",
+  "Natural Premium Dairy Milk Powder": "/images/natural_milk_powder.png",
+  "Natural Soft Gulab Jamun": "/images/natural_gulab_jamun.png",
+  "Natural Classic Bengali Rasgulla": "/images/natural_bengali_rasgulla.png",
+  "Natural Mathura Kesar Peda": "/images/natural_kesar_peda.png",
+
+  // Legacy mappings for backward compatibility
+  "Madhu Cow Milk (Full Cream)": "/images/natural_cow_milk.png",
+  "Madhu Fresh Whole Cow Milk": "/images/natural_cow_milk.png",
+  "Madhur Fresh Whole Cow Milk": "/images/natural_cow_milk.png",
+  "Madhu Buffalo Toned Milk": "/images/natural_buffalo_milk.png",
+  "Madhur Buffalo Toned Milk": "/images/natural_buffalo_milk.png",
+  "Madhu Toned Cow Milk": "/images/natural_cow_milk.png",
+  "Madhu Fresh Malai Paneer": "/images/natural_malai_paneer.png",
+  "Madhur Fresh Malai Paneer": "/images/natural_malai_paneer.png",
+  "Madhu Organic Desi Cow Ghee": "/images/natural_desi_ghee.png",
+  "Madhur Organic Desi Cow Ghee": "/images/natural_desi_ghee.png",
+  "Madhu Natural Thick Curd": "/images/natural_thick_curd.png",
+  "Madhur Natural Thick Curd": "/images/natural_thick_curd.png",
+  "Madhu Salted Cooking Butter": "/images/natural_cooking_butter.png",
+  "Madhur Salted Cooking Butter": "/images/natural_cooking_butter.png",
+  "Madhu Shredded Mozzarella Cheese": "/images/natural_mozzarella_cheese.png",
+  "Madhur Shredded Mozzarella Cheese": "/images/natural_mozzarella_cheese.png",
+  "Madhu Sweet Punjabi Malai Lassi": "/images/natural_malai_lassi.png",
+  "Madhur Sweet Punjabi Malai Lassi": "/images/natural_malai_lassi.png",
+  "Madhu Spiced Masala Chaas": "/images/natural_masala_chaas.png",
+  "Madhur Spiced Masala Chaas": "/images/natural_masala_chaas.png",
+  "Madhu Pure Fresh Khoya (Mawa)": "/images/natural_khoya_mawa.png",
+  "Madhur Pure Fresh Khoya (Mawa)": "/images/natural_khoya_mawa.png",
+  "Madhu Creamy Kesar Basundi": "/images/natural_kesar_basundi.png",
+  "Madhur Creamy Kesar Basundi": "/images/natural_kesar_basundi.png",
+  "Madhu Kesar Shrikhand": "/images/natural_kesar_shrikhand.png",
+  "Madhur Kesar Shrikhand": "/images/natural_kesar_shrikhand.png",
+  "Madhu Fresh Dairy Cream": "/images/natural_dairy_cream.png",
+  "Madhur Fresh Dairy Cream": "/images/natural_dairy_cream.png",
+  "Madhu Premium Dairy Milk Powder": "/images/natural_milk_powder.png",
+  "Madhur Premium Dairy Milk Powder": "/images/natural_milk_powder.png",
+  "Madhu Soft Gulab Jamun": "/images/natural_gulab_jamun.png",
+  "Madhur Soft Gulab Jamun": "/images/natural_gulab_jamun.png",
+  "Madhu Classic Bengali Rasgulla": "/images/natural_bengali_rasgulla.png",
+  "Madhur Classic Bengali Rasgulla": "/images/natural_bengali_rasgulla.png",
+  "Madhu Mathura Kesar Peda": "/images/natural_kesar_peda.png",
+  "Madhur Mathura Kesar Peda": "/images/natural_kesar_peda.png",
 };
 
 const UNIQUE_PRODUCT_BACKGROUND_IMAGES = {
   // Category exact names & short names
-  "Milk": "/images/madhur_cow_milk.png",
-  "Paneer": "/images/madhur_malai_paneer.png",
-  "Ghee": "/images/madhur_desi_ghee.png",
-  "Curd": "/images/madhur_thick_curd.png",
-  "Butter": "/images/madhur_cooking_butter.png",
-  "Lassi": "/images/madhur_malai_lassi.png",
-  "Chaas": "/images/madhur_masala_chaas.png",
-  "Shrikhand": "/images/madhur_kesar_shrikhand.png",
-  "Basundi": "/images/madhur_kesar_basundi.png",
-  "Khoya": "/images/madhur_khoya_mawa.png",
-  "Cheese": "/images/madhur_mozzarella_cheese.png",
-  "Flavored Milk": "/images/madhur_buffalo_milk.png",
-  "Dairy Sweets": "/images/madhur_gulab_jamun.png",
-  "Milk Powder": "/images/madhur_milk_powder.png",
-  "Cream": "/images/madhur_dairy_cream.png",
-  "Badham": "/images/madhur_kesar_peda.png",
-  "Sweets": "/images/madhur_gulab_jamun.png",
-  "Khoya (Mawa)": "/images/madhur_khoya_mawa.png",
-  "Fresh Milk": "/images/madhur_cow_milk.png",
-  "Pure Ghee": "/images/madhur_desi_ghee.png",
-
-  // Specific product name keys
-  "Madhu Cow Milk (Full Cream)": "/images/madhur_cow_milk.png",
-  "Madhu Fresh Whole Cow Milk": "/images/madhur_cow_milk.png",
-  "Madhur Fresh Whole Cow Milk": "/images/madhur_cow_milk.png",
-  "Madhu Buffalo Toned Milk": "/images/madhur_buffalo_milk.png",
-  "Madhur Buffalo Toned Milk": "/images/madhur_buffalo_milk.png",
-  "Madhu Toned Cow Milk": "/images/madhur_cow_milk.png",
-  "Madhu Fresh Malai Paneer": "/images/madhur_malai_paneer.png",
-  "Madhur Fresh Malai Paneer": "/images/madhur_malai_paneer.png",
-  "Madhu Organic Desi Cow Ghee": "/images/madhur_desi_ghee.png",
-  "Madhur Organic Desi Cow Ghee": "/images/madhur_desi_ghee.png",
-  "Madhu Natural Thick Curd": "/images/madhur_thick_curd.png",
-  "Madhur Natural Thick Curd": "/images/madhur_thick_curd.png",
-  "Madhu Salted Cooking Butter": "/images/madhur_cooking_butter.png",
-  "Madhur Salted Cooking Butter": "/images/madhur_cooking_butter.png",
-  "Madhu Shredded Mozzarella Cheese": "/images/madhur_mozzarella_cheese.png",
-  "Madhur Shredded Mozzarella Cheese": "/images/madhur_mozzarella_cheese.png",
-  "Madhu Sweet Punjabi Malai Lassi": "/images/madhur_malai_lassi.png",
-  "Madhur Sweet Punjabi Malai Lassi": "/images/madhur_malai_lassi.png",
-  "Madhu Spiced Masala Chaas": "/images/madhur_masala_chaas.png",
-  "Madhur Spiced Masala Chaas": "/images/madhur_masala_chaas.png",
-  "Madhu Pure Fresh Khoya (Mawa)": "/images/madhur_khoya_mawa.png",
-  "Madhur Pure Fresh Khoya (Mawa)": "/images/madhur_khoya_mawa.png",
-  "Madhu Creamy Kesar Basundi": "/images/madhur_kesar_basundi.png",
-  "Madhur Creamy Kesar Basundi": "/images/madhur_kesar_basundi.png",
-  "Madhu Kesar Shrikhand": "/images/madhur_kesar_shrikhand.png",
-  "Madhur Kesar Shrikhand": "/images/madhur_kesar_shrikhand.png",
-  "Madhu Fresh Dairy Cream": "/images/madhur_dairy_cream.png",
-  "Madhur Fresh Dairy Cream": "/images/madhur_dairy_cream.png",
-  "Madhu Premium Dairy Milk Powder": "/images/madhur_milk_powder.png",
-  "Madhur Premium Dairy Milk Powder": "/images/madhur_milk_powder.png",
-  "Madhu Soft Gulab Jamun": "/images/madhur_gulab_jamun.png",
-  "Madhur Soft Gulab Jamun": "/images/madhur_gulab_jamun.png",
-  "Madhu Classic Bengali Rasgulla": "/images/madhur_bengali_rasgulla.png",
-  "Madhur Classic Bengali Rasgulla": "/images/madhur_bengali_rasgulla.png",
-  "Madhu Mathura Kesar Peda": "/images/madhur_kesar_peda.png",
-  "Madhur Mathura Kesar Peda": "/images/madhur_kesar_peda.png",
+  "Milk": "/images/natural_cow_milk.png",
+  "Paneer": "/images/natural_malai_paneer.png",
+  "Ghee": "/images/natural_desi_ghee.png",
+  "Curd": "/images/natural_thick_curd.png",
+  "Butter": "/images/natural_cooking_butter.png",
+  "Lassi": "/images/natural_malai_lassi.png",
+  "Chaas": "/images/natural_masala_chaas.png",
+  "Shrikhand": "/images/natural_kesar_shrikhand.png",
+  "Basundi": "/images/natural_kesar_basundi.png",
+  "Khoya": "/images/natural_khoya_mawa.png",
+  "Cheese": "/images/natural_mozzarella_cheese.png",
+  "Flavored Milk": "/images/natural_buffalo_milk.png",
+  "Dairy Sweets": "/images/natural_gulab_jamun.png",
+  "Milk Powder": "/images/natural_milk_powder.png",
+  "Cream": "/images/natural_dairy_cream.png",
+  "Badham": "/images/natural_kesar_peda.png",
+  "Sweets": "/images/natural_gulab_jamun.png",
+  "Khoya (Mawa)": "/images/natural_khoya_mawa.png",
+  "Fresh Milk": "/images/natural_cow_milk.png",
+  "Pure Ghee": "/images/natural_desi_ghee.png",
 };
 
 export const getProductImage = (item, fallbackName = "") => {
@@ -139,6 +122,10 @@ export const getProductImage = (item, fallbackName = "") => {
       !cleanImg.includes("example.com") &&
       !cleanImg.includes("unsplash.com")
     ) {
+      if (cleanImg.includes("madhu_") || cleanImg.includes("madhur_")) {
+        cleanImg = cleanImg.replace("madhur_", "natural_").replace("madhu_", "natural_");
+      }
+
       if (cleanImg.startsWith("uploads/")) {
         cleanImg = "/" + cleanImg;
       }
@@ -170,27 +157,27 @@ export const getProductImage = (item, fallbackName = "") => {
     }
 
     const n = cleanName.toLowerCase();
-    if (n.includes("powder")) return UNIQUE_PRODUCT_IMAGES["Madhu Premium Dairy Milk Powder"];
-    if (n.includes("cow milk") || (n.includes("cow") && n.includes("milk"))) return UNIQUE_PRODUCT_IMAGES["Madhu Fresh Whole Cow Milk"];
-    if (n.includes("toned") || n.includes("buffalo")) return UNIQUE_PRODUCT_IMAGES["Madhu Buffalo Toned Milk"];
-    if (n.includes("paneer")) return UNIQUE_PRODUCT_IMAGES["Madhu Fresh Malai Paneer"];
-    if (n.includes("ghee")) return UNIQUE_PRODUCT_IMAGES["Madhu Organic Desi Cow Ghee"];
-    if (n.includes("curd") || n.includes("dahi") || n.includes("doi")) return UNIQUE_PRODUCT_IMAGES["Madhu Natural Thick Curd"];
-    if (n.includes("butter") && !n.includes("milk")) return UNIQUE_PRODUCT_IMAGES["Madhu Salted Cooking Butter"];
-    if (n.includes("cheese") || n.includes("mozzarella")) return UNIQUE_PRODUCT_IMAGES["Madhu Shredded Mozzarella Cheese"];
-    if (n.includes("lassi")) return UNIQUE_PRODUCT_IMAGES["Madhu Sweet Punjabi Malai Lassi"];
-    if (n.includes("chaas") || n.includes("buttermilk") || n.includes("masala chaas")) return UNIQUE_PRODUCT_IMAGES["Madhu Spiced Masala Chaas"];
-    if (n.includes("khoya") || n.includes("mawa")) return UNIQUE_PRODUCT_IMAGES["Madhu Pure Fresh Khoya (Mawa)"];
-    if (n.includes("basundi")) return UNIQUE_PRODUCT_IMAGES["Madhu Creamy Kesar Basundi"];
-    if (n.includes("shrikhand")) return UNIQUE_PRODUCT_IMAGES["Madhu Kesar Shrikhand"];
-    if (n.includes("cream") || n.includes("rabri")) return UNIQUE_PRODUCT_IMAGES["Madhu Fresh Dairy Cream"];
-    if (n.includes("gulab") || n.includes("jamun") || n.includes("sweet") || n.includes("mithai")) return UNIQUE_PRODUCT_IMAGES["Madhu Soft Gulab Jamun"];
-    if (n.includes("rasgulla") || n.includes("rosogolla")) return UNIQUE_PRODUCT_IMAGES["Madhu Classic Bengali Rasgulla"];
-    if (n.includes("peda")) return UNIQUE_PRODUCT_IMAGES["Madhu Mathura Kesar Peda"];
-    if (n.includes("milk") || n.includes("badam")) return UNIQUE_PRODUCT_IMAGES["Madhu Fresh Whole Cow Milk"];
+    if (n.includes("powder")) return "/images/natural_milk_powder.png";
+    if (n.includes("cow milk") || (n.includes("cow") && n.includes("milk"))) return "/images/natural_cow_milk.png";
+    if (n.includes("toned") || n.includes("buffalo")) return "/images/natural_buffalo_milk.png";
+    if (n.includes("paneer")) return "/images/natural_malai_paneer.png";
+    if (n.includes("ghee")) return "/images/natural_desi_ghee.png";
+    if (n.includes("curd") || n.includes("dahi") || n.includes("doi")) return "/images/natural_thick_curd.png";
+    if (n.includes("butter") && !n.includes("milk")) return "/images/natural_cooking_butter.png";
+    if (n.includes("cheese") || n.includes("mozzarella")) return "/images/natural_mozzarella_cheese.png";
+    if (n.includes("lassi")) return "/images/natural_malai_lassi.png";
+    if (n.includes("chaas") || n.includes("buttermilk") || n.includes("masala chaas")) return "/images/natural_masala_chaas.png";
+    if (n.includes("khoya") || n.includes("mawa")) return "/images/natural_khoya_mawa.png";
+    if (n.includes("basundi")) return "/images/natural_kesar_basundi.png";
+    if (n.includes("shrikhand")) return "/images/natural_kesar_shrikhand.png";
+    if (n.includes("cream") || n.includes("rabri")) return "/images/natural_dairy_cream.png";
+    if (n.includes("gulab") || n.includes("jamun") || n.includes("sweet") || n.includes("mithai")) return "/images/natural_gulab_jamun.png";
+    if (n.includes("rasgulla") || n.includes("rosogolla")) return "/images/natural_bengali_rasgulla.png";
+    if (n.includes("peda")) return "/images/natural_kesar_peda.png";
+    if (n.includes("milk") || n.includes("badam")) return "/images/natural_cow_milk.png";
   }
 
-  return "/images/madhu_cow_milk.png";
+  return "/images/natural_cow_milk.png";
 };
 
 export const getCardBackgroundImage = (item, fallbackName = "") => {
@@ -216,39 +203,35 @@ export const getCardBackgroundImage = (item, fallbackName = "") => {
   // 2. Keyword Match in Name
   if (name) {
     const n = name.trim().toLowerCase();
-    if (n.includes("powder")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Premium Dairy Milk Powder"];
-    if (n.includes("cow milk") || (n.includes("cow") && n.includes("milk"))) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Fresh Whole Cow Milk"];
-    if (n.includes("toned") || n.includes("buffalo")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Buffalo Toned Milk"];
-    if (n.includes("paneer")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Fresh Malai Paneer"];
-    if (n.includes("ghee")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Organic Desi Cow Ghee"];
-    if (n.includes("curd") || n.includes("dahi") || n.includes("doi")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Natural Thick Curd"];
-    if (n.includes("butter") && !n.includes("milk")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Salted Cooking Butter"];
-    if (n.includes("cheese") || n.includes("mozzarella")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Shredded Mozzarella Cheese"];
-    if (n.includes("lassi")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Sweet Punjabi Malai Lassi"];
-    if (n.includes("chaas") || n.includes("buttermilk") || n.includes("masala chaas")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Spiced Masala Chaas"];
-    if (n.includes("khoya") || n.includes("mawa")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Pure Fresh Khoya (Mawa)"];
-    if (n.includes("basundi")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Creamy Kesar Basundi"];
-    if (n.includes("shrikhand")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Kesar Shrikhand"];
-    if (n.includes("cream") || n.includes("rabri")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Fresh Dairy Cream"];
-    if (n.includes("gulab") || n.includes("jamun") || n.includes("sweet") || n.includes("mithai")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Soft Gulab Jamun"];
-    if (n.includes("rasgulla") || n.includes("rosogolla")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Classic Bengali Rasgulla"];
-    if (n.includes("peda")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Mathura Kesar Peda"];
-    if (n.includes("milk") || n.includes("badam")) return UNIQUE_PRODUCT_BACKGROUND_IMAGES["Madhu Fresh Whole Cow Milk"];
+    if (n.includes("powder")) return "/images/natural_milk_powder.png";
+    if (n.includes("cow milk") || (n.includes("cow") && n.includes("milk"))) return "/images/natural_cow_milk.png";
+    if (n.includes("toned") || n.includes("buffalo")) return "/images/natural_buffalo_milk.png";
+    if (n.includes("paneer")) return "/images/natural_malai_paneer.png";
+    if (n.includes("ghee")) return "/images/natural_desi_ghee.png";
+    if (n.includes("curd") || n.includes("dahi") || n.includes("doi")) return "/images/natural_thick_curd.png";
+    if (n.includes("butter") && !n.includes("milk")) return "/images/natural_cooking_butter.png";
+    if (n.includes("cheese") || n.includes("mozzarella")) return "/images/natural_mozzarella_cheese.png";
+    if (n.includes("lassi")) return "/images/natural_malai_lassi.png";
+    if (n.includes("chaas") || n.includes("buttermilk") || n.includes("masala chaas")) return "/images/natural_masala_chaas.png";
+    if (n.includes("khoya") || n.includes("mawa")) return "/images/natural_khoya_mawa.png";
+    if (n.includes("basundi")) return "/images/natural_kesar_basundi.png";
+    if (n.includes("shrikhand")) return "/images/natural_kesar_shrikhand.png";
+    if (n.includes("cream") || n.includes("rabri")) return "/images/natural_dairy_cream.png";
+    if (n.includes("gulab") || n.includes("jamun") || n.includes("sweet") || n.includes("mithai")) return "/images/natural_gulab_jamun.png";
+    if (n.includes("rasgulla") || n.includes("rosogolla")) return "/images/natural_bengali_rasgulla.png";
+    if (n.includes("peda")) return "/images/natural_kesar_peda.png";
+    if (n.includes("milk") || n.includes("badam")) return "/images/natural_cow_milk.png";
   }
 
-  // 3. Convert madhu_ path to madhur_ path (cutout -> background)
   if (typeof imageProp === "string" && imageProp.trim()) {
     let cleanImg = imageProp.trim();
-    if (cleanImg.includes("/images/madhu_")) {
-      return cleanImg.replace("/images/madhu_", "/images/madhur_");
-    }
-    if (cleanImg.includes("images/madhu_")) {
-      return "/" + cleanImg.replace("images/madhu_", "images/madhur_");
+    if (cleanImg.includes("madhu_") || cleanImg.includes("madhur_")) {
+      return cleanImg.replace("madhur_", "natural_").replace("madhu_", "natural_");
     }
     if (!cleanImg.includes("res.cloudinary.com") && !cleanImg.includes("example.com")) {
       return cleanImg.startsWith("images/") ? "/" + cleanImg : cleanImg;
     }
   }
 
-  return "/images/madhur_cow_milk.png";
+  return "/images/natural_cow_milk.png";
 };

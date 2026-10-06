@@ -40,10 +40,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalRevenue,
             trend: "+14.2%",
             trendUp: true,
-            icon: <TrendingUpIcon className="text-[#6C5CE7]" sx={{ fontSize: "1.3rem" }} />,
+            icon: <TrendingUpIcon className="text-[#075C2A]" sx={{ fontSize: "1.3rem" }} />,
             bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
             iconBg: "bg-purple-100 dark:bg-purple-900/60",
-            textColor: "text-[#6C5CE7] dark:text-purple-300",
+            textColor: "text-[#075C2A] dark:text-purple-300",
             route: "/admin/orders",
         },
         {
@@ -101,7 +101,7 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
         >
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">Sales & Revenue Metrics</h2>
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
                     Live Performance
                 </span>
             </div>

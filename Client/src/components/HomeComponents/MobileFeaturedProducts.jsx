@@ -16,7 +16,7 @@ export default function MobileFeaturedProducts() {
                     <h2 className="text-sm font-bold text-gray-800 dark:text-gray-100">Featured Products</h2>
                     <p className="text-[10px] text-gray-400">Farm-fresh favourites</p>
                 </div>
-                <Link to="/products" className="text-xs text-violet-600 dark:text-violet-400 font-semibold">
+                <Link to="/products" className="text-xs text-blue-700 dark:text-blue-400 font-semibold">
                     View All →
                 </Link>
             </div>

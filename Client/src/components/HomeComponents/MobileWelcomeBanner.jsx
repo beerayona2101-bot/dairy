@@ -64,11 +64,11 @@ export default function MobileWelcomeBanner() {
                             <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-slate-900 dark:text-white leading-tight truncate mt-0.5">
                                 {isLoggedIn ? (
                                     <>
-                                        Welcome back, <span className="text-violet-600 dark:text-violet-400">{userName}</span>! 👋
+                                        Welcome back, <span className="text-blue-700 dark:text-blue-400">{userName}</span>! 👋
                                     </>
                                 ) : (
                                     <>
-                                        Welcome to <span className="text-violet-600 dark:text-violet-400">Madhu Dairy & Daily Needs</span> 🥛
+                                        Welcome to <span className="text-blue-700 dark:text-blue-400">Natural Milk Dairy &amp; Daily Needs</span> 🥛
                                     </>
                                 )}
                             </h2>
@@ -81,8 +81,8 @@ export default function MobileWelcomeBanner() {
                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
                             <span>100% Pure & Organic</span>
                         </div>
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/60 text-violet-700 dark:text-violet-300 text-xs font-extrabold">
-                            <Truck className="w-4 h-4 text-violet-500" />
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-extrabold">
+                            <Truck className="w-4 h-4 text-blue-600" />
                             <span>Daily Express Delivery</span>
                         </div>
                     </div>

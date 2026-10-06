@@ -108,20 +108,20 @@ export default function ForgetPassword() {
         <button
           type="button"
           onClick={handleGoBack}
-          className="pointer-events-auto p-1.5 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
+          className="pointer-events-auto p-1.5 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
           aria-label="Back"
         >
-          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#6C5CE7] dark:text-[#A78BFA]" />
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#075C2A] dark:text-[#3F9E18]" />
           <span className="hidden sm:inline text-xs font-bold">Back</span>
         </button>
 
         <button
           type="button"
           onClick={() => navigate("/home")}
-          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#6C5CE7] dark:hover:text-[#A78BFA] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
           title="Continue as Guest"
         >
-          <User className="w-3.5 h-3.5 text-[#6C5CE7] dark:text-[#A78BFA]" />
+          <User className="w-3.5 h-3.5 text-[#075C2A] dark:text-[#3F9E18]" />
           <span>Guest</span>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:translate-x-0.5 transition-transform -ml-0.5" />
         </button>
@@ -169,9 +169,9 @@ export default function ForgetPassword() {
               <div className={`group flex items-center px-3.5 py-2.5 rounded-xl border transition-all shadow-xs ${
                 disableInput
                   ? "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 opacity-80"
-                  : "bg-slate-50/80 dark:bg-slate-900/60 border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#6C5CE7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#6C5CE7]/20"
+                  : "bg-slate-50/80 dark:bg-slate-900/60 border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20"
               }`}>
-                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#6C5CE7] mr-2.5 shrink-0 transition-colors" />
+                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-2.5 shrink-0 transition-colors" />
                 <input
                   type="email"
                   placeholder="name@example.com"
@@ -205,7 +205,7 @@ export default function ForgetPassword() {
                       onChange={(e) => handleOtpChange(index, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(e, index)}
                       ref={(el) => (inputRefs.current[index] = el)}
-                      className="w-10 sm:w-12 h-11 sm:h-12 text-center text-base sm:text-lg font-black rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-white focus:border-[#6C5CE7] focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#6C5CE7]/20 outline-none transition-all shadow-xs"
+                      className="w-10 sm:w-12 h-11 sm:h-12 text-center text-base sm:text-lg font-black rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-white focus:border-[#075C2A] focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#075C2A]/20 outline-none transition-all shadow-xs"
                     />
                   ))}
                 </div>
@@ -217,7 +217,7 @@ export default function ForgetPassword() {
               type="button"
               disabled={loading}
               onClick={showOtpInput ? verifyOtp : verifyEmail}
-              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-[#6C5CE7] to-[#5B54F2] hover:from-[#5B4BC4] hover:to-[#4D44DB] text-white font-black text-xs sm:text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
+              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-[#075C2A] to-[#054593] hover:from-[#5B4BC4] hover:to-[#4D44DB] text-white font-black text-xs sm:text-sm tracking-wide shadow-md shadow-indigo-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
             >
               {loading ? (
                 <BuffaloLoader
@@ -236,7 +236,7 @@ export default function ForgetPassword() {
         {/* Back to Login Footer */}
         <div className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">
           Remember your password?{" "}
-          <Link to="/login" className="font-extrabold text-[#6C5CE7] dark:text-[#A78BFA] hover:text-[#5B54F2] hover:underline ml-1">
+          <Link to="/login" className="font-extrabold text-[#075C2A] dark:text-[#3F9E18] hover:text-[#054593] hover:underline ml-1">
             Back to Sign In
           </Link>
         </div>

@@ -100,7 +100,7 @@ export default function PageContentManager() {
       stats: [
         { value: "100%", label: "Pure & Fresh Milk", icon: "🥛", color: "#477A50" },
         { value: "7 AM", label: "Doorstep Delivery", icon: "🚚", color: "#00ACC1" },
-        { value: "100+", label: "Quality Tests", icon: "🔬", color: "#6C5CE7" },
+        { value: "100+", label: "Quality Tests", icon: "🔬", color: "#075C2A" },
         { value: "50,000+", label: "Happy Families", icon: "❤️", color: "#FF7675" },
       ],
     },
@@ -181,7 +181,7 @@ export default function PageContentManager() {
           stats: [
             { value: "100%", label: "Pure & Fresh Milk", icon: "🥛", color: "#477A50" },
             { value: "7 AM", label: "Doorstep Delivery", icon: "🚚", color: "#00ACC1" },
-            { value: "100+", label: "Quality Tests", icon: "🔬", color: "#6C5CE7" },
+            { value: "100+", label: "Quality Tests", icon: "🔬", color: "#075C2A" },
             { value: "50,000+", label: "Happy Families", icon: "❤️", color: "#FF7675" },
           ],
         },
@@ -488,7 +488,7 @@ export default function PageContentManager() {
         <div className="flex items-start sm:items-center gap-3">
           <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-2 text-[#6C5CE7] dark:text-purple-400">
+            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-2 text-[#075C2A] dark:text-purple-400">
               <LayoutIcon className="w-6 h-6" /> Page Content & Store Info Manager
             </h1>
             <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
@@ -500,7 +500,7 @@ export default function PageContentManager() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white font-bold text-sm shadow-md transition hover:scale-105 cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#075C2A] hover:bg-[#054593] text-white font-bold text-sm shadow-md transition hover:scale-105 cursor-pointer disabled:opacity-50"
         >
           {saving ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -514,14 +514,14 @@ export default function PageContentManager() {
       {/* Category Management Info Banner */}
       <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/80 p-4 rounded-2xl flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Layers className="w-5 h-5 text-[#6C5CE7] dark:text-purple-400 shrink-0" />
+          <Layers className="w-5 h-5 text-[#075C2A] dark:text-purple-400 shrink-0" />
           <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300 font-medium">
-            <strong className="text-[#6C5CE7] dark:text-purple-300">Category Showcase Cards:</strong> Are managed under <strong className="underline">Admin → Inventory → Total Categories</strong>.
+            <strong className="text-[#075C2A] dark:text-purple-300">Category Showcase Cards:</strong> Are managed under <strong className="underline">Admin → Inventory → Total Categories</strong>.
           </p>
         </div>
         <Link
           to="/admin/inventory"
-          className="px-3.5 py-1.5 rounded-xl bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white text-xs font-bold shadow-xs whitespace-nowrap"
+          className="px-3.5 py-1.5 rounded-xl bg-[#075C2A] hover:bg-[#054593] text-white text-xs font-bold shadow-xs whitespace-nowrap"
         >
           Go to Inventory →
         </Link>
@@ -543,15 +543,15 @@ export default function PageContentManager() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition cursor-pointer whitespace-nowrap ${
               activeTab === tab.id
                 ? tab.id === "3dcards"
-                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30"
-                  : "bg-[#6C5CE7] text-white shadow-sm"
+                  ? "bg-gradient-to-r from-[#075C2A] to-indigo-600 text-white shadow-lg shadow-violet-500/30"
+                  : "bg-[#075C2A] text-white shadow-sm"
                 : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
             }`}
           >
             {tab.icon}
             <span>{tab.label}</span>
             {tab.id === "3dcards" && (
-              <span className="bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 text-[10px] font-black px-1.5 py-0.5 rounded-full">
+              <span className="bg-violet-100 dark:bg-violet-900/50 text-[#0756B5] dark:text-violet-300 text-[10px] font-black px-1.5 py-0.5 rounded-full">
                 {(formData.showcase3DCards || []).filter(c => c.enabled !== false).length}
               </span>
             )}
@@ -565,7 +565,7 @@ export default function PageContentManager() {
           <AdminAccordion
             title="Company Info & Tagline"
             subtitle="Store name, brand slogan, and description"
-            icon={<FileText className="w-5 h-5 text-[#6C5CE7]" />}
+            icon={<FileText className="w-5 h-5 text-[#075C2A]" />}
             defaultExpanded={true}
           >
             <div className="space-y-5">
@@ -579,7 +579,7 @@ export default function PageContentManager() {
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
 
@@ -592,7 +592,7 @@ export default function PageContentManager() {
                     name="companyTagline"
                     value={formData.companyTagline}
                     onChange={handleTextChange}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
               </div>
@@ -606,7 +606,7 @@ export default function PageContentManager() {
                   name="companyDescription"
                   value={formData.companyDescription}
                   onChange={handleTextChange}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                 />
               </div>
             </div>
@@ -615,7 +615,7 @@ export default function PageContentManager() {
           <AdminAccordion
             title="Home Page Hero Carousel (3 Slides)"
             subtitle="Manage images, titles, descriptions, and button links for the 3 home hero carousel slides"
-            icon={<ImageIcon className="w-5 h-5 text-[#6C5CE7]" />}
+            icon={<ImageIcon className="w-5 h-5 text-[#075C2A]" />}
             defaultExpanded={true}
           >
             <div className="max-w-4xl space-y-6">
@@ -633,14 +633,14 @@ export default function PageContentManager() {
                       onClick={() => setActiveHeroSlide(idx)}
                       className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
                         isActive
-                          ? "bg-[#6C5CE7] text-white shadow-md shadow-[#6C5CE7]/20"
+                          ? "bg-[#075C2A] text-white shadow-md shadow-[#075C2A]/20"
                           : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
                       }`}
                     >
                       <span
                         className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black ${
                           isActive
-                            ? "bg-white text-[#6C5CE7]"
+                            ? "bg-white text-[#075C2A]"
                             : "bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                         }`}
                       >
@@ -670,7 +670,7 @@ export default function PageContentManager() {
                     {/* Header with Title and Reset */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-lg bg-[#6C5CE7]/10 text-[#6C5CE7] dark:text-purple-300 font-extrabold text-xs">
+                        <span className="px-2.5 py-1 rounded-lg bg-[#075C2A]/10 text-[#075C2A] dark:text-purple-300 font-extrabold text-xs">
                           Slide {activeHeroSlide + 1} of 3
                         </span>
                         <h4 className="text-sm font-bold text-gray-900 dark:text-white">
@@ -697,7 +697,7 @@ export default function PageContentManager() {
                       <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent pointer-events-none" />
                       {/* Preview Text Overlay */}
                       <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-center max-w-lg pointer-events-none space-y-2">
-                        <span className="text-[10px] uppercase tracking-wider font-bold bg-[#6C5CE7] text-white px-2 py-0.5 rounded w-max">
+                        <span className="text-[10px] uppercase tracking-wider font-bold bg-[#075C2A] text-white px-2 py-0.5 rounded w-max">
                           Live Hero Preview
                         </span>
                         <h3 className="text-sm sm:text-base font-extrabold text-white drop-shadow-md line-clamp-2">
@@ -723,9 +723,9 @@ export default function PageContentManager() {
                           placeholder="Paste image URL (Cloudinary, /assets/..., or web link)"
                           value={currentSlide?.image || ""}
                           onChange={(e) => handleHeroSlideChange(activeHeroSlide, "image", e.target.value)}
-                          className="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:border-[#6C5CE7]"
+                          className="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:border-[#075C2A]"
                         />
-                        <label className="px-4 py-2 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#6C5CE7] dark:text-purple-300 font-bold text-xs cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/50 flex items-center justify-center gap-1.5 transition shrink-0 border border-purple-200 dark:border-purple-800">
+                        <label className="px-4 py-2 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] dark:text-purple-300 font-bold text-xs cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/50 flex items-center justify-center gap-1.5 transition shrink-0 border border-purple-200 dark:border-purple-800">
                           <Upload className="w-3.5 h-3.5" /> Upload Image
                           <input
                             type="file"
@@ -751,7 +751,7 @@ export default function PageContentManager() {
                           placeholder="e.g. Welcome to MADHU Dairy & Daily Needs"
                           value={currentSlide?.title || ""}
                           onChange={(e) => handleHeroSlideChange(activeHeroSlide, "title", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-semibold focus:outline-none focus:border-[#6C5CE7]"
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-semibold focus:outline-none focus:border-[#075C2A]"
                         />
                       </div>
 
@@ -764,7 +764,7 @@ export default function PageContentManager() {
                           placeholder="Enter a descriptive subtitle for this slide..."
                           value={currentSlide?.subtitle || ""}
                           onChange={(e) => handleHeroSlideChange(activeHeroSlide, "subtitle", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#6C5CE7]"
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#075C2A]"
                         />
                       </div>
                     </div>
@@ -780,7 +780,7 @@ export default function PageContentManager() {
                           placeholder="e.g. Explore Products"
                           value={currentSlide?.buttonText || ""}
                           onChange={(e) => handleHeroSlideChange(activeHeroSlide, "buttonText", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#6C5CE7]"
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#075C2A]"
                         />
                       </div>
 
@@ -793,7 +793,7 @@ export default function PageContentManager() {
                           placeholder="e.g. /products or /about"
                           value={currentSlide?.buttonLink || ""}
                           onChange={(e) => handleHeroSlideChange(activeHeroSlide, "buttonLink", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#6C5CE7]"
+                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#075C2A]"
                         />
                       </div>
                     </div>
@@ -815,7 +815,7 @@ export default function PageContentManager() {
                         type="button"
                         disabled={activeHeroSlide === 2}
                         onClick={() => setActiveHeroSlide((prev) => Math.min(2, prev + 1))}
-                        className="px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-600 text-xs font-bold text-[#6C5CE7] hover:bg-purple-50 dark:hover:bg-purple-900/30 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-600 text-xs font-bold text-[#075C2A] hover:bg-purple-50 dark:hover:bg-purple-900/30 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                       >
                         Next Slide →
                       </button>
@@ -834,7 +834,7 @@ export default function PageContentManager() {
           <AdminAccordion
             title="About Us Headers & Mission"
             subtitle="Customize the titles, badge text, and mission statement on the About Us page"
-            icon={<Info className="w-5 h-5 text-[#6C5CE7]" />}
+            icon={<Info className="w-5 h-5 text-[#075C2A]" />}
             defaultExpanded={true}
           >
             <div className="space-y-4">
@@ -847,7 +847,7 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.aboutUs?.badgeText || ""}
                     onChange={(e) => handleAboutUsChange("badgeText", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
 
@@ -859,7 +859,7 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.aboutUs?.title || ""}
                     onChange={(e) => handleAboutUsChange("title", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
               </div>
@@ -872,7 +872,7 @@ export default function PageContentManager() {
                   rows={3}
                   value={formData.aboutUs?.subtitle || ""}
                   onChange={(e) => handleAboutUsChange("subtitle", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                 />
               </div>
 
@@ -885,7 +885,7 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.aboutUs?.journeyTitle || ""}
                     onChange={(e) => handleAboutUsChange("journeyTitle", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
 
@@ -897,7 +897,7 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.aboutUs?.journeySubtitle || ""}
                     onChange={(e) => handleAboutUsChange("journeySubtitle", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
               </div>
@@ -907,7 +907,7 @@ export default function PageContentManager() {
           <AdminAccordion
             title="About Us Stat Badges & Achievements"
             subtitle="Manage key trust metrics (e.g. 100% Pure, 7 AM Delivery, 50,000+ Happy Families)"
-            icon={<Sparkles className="w-5 h-5 text-[#6C5CE7]" />}
+            icon={<Sparkles className="w-5 h-5 text-[#075C2A]" />}
             defaultExpanded={true}
           >
             <div className="space-y-4">
@@ -918,7 +918,7 @@ export default function PageContentManager() {
                 <button
                   type="button"
                   onClick={addAboutStat}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-[#6C5CE7] dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-[#075C2A] dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Stat Badge
                 </button>
@@ -983,7 +983,7 @@ export default function PageContentManager() {
           <AdminAccordion
             title="Contact Us Information & Support Options"
             subtitle="Manage office address, support phone, email, and WhatsApp contact details"
-            icon={<PhoneCall className="w-5 h-5 text-[#6C5CE7]" />}
+            icon={<PhoneCall className="w-5 h-5 text-[#075C2A]" />}
             defaultExpanded={true}
           >
             <div className="space-y-5">
@@ -996,7 +996,7 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.contactUs?.badgeText || ""}
                     onChange={(e) => handleContactUsChange("badgeText", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
 
@@ -1008,7 +1008,7 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.contactUs?.title || ""}
                     onChange={(e) => handleContactUsChange("title", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
               </div>
@@ -1021,7 +1021,7 @@ export default function PageContentManager() {
                   rows={2}
                   value={formData.contactUs?.supportText || ""}
                   onChange={(e) => handleContactUsChange("supportText", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                 />
               </div>
 
@@ -1034,20 +1034,20 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.contactUs?.address || ""}
                     onChange={(e) => handleContactUsChange("address", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-[#6C5CE7]" /> Support Phone
+                      <Phone className="w-3.5 h-3.5 text-[#075C2A]" /> Support Phone
                     </label>
                     <input
                       type="text"
                       value={formData.contactUs?.phone || ""}
                       onChange={(e) => handleContactUsChange("phone", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                     />
                   </div>
 
@@ -1059,7 +1059,7 @@ export default function PageContentManager() {
                       type="email"
                       value={formData.contactUs?.email || ""}
                       onChange={(e) => handleContactUsChange("email", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                     />
                   </div>
 
@@ -1071,7 +1071,7 @@ export default function PageContentManager() {
                       type="text"
                       value={formData.contactUs?.whatsappNumber || ""}
                       onChange={(e) => handleContactUsChange("whatsappNumber", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                     />
                   </div>
                 </div>
@@ -1084,7 +1084,7 @@ export default function PageContentManager() {
                     type="text"
                     value={formData.contactUs?.googleMaps || ""}
                     onChange={(e) => handleContactUsChange("googleMaps", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#6C5CE7]"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                   />
                 </div>
               </div>
@@ -1102,7 +1102,7 @@ export default function PageContentManager() {
             </h2>
             <button
               onClick={addGoodnessOffering}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#6C5CE7] font-bold text-xs cursor-pointer hover:bg-purple-100"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-purple-100"
             >
               <Plus className="w-3.5 h-3.5" /> Add Card
             </button>
@@ -1139,9 +1139,9 @@ export default function PageContentManager() {
                       value={item.image || ""}
                       onChange={(e) => handleGoodnessChange(idx, "image", e.target.value)}
                       placeholder="Paste image URL..."
-                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-medium focus:outline-none focus:border-[#6C5CE7]"
+                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-medium focus:outline-none focus:border-[#075C2A]"
                     />
-                    <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-[#6C5CE7] dark:text-purple-300 font-bold text-[11px] cursor-pointer hover:bg-purple-100 transition">
+                    <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] dark:text-purple-300 font-bold text-[11px] cursor-pointer hover:bg-purple-100 transition">
                       <Upload className="w-3 h-3" /> Upload Image
                       <input
                         type="file"
@@ -1187,7 +1187,7 @@ export default function PageContentManager() {
             </h2>
             <button
               onClick={addFaq}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#6C5CE7] font-bold text-xs cursor-pointer hover:bg-purple-100"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-purple-100"
             >
               <Plus className="w-3.5 h-3.5" /> Add Question
             </button>
@@ -1237,7 +1237,7 @@ export default function PageContentManager() {
       {activeTab === "3dcards" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           {/* Header Bar */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 p-5 shadow-xl">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#075C2A] via-indigo-600 to-[#063B22] p-5 shadow-xl">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
             <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
@@ -1262,7 +1262,7 @@ export default function PageContentManager() {
               </div>
               <button
                 onClick={add3DCard}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-violet-700 font-bold text-sm shadow-lg hover:bg-violet-50 transition hover:scale-105 cursor-pointer shrink-0"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#0756B5] font-bold text-sm shadow-lg hover:bg-[#F5E9D0] transition hover:scale-105 cursor-pointer shrink-0"
               >
                 <Plus className="w-4 h-4" /> Add 3D Card
               </button>
@@ -1306,7 +1306,7 @@ export default function PageContentManager() {
                 <p className="text-gray-400 dark:text-gray-500 text-xs mt-1 mb-4">Add cards to populate the homepage 3D showcase</p>
                 <button
                   onClick={add3DCard}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 text-white text-sm font-bold hover:bg-violet-700 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#075C2A] text-white text-sm font-bold hover:bg-violet-700 transition cursor-pointer"
                 >
                   <Plus className="w-4 h-4" /> Add First Card
                 </button>
@@ -1360,7 +1360,7 @@ export default function PageContentManager() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{card.title || "Untitled Card"}</span>
-                        <span className="text-[10px] bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full font-bold">{card.badge || ""}</span>
+                        <span className="text-[10px] bg-violet-100 dark:bg-violet-900/50 text-[#0756B5] dark:text-violet-300 px-2 py-0.5 rounded-full font-bold">{card.badge || ""}</span>
                         {card.enabled === false && (
                           <span className="text-[10px] bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full font-bold">HIDDEN</span>
                         )}
@@ -1401,7 +1401,7 @@ export default function PageContentManager() {
                       <button
                         onClick={() => setCard3DExpanded((prev) => (prev === idx ? null : idx))}
                         title="Edit Card"
-                        className="p-1.5 rounded-xl bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 hover:bg-violet-100 transition cursor-pointer"
+                        className="p-1.5 rounded-xl bg-[#F5E9D0] dark:bg-violet-900/30 text-[#075C2A] dark:text-violet-400 hover:bg-violet-100 transition cursor-pointer"
                       >
                         {card3DExpanded === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
@@ -1426,9 +1426,9 @@ export default function PageContentManager() {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="overflow-hidden border-t border-violet-100 dark:border-violet-900/50"
+                        className="overflow-hidden border-t border-[#D5A62A] dark:border-violet-900/50"
                       >
-                        <div className="p-4 space-y-4 bg-violet-50/30 dark:bg-violet-950/20">
+                        <div className="p-4 space-y-4 bg-[#F5E9D0]/30 dark:bg-violet-950/20">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Title */}
                             <div>
@@ -1465,7 +1465,7 @@ export default function PageContentManager() {
                                       title={b}
                                       className={`text-[11px] px-1.5 py-1 rounded-lg border transition cursor-pointer ${
                                         card.badge === b
-                                          ? "border-violet-500 bg-violet-100 dark:bg-violet-900/50 text-violet-700"
+                                          ? "border-violet-500 bg-violet-100 dark:bg-violet-900/50 text-[#0756B5]"
                                           : "border-gray-200 dark:border-gray-600 text-gray-500 hover:border-violet-300"
                                       }`}
                                     >
@@ -1533,7 +1533,7 @@ export default function PageContentManager() {
                               <ImageIcon className="w-3 h-3" /> Product PNG Image (transparent background preferred)
                             </label>
                             <div className="flex items-start gap-4">
-                              <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center overflow-hidden shrink-0">
+                              <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-700 bg-[#F5E9D0] dark:bg-violet-950/30 flex items-center justify-center overflow-hidden shrink-0">
                                 {card.pngImage ? (
                                   <img src={card.pngImage} alt={card.title} className="w-full h-full object-contain" />
                                 ) : (
@@ -1548,7 +1548,7 @@ export default function PageContentManager() {
                                   placeholder="Paste image URL or upload file below"
                                   className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-violet-500"
                                 />
-                                <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 font-bold text-xs cursor-pointer hover:bg-violet-200 transition">
+                                <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-[#0756B5] dark:text-violet-300 font-bold text-xs cursor-pointer hover:bg-violet-200 transition">
                                   <Upload className="w-3.5 h-3.5" /> Upload PNG File
                                   <input
                                     type="file"
@@ -1565,7 +1565,7 @@ export default function PageContentManager() {
                           </div>
 
                           {/* Visibility Toggle */}
-                          <div className="flex items-center justify-between pt-2 border-t border-violet-100 dark:border-violet-900/50">
+                          <div className="flex items-center justify-between pt-2 border-t border-[#D5A62A] dark:border-violet-900/50">
                             <div>
                               <p className="text-xs font-bold text-gray-700 dark:text-gray-300">Card Visibility</p>
                               <p className="text-[10px] text-gray-500 dark:text-gray-400">
@@ -1634,7 +1634,7 @@ export default function PageContentManager() {
                     className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-left transition ${
                       alreadyAdded
                         ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 cursor-not-allowed"
-                        : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:text-violet-700 cursor-pointer"
+                        : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-violet-400 hover:bg-[#F5E9D0] dark:hover:bg-violet-900/20 hover:text-[#0756B5] cursor-pointer"
                     }`}
                   >
                     <span className="text-base leading-none">

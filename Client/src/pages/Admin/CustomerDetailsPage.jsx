@@ -79,7 +79,7 @@ export default function CustomerDetailsPage() {
     const gradients = [
       "from-purple-600 to-purple-800 text-white shadow-purple-500/20",
       "from-purple-700 to-zinc-900 text-white shadow-purple-900/20",
-      "from-violet-600 to-purple-900 text-white shadow-violet-500/20",
+      "from-[#075C2A] to-[#063B22] text-white shadow-violet-500/20",
       "from-zinc-800 to-purple-950 text-white shadow-zinc-800/20",
       "from-purple-500 to-violet-700 text-white shadow-purple-500/20",
       "from-zinc-900 to-purple-800 text-white shadow-purple-900/20",
@@ -104,7 +104,7 @@ export default function CustomerDetailsPage() {
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Detailed account profile, direct contact options, and complete transaction history.</p>
             </div>
           </div>
-          <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60">
+          <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60">
             Customer ID: {userId?.slice(-8)?.toUpperCase()}
           </span>
         </div>
@@ -127,16 +127,16 @@ export default function CustomerDetailsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/60 dark:border-gray-600 pb-3">
               <div>
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white">{fullName}</h2>
-                <p className="text-xs font-bold text-[#6C5CE7] dark:text-purple-300">
+                <p className="text-xs font-bold text-[#075C2A] dark:text-purple-300">
                   {username ? `@${username}` : "Registered Customer Account"}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs">
+                <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs">
                   ✓ Active Account
                 </span>
-                <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#6C5CE7] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs">
+                <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs">
                   📦 {orders.length} Total Orders
                 </span>
               </div>
@@ -146,7 +146,7 @@ export default function CustomerDetailsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
               <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-purple-100/80 dark:border-gray-700 shadow-xs space-y-0.5">
                 <span className="font-bold text-gray-400 text-[10px] uppercase block">Email Address</span>
-                <a href={`mailto:${email}`} className="font-bold text-[#6C5CE7] dark:text-purple-300 hover:underline flex items-center gap-1 truncate">
+                <a href={`mailto:${email}`} className="font-bold text-[#075C2A] dark:text-purple-300 hover:underline flex items-center gap-1 truncate">
                   <EmailIcon sx={{ fontSize: "0.95rem" }} />
                   <span className="truncate">{email || "N/A"}</span>
                 </a>
@@ -155,7 +155,7 @@ export default function CustomerDetailsPage() {
               <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-purple-100/80 dark:border-gray-700 shadow-xs space-y-0.5">
                 <span className="font-bold text-gray-400 text-[10px] uppercase block">Mobile Number</span>
                 {mobileNo ? (
-                  <a href={`tel:${mobileNo}`} className="font-bold text-[#6C5CE7] dark:text-purple-300 hover:underline flex items-center gap-1">
+                  <a href={`tel:${mobileNo}`} className="font-bold text-[#075C2A] dark:text-purple-300 hover:underline flex items-center gap-1">
                     <CallIcon sx={{ fontSize: "0.95rem" }} />
                     <span>{mobileNo}</span>
                   </a>
@@ -167,14 +167,14 @@ export default function CustomerDetailsPage() {
               <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-purple-100/80 dark:border-gray-700 shadow-xs space-y-0.5">
                 <span className="font-bold text-gray-400 text-[10px] uppercase block">Gender</span>
                 <span className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1">
-                  <PersonIcon sx={{ fontSize: "0.95rem" }} className="text-[#6C5CE7]" />
+                  <PersonIcon sx={{ fontSize: "0.95rem" }} className="text-[#075C2A]" />
                   <span>{gender || "Not Specified"}</span>
                 </span>
               </div>
 
               <div className="p-3 bg-white dark:bg-gray-800 rounded-xl border border-purple-100/80 dark:border-gray-700 shadow-xs space-y-0.5">
                 <span className="font-bold text-gray-400 text-[10px] uppercase block">Total Spent</span>
-                <span className="font-extrabold text-[#6C5CE7] dark:text-purple-300 flex items-center gap-1">
+                <span className="font-extrabold text-[#075C2A] dark:text-purple-300 flex items-center gap-1">
                   <ShoppingBagIcon sx={{ fontSize: "0.95rem" }} />
                   <span>₹{totalSpent.toFixed(2)}</span>
                 </span>
@@ -189,7 +189,7 @@ export default function CustomerDetailsPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-purple-500/20 transition"
+                className="inline-flex items-center gap-2 bg-[#075C2A] hover:bg-[#054593] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-purple-500/20 transition"
               >
                 <WhatsAppIcon sx={{ fontSize: "1.1rem" }} />
                 <span>WhatsApp Customer</span>
@@ -198,7 +198,7 @@ export default function CustomerDetailsPage() {
               {mobileNo && (
                 <a
                   href={`tel:${mobileNo}`}
-                  className="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-purple-300 hover:bg-purple-100 border border-purple-200 dark:border-purple-800 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-xs"
+                  className="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-purple-300 hover:bg-purple-100 border border-purple-200 dark:border-purple-800 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-xs"
                 >
                   <CallIcon sx={{ fontSize: "1rem" }} />
                   <span>Call {mobileNo}</span>
@@ -208,7 +208,7 @@ export default function CustomerDetailsPage() {
               {email && (
                 <a
                   href={`mailto:${email}`}
-                  className="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-950/40 text-[#6C5CE7] dark:text-purple-300 hover:bg-purple-100 border border-purple-200 dark:border-purple-800 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-xs"
+                  className="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-purple-300 hover:bg-purple-100 border border-purple-200 dark:border-purple-800 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-xs"
                 >
                   <EmailIcon sx={{ fontSize: "1rem" }} />
                   <span>Email {email}</span>
@@ -224,7 +224,7 @@ export default function CustomerDetailsPage() {
         {/* Filters & Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 dark:border-gray-700 pb-4">
           <div className="flex items-center gap-2">
-            <ShoppingBagIcon className="text-[#6C5CE7]" />
+            <ShoppingBagIcon className="text-[#075C2A]" />
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">Customer Orders History ({orders.length})</h2>
           </div>
 
@@ -276,25 +276,25 @@ export default function CustomerDetailsPage() {
             <div key={order._id} className="bg-gray-50/80 dark:bg-gray-700/40 rounded-2xl border border-gray-200/70 dark:border-gray-700 p-4 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                 <div className="flex items-center gap-1.5">
-                  <AssignmentTurnedInIcon className="text-[#6C5CE7]" fontSize="small" />
+                  <AssignmentTurnedInIcon className="text-[#075C2A]" fontSize="small" />
                   <span className="font-bold text-gray-500">Order ID:</span>
                   <span className="font-mono font-bold text-gray-900 dark:text-white">#{order._id?.slice(-8)?.toUpperCase()}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <LocationOnIcon className="text-[#6C5CE7]" fontSize="small" />
+                  <LocationOnIcon className="text-[#075C2A]" fontSize="small" />
                   <span className="font-bold text-gray-500">Address:</span>
                   <span className="font-medium text-gray-800 dark:text-gray-200 truncate">{formatFullAddress(order?.address)}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <CallIcon className="text-[#6C5CE7]" fontSize="small" />
+                  <CallIcon className="text-[#075C2A]" fontSize="small" />
                   <span className="font-bold text-gray-500">Contact:</span>
                   <span className="font-medium text-gray-800 dark:text-gray-200">{order?.address?.phone || mobileNo}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <CalendarMonthIcon className="text-[#6C5CE7]" fontSize="small" />
+                  <CalendarMonthIcon className="text-[#075C2A]" fontSize="small" />
                   <span className="font-bold text-gray-500">Ordered:</span>
                   <span className="font-medium text-gray-800 dark:text-gray-200">
                     {new Date(order.createdAt).toLocaleDateString("en-IN", {
@@ -323,7 +323,7 @@ export default function CustomerDetailsPage() {
                         <td className="px-3 py-2 font-bold text-gray-900 dark:text-white">{item?.productId?.name || "Product"}</td>
                         <td className="px-3 py-2 text-center font-bold">{item?.productQuantity || 1}</td>
                         <td className="px-3 py-2 font-medium">₹{(item?.productPrice || 0).toFixed(2)}</td>
-                        <td className="px-3 py-2 text-right font-bold text-[#6C5CE7]">
+                        <td className="px-3 py-2 text-right font-bold text-[#075C2A]">
                           ₹{((item?.productPrice || 0) * (item?.productQuantity || 1)).toFixed(2)}
                         </td>
                       </tr>
@@ -336,7 +336,7 @@ export default function CustomerDetailsPage() {
               <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-1 border-t border-gray-200/60 dark:border-gray-600">
                 <div className="flex items-center gap-3">
                   <span className="font-bold text-gray-500">
-                    Status: <span className="text-[#6C5CE7] dark:text-purple-300 font-black">{order.status || "Processing"}</span>
+                    Status: <span className="text-[#075C2A] dark:text-purple-300 font-black">{order.status || "Processing"}</span>
                   </span>
                   <span className="font-bold text-gray-500">
                     Payment Mode: <span className="text-gray-800 dark:text-gray-200 font-black">{order.paymentMode || order.paymentMethod || "COD"}</span>
@@ -344,7 +344,7 @@ export default function CustomerDetailsPage() {
                 </div>
 
                 <div className="text-sm font-black text-gray-900 dark:text-white">
-                  Total: <span className="text-[#6C5CE7] dark:text-purple-300">₹{(order.totalAmount || 0).toFixed(2)}</span>
+                  Total: <span className="text-[#075C2A] dark:text-purple-300">₹{(order.totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>

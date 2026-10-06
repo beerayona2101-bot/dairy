@@ -418,9 +418,9 @@ export default function OrderCheckoutPage() {
         {/* Right: Cart Item Badge Count */}
         <div className="flex items-center">
           <div className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 flex items-center justify-center">
-            <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} className="text-[#6C5CE7] dark:text-[#A78BFA]" />
+            <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} className="text-[#075C2A] dark:text-[#3F9E18]" />
             {cartItems?.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#6C5CE7] to-[#805AD5] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
+              <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#075C2A] to-[#054593] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
                 {cartItems.length}
               </span>
             )}
@@ -438,7 +438,7 @@ export default function OrderCheckoutPage() {
               <motion.h1
                 initial={{ opacity: 0, y: -15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-2xl sm:text-3xl font-black text-[#6C5CE7] dark:text-purple-400 tracking-tight"
+                className="text-2xl sm:text-3xl font-black text-[#075C2A] dark:text-purple-400 tracking-tight"
               >
                 Confirm Order & Payment
               </motion.h1>
@@ -459,8 +459,8 @@ export default function OrderCheckoutPage() {
                 {deliveryAddress ? (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-black uppercase text-[#6C5CE7] tracking-wider">DELIVERING TO</span>
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#6C5CE7]/10 text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/20 uppercase">
+                      <span className="text-[11px] font-black uppercase text-[#075C2A] tracking-wider">DELIVERING TO</span>
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#075C2A]/10 text-[#075C2A] font-extrabold border border-[#075C2A]/20 uppercase">
                         {deliveryAddress?.addressType || "Home"}
                       </span>
                     </div>
@@ -478,7 +478,7 @@ export default function OrderCheckoutPage() {
                     </p>
                     <Link
                       to="/cart"
-                      className="inline-block bg-[#6C5CE7] text-white px-5 py-2 rounded-full font-bold text-xs hover:bg-[#5b4cc4] shadow-md transition cursor-pointer"
+                      className="inline-block bg-[#075C2A] text-white px-5 py-2 rounded-full font-bold text-xs hover:bg-[#054593] shadow-md transition cursor-pointer"
                     >
                       Select Address in Cart &rarr;
                     </Link>
@@ -644,7 +644,7 @@ export default function OrderCheckoutPage() {
                   <button
                     disabled={orderLoading}
                     onClick={handlePaymentMode}
-                    className="w-full text-center py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-[#6C5CE7] to-[#5b4cc4] hover:brightness-105 active:scale-98 text-white font-black text-sm sm:text-base shadow-[0_10px_25px_rgba(108,92,231,0.35)] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full text-center py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-[#075C2A] to-[#054593] hover:brightness-105 active:scale-98 text-white font-black text-sm sm:text-base shadow-[0_10px_25px_rgba(108,92,231,0.35)] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Place Order →
                   </button>
@@ -704,7 +704,7 @@ export default function OrderCheckoutPage() {
                 <span>- &#8377;{formatNumberWithCommas(totalSaving)}</span>
               </div>
             )}
-            <div className="flex justify-between text-base font-black text-[#6C5CE7] dark:text-purple-400 pt-2 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex justify-between text-base font-black text-[#075C2A] dark:text-purple-400 pt-2 border-t border-gray-100 dark:border-gray-800">
               <span>Payable Amount:</span>
               <span>&#8377;{formatNumberWithCommas(totalAmount)}</span>
             </div>
@@ -729,7 +729,7 @@ export default function OrderCheckoutPage() {
             <button
               disabled={orderLoading}
               onClick={() => handlePlaceOrder("Online")}
-              className="flex items-center justify-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cc4] text-white py-3.5 px-4 rounded-full font-extrabold text-xs sm:text-sm shadow-md transition cursor-pointer disabled:opacity-50"
+              className="flex items-center justify-center gap-2 bg-[#075C2A] hover:bg-[#054593] text-white py-3.5 px-4 rounded-full font-extrabold text-xs sm:text-sm shadow-md transition cursor-pointer disabled:opacity-50"
             >
               {(orderLoading && selectedPaymentMode === "Online") ? (
                 <BuffaloLoader variant="button" text="Placing Order..." />
