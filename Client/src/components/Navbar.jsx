@@ -54,6 +54,7 @@ export default function Navbar() {
     const location = useLocation();
     const isCheckoutPage = location.pathname.includes("checkout");
     const isCartPage = location.pathname.includes("cart");
+    const isProductsCatalog = location.pathname === "/products";
     const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
     const hideNavItems = isCheckoutPage || isCartPage;
 
@@ -376,21 +377,29 @@ export default function Navbar() {
     return (
         <>
             <nav className={`fixed top-0 left-0 w-full z-50 pt-[max(env(safe-area-inset-top,0px),8px)] pb-2.5 sm:py-2 px-3.5 sm:px-8 lg:px-12 glass-navbar rounded-none border-none shadow-none translate-y-0 ${
-                (isProductsPage || isCartPage || isCheckoutPage) ? "hidden md:block" : ""
+                (isProductsCatalog || isCartPage || isCheckoutPage) ? "hidden md:block" : ""
             }`}>
                 <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
-                    {/* Desktop View Brand Logo */}
-                    <Link to="/" className="hidden md:flex items-center hover:scale-105 transition-transform py-0.5 z-10">
+                    {/* Desktop View Brand Logo: Emblem + NATURAL (Main) / Milk Dairy (Child) */}
+                    <Link to="/" className="hidden md:flex items-center gap-2.5 hover:scale-105 transition-transform py-0.5 z-10 no-underline">
                         <img
                             src={displayLogo}
-                            alt={company?.name || "Madhu Dairy & Daily Needs"}
+                            alt={company?.name || "Natural Milk Dairy"}
                             loading="eager"
                             decoding="sync"
-                            className="h-8 sm:h-9 md:h-10 lg:h-10.5 w-auto object-contain drop-shadow-sm transition-all duration-300"
+                            className="h-9 md:h-10 lg:h-11 w-auto object-contain drop-shadow-sm transition-all duration-300"
                         />
+                        <div className="flex flex-col items-start justify-center leading-none">
+                            <span className="font-black text-lg lg:text-xl tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
+                                NATURAL
+                            </span>
+                            <span className="text-[10px] lg:text-[11px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-widest uppercase leading-tight mt-0.5">
+                                Milk Dairy
+                            </span>
+                        </div>
                     </Link>
 
-                    {/* Mobile View Brand Logo & Text Unified on Left (Leaves Center Clear for Phone Notch / Dynamic Island) */}
+                    {/* Mobile View Brand Logo: NATURAL (Main) / Milk Dairy (Child) */}
                     <Link to="/" className="flex md:hidden items-center gap-2 hover:scale-105 transition-transform py-0.5 z-10 no-underline">
                         <img
                             src={cowLogoImg}
@@ -398,11 +407,11 @@ export default function Navbar() {
                             className="h-9 w-auto object-contain drop-shadow-sm shrink-0"
                         />
                         <div className="flex flex-col items-start justify-center leading-none">
-                            <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-tight">
-                                Natural Milk Dairy
+                            <span className="font-black text-sm sm:text-base tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
+                                NATURAL
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#075C2A] dark:text-[#3F9E18] tracking-wider uppercase leading-tight mt-0.5">
-                                &amp; Daily Needs
+                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-widest uppercase leading-tight mt-0.5">
+                                Milk Dairy
                             </span>
                         </div>
                     </Link>
@@ -410,7 +419,7 @@ export default function Navbar() {
 
                     {/* Center Navigation Links: Default Black Text, Active Violet with Light Glow */}
                     {!hideNavItems && (
-                        <div className="hidden md:flex items-center gap-5 sm:gap-8">
+                        <div className="hidden md:flex items-center gap-8 md:gap-10 lg:gap-12">
                             {navItems.map((item, idx) => {
                                 const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
                                 return (
@@ -530,10 +539,10 @@ export default function Navbar() {
                     <Box key="admin-menu-container">
                         <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
                             <p className="text-xs font-black text-gray-800 dark:text-gray-100">
-                                {authAdmin?.name || "MADHU Admin"}
+                                {authAdmin?.name || "Natural Admin"}
                             </p>
                             <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                                {authAdmin?.email || "admin@MADHUdairy.com"}
+                                {authAdmin?.email || "admin@naturalmilkdairy.com"}
                             </p>
                             <span className="inline-block mt-1 px-2.5 py-0.5 text-[10px] font-extrabold bg-blue-100 text-[#075C2A] rounded-full">
                                 Administrator & Shopper

@@ -21,7 +21,7 @@ export default function DairyStandardsSection({ image }) {
                     <div className="relative rounded-[28px] overflow-hidden h-[340px] sm:h-[400px] bg-gray-100 dark:bg-gray-700 group shadow-sm">
                         <img
                             src={displayImg}
-                            alt="MADHU Dairy Happy Family Quality Purity"
+                            alt="Natural Milk Dairy Happy Family Quality Purity"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                         
@@ -42,13 +42,14 @@ export default function DairyStandardsSection({ image }) {
                     <div className="space-y-6">
                         {/* Tagline */}
                         <div>
-                            <span className="text-[12px] font-extrabold uppercase tracking-widest text-[#0284C7] dark:text-[#075C2A]">
-                                MADHU DAIRY STANDARDS
+                            <span className="text-[12px] font-extrabold uppercase tracking-widest text-[#0756B5] dark:text-blue-400">
+                                NATURAL MILK DAIRY STANDARDS
                             </span>
                             <AnimatedHeading
                                 blackText="Secret Dairy Technologies &"
                                 violetText="Quality Purity"
-                                className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#2D3748] dark:text-white leading-tight mt-1"
+                                className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white leading-tight mt-1"
+                                violetClassName="text-[#0756B5] dark:text-blue-400 font-black"
                             />
                         </div>
 

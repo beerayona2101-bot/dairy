@@ -25,7 +25,7 @@ const ProductSchema = new Schema(
     quantityUnit: {
       type: String,
       required: true,
-      enum: ["Litre", "Ml", "Kg", "Gram", "Pack"],
+      default: "Pack",
     },
 
     stock: { type: Number, default: 0, min: 0 },

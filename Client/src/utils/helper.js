@@ -169,12 +169,13 @@ export const getProductImage = (item, fallbackName = "") => {
     if (n.includes("chaas") || n.includes("buttermilk") || n.includes("masala chaas")) return "/images/natural_masala_chaas.png";
     if (n.includes("khoya") || n.includes("mawa")) return "/images/natural_khoya_mawa.png";
     if (n.includes("basundi")) return "/images/natural_kesar_basundi.png";
-    if (n.includes("shrikhand")) return "/images/natural_kesar_shrikhand.png";
+    if (n.includes("shrikhand") || n.includes("amrakhand")) return "/images/natural_kesar_shrikhand.png";
     if (n.includes("cream") || n.includes("rabri")) return "/images/natural_dairy_cream.png";
     if (n.includes("gulab") || n.includes("jamun") || n.includes("sweet") || n.includes("mithai")) return "/images/natural_gulab_jamun.png";
     if (n.includes("rasgulla") || n.includes("rosogolla")) return "/images/natural_bengali_rasgulla.png";
     if (n.includes("peda")) return "/images/natural_kesar_peda.png";
-    if (n.includes("milk") || n.includes("badam")) return "/images/natural_cow_milk.png";
+    if (n.includes("kalakand") || n.includes("milk cake")) return "/images/natural_khoya_mawa.png";
+    if (n.includes("milk") || n.includes("badam") || n.includes("badham")) return "/images/natural_cow_milk.png";
   }
 
   return "/images/natural_cow_milk.png";
@@ -234,4 +235,37 @@ export const getCardBackgroundImage = (item, fallbackName = "") => {
   }
 
   return "/images/natural_cow_milk.png";
+};
+
+export const splitProductName = (rawName = "") => {
+  const name = String(rawName || "").trim();
+  if (!name) return { mainTitle: "", variantInfo: "" };
+
+  const parenMatch = name.match(/^(.*?)\s*(\([^)]+\))\s*$/);
+  if (parenMatch && parenMatch[1]) {
+    return {
+      mainTitle: parenMatch[1].trim(),
+      variantInfo: parenMatch[2].trim(),
+    };
+  }
+
+  const dashMatch = name.match(/^(.*?)\s*[-–—]\s*(\d+.*)$/);
+  if (dashMatch && dashMatch[1]) {
+    return {
+      mainTitle: dashMatch[1].trim(),
+      variantInfo: `(${dashMatch[2].trim()})`,
+    };
+  }
+
+  return {
+    mainTitle: name,
+    variantInfo: "",
+  };
+};
+
+export const formatRating = (rating) => {
+  if (rating === undefined || rating === null || rating === "") return "4.9";
+  const num = Number(rating);
+  if (isNaN(num)) return "4.9";
+  return num.toFixed(1);
 };

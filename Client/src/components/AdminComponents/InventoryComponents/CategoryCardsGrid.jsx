@@ -21,6 +21,7 @@ import { updatePageContentService } from "../../../services/pageContentService";
 import { socket } from "../../../socket/socket";
 import { useSnackbar } from "notistack";
 import { useModalBackNavigation } from "../../../hooks/useModalBackNavigation";
+import DiscountBadge from "../../Common/DiscountBadge";
 
 const fadeVariants = {
   hidden: { opacity: 0, y: 15 },
@@ -117,7 +118,7 @@ export default function CategoryCardsGrid({
       const repImage = getProductImage(items[0]);
       const defaultCard = {
         title: categoryName,
-        image: repImage || "/images/MADHU_milk.png",
+        image: repImage || "/images/natural_cow_milk.png",
         description: `Pure, fresh, high-quality ${categoryName} products delivered daily.`,
         features: ["100% Pure & Fresh", "Quality Guaranteed"],
       };
@@ -380,7 +381,7 @@ export default function CategoryCardsGrid({
                           alt={product.name}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/images/madhu_cow_milk.png";
+                            e.target.src = "/images/natural_cow_milk.png";
                           }}
                           className="w-10 h-10 object-cover rounded-xl border border-purple-100 dark:border-gray-700 shrink-0"
                         />
@@ -420,9 +421,7 @@ export default function CategoryCardsGrid({
 
                       <td className="py-3.5 px-4 text-center">
                         {hasDiscount ? (
-                          <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200">
-                            {product?.discount}% OFF
-                          </span>
+                          <DiscountBadge discount={product?.discount} size="md" />
                         ) : (
                           <span className="text-xs text-gray-400 font-medium">-</span>
                         )}
@@ -526,7 +525,7 @@ export default function CategoryCardsGrid({
                 {/* Category Image Header Only */}
                 <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
                   <img
-                    src={showcaseCard?.image || repImage || "/images/MADHU_milk.png"}
+                    src={showcaseCard?.image || repImage || "/images/natural_cow_milk.png"}
                     alt={category}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

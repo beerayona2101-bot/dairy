@@ -496,7 +496,7 @@ export default function AccountInfo() {
                         About Us
                       </h5>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Learn about MADHU Dairy & quality
+                        Learn about Natural Milk Dairy & quality
                       </p>
                     </div>
                   </div>
@@ -934,7 +934,7 @@ export default function AccountInfo() {
               Are you sure you want to permanently delete your account (<span className="font-bold">{dbData?.email}</span>)?
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-              This action cannot be undone. All your profile data, saved delivery addresses, and account details will be permanently removed from Madhu Dairy.
+              This action cannot be undone. All your profile data, saved delivery addresses, and account details will be permanently removed from Natural Milk Dairy.
             </p>
           </DialogContent>
           <DialogActions className="p-3 border-t border-red-100 dark:border-red-900/50">

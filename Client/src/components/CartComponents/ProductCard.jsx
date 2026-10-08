@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { slugify } from "../../utils/slugify";
 import { getDiscountedPrice, getProductImage } from "../../utils/helper";
 import { formatNumberWithCommas } from "../../utils/format";
+import DiscountBadge from "../Common/DiscountBadge";
 
 
 export default function ProductCard({ item, highlightOutOfStock }) {
@@ -54,16 +55,17 @@ export default function ProductCard({ item, highlightOutOfStock }) {
             {/* Left Section: Product Thumbnail + Info (Title & Subtitle) */}
             <div className="flex items-center gap-3 min-w-0 flex-1">
                 {/* Product Thumbnail */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-gray-700/50 rounded-xl overflow-hidden shrink-0 border border-gray-100 dark:border-gray-700/60 flex items-center justify-center p-1 group">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 dark:bg-gray-700/50 rounded-xl overflow-hidden shrink-0 border border-gray-100 dark:border-gray-700/60 flex items-center justify-center p-1 group">
                     <img
                         src={getProductImage({ name, image })}
                         alt={name}
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/images/madhu_cow_milk.png";
+                            e.target.src = "/images/natural_cow_milk.png";
                         }}
                         className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                     />
+                    <DiscountBadge discount={discount} isFloating={true} size="sm" containerClassName="top-1 left-1" />
                 </div>
 
                 {/* Product Title & Subtitle */}
@@ -115,11 +117,14 @@ export default function ProductCard({ item, highlightOutOfStock }) {
                 </div>
 
                 {/* Price Display */}
-                <div className="flex items-center gap-1.5 text-right">
+                <div className="flex items-center gap-1.5 text-right flex-wrap justify-end">
                     {discount > 0 && (
-                        <span className="text-xs line-through text-gray-400 font-semibold">
-                            &#8377;{formatNumberWithCommas(itemOriginalPrice)}
-                        </span>
+                        <>
+                            <span className="text-xs line-through text-gray-400 font-semibold">
+                                &#8377;{formatNumberWithCommas(itemOriginalPrice)}
+                            </span>
+                            <DiscountBadge discount={discount} size="sm" />
+                        </>
                     )}
                     <span className="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400">
                         &#8377;{formatNumberWithCommas(itemTotalPrice)}

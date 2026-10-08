@@ -19,6 +19,8 @@ import { updateAddress } from "../services/userProfileService";
 import { ProductContext } from "../context/ProductProvider";
 import { useSnackbar } from "notistack";
 import BuffaloLoader from "../components/BuffaloLoader";
+import BackButton from "../components/Common/BackButton";
+import DiscountBadge from "../components/Common/DiscountBadge";
 
 export default function CartPage() {
 
@@ -114,6 +116,16 @@ export default function CartPage() {
     if (cartItems?.length === 0) {
         return (
             <div className="w-full max-w-5xl mx-auto px-4 py-8 sm:py-14 flex flex-col items-center justify-center min-h-[55vh]">
+                {/* Desktop Web Back Button Header for Empty Cart (Web Response Only) */}
+                <div className="hidden md:flex self-start mb-4">
+                    <BackButton
+                        fallbackPath="/products"
+                        hideOnWeb={false}
+                        label="Back to Products"
+                        title="Back to Products"
+                        className="hidden md:inline-flex"
+                    />
+                </div>
                 <div className="w-full max-w-md px-4 py-8 text-center">
                     <div className="w-16 h-16 bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-[#3F9E18] rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100 dark:border-purple-900/50 shadow-xs">
                         <ShoppingCartIcon sx={{ fontSize: "2rem" }} />
@@ -135,6 +147,29 @@ export default function CartPage() {
 
     return (
         <>
+            {/* Desktop Web Top Navigation Bar: Back Button (Web Response Only) */}
+            <div className="hidden md:flex items-center justify-between w-full max-w-5xl mx-auto pt-3 sm:pt-4 pb-2 px-1 md:px-6">
+                <div className="flex items-center gap-3">
+                    <BackButton
+                        fallbackPath="/products"
+                        hideOnWeb={false}
+                        label="Back"
+                        title="Back to Previous Page"
+                        className="hidden md:inline-flex"
+                    />
+                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                        Shopping Cart
+                    </h1>
+                </div>
+                <Link
+                    to="/products"
+                    className="hidden md:inline-flex items-center gap-1.5 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] hover:underline transition-all"
+                >
+                    <span>Continue Shopping</span>
+                    <span className="text-sm font-black">&rarr;</span>
+                </Link>
+            </div>
+
             {/* Delivery Address Section (Logged-in User Only) */}
             {currentUser && (
                 <section className="w-full max-w-5xl mx-auto pt-1 sm:pt-4 pb-2 px-0 md:px-6">
@@ -300,11 +335,7 @@ export default function CartPage() {
                                                 &#8377;{formatNumberWithCommas(discountedPrice)}
                                             </span>
                                         </span>
-                                        {item.discount > 0 && (
-                                            <span className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 px-1.5 py-0.5 rounded font-bold">
-                                                {item.discount}% OFF
-                                            </span>
-                                        )}
+                                        <DiscountBadge discount={item.discount} size="sm" />
                                     </div>
 
                                     {itemSaved > 0 && (

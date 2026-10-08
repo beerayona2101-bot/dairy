@@ -74,15 +74,15 @@ export default function AdminEnquiries() {
     setTemplate(val);
     if (val === "received") {
       setReplyMessage(
-        `Dear ${selectedEnquiry?.fullName || "Customer"},\n\nThank you for reaching out to Madhu Dairy & Daily Needs! We have received your message regarding: "${selectedEnquiry?.message || ""}". Our team is processing your request and will get back to you shortly.\n\nBest regards,\nMadhu Dairy Support Team`
+        `Dear ${selectedEnquiry?.fullName || "Customer"},\n\nThank you for reaching out to Natural Milk Dairy! We have received your message regarding: "${selectedEnquiry?.message || ""}". Our team is processing your request and will get back to you shortly.\n\nBest regards,\nNatural Milk Dairy Support Team`
       );
     } else if (val === "resolved") {
       setReplyMessage(
-        `Dear ${selectedEnquiry?.fullName || "Customer"},\n\nWe are pleased to inform you that your query/inquiry has been resolved! If you have any further questions, feel free to reply directly to this mail or call us at +91 94906 44434.\n\nWarm regards,\nMadhu Dairy Admin`
+        `Dear ${selectedEnquiry?.fullName || "Customer"},\n\nWe are pleased to inform you that your query/inquiry has been resolved! If you have any further questions, feel free to reply directly to this mail or call us at +91 94906 44434.\n\nWarm regards,\nNatural Milk Dairy Admin`
       );
     } else if (val === "order_info") {
       setReplyMessage(
-        `Dear ${selectedEnquiry?.fullName || "Customer"},\n\nRegarding your enquiry about our daily fresh milk & dairy subscriptions/orders: We guarantee 100% farm-fresh delivery every morning between 5:00 AM - 7:30 AM.\n\nPlease check your account profile or reply to this email for further details.\n\nBest regards,\nMadhu Dairy Management`
+        `Dear ${selectedEnquiry?.fullName || "Customer"},\n\nRegarding your enquiry about our daily fresh milk & dairy subscriptions/orders: We guarantee 100% farm-fresh delivery every morning between 5:00 AM - 7:30 AM.\n\nPlease check your account profile or reply to this email for further details.\n\nBest regards,\nNatural Milk Dairy Management`
       );
     } else {
       setReplyMessage("");

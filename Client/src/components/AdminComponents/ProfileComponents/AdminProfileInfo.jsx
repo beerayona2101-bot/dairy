@@ -305,10 +305,10 @@ export default function AdminProfileInfo() {
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-                {formData.name || "MADHU Admin"}
+                {formData.name || "Natural Admin"}
               </h2>
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
-                @{formData.username || "admin_MADHU"} • {formData.email || "admin@MADHUdairy.com"}
+                @{formData.username || "admin_natural"} • {formData.email || "admin@naturalmilkdairy.com"}
               </p>
               <span className="inline-block mt-2 px-3 py-0.5 text-[10px] font-extrabold bg-purple-100 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 rounded-full">
                 System Administrator
@@ -381,7 +381,7 @@ export default function AdminProfileInfo() {
                     className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
                   />
                 ) : (
-                  <span className="font-bold text-slate-800 dark:text-white">{formData.name || "MADHU Admin"}</span>
+                  <span className="font-bold text-slate-800 dark:text-white">{formData.name || "Natural Admin"}</span>
                 )}
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
@@ -395,7 +395,7 @@ export default function AdminProfileInfo() {
                     className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
                   />
                 ) : (
-                  <span className="font-bold text-slate-800 dark:text-white">{formData.username || "admin_MADHU"}</span>
+                  <span className="font-bold text-slate-800 dark:text-white">{formData.username || "admin_natural"}</span>
                 )}
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
@@ -409,7 +409,7 @@ export default function AdminProfileInfo() {
                     className="px-2 py-1 bg-white dark:bg-slate-800 border rounded text-xs"
                   />
                 ) : (
-                  <span className="font-bold text-slate-800 dark:text-white">{formData.email || "admin@MADHUdairy.com"}</span>
+                  <span className="font-bold text-slate-800 dark:text-white">{formData.email || "admin@naturalmilkdairy.com"}</span>
                 )}
               </div>
               <div className="flex justify-between py-1">

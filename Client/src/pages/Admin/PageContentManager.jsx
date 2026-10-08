@@ -48,7 +48,7 @@ import BackButton from "../../components/Common/BackButton";
 const defaultHeroCarouselSlides = [
   {
     image: homeHeroBgDefault,
-    title: "Welcome to MADHU Dairy & Daily Needs",
+    title: "Welcome to Natural Milk Dairy",
     subtitle: "Experience 100% unadulterated farm-fresh milk, ghee, paneer, and sweets sourced directly from ethical farms.",
     buttonText: "Explore Products",
     buttonLink: "/products",
@@ -93,7 +93,7 @@ export default function PageContentManager() {
     showcase3DCards: [],
     aboutUs: {
       badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
-      title: "About Madhu Dairy & Daily Needs",
+      title: "About Natural Milk Dairy",
       subtitle: "Delivering unadulterated farm-fresh milk, pure ghee, paneer, and daily kitchen essentials straight to thousands of happy families every morning by 7 AM.",
       journeyTitle: "WHO WE ARE",
       journeySubtitle: "Our Journey & Mission",
@@ -108,11 +108,11 @@ export default function PageContentManager() {
       badgeText: "GET IN TOUCH",
       title: "Contact Information",
       supportText: "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
-      address: "Shed no. A-31, Madhu Dairy & Daily Needs, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
+      address: "Shed no. A-31, Natural Milk Dairy, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
       phone: "+91 94906 44434",
       email: "beerayona143@gmail.com",
       whatsappNumber: "919490644434",
-      googleMaps: "https://maps.google.com/?q=Madhu+Dairy+Ambad+Nashik",
+      googleMaps: "https://maps.google.com/?q=Natural+Milk+Dairy+Ambad+Nashik",
     },
   });
 
@@ -142,7 +142,7 @@ export default function PageContentManager() {
   useEffect(() => {
     if (pageContent) {
       setFormData({
-        companyName: pageContent.companyName || "Madhu Dairy And Daily Needs",
+        companyName: pageContent.companyName || "Natural Milk Dairy And Daily Needs",
         companyTagline: pageContent.companyTagline || "",
         companyDescription: pageContent.companyDescription || "",
         heroBannerImage: pageContent.heroBannerImage || "",
@@ -174,7 +174,7 @@ export default function PageContentManager() {
           : default3DCards,
         aboutUs: pageContent.aboutUs || {
           badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
-          title: "About Madhu Dairy & Daily Needs",
+          title: "About Natural Milk Dairy",
           subtitle: "Delivering unadulterated farm-fresh milk, pure ghee, paneer, and daily kitchen essentials straight to thousands of happy families every morning by 7 AM.",
           journeyTitle: "WHO WE ARE",
           journeySubtitle: "Our Journey & Mission",
@@ -189,11 +189,11 @@ export default function PageContentManager() {
           badgeText: "GET IN TOUCH",
           title: "Contact Information",
           supportText: "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
-          address: "Shed no. A-31, Madhu Dairy & Daily Needs, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
+          address: "Shed no. A-31, Natural Milk Dairy, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
           phone: "+91 94906 44434",
           email: "beerayona143@gmail.com",
           whatsappNumber: "919490644434",
-          googleMaps: "https://maps.google.com/?q=Madhu+Dairy+Ambad+Nashik",
+          googleMaps: "https://maps.google.com/?q=Natural+Milk+Dairy+Ambad+Nashik",
         },
       });
     }
@@ -693,8 +693,6 @@ export default function PageContentManager() {
                         alt={`Slide ${activeHeroSlide + 1} Preview`}
                         className="w-full h-full object-cover brightness-105"
                       />
-                      {/* Gradient overlay simulation */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent pointer-events-none" />
                       {/* Preview Text Overlay */}
                       <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-center max-w-lg pointer-events-none space-y-2">
                         <span className="text-[10px] uppercase tracking-wider font-bold bg-[#075C2A] text-white px-2 py-0.5 rounded w-max">
@@ -748,7 +746,7 @@ export default function PageContentManager() {
                         </label>
                         <input
                           type="text"
-                          placeholder="e.g. Welcome to MADHU Dairy & Daily Needs"
+                          placeholder="e.g. Welcome to Natural Milk Dairy"
                           value={currentSlide?.title || ""}
                           onChange={(e) => handleHeroSlideChange(activeHeroSlide, "title", e.target.value)}
                           className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-semibold focus:outline-none focus:border-[#075C2A]"

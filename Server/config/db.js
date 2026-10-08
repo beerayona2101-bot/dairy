@@ -20,319 +20,9 @@ import Admin from "../models/AdminSchema.js";
 import User from "../models/UserSchema.js";
 import Product from "../models/ProductSchema.js";
 import Order from "../models/OrderSchema.js";
+import { initialProducts } from "./initialProducts.js";
 
 let mongoMemoryInstance = null;
-
-const initialProducts = [
-  {
-    name: "MADHU Cow Milk (Full Cream)",
-    category: "Milk",
-    description: "Pure, unadulterated fresh cow milk rich in calcium, protein, and natural vitamins.",
-    image: ["https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600&q=80"],
-    quantityUnit: "Litre",
-    stock: 117,
-    manufacturingCost: 40,
-    thresholdVal: 15,
-    price: 65,
-    discount: 10,
-    type: "Full Cream",
-    shelfLife: "7 Days"
-  },
-  {
-    name: "MADHU Buffalo Toned Milk",
-    category: "Milk",
-    description: "Rich, thick, and creamy buffalo milk—ideal for tea, coffee, curd, and sweets.",
-    image: ["https://images.unsplash.com/photo-1563636619-e9143da7973b?w=600&q=80"],
-    quantityUnit: "Litre",
-    stock: 89,
-    manufacturingCost: 45,
-    thresholdVal: 10,
-    price: 72,
-    discount: 5,
-    type: "Full Cream",
-    shelfLife: "7 Days"
-  },
-  {
-    name: "MADHU Toned Cow Milk",
-    category: "Milk",
-    description: "Low-fat pasteurized cow milk packed with calcium for daily balanced fitness.",
-    image: ["https://images.unsplash.com/photo-1528750997573-59b89d66f4f7?w=600&q=80"],
-    quantityUnit: "Litre",
-    stock: 95,
-    manufacturingCost: 35,
-    thresholdVal: 12,
-    price: 54,
-    discount: 5,
-    type: "Low Fat",
-    shelfLife: "7 Days"
-  },
-  {
-    name: "MADHU Fresh Malai Paneer",
-    category: "Paneer",
-    description: "Soft, velvety fresh cottage cheese made using traditional slow curdling.",
-    image: ["https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 80,
-    manufacturingCost: 60,
-    thresholdVal: 10,
-    price: 110,
-    discount: 10,
-    type: "Organic",
-    shelfLife: "10 Days"
-  },
-  {
-    name: "MADHU Organic Desi Cow Ghee",
-    category: "Ghee",
-    description: "Authentic bilona method pure cow ghee with rich granular aroma and texture.",
-    image: ["https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 50,
-    manufacturingCost: 400,
-    thresholdVal: 5,
-    price: 650,
-    discount: 15,
-    type: "Organic",
-    shelfLife: "180 Days"
-  },
-  {
-    name: "MADHU Buffalo Desi Ghee",
-    category: "Ghee",
-    description: "Pure white buffalo ghee cooked traditionally for high smoke point cooking.",
-    image: ["https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 45,
-    manufacturingCost: 380,
-    thresholdVal: 5,
-    price: 620,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "180 Days"
-  },
-  {
-    name: "MADHU Natural Thick Curd (Dahi)",
-    category: "Curd",
-    description: "Creamy set curd naturally fermented with active probiotics for digestion.",
-    image: ["https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 100,
-    manufacturingCost: 25,
-    thresholdVal: 15,
-    price: 45,
-    discount: 5,
-    type: "Regular",
-    shelfLife: "10 Days"
-  },
-  {
-    name: "MADHU Cooking Butter",
-    category: "Butter",
-    description: "Unsalted pure cream butter perfect for baking, parathas, and gourmet dishes.",
-    image: ["https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 60,
-    manufacturingCost: 40,
-    thresholdVal: 10,
-    price: 58,
-    discount: 5,
-    type: "Regular",
-    shelfLife: "30 Days"
-  },
-  {
-    name: "MADHU Sweet Malai Lassi",
-    category: "Lassi",
-    description: "Chilled, thick sweet lassi blended with cardamom and topped with fresh malai.",
-    image: ["https://images.unsplash.com/photo-1571006682858-a457224f984f?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 65,
-    manufacturingCost: 20,
-    thresholdVal: 10,
-    price: 40,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "7 Days"
-  },
-  {
-    name: "MADHU Spiced Masala Chaas",
-    category: "Chaas",
-    description: "Refreshing digestive buttermilk with roasted cumin, rock salt, coriander, and mint.",
-    image: ["https://images.unsplash.com/photo-1626078436894-39945037d45e?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 150,
-    manufacturingCost: 12,
-    thresholdVal: 20,
-    price: 25,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "7 Days"
-  },
-  {
-    name: "MADHU Kesar Shrikhand",
-    category: "Shrikhand",
-    description: "Traditional strained yoghurt sweet infused with pure saffron and green cardamom.",
-    image: ["https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 40,
-    manufacturingCost: 70,
-    thresholdVal: 8,
-    price: 120,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "20 Days"
-  },
-  {
-    name: "MADHU Kesar Basundi",
-    category: "Basundi",
-    description: "Rich condensed sweet milk cooked with saffron strands, almonds, and pistachios.",
-    image: ["https://images.unsplash.com/photo-1579372786545-d24232daf58c?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 35,
-    manufacturingCost: 80,
-    thresholdVal: 6,
-    price: 140,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "15 Days"
-  },
-  {
-    name: "MADHU Khoya (Mawa)",
-    category: "Khoya",
-    description: "Pure evaporated solid milk dough for authentic sweet making at home.",
-    image: ["https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 50,
-    manufacturingCost: 120,
-    thresholdVal: 10,
-    price: 180,
-    discount: 5,
-    type: "Regular",
-    shelfLife: "15 Days"
-  },
-  {
-    name: "MADHU Mozzarella Cheese",
-    category: "Cheese",
-    description: "Stretchable, high-melt fresh mozzarella cheese block for pizzas and pasta.",
-    image: ["https://images.unsplash.com/photo-1552767059-ce182ead8c1b?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 75,
-    manufacturingCost: 90,
-    thresholdVal: 10,
-    price: 150,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "30 Days"
-  },
-  {
-    name: "MADHU Elaichi Shrikhand",
-    category: "Shrikhand",
-    description: "Creamy strained yogurt dessert flavored with freshly ground aromatic cardamom.",
-    image: ["https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 45,
-    manufacturingCost: 65,
-    thresholdVal: 8,
-    price: 115,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "20 Days"
-  },
-  {
-    name: "MADHU Mango Malai Lassi",
-    category: "Lassi",
-    description: "Rich blended yogurt drink infused with Alphonso mango pulp and cream.",
-    image: ["https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 70,
-    manufacturingCost: 25,
-    thresholdVal: 10,
-    price: 48,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "7 Days"
-  },
-  {
-    name: "MADHU Badam Flavored Milk",
-    category: "Flavored Milk",
-    description: "Sterilized almond milk beverage with saffron bits and real crushed almonds.",
-    image: ["https://images.unsplash.com/photo-1528750997573-59b89d66f4f7?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 90,
-    manufacturingCost: 28,
-    thresholdVal: 15,
-    price: 50,
-    discount: 5,
-    type: "High Protein",
-    shelfLife: "30 Days"
-  },
-  {
-    name: "MADHU Chocolate Flavored Milk",
-    category: "Flavored Milk",
-    description: "Delicious cocoa flavored milk treat beloved by kids and adults alike.",
-    image: ["https://images.unsplash.com/photo-1556881286-fc6915169721?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 85,
-    manufacturingCost: 25,
-    thresholdVal: 15,
-    price: 45,
-    discount: 5,
-    type: "Regular",
-    shelfLife: "30 Days"
-  },
-  {
-    name: "MADHU Creamy Malai Rabri",
-    category: "Dairy Sweets",
-    description: "Rich thickened sweetened milk layered with malai, pistachios, and saffron.",
-    image: ["https://images.unsplash.com/photo-1579372786545-d24232daf58c?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 40,
-    manufacturingCost: 75,
-    thresholdVal: 8,
-    price: 135,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "10 Days"
-  },
-  {
-    name: "MADHU Milk Powder (Premium)",
-    category: "Milk Powder",
-    description: "Spray dried instant whole milk powder for tea, coffee, and bakery recipes.",
-    image: ["https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 60,
-    manufacturingCost: 150,
-    thresholdVal: 10,
-    price: 240,
-    discount: 10,
-    type: "Regular",
-    shelfLife: "180 Days"
-  },
-  {
-    name: "MADHU Mishti Doi",
-    category: "Curd",
-    description: "Traditional Bengali caramel sweetened thick fermented yogurt dessert.",
-    image: ["https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 65,
-    manufacturingCost: 30,
-    thresholdVal: 10,
-    price: 55,
-    discount: 5,
-    type: "Regular",
-    shelfLife: "10 Days"
-  },
-  {
-    name: "MADHU Fresh Cream (Heavy)",
-    category: "Cream",
-    description: "Rich whipping cream with 40% fat content for desserts, soups, and gravies.",
-    image: ["https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600&q=80"],
-    quantityUnit: "Pack",
-    stock: 55,
-    manufacturingCost: 45,
-    thresholdVal: 10,
-    price: 75,
-    discount: 5,
-    type: "Full Cream",
-    shelfLife: "15 Days"
-  }
-];
 
 const defaultCustomers = [
   {
@@ -385,13 +75,13 @@ const defaultCustomers = [
 const seedDefaultData = async () => {
   try {
     // 1. Seed Admin
-    const adminEmail = "admin@MADHUdairy.com";
-    const existingAdmin = await Admin.findOne({ email: adminEmail });
+    const adminEmail = "admin@naturalmilkdairy.com";
+    const existingAdmin = await Admin.findOne({ email: { $in: [adminEmail, "admin@MADHUdairy.com"] } });
     if (!existingAdmin) {
       const hashedAdminPassword = await bcryptjs.hash("Admin@12345", 10);
       await Admin.create({
-        name: "MADHU Admin",
-        username: "admin_MADHU",
+        name: "Natural Admin",
+        username: "admin_natural",
         email: adminEmail,
         password: hashedAdminPassword,
         mobileNo: "9876543210",
@@ -402,7 +92,12 @@ const seedDefaultData = async () => {
           pincode: "400001",
         },
       });
-      console.log("✅ Admin Account Ready: admin@MADHUdairy.com / Admin@12345");
+      console.log("✅ Admin Account Ready: admin@naturalmilkdairy.com / Admin@12345");
+    } else if (existingAdmin.name && existingAdmin.name.includes("MADHU")) {
+      existingAdmin.name = "Natural Admin";
+      existingAdmin.username = "admin_natural";
+      existingAdmin.email = adminEmail;
+      await existingAdmin.save();
     }
 
     // 2. Seed Customers
@@ -418,12 +113,13 @@ const seedDefaultData = async () => {
     }
     console.log("✅ Seeded customer accounts");
 
-    // 3. Seed Products if count is less than 22
+    // 3. Seed Products if count is less than initialProducts.length or if legacy MADHU products exist
+    const hasLegacy = await Product.findOne({ name: /^MADHU/i });
     const productCount = await Product.countDocuments();
-    if (productCount < initialProducts.length) {
+    if (productCount < initialProducts.length || hasLegacy) {
       await Product.deleteMany({});
       await Product.insertMany(initialProducts);
-      console.log(`✅ Seeded ${initialProducts.length} dairy products into database`);
+      console.log(`✅ Seeded ${initialProducts.length} Natural Milk Dairy products into database`);
     }
 
     // 4. Migrate existing Order IDs to MD-ORD-YYMMDD-XXXX format

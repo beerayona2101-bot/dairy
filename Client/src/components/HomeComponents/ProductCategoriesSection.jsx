@@ -119,10 +119,11 @@ export default function ProductCategoriesSection({ displayCategories }) {
                     <AnimatedHeading
                         blackText="Our Product"
                         violetText="Categories"
-                        className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight justify-center"
+                        className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight justify-center"
+                        violetClassName="text-[#0756B5] dark:text-blue-400 font-black"
                     />
 
-                    <p className="text-xs sm:text-sm text-[#718096] dark:text-gray-300 font-medium max-w-xl mx-auto line-clamp-1">
+                    <p className="text-xs sm:text-sm text-slate-700 dark:text-gray-300 font-medium max-w-xl mx-auto line-clamp-1">
                         Explore our wide range of 100% pure, farm-fresh A2 dairy products delivered daily.
                     </p>
                 </div>

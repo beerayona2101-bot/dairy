@@ -178,7 +178,7 @@ export default function LoginDialog() {
             <div className="flex flex-col items-center text-center mb-3">
               <img
                 src={brandLogo}
-                alt={company?.name || "Madhu Dairy"}
+                alt={company?.name || "Natural Milk Dairy"}
                 className="h-14 sm:h-16 w-auto object-contain mb-1 drop-shadow-xs transition-transform duration-300 hover:scale-105"
               />
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
@@ -284,7 +284,7 @@ export default function LoginDialog() {
 
             {/* Terms and Conditions Note */}
             <p className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">
-              By signing in, you agree to Madhu Dairy's{" "}
+              By signing in, you agree to Natural Milk Dairy's{" "}
               <Link
                 to="/about"
                 onClick={() => setOpenLoginDialog(false)}

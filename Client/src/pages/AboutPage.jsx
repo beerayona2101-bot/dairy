@@ -22,7 +22,7 @@ export default function AboutPage() {
 
   const aboutUsData = pageContent?.aboutUs || {
     badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
-    title: "About Madhu Dairy & Daily Needs",
+    title: "About Natural Milk Dairy & Daily Needs",
     subtitle:
       "Delivering unadulterated farm-fresh milk, pure ghee, paneer, and daily kitchen essentials straight to thousands of happy families every morning by 7 AM.",
     journeyTitle: "WHO WE ARE",
@@ -72,15 +72,15 @@ export default function AboutPage() {
           >
             <img
               src={logoSrc}
-              alt="Madhu Dairy Logo"
+              alt="Natural Milk Dairy Logo"
               className="h-20 sm:h-28 md:h-32 w-auto object-contain drop-shadow-[0_8px_24px_rgba(71,122,80,0.25)] transition-transform duration-500 hover:scale-105"
             />
           </motion.div>
 
           {/* Main Headline */}
           <AnimatedHeading
-            blackText="About Madhu Dairy &"
-            violetText="Daily Needs"
+            blackText="About"
+            violetText="Natural Milk Dairy"
             as="h1"
             className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2 justify-center"
           />

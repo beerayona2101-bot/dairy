@@ -48,7 +48,7 @@ export default function DairyProductsCarousel({ half }) {
                             <img
                                 src={imgUrl}
                                 alt={title}
-                                className="w-full h-full object-cover rounded-full brightness-105 contrast-105 saturate-105 group-hover/item:scale-110 group-hover/item:brightness-110 transition-all duration-500 transform-gpu"
+                                className="w-full h-full object-cover rounded-full brightness-105 contrast-105 saturate-105 transition-all duration-300 transform-gpu"
                             />
 
                             {/* Light Gradient Overlay covering text area for high black text contrast */}

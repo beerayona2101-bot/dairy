@@ -15,7 +15,7 @@ const FARM_HERO_BG = landingHeroBgHD;
 export function MilkHealthBenefitsHero() {
     const { pageContent } = useContext(PageContentContext);
 
-    const displayCompanyName = pageContent?.companyName || company?.name || "MADHU Dairy & Daily Needs";
+    const displayCompanyName = pageContent?.companyName || company?.name || "Natural Milk Dairy";
     const displayTagline = pageContent?.companyTagline || company?.tagline || "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep";
 
     let mainTitle = displayCompanyName;
@@ -35,7 +35,7 @@ export function MilkHealthBenefitsHero() {
             <div className="relative w-full h-[400px] sm:h-[460px] md:h-[500px] rounded-[32px] sm:rounded-[36px] overflow-hidden flex items-center justify-start text-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-2 border-white/40 dark:border-white/10 group bg-white/20 dark:bg-black/30">
                 <img
                     src={FARM_HERO_BG}
-                    alt="MADHU Dairy Pasture Milk Splash 16:9"
+                    alt="Natural Milk Dairy Pasture Milk Splash 16:9"
                     className="absolute inset-0 w-full h-full object-cover object-center z-0 group-hover:scale-105 transition-transform duration-1000 ease-out"
                 />
                 <motion.div
@@ -239,7 +239,7 @@ export function DairyPromiseCardsSection() {
     const sectionRef = useRef(null);
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const displayCompanyName = pageContent?.companyName || company?.name || "MADHU Dairy & Daily Needs";
+    const displayCompanyName = pageContent?.companyName || company?.name || "Natural Milk Dairy";
     const displayGoodness = (pageContent?.goodnessOfferings && pageContent.goodnessOfferings.length > 0)
         ? pageContent.goodnessOfferings
         : defaultFeatures;

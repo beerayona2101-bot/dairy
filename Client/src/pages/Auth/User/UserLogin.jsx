@@ -179,7 +179,7 @@ export default function UserLogin() {
         <div className="flex flex-col items-center text-center mb-2 sm:mb-3">
           <img
             src={brandLogo}
-            alt={company?.name || "Madhu Dairy"}
+            alt={company?.name || "Natural Milk Dairy"}
             className="h-14 sm:h-16 w-auto object-contain mb-1 drop-shadow-xs transition-transform duration-300 hover:scale-105"
           />
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">

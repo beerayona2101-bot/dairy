@@ -163,7 +163,7 @@ export default function OtpVerification() {
         <div className="flex flex-col items-center text-center mb-6">
           <img
             src={brandLogo}
-            alt={company?.name || "Madhu Dairy"}
+            alt={company?.name || "Natural Milk Dairy"}
             className="h-20 sm:h-24 w-auto object-contain mb-2 drop-shadow-xs transition-transform duration-300 hover:scale-105"
           />
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
@@ -265,7 +265,7 @@ export default function OtpVerification() {
 
         {/* Terms and Conditions Note */}
         <p className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">
-          Protected by Madhu Dairy's{" "}
+          Protected by Natural Milk Dairy's{" "}
           <Link
             to="/about"
             className="font-bold text-slate-600 dark:text-slate-300 hover:text-[#0284C7] dark:hover:text-[#38BDF8] underline decoration-slate-300 dark:decoration-slate-600 underline-offset-2 transition-colors"

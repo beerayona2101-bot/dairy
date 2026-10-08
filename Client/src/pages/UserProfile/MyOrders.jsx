@@ -303,7 +303,7 @@ export default function MyOrders() {
                       decoding="async"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "/images/madhu_cow_milk.png";
+                        e.target.src = "/images/natural_cow_milk.png";
                       }}
                       className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-gray-200/80 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shadow-2xs"
                     />
@@ -549,13 +549,13 @@ export default function MyOrders() {
                           alt={item?.productId?.name || item?.productName || "Product"}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/images/madhu_cow_milk.png";
+                            e.target.src = "/images/natural_cow_milk.png";
                           }}
                           className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shrink-0 bg-gray-50 dark:bg-gray-800"
                         />
                         <div className="min-w-0">
                           <h5 className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white truncate">
-                            {item?.productId?.name || item?.productName || "MADHU Dairy Product"}
+                            {item?.productId?.name || item?.productName || "Natural Milk Dairy Product"}
                           </h5>
                           <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">
                             {item?.productQuantity}x &bull; {item?.productId?.quantityUnit || "1 unit"}

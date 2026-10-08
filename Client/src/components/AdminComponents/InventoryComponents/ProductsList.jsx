@@ -20,6 +20,7 @@ import { getDiscountedPrice, getProductImage } from '../../../utils/helper';
 import { formatNumberWithCommas } from '../../../utils/format';
 import { socket } from '../../../socket/socket';
 import { useSnackbar } from 'notistack';
+import DiscountBadge from '../../Common/DiscountBadge';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -293,9 +294,7 @@ export default function ProductsList({ products, loading, selectedFilter = "all"
                     </td>
                     <td className="py-3 px-3.5 whitespace-nowrap text-center">
                       {hasDiscount ? (
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-purple-50 text-[#075C2A] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200">
-                          {product?.discount}% OFF
-                        </span>
+                        <DiscountBadge discount={product?.discount} size="md" />
                       ) : (
                         <span className="text-xs text-gray-400 font-medium">-</span>
                       )}

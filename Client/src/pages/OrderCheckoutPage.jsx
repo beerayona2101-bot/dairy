@@ -14,6 +14,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BackButton from '../components/Common/BackButton';
 import AnimatedHeading from '../components/Common/AnimatedHeading';
+import DiscountBadge from '../components/Common/DiscountBadge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Slide from '@mui/material/Slide';
 
@@ -24,6 +25,7 @@ import { getDiscountedPrice } from "../utils/helper";
 import { formatNumberWithCommas } from "../utils/format";
 import { razorpayOrderPayment, verifyRazorpayPayment } from "../services/paymentService";
 import { createOrderApi } from "../services/orderService";
+import { updateAddress } from "../services/userProfileService";
 import { UserOrderContext } from "../context/UserOrderProvider";
 import { ThemeContext } from "../context/ThemeProvider";
 import { ProductContext } from "../context/ProductProvider";
@@ -304,7 +306,7 @@ export default function OrderCheckoutPage() {
           key: data.keyId,
           amount: data.amount,
           currency: data.currency,
-          name: "Madhu Dairy & Daily Needs",
+          name: "Natural Milk Dairy",
           description: "Payment for your order",
           order_id: data.orderId,
           handler: async (response) => {
@@ -534,11 +536,7 @@ export default function OrderCheckoutPage() {
                               &#8377;{formatNumberWithCommas(discountedPrice)}
                             </span>
                           </span>
-                          {item.discount > 0 && (
-                            <span className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 px-1.5 py-0.5 rounded font-bold">
-                              {item.discount}% OFF
-                            </span>
-                          )}
+                          <DiscountBadge discount={item.discount} size="sm" />
                         </div>
 
                         {itemSaved > 0 && (

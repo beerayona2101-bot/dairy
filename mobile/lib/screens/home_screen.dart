@@ -566,7 +566,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   Image.network(
                     cat['image']!,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, _, __) => Container(
+                    errorBuilder: (context, _, _) => Container(
                       color: AppTheme.primary,
                       child: const Center(
                         child: Icon(Icons.category, color: Colors.white, size: 40),
@@ -607,7 +607,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         letterSpacing: 1.2,
                         shadows: [
                           Shadow(
-                            color: Colors.black50,
+                            color: Colors.black54,
                             offset: Offset(0, 2),
                             blurRadius: 6,
                           ),

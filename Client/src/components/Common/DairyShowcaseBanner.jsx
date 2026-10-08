@@ -37,7 +37,7 @@ const FEATURES = [
 
 export default function DairyShowcaseBanner() {
   const handleDownloadApp = () => {
-    alert("Madhu Dairy Mobile App will be available soon on Play Store & App Store!");
+    alert("Natural Milk Dairy Mobile App will be available soon on Play Store & App Store!");
   };
 
   return (
@@ -46,10 +46,10 @@ export default function DairyShowcaseBanner() {
       {/* ── Centered content: Heading + Subtitle + Features ── */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
 
-        {/* HEADING */}
+        {/* HEADING: NATURAL (Main) / Milk Dairy (Child) */}
         <AnimatedHeading
-          blackText="Madhu Dairy"
-          violetText="Wide Range of Products"
+          blackText="Natural"
+          violetText="Milk Dairy Collection"
           className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.2rem] font-black text-[#1a2340] dark:text-white tracking-tight leading-tight justify-center mb-2"
           violetClassName="bg-gradient-to-r from-[#1E88E5] to-[#075C2A] bg-clip-text text-transparent"
         />
@@ -96,8 +96,8 @@ export default function DairyShowcaseBanner() {
       >
         <img
           src={madhuLineupFullwidth}
-          alt="Madhu Dairy Wide Range of Products - A2 Milk, Milk, Cow Ghee, Paneer, Curd, Butter, Lassi, Sweet Peda with milk splash"
-          className="w-full h-auto object-cover object-center block animate-banner-zoom pointer-events-none"
+          alt="Natural Milk Dairy Wide Range of Products - A2 Milk, Milk, Cow Ghee, Paneer, Curd, Butter, Lassi, Sweet Peda with milk splash"
+          className="w-full h-auto object-contain object-center block animate-banner-zoom pointer-events-none mx-auto"
           style={{ maxHeight: "clamp(220px, 38vw, 560px)" }}
           loading="lazy"
         />
@@ -128,7 +128,7 @@ export default function DairyShowcaseBanner() {
           whileTap={{ scale: 0.95 }}
           onClick={handleDownloadApp}
           className="inline-flex items-center gap-3 px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base bg-gradient-to-r from-[#1E88E5] to-[#075C2A] hover:from-[#1565C0] hover:to-[#054593] text-white shadow-[0_8px_22px_rgba(30,136,229,0.38)] transition-all duration-300 cursor-pointer border border-white/20 focus:outline-none focus:ring-4 focus:ring-blue-300/50 select-none periodic-glass-shine btn-reflection"
-          aria-label="Download the Madhu Dairy App"
+          aria-label="Download the Natural Milk Dairy App"
         >
           <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

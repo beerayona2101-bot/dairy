@@ -105,7 +105,7 @@ export default function ProductShowcase3D() {
                     priceInr: `₹${formatNumberWithCommas(discountedPrice > 0 ? discountedPrice : rawPrice)}`,
                     originalPrice: rawPrice,
                     discount: rawDiscount,
-                    discountCode: idx % 2 === 0 ? "ORGANIC15" : "MADHU20",
+                    discountCode: idx % 2 === 0 ? "ORGANIC15" : "NATURAL20",
                     badge: card.badge || "",
                     image,
                     rating: matchedRealProduct?.rating || (4.7 + (idx % 3) * 0.1).toFixed(1),
@@ -141,7 +141,7 @@ export default function ProductShowcase3D() {
                 priceInr: `₹${formatNumberWithCommas(discountedPrice > 0 ? discountedPrice : rawPrice)}`,
                 originalPrice: rawPrice,
                 discount: rawDiscount,
-                discountCode: idx % 2 === 0 ? "ORGANIC15" : "MADHU20",
+                discountCode: idx % 2 === 0 ? "ORGANIC15" : "NATURAL20",
                 image: image,
                 rating: item.rating || (4.7 + (idx % 3) * 0.1).toFixed(1),
                 reviewsCount: 120 + idx * 25,
@@ -322,7 +322,7 @@ export default function ProductShowcase3D() {
     const handleShare = () => {
         const shareData = {
             title: currentSlide.title,
-            text: `Check out ${currentSlide.title} on MADHU Dairy!`,
+            text: `Check out ${currentSlide.title} on Natural Milk Dairy!`,
             url: window.location.href,
         };
 

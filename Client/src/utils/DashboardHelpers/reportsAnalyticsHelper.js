@@ -172,12 +172,12 @@ export const getReportAnalyticsData = (
 
   // 4. Product Sales Growth & Bar Chart Data
   const productGrowthData = (products?.length > 0 ? products : [
-    { name: "Madhu Fresh Whole Cow Milk", category: "Milk", stock: 85 },
-    { name: "Madhu Fresh Malai Paneer", category: "Paneer", stock: 50 },
-    { name: "Madhu Organic Desi Cow Ghee", category: "Ghee", stock: 40 },
-    { name: "Madhu Natural Thick Curd", category: "Curd", stock: 60 },
-    { name: "Madhu Soft Gulab Jamun", category: "Sweets", stock: 45 },
-    { name: "Madhu Creamy Kesar Basundi", category: "Dessert", stock: 30 },
+    { name: "Natural Farm Fresh Cow Milk (Full Cream - 1 Litre)", category: "Milk", stock: 85 },
+    { name: "Natural Fresh Malai Paneer (500g Value Pack)", category: "Paneer", stock: 50 },
+    { name: "Natural Traditional Bilona Cow Ghee (500ml Glass Jar)", category: "Ghee", stock: 40 },
+    { name: "Natural Thick Farm Fresh Curd (400g Pouch)", category: "Curd", stock: 60 },
+    { name: "Natural Pure Desi Ghee Gulab Jamun (500g Box)", category: "Dairy Sweets", stock: 45 },
+    { name: "Natural Creamy Kesar Basundi (500ml Bottle)", category: "Basundi", stock: 30 },
   ]).slice(0, 6).map((p, idx) => {
     const baseSold = p.totalQuantitySold || [142, 98, 76, 64, 52, 41][idx % 6];
     const unitPrice = p.price || [65, 120, 550, 45, 180, 220][idx % 6];
@@ -186,7 +186,7 @@ export const getReportAnalyticsData = (
 
     return {
       id: p._id || p.id || `prod_${idx}`,
-      name: p.name || `Madhu Dairy Product ${idx + 1}`,
+      name: p.name || `Natural Dairy Product ${idx + 1}`,
       category: p.category || "Dairy",
       sold: baseSold,
       revenue: revenue,

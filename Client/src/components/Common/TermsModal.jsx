@@ -8,7 +8,7 @@ export default function TermsModal({ isOpen, onClose, onAccept, initialTab = "te
 
   if (!isOpen) return null;
 
-  const companyName = company?.name || "Madhu Dairy & Daily Needs";
+  const companyName = company?.name || "Natural Milk Dairy";
 
   return (
     <AnimatePresence>

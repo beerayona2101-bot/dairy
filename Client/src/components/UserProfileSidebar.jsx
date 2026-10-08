@@ -119,7 +119,7 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
                     </div>
 
                     <h2 className="text-base font-extrabold mt-2 text-[#2D3748] dark:text-white tracking-tight text-center">
-                        {authAdmin ? (authAdmin?.name || "Madhu Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}
+                        {authAdmin ? (authAdmin?.name || "Natural Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}
                     </h2>
                 </div>
 

@@ -334,7 +334,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                                 'assets/images/cowLogo.png',
                                 fit: BoxFit.contain,
                                 filterQuality: FilterQuality.high,
-                                errorBuilder: (_, __, ___) => const Icon(
+                                errorBuilder: (_, _, _) => const Icon(
                                   Icons.eco_rounded,
                                   size: 60,
                                   color: Color(0xFF6C5CE7),

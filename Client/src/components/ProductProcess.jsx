@@ -53,9 +53,10 @@ export default function ProductProcess() {
                     <AnimatedHeading
                         blackText="Bringing Natural Freshness Back to"
                         violetText="Your Kitchen"
-                        className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-3 justify-center"
+                        className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3 justify-center"
+                        violetClassName="text-[#0756B5] dark:text-blue-400 font-black"
                     />
-                    <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+                    <p className="text-slate-700 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-medium">
                         Better everyday health begins with the basics. We ensure everything in
                         your kitchen is thoroughly tested for purity, taste, and safety.
                     </p>

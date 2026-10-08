@@ -1,18 +1,33 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { CartContext } from "../../context/CartProvider";
 
+/**
+ * FloatingCart
+ * Strictly displayed on Mobile App and Mobile Response viewports (< 768px).
+ * Completely removed and unmounted on Web Response (desktop / tablet web viewports >= 768px).
+ */
 export default function FloatingCart() {
   const navigate = useNavigate();
   const location = useLocation();
   const { cartItems } = useContext(CartContext) || {};
 
-  // Exclude from Home page only
-  if (location.pathname === "/" || location.pathname === "/home") {
-    return null;
-  }
+  // Responsive screen state: Only mount on mobile viewports (< 768px)
+  const [isMobileViewport, setIsMobileViewport] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileViewport(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const totalItemsCount = useMemo(() => {
     if (!Array.isArray(cartItems)) return 0;
@@ -21,54 +36,91 @@ export default function FloatingCart() {
 
   const hasItems = totalItemsCount > 0;
 
+  // 1. HARD REMOVAL ON WEB RESPONSE:
+  // If viewport width >= 768px, do not render into DOM at all.
+  if (!isMobileViewport) {
+    return null;
+  }
+
+  // 2. PATH EXCLUSIONS:
+  const pathname = (location.pathname || "").toLowerCase();
+  
+  // Never show on Cart or Checkout pages (user is already viewing/completing cart) or Admin routes
+  if (
+    pathname.startsWith("/cart") ||
+    pathname.startsWith("/order-checkout") ||
+    pathname.startsWith("/checkout") ||
+    pathname.startsWith("/admin")
+  ) {
+    return null;
+  }
+
+  // On Home or About/Contact pages, only show when there are active items in cart
+  const isBrowsePage =
+    pathname.startsWith("/products") || pathname.startsWith("/product-details");
+  if (!isBrowsePage && !hasItems) {
+    return null;
+  }
+
+  // 3. ADAPTIVE MOBILE POSITIONING:
+  // On pages with the bottom navigation bar (height ~72px), float nicely above it.
+  // On product-details (where bottom nav is hidden), float comfortably above bottom safe area.
+  const isProductDetails = pathname.startsWith("/product-details");
+  const bottomPositionClass = isProductDetails
+    ? "bottom-[calc(22px+env(safe-area-inset-bottom,0px))]"
+    : "bottom-[calc(84px+env(safe-area-inset-bottom,0px))]";
+
   return (
-    <div className="fixed right-4 sm:right-6 lg:right-8 bottom-20 sm:bottom-22 lg:bottom-8 z-40 pointer-events-auto">
+    <div
+      className={`md:hidden fixed right-4 z-40 pointer-events-auto transition-all duration-300 ${bottomPositionClass}`}
+      style={{ WebkitTapHighlightColor: "transparent" }}
+    >
       <AnimatePresence mode="wait">
         {hasItems ? (
-          /* CIRCULAR FLOATING CART BUTTON WITH NUMBER BADGE */
+          /* CIRCULAR FLOATING CART BUTTON WITH NUMBER BADGE (ACTIVE) */
           <motion.button
             key="floating-cart-active"
-            initial={{ opacity: 0, scale: 0.8, y: 15 }}
+            initial={{ opacity: 0, scale: 0.7, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 15 }}
-            whileHover={{ scale: 1.08, y: -2 }}
-            whileTap={{ scale: 0.94 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            exit={{ opacity: 0, scale: 0.7, y: 15 }}
+            whileHover={{ scale: 1.06, y: -2 }}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 450, damping: 24 }}
             onClick={() => navigate("/cart")}
-            className="relative flex items-center justify-center w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-[#075C2A] to-[#0756B5] text-white shadow-[0_8px_25px_rgba(7,86,181,0.45)] hover:shadow-[0_12px_32px_rgba(7,86,181,0.65)] border border-white/30 dark:border-white/20 backdrop-blur-md cursor-pointer transition-shadow"
+            className="relative flex items-center justify-center w-13 h-13 rounded-full bg-gradient-to-tr from-[#075C2A] via-[#054593] to-[#0756B5] text-white shadow-[0_8px_25px_rgba(7,86,181,0.45)] active:shadow-[0_4px_15px_rgba(7,86,181,0.3)] border border-white/35 backdrop-blur-md cursor-pointer select-none"
             title={`View Cart (${totalItemsCount} items)`}
             aria-label={`View Cart (${totalItemsCount} items)`}
           >
             {/* Center Shopping Cart Icon */}
-            <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <ShoppingCart className="w-5.5 h-5.5 text-white drop-shadow-sm" />
 
-            {/* Prominent Number Identification Badge */}
+            {/* Item Counter Badge */}
             <motion.span
               key={totalItemsCount}
-              initial={{ scale: 0.4 }}
+              initial={{ scale: 0.3 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 500, damping: 20 }}
-              className="absolute -top-1 -right-1 bg-[#35A8E8] text-white text-[11px] font-black min-w-[21px] h-[21px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md"
+              className="absolute -top-1 -right-1 bg-[#35A8E8] text-white text-[11px] font-black min-w-[22px] h-[22px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md leading-none"
             >
-              {totalItemsCount}
+              {totalItemsCount > 99 ? "99+" : totalItemsCount}
             </motion.span>
           </motion.button>
         ) : (
-          /* MINIMAL EMPTY FLOATING CART BUTTON */
+          /* MINIMAL EMPTY FLOATING CART BUTTON (ON PRODUCTS BROWSING) */
           <motion.button
             key="floating-cart-empty"
-            initial={{ opacity: 0, scale: 0.8, y: 15 }}
+            initial={{ opacity: 0, scale: 0.7, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 15 }}
-            whileHover={{ scale: 1.08, y: -2 }}
-            whileTap={{ scale: 0.94 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            exit={{ opacity: 0, scale: 0.7, y: 15 }}
+            whileHover={{ scale: 1.06, y: -2 }}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 450, damping: 24 }}
             onClick={() => navigate("/cart")}
-            className="relative flex items-center justify-center w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white dark:bg-[#1E293B] text-[#075C2A] dark:text-blue-400 border border-slate-200/90 dark:border-slate-700/80 shadow-[0_6px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_10px_28px_rgba(7,86,181,0.35)] cursor-pointer transition-all"
+            className="relative flex items-center justify-center w-12 h-12 rounded-full bg-white/95 dark:bg-slate-800/95 text-[#0756B5] dark:text-blue-400 border border-slate-200/90 dark:border-slate-700/80 shadow-[0_6px_20px_rgba(0,0,0,0.12)] active:shadow-sm cursor-pointer select-none backdrop-blur-md"
             title="View Cart"
             aria-label="View Cart"
           >
-            <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ShoppingCart className="w-5 h-5" />
           </motion.button>
         )}
       </AnimatePresence>

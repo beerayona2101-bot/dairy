@@ -80,7 +80,7 @@ function Footer() {
           <Link to="/" className="inline-block">
             <img
               src={currentLogo}
-              alt={company?.name || "MADHU Dairy"}
+              alt={company?.name || "Natural Milk Dairy"}
               loading="eager"
               decoding="sync"
               className="h-10 w-auto object-contain"
@@ -133,7 +133,7 @@ function Footer() {
 
         {/* Copyright */}
         <div className="border-t border-[#1E293B] pt-2.5 pb-1 text-[10px] text-[#475569] font-medium text-center">
-          © {new Date().getFullYear()} {company?.name || "MADHU Dairy"} · Made with ❤️ for pure living
+          © {new Date().getFullYear()} {company?.name || "Natural Milk Dairy"} · Made with ❤️ for pure living
         </div>
       </div>
 
@@ -151,7 +151,7 @@ function Footer() {
             <Link to="/" className="inline-block hover:scale-105 transition-transform">
               <img
                 src={currentLogo}
-                alt={company?.name || "MADHU Dairy"}
+                alt={company?.name || "Natural Milk Dairy"}
                 loading="eager"
                 decoding="sync"
                 className="h-14 w-auto object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
@@ -209,7 +209,7 @@ function Footer() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <p>© {new Date().getFullYear()} {company?.name || "MADHU Dairy"}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {company?.name || "Natural Milk Dairy"}. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span>Crafted with</span>
             <span className="text-red-400">❤️</span>

@@ -22,7 +22,7 @@ import { formatNumberWithCommas } from "../utils/format";
 import { fallbackProducts } from "../data/fallbackProducts";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
 import BackButton from "../components/Common/BackButton";
-import FloatingCart from "../components/Common/FloatingCart";
+import DiscountBadge from "../components/Common/DiscountBadge";
 
 export default function ProductDetailsPage() {
 
@@ -171,11 +171,7 @@ export default function ProductDetailsPage() {
                                                 alt={product?.name}
                                                 className="w-full h-full object-contain p-2.5 group-hover:scale-108 transition-transform duration-300 ease-out"
                                             />
-                                            {prodDiscount > 0 && (
-                                                <span className="absolute top-2 right-2 bg-[#075C2A] text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-xs">
-                                                    {prodDiscount}% OFF
-                                                </span>
-                                            )}
+                                            <DiscountBadge discount={prodDiscount} isFloating={true} />
                                         </Link>
 
                                         <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1">
@@ -248,9 +244,6 @@ export default function ProductDetailsPage() {
                     </div>
                 )}
             </section>
-
-            {/* Floating Cart Button (Right Side) */}
-            <FloatingCart />
         </>
     )
 }

@@ -6,15 +6,15 @@ import wsManager from "../socket/WebSocketManager";
 export const PageContentContext = createContext();
 
 const defaultInitialContent = {
-  companyName: "MADHU Dairy And Daily Needs",
+  companyName: "Natural Milk Dairy",
   companyTagline: "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep",
   companyDescription:
-    "MADHU Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
+    "Natural Milk Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
   heroBannerImage: "/assets/hero_carousel_slide_1.png",
   heroCarouselSlides: [
     {
       image: "/assets/hero_carousel_slide_1.png",
-      title: "Welcome to MADHU Dairy & Daily Needs",
+      title: "Welcome to Natural Milk Dairy",
       subtitle: "Experience 100% unadulterated farm-fresh milk, ghee, paneer, and sweets sourced directly from ethical farms.",
       buttonText: "Explore Products",
       buttonLink: "/products",

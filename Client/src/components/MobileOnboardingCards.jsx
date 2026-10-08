@@ -290,16 +290,21 @@ export default function MobileOnboardingCards({ forceShow = false, onClose }) {
       <div className="w-full max-w-sm flex-1 flex flex-col justify-between h-full max-h-[96vh]">
         {/* Top Header Bar */}
         <div className="flex items-center justify-between py-2 px-1 shrink-0">
-          {/* Brand Logo Mini */}
+          {/* Brand Logo Mini: NATURAL (Main) / Milk Dairy (Child) */}
           <div className="flex items-center gap-2">
             <img
               src={cowLogo}
-              alt="Madhu Dairy"
+              alt="Natural Milk Dairy"
               className="h-9 w-auto object-contain filter drop-shadow-sm"
             />
-            <span className="text-white font-black text-sm tracking-tight hidden xs:inline">
-              Madhu Dairy
-            </span>
+            <div className="flex flex-col items-start leading-none">
+              <span className="text-white font-black text-sm tracking-tight leading-none">
+                NATURAL
+              </span>
+              <span className="text-blue-200 font-extrabold text-[9px] tracking-widest uppercase leading-tight mt-0.5">
+                Milk Dairy
+              </span>
+            </div>
           </div>
 
           {/* Step Pill + Skip Button */}

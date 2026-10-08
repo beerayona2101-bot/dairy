@@ -2,15 +2,15 @@ import PageContent from "../models/PageContentSchema.js";
 import { uploadToCloudinary } from "../config/cloudinary.js";
 
 const defaultInitialContent = {
-  companyName: "MADHU Dairy And Daily Needs",
+  companyName: "Natural Milk Dairy",
   companyTagline: "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep",
   companyDescription:
-    "MADHU Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
+    "Natural Milk Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms. High quality, hygienic packaging, and daily morning delivery.",
   heroBannerImage: "/assets/hero_carousel_slide_1.png",
   heroCarouselSlides: [
     {
       image: "/assets/hero_carousel_slide_1.png",
-      title: "Welcome to MADHU Dairy & Daily Needs",
+      title: "Welcome to Natural Milk Dairy",
       subtitle: "Experience 100% unadulterated farm-fresh milk, ghee, paneer, and sweets sourced directly from ethical farms.",
       buttonText: "Explore Products",
       buttonLink: "/products",
@@ -129,8 +129,8 @@ const defaultInitialContent = {
   ],
   faqs: [
     {
-      question: "Why is MADHU Dairy and Daily Needs best for me?",
-      answer: "MADHU Dairy and Daily Needs provides 100% pure, unadulterated dairy products with no preservatives, artificial colors, or harmful additives.",
+      question: "Why is Natural Milk Dairy and Daily Needs best for me?",
+      answer: "Natural Milk Dairy and Daily Needs provides 100% pure, unadulterated dairy products with no preservatives, artificial colors, or harmful additives.",
     },
     {
       question: "How do you ensure quality?",

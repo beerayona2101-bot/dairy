@@ -1,230 +1,84 @@
-import { useContext, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { faqs, products } from "../data/products";
+import { useContext, useMemo } from "react";
 import { PageContentContext } from "../context/PageContentProvider";
 import { ProductContext } from "../context/ProductProvider";
-import { slugify } from "../utils/slugify";
-import { getCardBackgroundImage } from "../utils/helper";
-import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
+import { faqs as defaultFaqs } from "../data/products";
+import ScrollReveal from "../components/Common/ScrollReveal";
+
+// Modular Homepage Components
 import MobileWelcomeBanner from "../components/HomeComponents/MobileWelcomeBanner";
-import ProductVarietyCard from "../components/ProductComponents/ProductVarietyCard";
+import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
+import FeaturedProductsSection from "../components/HomeComponents/FeaturedProductsSection";
+import ProductCategoriesGrid from "../components/HomeComponents/ProductCategoriesGrid";
+import AboutBrandPreview from "../components/HomeComponents/AboutBrandPreview";
+import WhyChooseUsSection from "../components/HomeComponents/WhyChooseUsSection";
+import FarmToTableSection from "../components/HomeComponents/FarmToTableSection";
+import CustomerTrustSection from "../components/HomeComponents/CustomerTrustSection";
+import HomeFaqSection from "../components/HomeComponents/HomeFaqSection";
+import HomeContactCta from "../components/HomeComponents/HomeContactCta";
 
-// ── FAQ Item ─────────────────────────────────────────────
-function FaqItem({ question, answer }) {
-    const [open, setOpen] = useState(false);
-    return (
-        <div className="border-b border-gray-100 dark:border-gray-800">
-            <button
-                onClick={() => setOpen(!open)}
-                className="w-full flex items-center justify-between py-4 px-0 text-left cursor-pointer transition-colors"
-            >
-                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 pr-4 leading-snug">{question}</span>
-                <span className="text-[#0756B5] dark:text-[#35A8E8] text-xl font-bold shrink-0">{open ? "−" : "+"}</span>
-            </button>
-            {open && (
-                <div className="pb-4">
-                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{answer}</p>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// ── Main Page ─────────────────────────────────────────────
 export default function HomePage() {
     const { pageContent } = useContext(PageContentContext);
     const { products: liveProducts } = useContext(ProductContext);
-    const [visibleCount, setVisibleCount] = useState(8);
-    const [selectedCategory, setSelectedCategory] = useState("All");
 
-    // ── Data ──
-    const displayFaqs = (pageContent?.faqs?.length > 0) ? pageContent.faqs : faqs;
-
-
-    // Visual Category Cards Grid
-    const categoryGrid = useMemo(() => {
-        const cardMap = new Map();
-        products.forEach((p) => {
-            const title = p.title || p.name;
-            if (title) cardMap.set(title.toLowerCase().trim(), {
-                title, image: getCardBackgroundImage(p, title),
-            });
-        });
-        if (Array.isArray(pageContent?.homeCategoryCards)) {
-            pageContent.homeCategoryCards.forEach((c) => {
-                const title = c?.title || c?.name;
-                if (title) cardMap.set(title.toLowerCase().trim(), {
-                    title, image: getCardBackgroundImage(c, title),
-                });
-            });
-        }
-        return Array.from(cardMap.values());
+    // FAQs fallback
+    const displayFaqs = useMemo(() => {
+        return pageContent?.faqs?.length > 0 ? pageContent.faqs : defaultFaqs;
     }, [pageContent]);
 
-    const featuredProducts = useMemo(() => {
-        return (liveProducts || []).slice(0, 8);
-    }, [liveProducts]);
-
-    // Available Category Filter Tabs
-    const availableCategoryTabs = useMemo(() => {
-        const set = new Set(["All"]);
-        (liveProducts || []).forEach((p) => {
-            const c = p?.category || p?.type;
-            if (c && typeof c === "string" && c.trim()) {
-                const clean = c.trim();
-                set.add(clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase());
-            }
-        });
-        return Array.from(set);
-    }, [liveProducts]);
-
-    // Filtered Products for "Our Products"
-    const filteredProducts = useMemo(() => {
-        const list = Array.isArray(liveProducts) && liveProducts.length > 0 ? liveProducts : [];
-        if (selectedCategory === "All") return list;
-        const sel = selectedCategory.toLowerCase();
-        return list.filter((p) => {
-            const cat = (p?.category || "").toLowerCase();
-            const type = (p?.type || "").toLowerCase();
-            const name = (p?.name || p?.title || "").toLowerCase();
-            return cat.includes(sel) || type.includes(sel) || name.includes(sel);
-        });
-    }, [liveProducts, selectedCategory]);
-
     return (
-        <div className="bg-gray-50 dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-100 transition-colors">
-
-            {/* ── WELCOME BANNER (In between Nav and Home Carousel) ── */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-1">
+        <div className="bg-[#FAFBFD] dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
+            {/* Mobile Only: Dynamic Welcome Greeting & Time Pill Banner */}
+            <div className="md:hidden max-w-7xl mx-auto px-3 sm:px-6 pt-1.5 pb-2.5">
                 <MobileWelcomeBanner />
             </div>
 
-            {/* ── HERO BANNER / HOME CAROUSEL ─────────────────────────────── */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-1 sm:pt-2 pb-1">
+            {/* 1. HERO SECTION: Full-width 100% Viewport on Web, Balanced Card on Mobile */}
+            <div className="w-full max-w-7xl md:max-w-none mx-auto px-3 sm:px-6 md:px-0 pb-3 md:pb-0">
                 <HomeWelcomeHero />
             </div>
 
-            {/* ── PAGE BODY ────────────────────────────────── */}
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
+            {/* Main Content Sections with Spacious, Elegant Layout */}
+            <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-12 sm:space-y-18">
 
-                {/* ① FEATURED PRODUCTS */}
+                {/* 1. FEATURED PRODUCTS (Handpicked Farm Favourites with Instant Cart) */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <FeaturedProductsSection products={liveProducts} />
+                </ScrollReveal>
 
-                {/* ② FEATURED PRODUCTS */}
-                {featuredProducts.length > 0 && (
-                    <section className="pt-2 pb-2">
-                        <div className="flex items-center justify-between mb-4">
-                            <div>
-                                <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400">Featured Products</h2>
-                                <p className="text-[11px] text-gray-500 dark:text-gray-400">Hand-picked farm favourites delivered daily</p>
-                            </div>
-                            <Link to="/products" className="text-xs sm:text-sm text-[#075C2A] dark:text-blue-400 font-bold hover:underline">
-                                View All →
-                            </Link>
-                        </div>
-                        {/* Mobile: horizontal scroll | Desktop: 4-col grid */}
-                        <div className="flex gap-4 overflow-x-auto no-scrollbar sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:overflow-visible pb-2 pt-1">
-                            {featuredProducts.map((product, idx) => (
-                                <div
-                                    key={`fp-${product?._id || idx}`}
-                                    className="shrink-0 w-48 sm:w-auto h-full flex flex-col"
-                                >
-                                    <ProductVarietyCard product={product} />
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                )}
+                {/* 4. PRODUCT CATEGORIES (Visual Cards Grid for Milk, Paneer, Ghee, Curd, etc.) */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <ProductCategoriesGrid pageContent={pageContent} liveProducts={liveProducts} />
+                </ScrollReveal>
 
-                {/* ③ OUR PRODUCTS (With Category Filter & Full Cart/Wishlist Buttons) */}
-                <section className="pt-2 pb-2">
-                    <div className="mb-4">
-                        <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400">Our Products</h2>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400">Pure, organic & farm-fresh with instant cart access</p>
-                    </div>
+                {/* 5. ABOUT THE BRAND (Compact About Us Preview with 4 Core Stats & Brand Story) */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <AboutBrandPreview />
+                </ScrollReveal>
 
-                    {/* Product Cards Grid */}
-                    {filteredProducts.length === 0 ? (
-                        <div className="py-12 text-center text-gray-400 text-sm bg-white dark:bg-slate-800/40 rounded-2xl border border-dashed border-gray-200 dark:border-slate-700">
-                            No products found in this category.
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                            {filteredProducts.slice(0, visibleCount).map((product, index) => (
-                                <ProductVarietyCard
-                                    key={`catalog-p-${product?._id || index}`}
-                                    product={product}
-                                />
-                            ))}
-                        </div>
-                    )}
+                {/* 6. WHY CHOOSE US (6 Benefits: Freshness, Ethical Sourcing, 4°C Cold Chain, etc.) */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <WhyChooseUsSection />
+                </ScrollReveal>
 
-                    {/* Load More / Explore All */}
-                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                        {visibleCount < filteredProducts.length ? (
-                            <button
-                                onClick={() => setVisibleCount((p) => p + 8)}
-                                className="bg-[#075C2A] hover:bg-[#054593] text-white text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105"
-                            >
-                                Load More Products ({filteredProducts.length - visibleCount} more)
-                            </button>
-                        ) : null}
-                        <Link
-                            to="/products"
-                            className="border border-[#075C2A] text-[#075C2A] dark:text-blue-400 hover:bg-[#075C2A]/10 text-xs sm:text-sm font-bold px-7 py-2.5 rounded-full transition-all hover:scale-105"
-                        >
-                            Explore All in Catalog →
-                        </Link>
-                    </div>
-                </section>
+                {/* 7. VISUAL PRODUCT / FARM-TO-TABLE FRESHNESS JOURNEY */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <FarmToTableSection />
+                </ScrollReveal>
 
-                {/* ④ EXPLORE CATEGORIES (Visual Cards Grid) */}
-                <section className="pt-2 pb-2">
-                    <div className="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400">Explore Goodness</h2>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400">Browse by dairy family</p>
-                        </div>
-                        <Link to="/products" className="text-xs sm:text-sm text-[#075C2A] dark:text-blue-400 font-bold hover:underline">
-                            View All →
-                        </Link>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {categoryGrid.slice(0, 8).map((cat, index) => (
-                            <Link
-                                key={`cat-grid-${index}`}
-                                to={`/products/${slugify(cat?.title || cat?.name || "")}`}
-                                className="block rounded-xl overflow-hidden border border-[#D5A62A]/30 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-[#0756B5] dark:hover:border-emerald-500 hover:shadow-[0_4px_20px_rgba(7,92,42,0.18)] transition-all duration-200 group"
-                            >
-                                <div className="relative h-40 sm:h-48 bg-gradient-to-br from-[#F5E9D0]/50 via-emerald-50/30 to-[#FFFDF7] dark:from-slate-800 dark:to-slate-900 overflow-hidden">
-                                    <img
-                                        src={cat.image}
-                                        alt={cat?.title || cat?.name}
-                                        loading="lazy"
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                    />
-                                    {/* Gradient overlay at bottom */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                                    <div className="absolute bottom-2 left-2 right-2">
-                                        <p className="text-xs sm:text-sm font-bold text-white drop-shadow truncate">
-                                            {cat?.title || cat?.name}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
+                {/* 8. CUSTOMER / TRUST SECTION (4.9 Rating, Verified Reviews, Certifications) */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <CustomerTrustSection />
+                </ScrollReveal>
 
-                {/* ⑤ FAQ */}
-                <section className="pt-2 pb-4">
-                    <h2 className="text-base sm:text-lg font-black text-[#0756B5] dark:text-emerald-400 mb-1">Frequently Asked Questions</h2>
-                    <p className="text-xs text-gray-400 mb-4">Everything you need to know about our farm-fresh products.</p>
-                    <div className="bg-white dark:bg-slate-800/80 rounded-2xl p-4 sm:p-6 border border-gray-100 dark:border-slate-800 shadow-xs">
-                        {displayFaqs.slice(0, 8).map((faq, i) => (
-                            <FaqItem key={i} question={faq.question} answer={faq.answer} />
-                        ))}
-                    </div>
-                </section>
+                {/* 9. FAQ ACCORDION */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <HomeFaqSection faqs={displayFaqs} />
+                </ScrollReveal>
+
+                {/* 10. CONTACT / DELIVERY CTA ("Freshness Delivered to Your Door Every Morning") */}
+                <ScrollReveal yOffset={30} duration={0.65}>
+                    <HomeContactCta />
+                </ScrollReveal>
 
             </div>
         </div>

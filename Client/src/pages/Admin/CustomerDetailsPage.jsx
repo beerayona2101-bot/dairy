@@ -29,7 +29,7 @@ export default function CustomerDetailsPage() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  const companyName = "MADHU Dairy & Daily Needs";
+  const companyName = "Natural Milk Dairy";
   const appLink = window.location.origin;
 
   useEffect(() => {

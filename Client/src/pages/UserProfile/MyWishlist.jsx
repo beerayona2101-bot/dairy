@@ -13,6 +13,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { getGuestWishlist, toggleGuestWishlist, clearGuestWishlist, setGuestWishlist } from "../../utils/guestWishlist";
+import DiscountBadge from "../../components/Common/DiscountBadge";
 
 export default function MyWishlist() {
   const navigate = useNavigate();
@@ -338,15 +339,16 @@ export default function MyWishlist() {
                         alt={product?.name || "Product"}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = "/images/madhu_cow_milk.png";
+                          e.target.src = "/images/natural_cow_milk.png";
                         }}
                         className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                       />
-                      {product?.discount > 0 && (
-                        <span className="absolute top-1.5 left-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-xs">
-                          {product.discount}% OFF
-                        </span>
-                      )}
+                      <DiscountBadge
+                        discount={product?.discount}
+                        isFloating={true}
+                        size="sm"
+                        containerClassName="top-1.5 left-1.5"
+                      />
                     </Link>
 
                     {/* Right: Product Text & Info */}

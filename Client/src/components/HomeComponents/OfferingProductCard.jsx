@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { slugify } from "../../utils/slugify";
 import { motion } from "framer-motion";
 
-export default function OfferingProductCard({ image, title, hideNameOnWeb = false }) {
+export default function OfferingProductCard({ image, title, hideNameOnWeb = false, className = "" }) {
     const cardRef = useRef(null);
     const [transformStyle, setTransformStyle] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
     const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
@@ -48,7 +48,7 @@ export default function OfferingProductCard({ image, title, hideNameOnWeb = fals
                     transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                     transformStyle: "preserve-3d",
                 }}
-                className={`relative h-44 sm:h-64 md:h-80 lg:h-96 w-full shadow-md sm:shadow-[0_16px_40px_rgba(0,0,0,0.12)] rounded-2xl sm:rounded-[28px] overflow-hidden border border-white/40 dark:border-gray-700/60 transition-all duration-300 floating-border-light periodic-glass-shine ${isHovered ? 'active-touch' : ''}`}
+                className={`relative ${className || "h-44 sm:h-64 md:h-80 lg:h-96"} w-full shadow-md sm:shadow-[0_16px_40px_rgba(0,0,0,0.12)] rounded-2xl sm:rounded-[24px] overflow-hidden border border-white/40 dark:border-gray-700/60 transition-all duration-300 floating-border-light periodic-glass-shine ${isHovered ? 'active-touch' : ''}`}
             >
                 {/* Dynamic Mouse & Touch Cursor Spotlight Glow Effect */}
                 <div
@@ -68,13 +68,14 @@ export default function OfferingProductCard({ image, title, hideNameOnWeb = fals
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
 
-                {/* On-Image Category Title Overlay - Bottom Center Glass Pill */}
-                <div className="absolute bottom-3 sm:bottom-4 left-0 right-0 z-30 w-full flex items-center justify-center pointer-events-none px-2">
-                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 sm:px-5 py-1.5 sm:py-2 rounded-full shadow-md border border-white/80 dark:border-slate-700/80 transition-transform duration-300 group-hover:scale-105 group-hover:bg-white dark:group-hover:bg-slate-900">
-                        <h3 className="text-xs sm:text-sm md:text-base font-black text-slate-900 dark:text-white tracking-tight leading-none text-center whitespace-nowrap">
-                            {title}
-                        </h3>
-                    </div>
+                {/* Bottom Dark Gradient Shade for optimal text contrast without pill card */}
+                <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none transition-opacity duration-300 group-hover:from-black/90 group-hover:via-black/45 z-10" />
+
+                {/* On-Image Category Title Overlay - Clean Direct Text on Bottom Gradient */}
+                <div className="absolute bottom-3 sm:bottom-4 md:bottom-5 inset-x-0 z-20 flex items-center justify-center px-3 text-center pointer-events-none">
+                    <h3 className="text-sm sm:text-base md:text-lg font-black text-white tracking-wide drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-105">
+                        {title}
+                    </h3>
                 </div>
             </motion.div>
         </Link>
@@ -85,4 +86,5 @@ OfferingProductCard.propTypes = {
     image: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     hideNameOnWeb: PropTypes.bool,
+    className: PropTypes.string,
 };

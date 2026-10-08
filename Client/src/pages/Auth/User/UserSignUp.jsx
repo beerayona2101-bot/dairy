@@ -28,15 +28,15 @@ export default function UserSignUp() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [termsModalTab, setTermsModalTab] = useState(null);
 
-  if (isValidAdmin && !authAdminLoading) {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  if (isValidAdmin && !authAdminLoading) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   const brandLogo = theme === "dark" ? logoDarkMode : logoLightMode;
 
@@ -147,7 +147,7 @@ export default function UserSignUp() {
         <div className="flex flex-col items-center text-center mb-2 sm:mb-2.5">
           <img
             src={brandLogo}
-            alt={company?.name || "Madhu Dairy"}
+            alt={company?.name || "Natural Milk Dairy"}
             className="h-12 sm:h-14 w-auto object-contain mb-1 drop-shadow-xs transition-transform duration-300 hover:scale-105"
           />
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
@@ -161,7 +161,7 @@ export default function UserSignUp() {
             Create an Account 🚀
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-            Join Madhu Dairy for farm-fresh dairy delivered daily
+            Join Natural Milk Dairy for farm-fresh dairy delivered daily
           </p>
         </div>
 

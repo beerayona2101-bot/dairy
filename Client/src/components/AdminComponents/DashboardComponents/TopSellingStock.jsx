@@ -7,6 +7,7 @@ import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import { ThemeContext } from "../../../context/ThemeProvider";
 import { getDiscountedPrice, getProductImage } from "../../../utils/helper";
 import { formatNumberWithCommas } from "../../../utils/format";
+import DiscountBadge from "../../Common/DiscountBadge";
 
 const containerVariants = {
   hidden: {},
@@ -171,9 +172,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
 
                         <td className="py-3.5 px-4 text-center">
                           {hasDiscount ? (
-                            <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 font-bold text-xs">
-                              {product?.discount}% OFF
-                            </span>
+                            <DiscountBadge discount={product?.discount} size="md" />
                           ) : (
                             <span className="text-gray-400 text-xs">No Offer</span>
                           )}

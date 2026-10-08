@@ -10,6 +10,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import TuneIcon from "@mui/icons-material/Tune";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import CheckIcon from "@mui/icons-material/Check";
+import StarIcon from "@mui/icons-material/Star";
 import { searchProducts, sortProducts } from "../utils/filterData";
 import ProductList from "../components/ProductComponents/ProductList";
 import ProductVarietyCart from "../components/ProductComponents/ProductVarietyCard";
@@ -25,7 +27,27 @@ import { getProductImage, getCardBackgroundImage } from "../utils/helper";
 import { products as baseCategories } from "../data/products";
 import BackButton from "../components/Common/BackButton";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
-import FloatingCart from "../components/Common/FloatingCart";
+
+const getCategoryEmoji = (title = "") => {
+    const t = (title || "").toLowerCase();
+    if (t.includes("milk") && !t.includes("powder") && !t.includes("flavor")) return "🥛";
+    if (t.includes("paneer")) return "🧀";
+    if (t.includes("ghee")) return "🍯";
+    if (t.includes("curd") || t.includes("dahi")) return "🥣";
+    if (t.includes("butter")) return "🧈";
+    if (t.includes("lassi")) return "🥤";
+    if (t.includes("chaas") || t.includes("buttermilk")) return "🧊";
+    if (t.includes("shrikhand")) return "🍨";
+    if (t.includes("basundi")) return "🍮";
+    if (t.includes("khoya") || t.includes("mawa")) return "🍪";
+    if (t.includes("cheese")) return "🧀";
+    if (t.includes("flavor")) return "🧃";
+    if (t.includes("sweet") || t.includes("jamun") || t.includes("peda")) return "🍬";
+    if (t.includes("powder")) return "📦";
+    if (t.includes("cream")) return "🥛";
+    if (t.includes("badham") || t.includes("badam")) return "🥜";
+    return "🌿";
+};
 
 export default function ProductPage() {
 
@@ -35,54 +57,26 @@ export default function ProductPage() {
     const { pageContent } = useContext(PageContentContext);
     const { cartItems } = useContext(CartContext);
 
-    const productsSectionRef = useRef(null);
-
     const [query, setQuery] = useState(productId || "");
     const [debouncedQuery] = useDebounce(query, 300);
 
-    // Mobile filter & search state
+    // Mobile filter & search state (for !productId all-categories catalog)
     const [mobileSearchQuery, setMobileSearchQuery] = useState("");
-    const [mobileCategoryTag, setMobileCategoryTag] = useState("All");
     const [mobileSortOrder, setMobileSortOrder] = useState("default");
     const [showMobileFilterMenu, setShowMobileFilterMenu] = useState(false);
 
-    // Web filter & search state
+    // Web filter & search state (for !productId all-categories catalog)
     const [webSearchQuery, setWebSearchQuery] = useState("");
-    const [webCategoryTag, setWebCategoryTag] = useState("All");
     const [webSortOrder, setWebSortOrder] = useState("default");
     const [showWebSortMenu, setShowWebSortMenu] = useState(false);
-
-    const categoryTags = ["All", "Milk", "Paneer", "Ghee", "Curd", "Butter", "Cheese", "Lassi", "Chaas", "Sweets", "Khoya"];
 
     useEffect(() => {
         setQuery(productId);
     }, [productId]);
 
-    // Auto-scroll down to products section after 2 seconds of entering category page
+    // Scroll to top immediately when category changes
     useEffect(() => {
-        if (!productId) return;
-
-        // Ensure page starts at top upon navigating into category view
         window.scrollTo({ top: 0, behavior: "instant" });
-
-        const timer = setTimeout(() => {
-            // Only auto-scroll if user hasn't already manually scrolled deep into the page
-            if (window.scrollY < window.innerHeight * 0.4) {
-                if (productsSectionRef.current) {
-                    productsSectionRef.current.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                    });
-                } else {
-                    window.scrollTo({
-                        top: window.innerHeight,
-                        behavior: "smooth",
-                    });
-                }
-            }
-        }, 2000);
-
-        return () => clearTimeout(timer);
     }, [productId]);
 
     const allCategoryCards = useMemo(() => {
@@ -136,14 +130,6 @@ export default function ProductPage() {
     const filteredMobileCategoryCards = useMemo(() => {
         let result = [...allCategoryCards];
 
-        if (mobileCategoryTag !== "All") {
-            const tagClean = mobileCategoryTag.toLowerCase().trim();
-            result = result.filter(c => {
-                const title = (c.title || "").toLowerCase();
-                return title.includes(tagClean);
-            });
-        }
-
         if (mobileSearchQuery.trim()) {
             const q = mobileSearchQuery.toLowerCase().trim();
             result = result.filter(c => {
@@ -160,18 +146,10 @@ export default function ProductPage() {
         }
 
         return result;
-    }, [allCategoryCards, mobileCategoryTag, mobileSearchQuery, mobileSortOrder]);
+    }, [allCategoryCards, mobileSearchQuery, mobileSortOrder]);
 
     const filteredWebCategoryCards = useMemo(() => {
         let result = [...allCategoryCards];
-
-        if (webCategoryTag !== "All") {
-            const tagClean = webCategoryTag.toLowerCase().trim();
-            result = result.filter(c => {
-                const title = (c.title || "").toLowerCase();
-                return title.includes(tagClean);
-            });
-        }
 
         if (webSearchQuery.trim()) {
             const q = webSearchQuery.toLowerCase().trim();
@@ -189,7 +167,7 @@ export default function ProductPage() {
         }
 
         return result;
-    }, [allCategoryCards, webCategoryTag, webSearchQuery, webSortOrder]);
+    }, [allCategoryCards, webSearchQuery, webSortOrder]);
 
     const categoryInfo = useMemo(() => {
         if (!productId) return null;
@@ -248,139 +226,206 @@ export default function ProductPage() {
         };
     }, [productId, pageContent, products]);
 
-    const activeCategoryTitle = useMemo(() => {
-        if (!productId) return "All Products";
-        return categoryInfo?.title || unslugify(productId);
-    }, [productId, categoryInfo]);
+    // Base products belonging to this category (when productId is present)
+    const categoryBaseProducts = useMemo(() => {
+        if (!productId) return [];
+        return searchProducts(products ?? [], productId);
+    }, [products, productId]);
 
-    const filteredProducts = useMemo(() => {
-        return searchProducts(products ?? [], debouncedQuery);
-    }, [products, debouncedQuery]);
+    const finalCategoryProducts = categoryBaseProducts;
 
-    const sortedFilteredProducts = useMemo(() => {
-        const sorted = sortProducts(filteredProducts ?? [], filter);
-        if (!debouncedQuery) return sorted;
-        
-        const cleanQ = debouncedQuery.replace(/-/g, " ").toLowerCase().trim();
-        return [...sorted].sort((a, b) => {
-            const aName = (a?.name || "").toLowerCase();
-            const bName = (b?.name || "").toLowerCase();
-            const aSlug = slugify(a?.name || "");
-            const bSlug = slugify(b?.name || "");
-            const aCategory = (a?.category || "").toLowerCase();
-            const bCategory = (b?.category || "").toLowerCase();
+    // SPECIFIC CATEGORY PAGE VIEW (when productId is present): Redesigned World-Class Experience
+    if (productId) {
+        const emoji = getCategoryEmoji(categoryInfo?.title);
 
-            const aExact = aSlug === debouncedQuery || aName === cleanQ;
-            const bExact = bSlug === debouncedQuery || bName === cleanQ;
-            if (aExact && !bExact) return -1;
-            if (!aExact && bExact) return 1;
+        return (
+            <div className="w-full min-h-screen max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 flex flex-col space-y-4 sm:space-y-6">
 
-            const aPartial = aName.includes(cleanQ) || aCategory.includes(cleanQ);
-            const bPartial = bName.includes(cleanQ) || bCategory.includes(cleanQ);
-            if (aPartial && !bPartial) return -1;
-            if (!aPartial && bPartial) return 1;
-
-            return 0;
-        });
-    }, [filteredProducts, filter, debouncedQuery]);
-
-
-    return (
-        <>
-            <div className={`w-full ${productId ? 'min-h-screen px-0 pb-12' : 'px-0 md:px-6 lg:px-8 pt-1.5 md:pt-5 pb-8 max-w-7xl mx-auto'} flex flex-col`}>
-
-                {/* Main Content Area */}
-                <div className={`flex-1 ${productId ? 'flex flex-col space-y-0' : 'space-y-4'} w-full`}>
-
-                    {/* CATEGORY HERO BANNER CARD - RESPONSIVE BANNER HEIGHT WITH FLOATING GLASS CONTROLS */}
-                    {categoryInfo && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                            className="relative w-full h-[100vh] min-h-screen overflow-hidden group bg-gray-900 m-0 p-0 border-0 shadow-none rounded-none flex-shrink-0"
+                {/* 1. TOP BREADCRUMBS & ACTION BAR */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm">
+                        <button
+                            onClick={() => navigate("/products")}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700/80 transition-all font-bold text-xs cursor-pointer"
+                            title="Back to All Categories"
                         >
-                            {/* Floating Controls Overlay (Back button on top left ON THE IMAGE) */}
-                            <div className="absolute top-4 sm:top-6 left-0 right-0 z-20 px-4 sm:px-8 lg:px-12 w-full flex justify-start items-center">
-                                {/* Top Left: Glass Back Button (visible on both mobile and web) */}
-                                <BackButton fallbackPath="/products" hideOnWeb={false} variant="glass" label="Back to Categories" title="Back to All Categories" />
+                            <ArrowBackIcon sx={{ fontSize: "1rem" }} />
+                            <span>All Categories</span>
+                        </button>
+                        <span className="text-slate-300 dark:text-slate-600 font-bold">/</span>
+                        <span className="font-black text-[#0756B5] dark:text-emerald-400 capitalize">
+                            {categoryInfo?.title || unslugify(productId)}
+                        </span>
+                    </div>
+
+                    <div className="hidden sm:flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            100% Farm-Fresh A2 Dairy
+                        </span>
+                    </div>
+                </div>
+
+                {/* 2. COMPACT CATEGORY HERO HEADER CARD */}
+                {categoryInfo && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                        className="relative w-full bg-gradient-to-br from-white via-emerald-50/25 to-blue-50/30 dark:from-slate-850 dark:via-slate-850 dark:to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-7 border border-slate-200/90 dark:border-slate-700/80 shadow-xs overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-5"
+                    >
+                        {/* Ambient Glows */}
+                        <div className="absolute top-0 right-1/4 w-64 h-64 bg-emerald-400/5 dark:bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-blue-400/5 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+
+                        {/* Left Info Column */}
+                        <div className="flex-1 space-y-3 z-10">
+
+                            <div>
+                                <div className="flex items-center gap-2 mb-1.5">
+                                    <span className="text-sm sm:text-base font-black tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
+                                        NATURAL
+                                    </span>
+                                    <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-wider uppercase leading-none bg-[#0756B5]/10 dark:bg-blue-950/60 px-2 py-0.5 rounded-full border border-[#0756B5]/20">
+                                        Milk Dairy
+                                    </span>
+                                </div>
+                                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                                    {categoryInfo.title}
+                                </h1>
+                                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed mt-1.5">
+                                    {categoryInfo.description}
+                                </p>
                             </div>
 
-                            {/* Main Full-Bleed Category Banner Image with Continuous Zoom In & Out Animation */}
-                            <img
-                                src={categoryInfo.image}
-                                alt={categoryInfo.title}
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = getCardBackgroundImage(categoryInfo?.title);
-                                }}
-                                className="w-full h-full object-cover animate-banner-zoom pointer-events-none"
-                            />
+                            {/* Trust highlights */}
+                            <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-750">
+                                    🌿 No Preservatives
+                                </span>
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-750">
+                                    ❄️ Chilled at 4°C
+                                </span>
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-750">
+                                    ⚡ Same-Day Delivery
+                                </span>
+                            </div>
+                        </div>
 
-                            {/* Banner Bottom Text Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent flex flex-col justify-end p-6 sm:p-10 lg:p-16 text-white space-y-2 pointer-events-none">
-                                <div className="w-full px-2 sm:px-4 lg:px-6 space-y-2 pointer-events-auto pb-6 sm:pb-10">
-                                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-lg text-white">
-                                        {categoryInfo.title}
-                                    </h1>
-                                    <p className="text-xs sm:text-base md:text-lg text-gray-200 font-semibold max-w-2xl drop-shadow-md">
-                                        {categoryInfo.description}
-                                    </p>
+                        {/* Right Preview Image Frame */}
+                        <div className="relative shrink-0 z-10 self-center md:self-auto">
+                            <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-36 rounded-2xl overflow-hidden shadow-md border-2 border-white dark:border-slate-700 ring-1 ring-slate-200/80 dark:ring-slate-700 group bg-white dark:bg-slate-800">
+                                <img
+                                    src={categoryInfo.image}
+                                    alt={categoryInfo.title}
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = getCardBackgroundImage(categoryInfo?.title);
+                                    }}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                                <div className="absolute bottom-1.5 left-1.5 right-1.5 text-center">
+                                    <span className="inline-block px-2 py-0.5 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white text-[10px] font-black shadow-xs">
+                                        {categoryBaseProducts.length} {categoryBaseProducts.length === 1 ? "Item" : "Items"}
+                                    </span>
                                 </div>
                             </div>
+                        </div>
+                    </motion.div>
+                )}
 
-                            {/* Bouncing Scroll Down Indicator */}
-                            <button
-                                onClick={() => {
-                                    if (productsSectionRef.current) {
-                                        productsSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-                                    } else {
-                                        window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
-                                    }
-                                }}
-                                className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-0.5 text-white/80 hover:text-white text-[11px] sm:text-xs font-bold animate-bounce pointer-events-auto cursor-pointer bg-transparent border-0 outline-none"
-                                title="Scroll for Products"
-                            >
-                                <span>Scroll for Products</span>
-                                <KeyboardArrowDownIcon sx={{ fontSize: "1.2rem" }} />
-                            </button>
-                        </motion.div>
+                {/* 3. PRODUCTS GRID */}
+                <div className="w-full">
+                    {/* Available Varieties Section Heading */}
+                    <div className="flex items-center justify-between pb-3 px-0.5">
+                        <div className="flex items-center gap-2.5">
+                            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                                Available Varieties
+                            </h2>
+                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-[#075C2A]/10 text-[#075C2A] dark:text-emerald-400 border border-[#075C2A]/20">
+                                {finalCategoryProducts.length} {finalCategoryProducts.length === 1 ? "Product" : "Products"}
+                            </span>
+                        </div>
+                    </div>
+
+                    {productLoading ? (
+                        <MadhuLoader />
+                    ) : finalCategoryProducts.length === 0 ? (
+                        <div className="py-14 px-6 text-center bg-white dark:bg-slate-850 rounded-3xl border border-dashed border-slate-200 dark:border-slate-750 shadow-2xs flex flex-col items-center justify-center space-y-3">
+                            <div className="w-14 h-14 rounded-full bg-emerald-50 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                                <ShoppingCartIcon sx={{ fontSize: "1.75rem" }} className="text-emerald-600 dark:text-emerald-400 opacity-60" />
+                            </div>
+                            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                                {`No products currently available in ${categoryInfo?.title || 'this category'}`}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md">
+                                We are currently restocking fresh morning batches from the farm! Please browse our other farm-fresh dairy categories.
+                            </p>
+                            <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+                                <button
+                                    onClick={() => navigate("/products")}
+                                    className="px-4 py-2 rounded-xl bg-[#075C2A] hover:bg-[#054593] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                                >
+                                    Browse All Categories
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5 w-full items-stretch">
+                            {finalCategoryProducts.map((product, index) => (
+                                <ProductVarietyCart
+                                    key={product?._id ? String(product._id) : `prod-${index}`}
+                                    id={product?._id}
+                                    product={product}
+                                    image={getProductImage(product)}
+                                    name={product?.name || "Unnamed Product"}
+                                    discount={product?.discount || 0}
+                                    likes={Array.isArray(product?.likes) ? product.likes : []}
+                                    type={product?.type || "Unknown"}
+                                    price={product?.price || 0}
+                                    minQuantity={product?.minQuantity || 1}
+                                    stock={product?.stock || 0}
+                                    quantityUnit={product?.quantityUnit || "unit"}
+                                    rating={product?.rating || 4.9}
+                                />
+                            ))}
+                        </div>
                     )}
+                </div>
+            </div>
+        );
+    }
 
-                    {/* MAIN PRODUCTS CONTENT SECTION */}
-                    <div className={`w-full ${productId ? 'px-3 sm:px-6 lg:px-10 py-2 sm:py-3' : 'space-y-4 pt-1 md:pt-2 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8'}`}>
-                        {!productId ? (
-                            /* MAIN PRODUCTS PAGE VIEW (!productId): Show ALL Category Images Grid */
-                            <div className="space-y-4">
+    // MAIN ALL CATEGORIES CATALOG VIEW (when !productId):
+    return (
+        <>
+            <div className="w-full px-3 sm:px-6 lg:px-8 pt-1.5 md:pt-2 pb-3.5 max-w-7xl mx-auto flex flex-col">
+                <div className="flex-1 w-full">
+                    <div className="w-full">
+                        <div>
 
                                 {/* WEB DISPLAY: Light Heading Card, Desktop Search Bar & Filter Options, Category Cards Grid */}
-                                <div className="hidden md:flex flex-col space-y-4">
-                                    {/* Web Light Heading Banner Card */}
-                                    <div className="relative w-full overflow-hidden bg-[#F5E9D0]/50 dark:bg-slate-800/90 px-6 sm:px-8 py-5 flex items-center justify-between gap-4 text-[#063B22] dark:text-white m-0 border border-[#D5A62A]/40 dark:border-slate-700/80 rounded-2xl shadow-xs flex-shrink-0">
-                                        <div className="w-full flex flex-col justify-center items-start text-left space-y-1.5 overflow-hidden">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#0756B5] dark:text-emerald-300 bg-[#0756B5]/10 dark:bg-emerald-900/40 px-3 py-1 rounded-full border border-[#0756B5]/20 dark:border-emerald-800/60 shadow-2xs">
-                                                    🥛 Natural Milk Dairy Collection
-                                                </span>
-                                            </div>
-                                            <AnimatedHeading
-                                                blackText="All Farm-Fresh"
-                                                violetText="Products"
-                                                as="h1"
-                                                align="left"
-                                                className="text-xl sm:text-2xl lg:text-3xl font-black leading-tight text-[#063B22] dark:text-white justify-start text-left tracking-tight"
-                                                violetClassName="text-[#0756B5] dark:text-emerald-400"
-                                            />
-                                            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium max-w-2xl line-clamp-1 text-left">
-                                                Explore our complete range of 100% pure A2 milk, ghee, paneer, curd, and daily sweets.
-                                            </p>
-                                        </div>
+                                <div className="hidden md:flex flex-col space-y-2.5">
+                                    {/* Web Heading (Clean direct title without pill badge card) */}
+                                    <div className="w-full flex flex-col justify-center items-start text-left px-0.5 space-y-0.5 flex-shrink-0">
+                                        <AnimatedHeading
+                                            blackText="All Farm-Fresh"
+                                            violetText="Products"
+                                            as="h1"
+                                            align="left"
+                                            className="text-xl sm:text-2xl lg:text-[28px] font-black leading-tight text-[#063B22] dark:text-white justify-start text-left tracking-tight"
+                                            violetClassName="text-[#0756B5] dark:text-emerald-400"
+                                        />
+                                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium max-w-2xl line-clamp-1 text-left">
+                                            Explore our complete range of 100% pure A2 milk, ghee, paneer, curd, and daily sweets.
+                                        </p>
                                     </div>
 
-                                    {/* Web Search Bar, Category Filter Pills & Sort Options */}
-                                    <div className="flex flex-col md:flex-row items-center justify-between gap-3.5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-3.5 rounded-2xl border border-gray-200/90 dark:border-slate-700/80 shadow-xs">
+                                    {/* Web Search Bar & Sort Filter Options (WITHOUT OUTER CARD CONTAINER) */}
+                                    <div className="relative z-40 flex items-center justify-between gap-2.5 w-full my-1.5">
                                         {/* Search Input Bar */}
-                                        <div className="relative flex-1 w-full flex items-center bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 px-3.5 py-2.5 transition-all focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20">
+                                        <div className="relative flex-1 flex items-center bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-gray-200/90 dark:border-slate-700/80 px-4 py-2.5 shadow-2xs hover:shadow-xs focus-within:border-[#0756B5] dark:focus-within:border-[#38BDF8] focus-within:ring-2 focus-within:ring-[#0756B5]/20 transition-all">
                                             <SearchIcon sx={{ fontSize: "1.3rem" }} className="text-gray-400 dark:text-gray-400 mr-2.5 shrink-0" />
                                             <input
                                                 type="text"
@@ -399,31 +444,14 @@ export default function ProductPage() {
                                             )}
                                         </div>
 
-                                        {/* Category Filter Pills */}
-                                        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 md:pb-0 custom-scrollbar shrink-0">
-                                            {categoryTags.map((tag) => (
-                                                <button
-                                                    key={`web-tag-${tag}`}
-                                                    onClick={() => setWebCategoryTag(tag)}
-                                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all shrink-0 cursor-pointer ${
-                                                        webCategoryTag === tag
-                                                            ? "bg-[#075C2A] text-white border-[#075C2A] shadow-xs scale-105"
-                                                            : "bg-[#F5E9D0]/40 dark:bg-slate-800 text-[#063B22] dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-[#075C2A]/10 dark:hover:bg-slate-700 hover:text-[#075C2A]"
-                                                    }`}
-                                                >
-                                                    {tag}
-                                                </button>
-                                            ))}
-                                        </div>
-
                                         {/* Interactive Sort & Filter Option Dropdown */}
-                                        <div className="relative shrink-0 w-full md:w-auto flex justify-end">
+                                        <div className="relative shrink-0 flex justify-end">
                                             <button
                                                 onClick={() => setShowWebSortMenu(!showWebSortMenu)}
-                                                className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-between gap-2 cursor-pointer shadow-xs w-full md:w-auto ${
+                                                className={`px-4 py-2.5 rounded-xl sm:rounded-2xl text-xs font-bold border transition-all flex items-center justify-between gap-2 cursor-pointer shadow-2xs ${
                                                     webSortOrder !== "default"
-                                                        ? "bg-[#075C2A] text-white border-[#075C2A] shadow-md"
-                                                        : "bg-gray-100/90 dark:bg-slate-900 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-800"
+                                                        ? "bg-[#0756B5] text-white border-[#0756B5] shadow-md"
+                                                        : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border-gray-200/90 dark:border-slate-700/80 hover:bg-gray-50 dark:hover:bg-slate-700"
                                                 }`}
                                                 title="Filter & Sort Options"
                                             >
@@ -447,7 +475,7 @@ export default function ProductPage() {
                                                         {/* Backdrop */}
                                                         <div
                                                             onClick={() => setShowWebSortMenu(false)}
-                                                            className="fixed inset-0 z-30 bg-transparent cursor-pointer"
+                                                            className="fixed inset-0 z-40 bg-transparent cursor-pointer"
                                                         />
 
                                                         <motion.div
@@ -455,7 +483,7 @@ export default function ProductPage() {
                                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                                             exit={{ opacity: 0, y: 6, scale: 0.96 }}
                                                             transition={{ duration: 0.15 }}
-                                                            className="absolute right-0 top-full mt-2 z-40 w-56 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/90 dark:border-slate-800 shadow-xl p-2 space-y-1"
+                                                            className="absolute right-0 top-full mt-2 z-50 w-56 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/90 dark:border-slate-800 shadow-2xl p-2 space-y-1"
                                                         >
                                                             <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
                                                                 <span>Sort Options</span>
@@ -469,12 +497,12 @@ export default function ProductPage() {
                                                                 }}
                                                                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                                                                     webSortOrder === "default"
-                                                                        ? "bg-[#075C2A]/10 dark:bg-slate-800 text-[#075C2A] dark:text-blue-400 font-bold"
+                                                                        ? "bg-[#0756B5]/10 dark:bg-slate-800 text-[#0756B5] dark:text-blue-400 font-bold"
                                                                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800/80"
                                                                 }`}
                                                             >
                                                                 <span>Default Order</span>
-                                                                {webSortOrder === "default" && <span className="w-2 h-2 rounded-full bg-[#075C2A]" />}
+                                                                {webSortOrder === "default" && <span className="w-2 h-2 rounded-full bg-[#0756B5]" />}
                                                             </button>
 
                                                             <button
@@ -484,12 +512,12 @@ export default function ProductPage() {
                                                                 }}
                                                                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                                                                     webSortOrder === "name-asc"
-                                                                        ? "bg-[#075C2A]/10 dark:bg-slate-800 text-[#075C2A] dark:text-blue-400 font-bold"
+                                                                        ? "bg-[#0756B5]/10 dark:bg-slate-800 text-[#0756B5] dark:text-blue-400 font-bold"
                                                                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800/80"
                                                                 }`}
                                                             >
                                                                 <span>Name Ascending (A &rarr; Z)</span>
-                                                                {webSortOrder === "name-asc" && <span className="w-2 h-2 rounded-full bg-[#075C2A]" />}
+                                                                {webSortOrder === "name-asc" && <span className="w-2 h-2 rounded-full bg-[#0756B5]" />}
                                                             </button>
 
                                                             <button
@@ -499,12 +527,12 @@ export default function ProductPage() {
                                                                 }}
                                                                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                                                                     webSortOrder === "name-desc"
-                                                                        ? "bg-[#075C2A]/10 dark:bg-slate-800 text-[#075C2A] dark:text-blue-400 font-bold"
+                                                                        ? "bg-[#0756B5]/10 dark:bg-slate-800 text-[#0756B5] dark:text-blue-400 font-bold"
                                                                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800/80"
                                                                 }`}
                                                             >
                                                                 <span>Name Descending (Z &rarr; A)</span>
-                                                                {webSortOrder === "name-desc" && <span className="w-2 h-2 rounded-full bg-[#075C2A]" />}
+                                                                {webSortOrder === "name-desc" && <span className="w-2 h-2 rounded-full bg-[#0756B5]" />}
                                                             </button>
                                                         </motion.div>
                                                     </>
@@ -513,20 +541,21 @@ export default function ProductPage() {
                                         </div>
                                     </div>
 
-                                    {/* Web Category Cards Grid */}
+                                    {/* Web Category Cards Grid - 4 Columns fitting 100% viewport */}
                                     {productLoading ? (
                                         <MadhuLoader />
                                     ) : filteredWebCategoryCards.length === 0 ? (
                                         <div className="py-12 text-center text-gray-500 dark:text-gray-300 font-semibold text-sm bg-gray-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-                                            No categories found matching "{webSearchQuery || webCategoryTag}".
+                                            No categories found matching "{webSearchQuery}".
                                         </div>
                                     ) : (
-                                        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 pt-1">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3.5 sm:gap-x-4 lg:gap-x-5 gap-y-6 sm:gap-y-7 lg:gap-y-8 pt-1.5 pb-8 sm:pb-12">
                                             {filteredWebCategoryCards.map((cat, index) => (
                                                 <OfferingProductCard
                                                     key={`web-cat-${index}-${cat.title}`}
                                                     title={cat.title}
                                                     image={cat.image}
+                                                    className="h-44 sm:h-56 md:h-[calc(100vh-216px)] md:min-h-[340px] md:max-h-[550px]"
                                                 />
                                             ))}
                                         </div>
@@ -561,7 +590,7 @@ export default function ProductPage() {
                                         </div>
 
                                         {/* Mobile Search Bar Row (Google Style Pill Search Bar) */}
-                                        <div className="relative w-full flex items-center gap-2">
+                                        <div className="relative w-full flex items-center gap-2 my-1">
                                             <div className="relative flex-1 flex items-center bg-white dark:bg-slate-800 rounded-full border border-gray-200/90 dark:border-slate-700/80 px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-md focus-within:shadow-md focus-within:border-[#075C2A] dark:focus-within:border-blue-400 transition-all duration-200">
                                                 <SearchIcon sx={{ fontSize: "1.25rem" }} className="text-gray-400 dark:text-gray-400 mr-2 shrink-0" />
                                                 <input
@@ -586,7 +615,7 @@ export default function ProductPage() {
                                             <button
                                                 onClick={() => setShowMobileFilterMenu(true)}
                                                 className={`p-2.5 rounded-full border transition-all flex items-center justify-center shrink-0 shadow-sm ${
-                                                    showMobileFilterMenu || mobileSortOrder !== "default" || mobileCategoryTag !== "All"
+                                                    showMobileFilterMenu || mobileSortOrder !== "default"
                                                         ? "bg-[#075C2A] text-white border-[#075C2A] shadow-md scale-105"
                                                         : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200/90 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700"
                                                 }`}
@@ -639,29 +668,7 @@ export default function ProductPage() {
 
                                                     {/* Scrollable Modal Content */}
                                                     <div className="p-5 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
-                                                        {/* 1. Category Tag Selector */}
-                                                        <div className="space-y-2.5">
-                                                            <label className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
-                                                                Select Category
-                                                            </label>
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {categoryTags.map((tag) => (
-                                                                    <button
-                                                                        key={tag}
-                                                                        onClick={() => setMobileCategoryTag(tag)}
-                                                                        className={`px-3 py-1.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
-                                                                            mobileCategoryTag === tag
-                                                                                ? "bg-[#075C2A] text-white border-[#075C2A] shadow-sm scale-105"
-                                                                                : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700"
-                                                                        }`}
-                                                                    >
-                                                                        {tag}
-                                                                    </button>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* 2. Sort Order Options */}
+                                                        {/* Sort Order Options */}
                                                         <div className="space-y-2.5">
                                                             <label className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
                                                                 Sort Order
@@ -706,7 +713,6 @@ export default function ProductPage() {
                                                         <button
                                                             onClick={() => {
                                                                 setMobileSortOrder("default");
-                                                                setMobileCategoryTag("All");
                                                                 setMobileSearchQuery("");
                                                             }}
                                                             className="px-4 py-3 rounded-2xl border border-gray-300 dark:border-slate-700 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
@@ -732,7 +738,7 @@ export default function ProductPage() {
                                             No category cards found matching your search.
                                         </div>
                                     ) : (
-                                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4 pb-6 pt-2">
+                                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-5 sm:gap-y-6 pb-8 pt-2">
                                             {filteredMobileCategoryCards.map((cat, index) => (
                                                 <OfferingProductCard
                                                     key={`all-cat-${index}-${cat.title}`}
@@ -744,49 +750,9 @@ export default function ProductPage() {
                                     )}
                                 </div>
                             </div>
-                        ) : (
-                            /* SPECIFIC CATEGORY PAGE VIEW (productId): Scrolls naturally when many items are present */
-                            <div ref={productsSectionRef} className="w-full flex flex-col scroll-mt-6">
-
-                                {productLoading ? (
-                                    <MadhuLoader />
-                                ) : (
-                                     <section className="w-full flex flex-col">
-                                        {(sortedFilteredProducts?.length ?? 0) === 0 ? (
-                                            <div className="py-12 text-center text-gray-500 dark:text-gray-300 font-medium text-base bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
-                                                No products found in this category.
-                                            </div>
-                                        ) : (
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 w-full items-stretch">
-                                                {sortedFilteredProducts.map((product, index) => (
-                                                    <ProductVarietyCart
-                                                        key={product?._id ? String(product._id) : `prod-${index}`}
-                                                        id={product?._id}
-                                                        image={getProductImage(product)}
-                                                        name={product?.name || "Unnamed Product"}
-                                                        discount={product?.discount || 0}
-                                                        likes={Array.isArray(product?.likes) ? product.likes : []}
-                                                        type={product?.type || "Unknown"}
-                                                        price={product?.price || 0}
-                                                        minQuantity={product?.minQuantity || 1}
-                                                        stock={product?.stock || 0}
-                                                        quantityUnit={product?.quantityUnit || "unit"}
-                                                        rating={product?.rating || 4.9}
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
-                                    </section>
-                                )}
-                            </div>
-                        )}
+                        </div>
                     </div>
-
                 </div>
-            </div>
-
-            {/* Floating Cart Button (Right Side) */}
-            <FloatingCart />
-        </>
-    );
+            </>
+        );
 }

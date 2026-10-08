@@ -16,11 +16,12 @@ import { Tooltip } from "@mui/material";
 import { slugify } from "../../utils/slugify";
 import { UserAuthContext, AdminAuthContext } from "../../context/AuthProvider";
 import { CartContext } from "../../context/CartProvider";
-import { getDiscountedPrice, getProductImage } from "../../utils/helper";
+import { getDiscountedPrice, getProductImage, splitProductName, formatRating } from "../../utils/helper";
 import { formatNumberWithCommas } from "../../utils/format";
 import { addToWishlist, removeProductFromWishList } from "../../services/userProfileService";
 import { useSnackbar } from 'notistack';
 import { getGuestWishlist, toggleGuestWishlist } from "../../utils/guestWishlist";
+import DiscountBadge from "../Common/DiscountBadge";
 
 export default function ProductVarietyCard(props) {
     const productObj = props.product || props || {};
@@ -46,7 +47,11 @@ export default function ProductVarietyCard(props) {
 
     const id = props.id || props._id || productObj._id || productObj.id;
     const rawName = props.name || productObj.name || productObj.title || "Unnamed Product";
-    const name = typeof rawName === "string" ? rawName.replace(/^Madhu(r)?\s+/i, "Natural ") : String(rawName || "Unnamed Product");
+    let formattedName = typeof rawName === "string" ? rawName.replace(/^Madhu(r)?\s+/i, "Natural ") : String(rawName || "Unnamed Product");
+    if (!formattedName.toLowerCase().startsWith("natural")) {
+        formattedName = `Natural ${formattedName}`;
+    }
+    const name = formattedName;
     const image = props.image || productObj.image;
     const price = props.price ?? productObj.price ?? 0;
     const discount = props.discount ?? productObj.discount ?? 0;
@@ -56,6 +61,8 @@ export default function ProductVarietyCard(props) {
     const type = props.type || productObj.type || productObj.category || "Unknown";
     const rating = props.rating ?? productObj.rating ?? 4.9;
     const quantityUnit = props.quantityUnit || productObj.quantityUnit || "unit";
+    const { mainTitle, variantInfo } = splitProductName(name);
+    const displayRating = formatRating(rating);
 
     const finalImage = getProductImage({ name, image });
     const existing = cartItems?.find(item => {
@@ -77,7 +84,7 @@ export default function ProductVarietyCard(props) {
             const wId = typeof w === 'object' ? w._id || w.id : w;
             return String(wId) === String(id);
         }))
-        : guestWishlist.map(String).includes(String(id));
+        : (Array.isArray(guestWishlist) ? guestWishlist.map(String).includes(String(id)) : false);
 
     const showSnackbar = (message, variant = "info") => {
         enqueueSnackbar(message, { variant });
@@ -241,13 +248,7 @@ export default function ProductVarietyCard(props) {
                 )}
 
                 {/* Floating Top-Left Discount Badge */}
-                {discountPercent > 0 && (
-                    <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 z-10 pointer-events-none select-none">
-                        <span className="inline-flex items-center justify-center bg-[#FEF9C3] dark:bg-yellow-400/95 text-[#854D0E] dark:text-yellow-950 font-black text-[10px] sm:text-xs px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full border border-[#FDE047] shadow-xs tracking-wide">
-                            {discountPercent}% OFF
-                        </span>
-                    </div>
-                )}
+                <DiscountBadge discount={discountPercent} isFloating={true} />
 
                 {/* Floating Top-Right Wishlist Heart Circle Button */}
                 <button
@@ -279,23 +280,33 @@ export default function ProductVarietyCard(props) {
                 <div>
                     {/* Top Pill Row: Upper-case category pill + Star rating */}
                     <div className="flex items-center justify-between gap-1 mb-1.5">
-                        <span className="inline-block text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#0756B5] dark:text-[#35A8E8] bg-[#0756B5]/10 dark:bg-[#0756B5]/20 px-2.5 py-0.5 rounded-full border border-[#0756B5]/20">
-                            {type && type !== "Unknown" ? type : "ORGANIC DAIRY"}
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-gradient-to-r from-blue-500/15 via-teal-500/10 to-emerald-500/15 dark:from-blue-500/25 dark:via-teal-500/20 dark:to-emerald-500/25 border border-emerald-500/30 dark:border-emerald-400/30 shadow-2xs">
+                            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-gradient-to-r from-[#0756B5] via-teal-700 to-[#075C2A] dark:from-[#35A8E8] dark:via-teal-300 dark:to-emerald-400 bg-clip-text text-transparent">
+                                {type && type !== "Unknown" ? type : "ORGANIC DAIRY"}
+                            </span>
                         </span>
 
                         <div className="flex items-center gap-1 bg-[#D5A62A]/15 dark:bg-[#D5A62A]/25 text-[#854D0E] dark:text-[#FDE047] text-[10px] sm:text-xs font-extrabold px-2 py-0.5 rounded-full shrink-0 border border-[#D5A62A]/30">
                             <StarIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} className="text-[#D5A62A]" />
-                            <span>{rating || "4.9"}</span>
+                            <span>{displayRating}</span>
                         </div>
                     </div>
 
-                    {/* Title: 2-Line clean font without truncating titles prematurely */}
+                    {/* Title: 2-Line clean font with blue product name and distinct smaller variant tag */}
                     <div className="mb-1.5 min-h-[38px] flex items-center">
                         <Link
                             to={`/product-details/${slugify(name)}`}
-                            className="text-xs sm:text-sm font-extrabold text-[#0756B5] dark:text-[#35A8E8] hover:text-[#054593] dark:hover:text-blue-300 line-clamp-2 transition-colors leading-snug"
+                            className="text-xs sm:text-sm leading-snug line-clamp-2 hover:opacity-90 transition-opacity"
+                            title={name}
                         >
-                            {name}
+                            <span className="font-extrabold text-[#0756B5] dark:text-[#35A8E8]">
+                                {mainTitle}
+                            </span>
+                            {variantInfo && (
+                                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 ml-1">
+                                    {variantInfo}
+                                </span>
+                            )}
                         </Link>
                     </div>
 

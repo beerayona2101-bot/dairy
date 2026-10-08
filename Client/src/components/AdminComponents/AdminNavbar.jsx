@@ -160,10 +160,10 @@ export default function AdminNavbar() {
                     className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 no-underline cursor-pointer select-none"
                 >
                     <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
-                        Madhu Dairy
+                        Natural Milk Dairy
                     </span>
                     <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#075C2A] dark:text-[#3F9E18] tracking-widest uppercase leading-tight mt-0.5">
-                        &amp; Daily Needs
+                        Pure &amp; Fresh A2
                     </span>
                 </Link>
 

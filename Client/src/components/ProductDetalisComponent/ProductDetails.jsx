@@ -14,7 +14,7 @@ import Rating from '@mui/material/Rating';
 import { UserAuthContext, AdminAuthContext } from "../../context/AuthProvider";
 import { CartContext } from "../../context/CartProvider";
 import { productLike } from "../../services/productServices";
-import { getDiscountedPrice, getProductImage } from "../../utils/helper";
+import { getDiscountedPrice, getProductImage, splitProductName, formatRating } from "../../utils/helper";
 import BackButton from "../Common/BackButton";
 import { formatNumberWithCommas } from "../../utils/format";
 import { addToWishlist, removeProductFromWishList } from "../../services/userProfileService";
@@ -23,6 +23,7 @@ import { slugify } from "../../utils/slugify";
 import { useSnackbar } from "notistack";
 import { getGuestWishlist, toggleGuestWishlist } from "../../utils/guestWishlist";
 import BuffaloLoader from "../BuffaloLoader";
+import DiscountBadge from "../Common/DiscountBadge";
 
 import { fallbackProducts } from "../../data/fallbackProducts";
 
@@ -125,7 +126,12 @@ export default function ProductDetails({ productId: propProductId }) {
 
     const inCartQty = existing ? Number(existing.quantity) : 0;
     const stock = selectedProduct?.stock || 0;
-    const avgRating = 5;
+    const rawRating = selectedProduct?.rating !== undefined && selectedProduct?.rating !== null ? Number(selectedProduct.rating) : 4.9;
+    const avgRating = isNaN(rawRating) ? 4.9 : rawRating;
+    const displayRating = formatRating(avgRating);
+
+    const productName = selectedProduct?.name || "Not Defined";
+    const { mainTitle, variantInfo } = splitProductName(productName);
 
     const priceNumber = Number(selectedProduct?.price) || 0;
     const discountPercent = Number(selectedProduct?.discount) || 0;
@@ -332,6 +338,14 @@ export default function ProductDetails({ productId: propProductId }) {
                         {/* Floating Back Button (Mobile only) */}
                         <BackButton fallbackPath="/products" hideOnWeb={true} variant="circle" className="absolute top-3 left-3 z-30 shadow-md" title="Go Back to Previous Page" />
 
+                        {/* Floating Top-Left Discount Badge */}
+                        <DiscountBadge
+                            discount={discountPercent}
+                            isFloating={true}
+                            size="md"
+                            containerClassName="left-14 sm:left-3 md:left-3.5 top-3 md:top-3.5"
+                        />
+
                         {(!selectedImage || selectedImage === 'null') ? (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-[#F5E9D0]/50 dark:bg-slate-800 rounded-2xl">
                                 <EmojiFoodBeverageIcon className="text-[#0756B5] dark:text-emerald-300 text-5xl" />
@@ -352,6 +366,16 @@ export default function ProductDetails({ productId: propProductId }) {
                                 className="w-full h-full object-contain p-3 sm:p-4 rounded-2xl group-hover:scale-105 transition-transform duration-500 ease-out block m-0 border-0"
                             />
                         )}
+
+                        {/* Brand Identity Badge Overlay on Main Image: NATURAL (Main) / Milk Dairy (Child) */}
+                        <div className="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-emerald-500/30 shadow-md flex flex-col items-start leading-none pointer-events-none select-none">
+                            <span className="text-xs sm:text-sm font-black text-[#075C2A] dark:text-emerald-400 tracking-tight leading-tight">
+                                NATURAL
+                            </span>
+                            <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#0756B5] dark:text-blue-400 uppercase tracking-wider -mt-0.5 leading-tight">
+                                Milk Dairy
+                            </span>
+                        </div>
 
                         {/* Floating Wishlist Heart Circle Button */}
                         <button
@@ -408,17 +432,32 @@ export default function ProductDetails({ productId: propProductId }) {
                 {/* Right Side: Product Details & Purchase Actions */}
                 <div className="md:col-span-7 flex flex-col justify-between h-full space-y-3">
                     <div>
-                        {/* Category Tag */}
-                        {(selectedProduct?.category || selectedProduct?.type) && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#0756B5] dark:text-emerald-300 bg-[#0756B5]/10 dark:bg-emerald-950/60 border border-[#0756B5]/20 dark:border-emerald-800/60 rounded-full mb-2 shadow-xs">
-                                <span>🥛</span>
-                                <span>{selectedProduct?.category || selectedProduct?.type}</span>
+                        {/* Brand Hierarchy: Natural (Main) / Milk Dairy (Child) */}
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                            <span className="text-sm sm:text-base font-black tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
+                                Natural
                             </span>
-                        )}
+                            <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-wider uppercase leading-none bg-[#0756B5]/10 dark:bg-blue-950/60 px-2 py-0.5 rounded-full border border-[#0756B5]/20">
+                                Milk Dairy
+                            </span>
+                            {(selectedProduct?.category || selectedProduct?.type) && (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10.5px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs">
+                                    <span>🥛</span>
+                                    <span>{selectedProduct?.category || selectedProduct?.type}</span>
+                                </span>
+                            )}
+                        </div>
 
-                        {/* Title */}
-                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#063B22] dark:text-white tracking-tight leading-snug mb-2">
-                            {selectedProduct?.name || "Not Defined"}
+                        {/* Title: Base product name in blue, variant/quantity in smaller distinct slate color on the same line */}
+                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight leading-snug mb-2">
+                            <span className="text-[#0756B5] dark:text-[#35A8E8]">
+                                {mainTitle}
+                            </span>
+                            {variantInfo && (
+                                <span className="text-sm sm:text-base lg:text-lg font-bold text-slate-500 dark:text-slate-400 ml-2 inline-block">
+                                    {variantInfo}
+                                </span>
+                            )}
                         </h1>
 
                         {/* Rating, Quality & Shelf Life */}
@@ -429,8 +468,8 @@ export default function ProductDetails({ productId: propProductId }) {
                             </div>
 
                             <div className="bg-[#D5A62A]/15 dark:bg-amber-950/40 border border-[#D5A62A]/40 dark:border-amber-800/60 px-2.5 py-1 rounded-lg text-[#854D0E] dark:text-amber-400 font-black flex items-center gap-1">
-                                <Rating sx={{ fontSize: "0.95rem" }} name="read-only" value={avgRating} readOnly />
-                                <span>{avgRating}</span>
+                                <Rating sx={{ fontSize: "0.95rem" }} name="read-only" value={Number(displayRating)} precision={0.1} readOnly />
+                                <span>{displayRating}</span>
                                 <span className="text-gray-500 dark:text-gray-400 font-normal">({selectedProduct?.reviews?.length || 0})</span>
                             </div>
 
@@ -512,9 +551,7 @@ export default function ProductDetails({ productId: propProductId }) {
                                     <span className="text-gray-400 dark:text-gray-500 text-base line-through font-semibold">
                                         &#8377;{formatNumberWithCommas(priceNumber)}
                                     </span>
-                                    <span className="bg-[#D5A62A]/20 text-[#854D0E] dark:text-amber-300 text-xs px-2.5 py-0.5 rounded-full font-black border border-[#D5A62A]/40">
-                                        {discountPercent}% OFF
-                                    </span>
+                                    <DiscountBadge discount={discountPercent} size="md" />
                                     <span className="text-xs font-bold text-[#35A8E8]">
                                         You save &#8377;{formatNumberWithCommas(saved)}
                                     </span>

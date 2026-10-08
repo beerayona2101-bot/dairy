@@ -6,7 +6,7 @@ export default function MadhuLoader({ fullScreen = false, text }) {
   return (
     <BuffaloLoader
       variant={fullScreen ? "full" : "inline"}
-      text={text || "Loading fresh dairy data..."}
+      text={text || "Loading Natural Milk Dairy..."}
     />
   );
 }
