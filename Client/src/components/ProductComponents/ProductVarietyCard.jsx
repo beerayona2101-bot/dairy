@@ -45,7 +45,8 @@ export default function ProductVarietyCard(props) {
     }, []);
 
     const id = props.id || props._id || productObj._id || productObj.id;
-    const name = props.name || productObj.name || productObj.title || "Unnamed Product";
+    const rawName = props.name || productObj.name || productObj.title || "Unnamed Product";
+    const name = typeof rawName === "string" ? rawName.replace(/^Madhu(r)?\s+/i, "Natural ") : String(rawName || "Unnamed Product");
     const image = props.image || productObj.image;
     const price = props.price ?? productObj.price ?? 0;
     const discount = props.discount ?? productObj.discount ?? 0;
@@ -206,7 +207,7 @@ export default function ProductVarietyCard(props) {
 
     return (
         <motion.div
-            className={`relative rounded-[16px] sm:rounded-[20px] overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/80 dark:border-gray-700/80 p-0 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between ${props.className || ""}`}
+            className={`relative rounded-[18px] sm:rounded-[24px] overflow-hidden bg-white/95 dark:bg-slate-800/90 backdrop-blur-lg border border-blue-100/80 dark:border-slate-700/80 p-0 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${props.className || ""}`}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
@@ -218,7 +219,7 @@ export default function ProductVarietyCard(props) {
                     <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-0 m-0 border-0">
                         <EmojiFoodBeverageIcon className="text-[#075C2A] text-2xl sm:text-4xl" />
                         <Link to={`/product-details/${slugify(name)}`}>
-                            <span className="text-gray-500 dark:text-gray-300 text-[11px] sm:text-xs font-medium hover:text-[#075C2A]">
+                            <span className="text-[#0756B5] dark:text-[#35A8E8] text-[11px] sm:text-xs font-semibold hover:underline">
                                 {name}
                             </span>
                         </Link>
@@ -274,55 +275,55 @@ export default function ProductVarietyCard(props) {
             </div>
 
             {/* Bottom Content Container with compact spacing & internal padding */}
-            <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between space-y-1.5">
+            <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between space-y-2">
                 <div>
-                    {/* Category Badge: Upper-case bold category pill text */}
-                    <div className="mb-1">
-                        <span className="inline-block text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#0756B5] dark:text-[#35A8E8] bg-[#0756B5]/10 dark:bg-[#0756B5]/20 px-2 py-0.5 rounded-full border border-[#0756B5]/20">
+                    {/* Top Pill Row: Upper-case category pill + Star rating */}
+                    <div className="flex items-center justify-between gap-1 mb-1.5">
+                        <span className="inline-block text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#0756B5] dark:text-[#35A8E8] bg-[#0756B5]/10 dark:bg-[#0756B5]/20 px-2.5 py-0.5 rounded-full border border-[#0756B5]/20">
                             {type && type !== "Unknown" ? type : "ORGANIC DAIRY"}
                         </span>
-                    </div>
 
-                    {/* Title & Rating: Bold title link + star rating */}
-                    <div className="flex items-center justify-between gap-1 mb-1">
-                        <Link
-                            to={`/product-details/${slugify(name)}`}
-                            className="text-sm sm:text-base font-extrabold text-[#063B22] dark:text-white hover:text-[#0756B5] dark:hover:text-[#35A8E8] line-clamp-1 transition-colors leading-tight"
-                        >
-                            {name}
-                        </Link>
-
-                        <div className="flex items-center gap-0.5 bg-[#D5A62A]/15 dark:bg-[#D5A62A]/25 text-[#854D0E] dark:text-[#FDE047] text-[10px] sm:text-xs font-extrabold px-1.5 py-0.5 rounded-full shrink-0 border border-[#D5A62A]/30">
+                        <div className="flex items-center gap-1 bg-[#D5A62A]/15 dark:bg-[#D5A62A]/25 text-[#854D0E] dark:text-[#FDE047] text-[10px] sm:text-xs font-extrabold px-2 py-0.5 rounded-full shrink-0 border border-[#D5A62A]/30">
                             <StarIcon sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} className="text-[#D5A62A]" />
                             <span>{rating || "4.9"}</span>
                         </div>
                     </div>
-                </div>
 
-                <div>
+                    {/* Title: 2-Line clean font without truncating titles prematurely */}
+                    <div className="mb-1.5 min-h-[38px] flex items-center">
+                        <Link
+                            to={`/product-details/${slugify(name)}`}
+                            className="text-xs sm:text-sm font-extrabold text-[#0756B5] dark:text-[#35A8E8] hover:text-[#054593] dark:hover:text-blue-300 line-clamp-2 transition-colors leading-snug"
+                        >
+                            {name}
+                        </Link>
+                    </div>
+
                     {/* Stock Info */}
-                    <div className="flex items-center text-xs mb-1.5 text-[#063B22]/80 dark:text-slate-300 font-semibold">
+                    <div className="flex items-center text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-semibold mb-1">
                         {stock === 0 ? (
                             <span className="text-red-500 font-extrabold">Out of Stock</span>
                         ) : (
-                            <span>Available: <strong className="text-[#063B22] dark:text-white font-extrabold">{stock} {quantityUnit}</strong></span>
+                            <span>Available: <strong className="text-[#075C2A] dark:text-emerald-400 font-extrabold">{stock} {quantityUnit}</strong></span>
                         )}
                     </div>
+                </div>
 
-                    {/* Footer Row: Bold price + Pill button [ Add ] */}
-                    <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-gray-200/90 dark:border-gray-700/60">
-                        <div className="flex flex-col min-w-0">
+                <div>
+                    {/* Footer Row: Clean price without truncation + Pill buttons [ Buy ] [ Add ] */}
+                    <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                        <div className="flex flex-col shrink-0">
                             {discountPercent > 0 ? (
                                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-1">
-                                    <span className="text-xs sm:text-base font-black text-[#075C2A] dark:text-[#3F9E18] leading-tight truncate">
+                                    <span className="text-xs sm:text-sm font-black text-[#075C2A] dark:text-[#3F9E18] leading-none whitespace-nowrap">
                                         &#8377;{formatNumberWithCommas(discountedPrice)}
                                     </span>
-                                    <span className="text-[9px] sm:text-xs text-slate-400 line-through font-semibold leading-tight truncate">
+                                    <span className="text-[9px] sm:text-[10px] text-slate-400 line-through font-semibold leading-none whitespace-nowrap">
                                         &#8377;{formatNumberWithCommas(priceNumber)}
                                     </span>
                                 </div>
                             ) : (
-                                <span className="text-xs sm:text-base font-black text-[#075C2A] dark:text-[#3F9E18] leading-tight truncate">
+                                <span className="text-xs sm:text-sm font-black text-[#075C2A] dark:text-[#3F9E18] leading-none whitespace-nowrap">
                                     &#8377;{formatNumberWithCommas(priceNumber)}
                                 </span>
                             )}

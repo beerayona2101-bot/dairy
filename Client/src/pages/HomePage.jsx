@@ -19,7 +19,7 @@ function FaqItem({ question, answer }) {
                 className="w-full flex items-center justify-between py-4 px-0 text-left cursor-pointer transition-colors"
             >
                 <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 pr-4 leading-snug">{question}</span>
-                <span className="text-violet-500 text-xl font-bold shrink-0">{open ? "−" : "+"}</span>
+                <span className="text-[#0756B5] dark:text-[#35A8E8] text-xl font-bold shrink-0">{open ? "−" : "+"}</span>
             </button>
             {open && (
                 <div className="pb-4">

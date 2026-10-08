@@ -2,21 +2,22 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-brand-green: #0756B5;
-  --color-brand-leaf: #35A8E8;
-  --color-dairy-blue: #075C2A;
-  --color-sky-blue: #3F9E18;
+  --color-brand-green: #075C2A;
+  --color-brand-leaf: #3F9E18;
+  --color-dairy-blue: #0756B5;
+  --color-sky-blue: #35A8E8;
   --color-premium-gold: #D5A62A;
   --color-milk-white: #FFFDF7;
   --color-cream-bg: #F5E9D0;
   --color-dark-green-text: #063B22;
 
-  --color-primary-purple: #0756B5;
-  --color-primary-purple-dark: #063B22;
-  --color-emerald-green: #35A8E8;
-  --color-salmon-orange: #FF385C;
+  --color-primary-green: #075C2A;
+  --color-primary-blue: #0756B5;
+  --color-accent-sky: #35A8E8;
+  --color-accent-gold: #D5A62A;
   --color-bg-main: #FFFDF7;
   --color-card-white: #FFFFFF;
+  --color-card-cream: #F5E9D0;
   --color-text-dark: #063B22;
   --color-text-muted: #526B5C;
   --color-discount-bg: #FEF9C3;
@@ -25,32 +26,23 @@
 }
 
 :root {
-  --brand-green: #0756B5;
-  --brand-leaf: #35A8E8;
-  --dairy-blue: #075C2A;
-  --sky-blue: #3F9E18;
+  --brand-green: #075C2A;
+  --brand-leaf: #3F9E18;
+  --dairy-blue: #0756B5;
+  --sky-blue: #35A8E8;
   --premium-gold: #D5A62A;
   --milk-white: #FFFDF7;
   --cream-bg: #F5E9D0;
   --dark-green-text: #063B22;
 
-  --primary-purple: #0756B5;
-  --primary-purple-dark: #063B22;
-  --emerald-green: #35A8E8;
-  --salmon-orange: #FF385C;
+  --primary-green: #075C2A;
+  --primary-blue: #0756B5;
+  --sky-accent: #35A8E8;
+  --gold-accent: #D5A62A;
   --bg-main: #FFFDF7;
   --card-white: #FFFFFF;
   --text-dark: #063B22;
   --text-muted: #526B5C;
-
-  /* Legacy Fallbacks */
-  --primary-blue: #075C2A;
-  --primary-blue-hover: #054593;
-  --deep-navy: #063B22;
-  --farm-green: #0756B5;
-  --farm-green-hover: #054820;
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
