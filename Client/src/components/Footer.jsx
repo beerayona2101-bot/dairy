@@ -72,30 +72,30 @@ function Footer() {
 
       {/* ─── MOBILE COMPACT LAYOUT (hidden on lg+) ─── */}
       <div 
-        className="lg:hidden px-5 pt-6 pb-28 sm:pb-32"
-        style={{ paddingBottom: 'calc(98px + max(env(safe-area-inset-bottom, 0px), 10px))' }}
+        className="lg:hidden px-5 pt-5 pb-24"
+        style={{ paddingBottom: 'calc(80px + max(env(safe-area-inset-bottom, 0px), 8px))' }}
       >
         {/* Top row: Logo */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <Link to="/" className="inline-block">
             <img
               src={currentLogo}
               alt={company?.name || "Natural Milk Dairy"}
               loading="eager"
               decoding="sync"
-              className="h-10 w-auto object-contain"
+              className="h-9 w-auto object-contain"
             />
           </Link>
         </div>
 
         {/* Links: 3 columns side by side */}
-        <div className="grid grid-cols-3 gap-x-4 gap-y-1 mb-4">
+        <div className="grid grid-cols-3 gap-x-4 gap-y-1 mb-3">
           {linkSections.map((section) => (
             <div key={section.heading}>
-              <p className="text-[10px] font-black uppercase tracking-wider text-white mb-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-white mb-1.5">
                 {section.heading}
               </p>
-              <ul className="space-y-1.5">
+              <ul className="space-y-1">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <Link
@@ -113,7 +113,7 @@ function Footer() {
 
         {/* Social Icons row */}
         {socialIcons.some(({ key }) => company?.socials?.[key]) && (
-          <div className="flex items-center gap-2.5 mb-4">
+          <div className="flex items-center gap-2 mb-3">
             {socialIcons.map(({ key, Icon, className }) =>
               company?.socials?.[key] ? (
                 <a
@@ -132,29 +132,29 @@ function Footer() {
         )}
 
         {/* Copyright */}
-        <div className="border-t border-[#1E293B] pt-2.5 pb-1 text-[10px] text-[#475569] font-medium text-center">
-          © {new Date().getFullYear()} {company?.name || "Natural Milk Dairy"} · Made with ❤️ for pure living
+        <div className="border-t border-[#1E293B] pt-2 text-[10px] text-[#475569] font-medium text-center">
+          © {new Date().getFullYear()} {company?.name || "Natural Milk Dairy"}. All rights reserved.
         </div>
       </div>
 
       {/* ─── DESKTOP FULL LAYOUT (hidden on mobile) ─── */}
-      <div className="hidden lg:block max-w-7xl mx-auto px-6 py-12">
+      <div className="hidden lg:block max-w-7xl mx-auto px-6 py-6">
         <motion.div
-          className="grid grid-cols-4 gap-10"
+          className="grid grid-cols-4 gap-8"
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
         >
           {/* Brand column */}
-          <motion.div variants={itemVariants} className="space-y-4">
+          <motion.div variants={itemVariants} className="space-y-3">
             <Link to="/" className="inline-block hover:scale-105 transition-transform">
               <img
                 src={currentLogo}
                 alt={company?.name || "Natural Milk Dairy"}
                 loading="eager"
                 decoding="sync"
-                className="h-14 w-auto object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
+                className="h-11 w-auto object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
               />
             </Link>
 
@@ -162,7 +162,7 @@ function Footer() {
               Farm-fresh, 100% pure &amp; nutritious A2 dairy delivered daily to your doorstep.
             </p>
 
-            <div className="flex gap-3 pt-1">
+            <div className="flex gap-2.5 pt-0.5">
               {socialIcons.map(({ key, Icon, className }) =>
                 company?.socials?.[key] ? (
                   <a
@@ -171,9 +171,9 @@ function Footer() {
                     aria-label={key}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-9 h-9 rounded-full bg-[#162032] text-slate-300 flex items-center justify-center border border-[#253248] hover:bg-[#22304A] hover:text-white hover:scale-110 transition cursor-pointer"
+                    className="w-8 h-8 rounded-full bg-[#162032] text-slate-300 flex items-center justify-center border border-[#253248] hover:bg-[#22304A] hover:text-white hover:scale-110 transition cursor-pointer"
                   >
-                    <Icon className={`${className} transition-colors`} style={{ fontSize: 16 }} />
+                    <Icon className={`${className} transition-colors`} style={{ fontSize: 15 }} />
                   </a>
                 ) : null
               )}
@@ -182,11 +182,11 @@ function Footer() {
 
           {/* Link columns */}
           {linkSections.map((section) => (
-            <motion.div key={section.heading} variants={itemVariants} className="space-y-4">
+            <motion.div key={section.heading} variants={itemVariants} className="space-y-3">
               <h3 className="text-sm font-bold uppercase tracking-wider text-white">
                 {section.heading === "Services" ? "Our Services" : section.heading}
               </h3>
-              <ul className="space-y-2.5 text-xs font-semibold">
+              <ul className="space-y-2 text-xs font-semibold">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <Link
@@ -204,17 +204,12 @@ function Footer() {
 
         {/* Desktop Footer Bottom */}
         <motion.div
-          className="mt-12 border-t border-[#1E293B] pt-6 text-xs text-center font-bold text-[#64748B] flex flex-col sm:flex-row items-center justify-between gap-4"
+          className="mt-6 border-t border-[#1E293B] pt-4 text-xs text-center font-semibold text-[#64748B] flex items-center justify-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
           <p>© {new Date().getFullYear()} {company?.name || "Natural Milk Dairy"}. All rights reserved.</p>
-          <p className="flex items-center gap-2">
-            <span>Crafted with</span>
-            <span className="text-red-400">❤️</span>
-            <span>for pure healthy living.</span>
-          </p>
         </motion.div>
       </div>
     </footer>

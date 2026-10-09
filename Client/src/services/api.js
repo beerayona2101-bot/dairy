@@ -1,11 +1,32 @@
 import axios from "axios";
 import { getFriendlyErrorMessage } from "../utils/errorHelper";
 
-const getBaseUrl = () => {
-  if (typeof window !== "undefined" && window.location && window.location.hostname) {
-    const protocol = window.location.protocol === "https:" ? "https:" : "http:";
-    return `${protocol}//${window.location.hostname}:9000`;
+export const getBaseUrl = () => {
+  // 1. If VITE_API_URL is configured in environment, use it directly
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && typeof envUrl === "string" && envUrl.trim()) {
+    return envUrl.trim().replace(/\/+$/, "");
   }
+
+  // 2. In browser environments:
+  if (typeof window !== "undefined" && window.location) {
+    const hostname = window.location.hostname;
+    // Local development (localhost, 127.0.0.1, or local WiFi network IP)
+    if (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.")
+    ) {
+      const protocol = window.location.protocol === "https:" ? "https:" : "http:";
+      return `${protocol}//${hostname}:9000`;
+    }
+
+    // Cloud deployment (Vercel, Netlify, Render, or custom domain):
+    // Use the origin without appending :9000
+    return window.location.origin.replace(/\/+$/, "");
+  }
+
   return "http://localhost:9000";
 };
 

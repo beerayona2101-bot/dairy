@@ -1,4 +1,5 @@
 import { io } from "socket.io-client";
+import { getBaseUrl } from "../services/api.js";
 
 export const CONNECTION_STATE = Object.freeze({
   CONNECTING: "CONNECTING",
@@ -25,11 +26,7 @@ class WebSocketManager {
   }
 
   getSocketUrl() {
-    if (typeof window !== "undefined" && window.location && window.location.hostname) {
-      const protocol = window.location.protocol === "https:" ? "https:" : "http:";
-      return `${protocol}//${window.location.hostname}:9000`;
-    }
-    return "http://localhost:9000";
+    return getBaseUrl();
   }
 
   setConnectionState(newState) {

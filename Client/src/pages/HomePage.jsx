@@ -5,7 +5,6 @@ import { faqs as defaultFaqs } from "../data/products";
 import ScrollReveal from "../components/Common/ScrollReveal";
 
 // Modular Homepage Components
-import MobileWelcomeBanner from "../components/HomeComponents/MobileWelcomeBanner";
 import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
 import FeaturedProductsSection from "../components/HomeComponents/FeaturedProductsSection";
 import ProductCategoriesGrid from "../components/HomeComponents/ProductCategoriesGrid";
@@ -27,13 +26,8 @@ export default function HomePage() {
 
     return (
         <div className="bg-[#FAFBFD] dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
-            {/* Mobile Only: Dynamic Welcome Greeting & Time Pill Banner */}
-            <div className="md:hidden max-w-7xl mx-auto px-3 sm:px-6 pt-1.5 pb-2.5">
-                <MobileWelcomeBanner />
-            </div>
-
-            {/* 1. HERO SECTION: Full-width 100% Viewport on Web, Balanced Card on Mobile */}
-            <div className="w-full max-w-7xl md:max-w-none mx-auto px-3 sm:px-6 md:px-0 pb-3 md:pb-0">
+            {/* 1. HERO CAROUSEL: Full-width 100% Viewport on Web, Responsive Card on Mobile */}
+            <div className="w-full max-w-7xl md:max-w-none mx-auto px-3 sm:px-6 md:px-0 pt-2 pb-3 md:pt-0 md:pb-0">
                 <HomeWelcomeHero />
             </div>
 

@@ -44,11 +44,17 @@ app.use(
 );
 app.use(
   cors({
-    origin: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    origin: (origin, callback) => callback(null, true),
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "x-admin-token", "x-user-token", "Accept"],
   })
 );
+app.options("*", cors());
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
 const server = http.createServer(app);
 const io = connectToSocket(server);
@@ -120,7 +126,7 @@ app.use((err, req, res, next) => {
 const startServer = async (currentPort) => {
   await connectDB();
 
-  server.listen(currentPort, () => {
+  server.listen(currentPort, "0.0.0.0", () => {
     console.log(`Server is running on port ${currentPort}`);
   });
 

@@ -1,3 +1,5 @@
+import { getBaseUrl } from "../services/api.js";
+
 export const getDiscountedPrice = (price, discountPercent) => {
   const validPrice = typeof price === "number" && price >= 0 ? price : 0;
   const validDiscount = typeof discountPercent === "number" && discountPercent >= 0 ? discountPercent : 0;
@@ -130,9 +132,7 @@ export const getProductImage = (item, fallbackName = "") => {
         cleanImg = "/" + cleanImg;
       }
       if (cleanImg.startsWith("/uploads")) {
-        const backendHost = typeof window !== "undefined" && window.location?.hostname
-          ? `${window.location.protocol}//${window.location.hostname}:9000`
-          : "http://localhost:9000";
+        const backendHost = getBaseUrl();
         return `${backendHost}${cleanImg}`;
       }
       if (
