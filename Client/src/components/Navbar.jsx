@@ -376,8 +376,8 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 left-0 w-full z-50 pt-[max(env(safe-area-inset-top,0px),8px)] pb-2.5 sm:py-2 px-3.5 sm:px-8 lg:px-12 glass-navbar rounded-none border-none shadow-none translate-y-0 ${
-                (isProductsCatalog || isCartPage || isCheckoutPage) ? "hidden md:block" : ""
+            <nav className={`fixed top-0 left-0 w-full z-50 h-[48px] sm:h-[54px] md:h-[60px] flex items-center px-3 sm:px-8 lg:px-12 glass-navbar rounded-none border-b border-gray-100/70 dark:border-gray-800/70 shadow-xs translate-y-0 ${
+                (isProductsCatalog || isCartPage || isCheckoutPage) ? "hidden md:flex" : ""
             }`}>
                 <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
                     {/* Desktop View Brand Logo: Emblem + NATURAL (Main) / Milk Dairy (Child) */}
@@ -400,17 +400,19 @@ export default function Navbar() {
                     </Link>
 
                     {/* Mobile View Brand Logo: NATURAL (Main) / Milk Dairy (Child) */}
-                    <Link to="/" className="flex md:hidden items-center gap-2 hover:scale-105 transition-transform py-0.5 z-10 no-underline">
+                    <Link to="/" className="flex md:hidden items-center gap-2 hover:scale-105 transition-transform py-0 z-10 no-underline">
                         <img
-                            src={cowLogoImg}
+                            src={displayLogo}
                             alt="Natural Milk Dairy Logo"
-                            className="h-9 w-auto object-contain drop-shadow-sm shrink-0"
+                            loading="eager"
+                            decoding="sync"
+                            className="h-8 sm:h-9 w-auto object-contain drop-shadow-sm shrink-0 transition-all duration-300"
                         />
                         <div className="flex flex-col items-start justify-center leading-none">
                             <span className="font-black text-sm sm:text-base tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
                                 NATURAL
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-widest uppercase leading-tight mt-0.5">
+                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-wider uppercase leading-tight mt-0.5">
                                 Milk Dairy
                             </span>
                         </div>
@@ -649,57 +651,63 @@ export default function Navbar() {
 
             {/* Mobile Bottom Navigation Bar */}
             {!location.pathname.startsWith('/product-details') && !isCheckoutPage && (
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 min-h-[72px] pt-2 pb-[max(env(safe-area-inset-bottom,4px),8px)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-gray-200/80 dark:border-gray-800/80 shadow-[0_-6px_25px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-around px-3 translate-y-0">
+                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-[52px] sm:h-[56px] bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border-t border-gray-200/85 dark:border-gray-800/85 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-6px_24px_rgba(0,0,0,0.4)] flex items-center justify-around px-1 sm:px-3 translate-y-0">
                     {/* 1. Products */}
                     <Link
                         to="/products"
-                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all ${
+                        onMouseEnter={() => import('../pages/ProductPage')}
+                        onTouchStart={() => import('../pages/ProductPage')}
+                        className={`flex flex-col items-center justify-center flex-1 max-w-[64px] py-0.5 text-xs font-semibold transition-all ${
                             location.pathname.startsWith('/products')
                                 ? "text-[#075C2A] dark:text-[#3F9E18] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                         }`}
                     >
-                        <ShoppingBag className={`w-6 h-6 transition-all duration-200 ${
+                        <ShoppingBag className={`w-5 h-5 transition-all duration-200 ${
                             location.pathname.startsWith('/products') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                         }`} />
-                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Products</span>
+                        <span className="text-[10px] leading-none mt-1 font-bold tracking-tight">Products</span>
                     </Link>
 
                     {/* 2. Wishlist */}
                     <button
                         onClick={handleUserWishlist}
-                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                        onMouseEnter={() => import('../pages/UserProfile/MyWishlist')}
+                        onTouchStart={() => import('../pages/UserProfile/MyWishlist')}
+                        className={`flex flex-col items-center justify-center flex-1 max-w-[64px] py-0.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.includes('/wishlist')
                                 ? "text-[#FF385C] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#FF385C]"
                         }`}
                     >
                         <div className="relative">
-                            <Heart className={`w-6 h-6 transition-all duration-200 ${
+                            <Heart className={`w-5 h-5 transition-all duration-200 ${
                                 location.pathname.includes('/wishlist') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(255,56,92,0.4)] fill-[#FF385C]' : 'stroke-[1.8]'
                             }`} />
                             {wishlistCount > 0 && (
-                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#FF385C] text-white rounded-full text-[9px] shadow-[0_0_6px_rgba(255,56,92,0.6)]">
+                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#FF385C] text-white rounded-full text-[8.5px] shadow-[0_0_6px_rgba(255,56,92,0.6)]">
                                     {wishlistCount}
                                 </span>
                             )}
                         </div>
-                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Wishlist</span>
+                        <span className="text-[10px] leading-none mt-1 font-bold tracking-tight">Wishlist</span>
                     </button>
 
                     {/* 3. Centralized Home Button */}
                     <Link
                         to="/home"
-                        className="flex flex-col items-center justify-center -mt-6 group cursor-pointer"
+                        onMouseEnter={() => import('../pages/HomePage')}
+                        onTouchStart={() => import('../pages/HomePage')}
+                        className="flex flex-col items-center justify-center flex-1 max-w-[64px] -mt-3.5 group cursor-pointer"
                     >
-                        <div className={`p-3 rounded-full border-4 border-white dark:border-slate-900 shadow-xl transition-all duration-300 ${
+                        <div className={`p-2 rounded-full border-[3px] border-white dark:border-slate-900 shadow-md transition-all duration-300 ${
                             location.pathname === '/home' || location.pathname === '/'
-                                ? "bg-gradient-to-tr from-[#075C2A] to-[#054593] text-white scale-110 shadow-[0_4px_20px_rgba(108,92,231,0.5)] ring-2 ring-[#075C2A]/30"
-                                : "bg-white dark:bg-gray-800 text-[#075C2A] dark:text-[#3F9E18] border border-purple-200/80 dark:border-purple-800/80 group-hover:scale-105"
+                                ? "bg-gradient-to-tr from-[#075C2A] to-[#054593] text-white scale-110 shadow-[0_4px_16px_rgba(7,92,42,0.4)] ring-2 ring-[#075C2A]/25"
+                                : "bg-white dark:bg-gray-800 text-[#075C2A] dark:text-[#3F9E18] border border-gray-200 dark:border-gray-700 group-hover:scale-105"
                         }`}>
-                            <Home className="w-6 h-6 stroke-[2.2]" />
+                            <Home className="w-5 h-5 stroke-[2.2]" />
                         </div>
-                        <span className={`text-[11px] leading-none font-bold mt-1.5 ${
+                        <span className={`text-[10px] leading-none font-bold mt-1 ${
                             location.pathname === '/home' || location.pathname === '/'
                                 ? "text-[#075C2A] dark:text-[#3F9E18] font-black"
                                 : "text-slate-800 dark:text-slate-200"
@@ -711,29 +719,33 @@ export default function Navbar() {
                     {/* 4. Cart */}
                     <button
                         onClick={handleUserCart}
-                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                        onMouseEnter={() => import('../pages/CartPage')}
+                        onTouchStart={() => import('../pages/CartPage')}
+                        className={`flex flex-col items-center justify-center flex-1 max-w-[64px] py-0.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname === '/cart'
                                 ? "text-[#075C2A] dark:text-[#3F9E18] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                         }`}
                     >
                         <div className="relative">
-                            <ShoppingCart className={`w-6 h-6 transition-all duration-200 ${
+                            <ShoppingCart className={`w-5 h-5 transition-all duration-200 ${
                                 location.pathname === '/cart' ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                             }`} />
                             {(cartItems?.length || 0) > 0 && (
-                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#075C2A] text-white rounded-full text-[9px] shadow-[0_0_6px_rgba(108,92,231,0.6)]">
+                                <span className="absolute -top-1 -right-2 font-extrabold px-1.5 py-0.2 bg-[#075C2A] text-white rounded-full text-[8.5px] shadow-[0_0_6px_rgba(7,92,42,0.6)]">
                                     {cartItems?.length}
                                 </span>
                             )}
                         </div>
-                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Cart</span>
+                        <span className="text-[10px] leading-none mt-1 font-bold tracking-tight">Cart</span>
                     </button>
 
                     {/* 5. Profile (Right-most) */}
                     <button
                         onClick={handleProfileClick}
-                        className={`flex flex-col items-center justify-center w-16 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                        onMouseEnter={() => import('../pages/UserProfile/UserDashboard')}
+                        onTouchStart={() => import('../pages/UserProfile/UserDashboard')}
+                        className={`flex flex-col items-center justify-center flex-1 max-w-[64px] py-0.5 text-xs font-semibold transition-all cursor-pointer ${
                             location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
                                 ? "text-[#075C2A] dark:text-[#3F9E18] font-black scale-105"
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
@@ -743,14 +755,14 @@ export default function Navbar() {
                             <Avatar
                                 alt={authUser?.firstName}
                                 src={authUser?.photo}
-                                sx={{ width: 24, height: 24, border: "1.5px solid #075C2A" }}
+                                sx={{ width: 20, height: 20, border: "1.5px solid #075C2A" }}
                             />
                         ) : (
-                            <User className={`w-6 h-6 transition-all duration-200 ${
+                            <User className={`w-5 h-5 transition-all duration-200 ${
                                 location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
                             }`} />
                         )}
-                        <span className="text-[11px] leading-none mt-1.5 font-bold tracking-tight">Profile</span>
+                        <span className="text-[10px] leading-none mt-1 font-bold tracking-tight">Profile</span>
                     </button>
                 </nav>
             )}

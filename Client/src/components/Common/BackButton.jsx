@@ -30,9 +30,9 @@ export default function BackButton({
         onClick={handleClick}
         title={title}
         aria-label={label || title || "Go back"}
-        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/80 dark:border-gray-700 text-gray-800 dark:text-white shadow-md hover:scale-105 active:scale-95 transition cursor-pointer ${webHideClass} ${className}`}
+        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200/80 dark:border-slate-700 text-slate-800 dark:text-white shadow-md hover:scale-105 active:scale-95 transition cursor-pointer ${webHideClass} ${className}`}
       >
-        <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-[#075C2A] dark:text-[#3F9E18]" />
+        <ArrowBackIcon sx={{ fontSize: "1.15rem" }} className="text-slate-800 dark:text-white" />
       </button>
     );
   }

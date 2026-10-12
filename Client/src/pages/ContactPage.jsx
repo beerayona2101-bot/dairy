@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { LocationOn, Phone, Email } from "@mui/icons-material";
+import { LocationOn, Phone, Email, Send } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useSnackbar } from "notistack";
 import company from "../data/company.json";
@@ -14,7 +14,7 @@ export default function ContactPage() {
     const [submitting, setSubmitting] = useState(false);
 
     const contactData = pageContent?.contactUs || {
-        badgeText: "GET IN TOUCH",
+        badgeText: "",
         title: "Contact Information",
         supportText: company.supportText || "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
         address: `${company.address.line}, ${company.address.city}, ${company.address.state} - ${company.address.pincode}`,
@@ -95,7 +95,7 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="min-h-[calc(100vh-70px)] flex flex-col justify-center py-2 sm:py-4 px-4 sm:px-6 max-w-6xl mx-auto">
+        <div className="min-h-[calc(100vh-70px)] flex flex-col justify-center py-4 sm:py-6 px-4 sm:px-6 max-w-6xl mx-auto">
             {/* Mobile View Back Button (Mobile Only: md:hidden) */}
             <div className="md:hidden flex items-center justify-start pb-2 mb-1 w-full">
                 <BackButton fallbackPath="/user-profile" />
@@ -110,45 +110,42 @@ export default function ContactPage() {
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                     className="order-2 md:order-1 md:w-1/2 space-y-4 p-5 sm:p-6 lg:p-7 rounded-[28px] bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px] border border-white/90 dark:border-gray-700/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex flex-col justify-between"
                 >
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                         <div>
-                            <span className="text-[11px] font-black uppercase text-[#075C2A] tracking-wider">
-                                {contactData.badgeText || "GET IN TOUCH"}
-                            </span>
                             <AnimatedHeading
                                 blackText="Contact"
                                 violetText="Information"
-                                className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mt-0.5"
+                                className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight"
                             />
                         </div>
 
-                        <div className="space-y-3 pt-1">
-                            <div className="flex items-start gap-3 text-xs sm:text-sm text-[#718096] dark:text-gray-300">
-                                <div className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/50 text-[#075C2A] flex items-center justify-center shrink-0 border border-purple-200">
-                                    <LocationOn sx={{ fontSize: "1rem" }} />
+                        <div className="space-y-4 pt-1">
+                            <div className="flex items-start gap-3.5 text-xs sm:text-sm text-[#718096] dark:text-gray-300">
+                                <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-[#075C2A] dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-800/40">
+                                    <LocationOn sx={{ fontSize: "1.1rem" }} />
                                 </div>
                                 <a
                                     href={contactData.googleMaps || "https://maps.google.com"}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:text-[#075C2A] transition-colors leading-relaxed font-semibold"
+                                    className="hover:text-[#075C2A] transition-colors leading-relaxed font-semibold pt-1"
                                 >
                                     {contactData.address}
                                 </a>
                             </div>
 
-                            <div className="flex items-center gap-3 text-xs sm:text-sm text-[#718096] dark:text-gray-300">
-                                <div className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/50 text-[#075C2A] flex items-center justify-center shrink-0 border border-purple-200">
-                                    <Phone sx={{ fontSize: "1rem" }} />
+                            <div className="flex items-center gap-3.5 text-xs sm:text-sm text-[#718096] dark:text-gray-300">
+                                <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-[#075C2A] dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-800/40">
+                                    <Phone sx={{ fontSize: "1.1rem" }} />
                                 </div>
                                 <a href={`tel:${contactData.phone}`} className="hover:text-[#075C2A] transition-colors font-semibold">
                                     {contactData.phone}
                                 </a>
                             </div>
 
-                            <div className="flex items-center gap-3 text-xs sm:text-sm text-[#718096] dark:text-gray-300">
-                                <div className="w-7 h-7 rounded-full bg-purple-50 dark:bg-purple-950/50 text-[#075C2A] flex items-center justify-center shrink-0 border border-purple-200">
-                                    <Email sx={{ fontSize: "1rem" }} />
+                            <div className="flex items-center gap-3.5 text-xs sm:text-sm text-[#718096] dark:text-gray-300">
+                                <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-[#075C2A] dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-800/40">
+                                    <Email sx={{ fontSize: "1.1rem" }} />
                                 </div>
                                 <a href={`mailto:${contactData.email}`} className="hover:text-[#075C2A] transition-colors font-semibold">
                                     {contactData.email}
@@ -157,7 +154,7 @@ export default function ContactPage() {
                         </div>
                     </div>
 
-                    <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-700 leading-relaxed">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50/80 dark:bg-gray-700/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 leading-relaxed mt-4">
                         {contactData.supportText}
                     </p>
                 </motion.div>
@@ -178,7 +175,7 @@ export default function ContactPage() {
                             className="text-2xl sm:text-3xl font-black text-[#2D3748] dark:text-white tracking-tight leading-tight mb-2.5"
                         />
 
-                        <div className="space-y-2">
+                        <div className="space-y-2.5">
                             <div>
                                 <label htmlFor="fullName" className="block text-[11px] font-bold text-[#718096] dark:text-gray-300 mb-0.5">
                                     Full Name
@@ -191,7 +188,7 @@ export default function ContactPage() {
                                     value={formData.fullName}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-3.5 py-1.5 sm:py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
+                                    className="w-full px-3.5 py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
                                 />
                             </div>
 
@@ -207,7 +204,7 @@ export default function ContactPage() {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-3.5 py-1.5 sm:py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
+                                    className="w-full px-3.5 py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
                                 />
                             </div>
 
@@ -223,13 +220,13 @@ export default function ContactPage() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-3.5 py-1.5 sm:py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
+                                    className="w-full px-3.5 py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200"
                                 />
                                 {formData.email && fixEmailTypo(formData.email) !== formData.email.trim() && fixEmailTypo(formData.email).includes("@") && (
                                     <button
                                         type="button"
                                         onClick={() => setFormData((prev) => ({ ...prev, email: fixEmailTypo(prev.email) }))}
-                                        className="text-[10px] font-bold text-[#075C2A] dark:text-purple-300 hover:underline mt-1 block text-left bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded-md border border-purple-200 dark:border-purple-800"
+                                        className="text-[10px] font-bold text-[#075C2A] dark:text-emerald-400 hover:underline mt-1 block text-left bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800"
                                     >
                                         💡 Did you mean <span className="underline font-black">{fixEmailTypo(formData.email)}</span>? Click to auto-apply
                                     </button>
@@ -244,43 +241,33 @@ export default function ContactPage() {
                                     id="message"
                                     name="message"
                                     placeholder="Enter your message"
-                                    rows="2"
+                                    rows="3"
                                     value={formData.message}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-3.5 py-1.5 sm:py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 resize-none"
+                                    className="w-full px-3.5 py-2 text-xs font-semibold border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-[#2D3748] dark:text-white focus:outline-none focus:border-[#075C2A] focus:ring-2 focus:ring-[#075C2A]/30 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 resize-none"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="pt-1 space-y-2">
+                    <div className="pt-2">
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="w-full py-2.5 px-5 bg-[#075C2A] hover:bg-[#054593] text-white rounded-full font-extrabold text-xs shadow-[0_8px_20px_rgba(108,92,231,0.35)] hover:scale-102 transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
+                            className="w-full py-2.5 sm:py-3 px-5 bg-[#075C2A] hover:bg-[#054620] active:scale-[0.99] text-white rounded-xl font-bold text-xs sm:text-sm shadow-[0_6px_18px_rgba(7,92,42,0.22)] hover:shadow-[0_8px_24px_rgba(7,92,42,0.32)] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
                         >
                             {submitting ? (
                                 <>
                                     <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    <span>Sending via SMTP...</span>
+                                    <span>Sending Message...</span>
                                 </>
                             ) : (
-                                <span>Send Message via Email →</span>
+                                <>
+                                    <span>Send Message</span>
+                                    <Send sx={{ fontSize: "0.95rem" }} />
+                                </>
                             )}
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => {
-                                const { fullName, phone, email, message } = formData;
-                                const whatsappMessage = `Hello! I'm ${fullName || "Customer"},\nPhone: ${phone}\nEmail: ${email}\nMessage: ${message}`;
-                                const targetWa = (contactData.whatsappNumber || "919490644434").replace(/\D/g, "");
-                                window.open(`https://wa.me/${targetWa}?text=${encodeURIComponent(whatsappMessage)}`, "_blank");
-                            }}
-                            className="w-full py-2 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full font-bold text-xs transition cursor-pointer flex items-center justify-center gap-2"
-                        >
-                            <span>💬 Quick Chat on WhatsApp</span>
                         </button>
                     </div>
                 </motion.form>

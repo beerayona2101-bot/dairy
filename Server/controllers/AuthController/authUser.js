@@ -5,7 +5,7 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../../middlewares/authMiddleware.js";
 import { OAuth2Client } from "google-auth-library";
-import { sendWelcomeCredentialsEmail, sendOtpEmail } from "../../config/nodemailer.js";
+import { sendOtpEmail } from "../../config/nodemailer.js";
 import { sendSMS } from "../../config/fast2sms.js";
 import { addNotification, notifyNewUserRegistration } from "../../socket/helper.js";
 
@@ -61,17 +61,9 @@ export const signUpUser = async (req, res) => {
     console.warn("New user registration notification notice:", notifErr?.message);
   }
 
-  // Send Welcome Email with Welcome Note & Account Credentials from Admin Email
-  sendWelcomeCredentialsEmail({
-    toEmail: email,
-    name: email.split("@")[0],
-    email,
-    rawPassword: password,
-  }).catch((err) => console.warn("Signup welcome email notice:", err.message));
-
   res.status(201).json({
     success: true,
-    message: "Account Created Successfully! Welcome email sent with your login credentials.",
+    message: "Account Created Successfully!",
     user: {
       _id: newUser._id,
       email: newUser.email,
@@ -326,13 +318,6 @@ export const loginWithGoogle = async (req, res) => {
       console.warn("Google signup registration notification notice:", notifErr?.message);
     }
 
-    // Send Welcome Email for new Google sign up
-    sendWelcomeCredentialsEmail({
-      toEmail: email,
-      name: name || `${firstName} ${lastName}`.trim(),
-      email,
-      rawPassword: "Google Sign-In (No password required)",
-    }).catch((err) => console.warn("Google signup welcome email notice:", err.message));
   }
 
   // Check for basic info filled
@@ -427,14 +412,6 @@ export const verifyOtp = async (req, res) => {
     console.warn("OTP signup registration notification notice:", notifErr?.message);
   }
 
-  // Send Welcome Credentials Email directly to user mail
-  sendWelcomeCredentialsEmail({
-    toEmail: email,
-    name: email.split("@")[0],
-    email,
-    rawPassword: password,
-  }).catch((err) => console.warn("Signup welcome email notice:", err.message));
-
   const userToken = jwt.sign(
     { id: newUser._id, role: "user", email: newUser.email },
     JWT_SECRET,
@@ -442,7 +419,7 @@ export const verifyOtp = async (req, res) => {
   );
 
   res.status(201).json({
-    message: "Account Created Successfully! Welcome email sent to your mail.",
+    message: "Account Created Successfully!",
     success: true,
     userToken,
     user: {
@@ -482,14 +459,6 @@ export const handleInfoInput = async (req, res) => {
     },
     { new: true }
   );
-
-  if (updatedUser?.email) {
-    sendWelcomeCredentialsEmail({
-      toEmail: updatedUser.email,
-      name: `${updatedUser.firstName || ''} ${updatedUser.lastName || ''}`.trim() || updatedUser.username,
-      email: updatedUser.email,
-    }).catch((err) => console.warn("Welcome email notice:", err.message));
-  }
 
   res.status(201).json({
     success: true,

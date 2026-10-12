@@ -170,10 +170,10 @@ export const notifyNewUserRegistration = async (user, io, options = {}) => {
 
     // 1. User Welcome Notification
     const userWelcomeNotif = {
-      title: "Welcome to MADHU Dairy! 🥛",
+      title: "Welcome to Natural Milk Dairy! 🥛",
       description: createdByAdmin
-        ? `Welcome, ${userName}! Your customer account has been created by MADHU Admin. Enjoy fresh dairy products and fast home delivery.`
-        : `Welcome, ${userName}! Thank you for joining MADHU Dairy. Explore fresh dairy products, manage orders, and enjoy fast home delivery.`,
+        ? `Welcome, ${userName}! Your customer account has been created. Enjoy fresh dairy products and fast home delivery.`
+        : `Welcome, ${userName}! Thank you for joining Natural Milk Dairy. Explore fresh dairy products, manage orders, and enjoy fast home delivery.`,
       date: new Date(),
       isRead: false,
       type: "welcome",
@@ -189,7 +189,7 @@ export const notifyNewUserRegistration = async (user, io, options = {}) => {
       title: createdByAdmin ? "New Customer Created 👤" : "New User Registered 👤",
       description: createdByAdmin
         ? `New customer ${userName} (${userEmail}) was created by admin.`
-        : `New customer ${userName} (${userEmail}) has registered on MADHU Dairy.`,
+        : `New customer ${userName} (${userEmail}) has registered on Natural Milk Dairy.`,
       date: new Date(),
       isRead: false,
       type: "user_signup",

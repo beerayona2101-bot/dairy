@@ -53,8 +53,8 @@ export const PageContentProvider = ({ children }) => {
       }
       return defaultInitialContent;
     },
-    staleTime: 0,           // Always considered stale — refetch always fetches fresh from server
-    gcTime: 1000 * 60 * 5, // Keep in memory for 5 min (was 1 hour — reduce memory pressure)
+    staleTime: 1000 * 60 * 10, // 10 minutes cache freshness for instant 0ms loads
+    gcTime: 1000 * 60 * 30,    // Keep in memory for 30 min
     refetchOnWindowFocus: false,
   });
 

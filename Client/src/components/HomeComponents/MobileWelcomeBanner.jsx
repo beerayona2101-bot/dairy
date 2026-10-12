@@ -1,90 +1,85 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { UserAuthContext, AdminAuthContext } from "../../context/AuthProvider";
-import { ShieldCheck, Truck } from "lucide-react";
 
 export default function MobileWelcomeBanner() {
     const { authUser } = useContext(UserAuthContext);
     const { authAdmin } = useContext(AdminAuthContext);
 
-    // Dynamic time-of-day greeting & icon
-    const getTimingDetails = () => {
+    // Dynamic time-of-day greeting & branding
+    const timing = useMemo(() => {
         const hour = new Date().getHours();
         if (hour >= 5 && hour < 12) {
             return {
                 greeting: "Good Morning",
                 emoji: "☀️",
+                badgeBorder: "border-amber-200/90 dark:border-amber-800/60",
+                badgeBg: "bg-amber-500/15 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300",
                 accentText: "text-amber-600 dark:text-amber-400",
-                accentBg: "bg-amber-50 dark:bg-amber-950/40",
-                badgeBorder: "border-amber-200 dark:border-amber-800/60"
+                gradient: "from-amber-50/70 via-emerald-50/40 to-white dark:from-slate-900/95 dark:via-slate-900/90 dark:to-slate-850/80",
             };
         } else if (hour >= 12 && hour < 17) {
             return {
                 greeting: "Good Afternoon",
                 emoji: "🌤️",
-                accentText: "text-orange-600 dark:text-orange-400",
-                accentBg: "bg-orange-50 dark:bg-orange-950/40",
-                badgeBorder: "border-orange-200 dark:border-orange-800/60"
+                badgeBorder: "border-sky-200/90 dark:border-sky-800/60",
+                badgeBg: "bg-sky-500/15 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300",
+                accentText: "text-sky-600 dark:text-sky-400",
+                gradient: "from-sky-50/70 via-emerald-50/40 to-white dark:from-slate-900/95 dark:via-slate-900/90 dark:to-slate-850/80",
             };
         } else {
             return {
                 greeting: "Good Evening",
                 emoji: "🌙",
+                badgeBorder: "border-indigo-200/90 dark:border-indigo-800/60",
+                badgeBg: "bg-indigo-500/15 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300",
                 accentText: "text-indigo-600 dark:text-indigo-400",
-                accentBg: "bg-indigo-50 dark:bg-indigo-950/40",
-                badgeBorder: "border-indigo-200 dark:border-indigo-800/60"
+                gradient: "from-indigo-50/70 via-slate-50/50 to-white dark:from-slate-900/95 dark:via-slate-900/90 dark:to-slate-850/80",
             };
         }
-    };
+    }, []);
 
-    const timing = getTimingDetails();
     const isLoggedIn = Boolean(authUser || authAdmin);
-
-    // Dynamic user display name
-    const rawName = authUser?.firstName || authUser?.name || authAdmin?.name || (isLoggedIn ? "Yona" : null);
-    const userName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : "Yona";
+    const fullName = useMemo(() => {
+        if (authUser) {
+            if (authUser.name) return authUser.name;
+            const combined = [authUser.firstName, authUser.lastName].filter(Boolean).join(" ");
+            if (combined) return combined;
+        }
+        if (authAdmin) {
+            return authAdmin.name || "Admin";
+        }
+        return "";
+    }, [authUser, authAdmin]);
 
     return (
-        <div className="w-full md:hidden">
-            {/* ELEVATED WELCOME BANNER - COMFORTABLE PADDING & PROMINENT HEADER PRESENCE */}
-            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-3.5 md:py-4 shadow-xs hover:shadow-sm transition-all duration-300 w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full">
-                    <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                        {/* Time Emoji Box */}
-                        <div className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-xl sm:rounded-2xl ${timing.accentBg} ${timing.badgeBorder} border flex items-center justify-center shrink-0 shadow-2xs`}>
-                            <span className="text-xl sm:text-2xl select-none" role="img" aria-label="greeting">
-                                {timing.emoji}
-                            </span>
-                        </div>
-
-                        {/* Welcome Text */}
-                        <div className="min-w-0 flex-1">
-                            <span className={`text-[11px] sm:text-xs font-black uppercase tracking-wider block leading-none mb-1 sm:mb-1.5 ${timing.accentText}`}>
-                                {timing.greeting}
-                            </span>
-                            <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-black text-slate-900 dark:text-white leading-tight truncate">
-                                {isLoggedIn ? (
-                                    <>
-                                        Welcome back, <span className="text-blue-700 dark:text-blue-400">{userName}</span>!
-                                    </>
-                                ) : (
-                                    <>
-                                        Welcome to <span className="text-blue-700 dark:text-blue-400">Natural Milk Dairy</span>
-                                    </>
-                                )}
-                            </h2>
-                        </div>
+        <div className="w-full">
+            {/* CLEAN MINIMALIST WELCOME BANNER (Full Name & Greeting Prominence) */}
+            <div className={`relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-gradient-to-r ${timing.gradient} px-3 py-2 sm:px-4 sm:py-2.5 shadow-xs backdrop-blur-md transition-all duration-300`}>
+                <div className="flex items-center gap-2.5">
+                    {/* Time Emoji Box */}
+                    <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${timing.badgeBg} ${timing.badgeBorder} border flex items-center justify-center shrink-0 shadow-2xs`}>
+                        <span className="text-xl select-none" role="img" aria-label="Greeting Icon">
+                            {timing.emoji}
+                        </span>
                     </div>
 
-                    {/* Web Highlights Badges (Visible on Web & Tablet Viewports) */}
-                    <div className="hidden sm:flex items-center gap-2.5 shrink-0">
-                        <div className="flex items-center gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs sm:text-[13px] font-extrabold shadow-2xs">
-                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                            <span>100% Pure & Organic</span>
-                        </div>
-                        <div className="flex items-center gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs sm:text-[13px] font-extrabold shadow-2xs">
-                            <Truck className="w-4 h-4 text-blue-600" />
-                            <span>Daily Express Delivery</span>
-                        </div>
+                    {/* Text Group: Time Greeting + Completely Visible Full Name */}
+                    <div className="min-w-0 flex-1">
+                        <span className={`text-[10px] xs:text-[11px] font-black uppercase tracking-wider block leading-none mb-1 ${timing.accentText}`}>
+                            {timing.greeting}
+                        </span>
+
+                        <h2 className="text-sm xs:text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug">
+                            {isLoggedIn ? (
+                                <>
+                                    Welcome back, <span className="text-[#0756B5] dark:text-blue-400">{fullName}</span>!
+                                </>
+                            ) : (
+                                <>
+                                    Welcome to <span className="text-[#075C2A] dark:text-emerald-400">Natural Milk Dairy</span>
+                                </>
+                            )}
+                        </h2>
                     </div>
                 </div>
             </div>

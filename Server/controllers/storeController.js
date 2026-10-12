@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import User from "../models/UserSchema.js";
 import Order from "../models/OrderSchema.js";
 import bcryptjs from "bcryptjs";
-import { sendWelcomeCredentialsEmail } from "../config/nodemailer.js";
 import { notifyNewUserRegistration } from "../socket/helper.js";
 
 // READ: Get all customers with accurate aggregated order counts
@@ -102,28 +101,12 @@ export const createCustomer = async (req, res) => {
     console.warn("Admin create customer notification notice:", notifErr?.message);
   }
 
-  // Send Welcome Email with login credentials after user is saved in DB
-  let emailSent = false;
-  try {
-    const emailResult = await sendWelcomeCredentialsEmail({
-      toEmail: cleanEmail,
-      name: `${firstName} ${lastName || ''}`.trim(),
-      email: cleanEmail,
-      rawPassword: effectivePassword,
-    });
-    emailSent = emailResult?.success || false;
-    console.log("📧 [EMAIL_DISPATCH_RESULT] Sent to %s: %s", cleanEmail, emailSent ? "SUCCESS" : "FAILED/FALLBACK");
-  } catch (emailErr) {
-    console.error("❌ [EMAIL_DISPATCH_ERROR] Failed to send welcome email:", emailErr.message);
-  }
-
   const customerObject = savedUser.toObject ? savedUser.toObject() : { ...savedUser };
   delete customerObject.password;
 
   return res.status(201).json({
     success: true,
-    message: "User created successfully and login credentials have been sent to the registered email.",
-    emailSent,
+    message: "User created successfully.",
     customer: customerObject,
   });
 };

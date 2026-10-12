@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 
 import { Link, useParams } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
@@ -28,27 +28,21 @@ export default function ProductDetailsPage() {
 
     const { productId } = useParams();
     const { theme } = useContext(ThemeContext);
-    const { products, productLoading } = useContext(ProductContext);
+    const { products } = useContext(ProductContext);
 
     const [page, setPage] = useState(1);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [relatedProducts, setRelatedProducts] = useState([]);
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "instant" });
     }, [productId]);
 
-    useEffect(() => {
-        const allAvailable = Array.isArray(products) && products.length > 0 ? products : fallbackProducts;
+    const allAvailable = useMemo(() => {
+        return Array.isArray(products) && products.length > 0 ? products : fallbackProducts;
+    }, [products]);
 
+    const selectedProduct = useMemo(() => {
         if (!productId) {
-            const fallbackProd = allAvailable[0] || null;
-            setSelectedProduct(fallbackProd);
-            if (fallbackProd) {
-                const currRelated = recommendProducts(allAvailable, fallbackProd._id || fallbackProd.id);
-                setRelatedProducts(currRelated);
-            }
-            return;
+            return allAvailable[0] || null;
         }
 
         const searchSlug = slugify(productId).replace(/[^a-z0-9]/g, "");
@@ -63,26 +57,24 @@ export default function ProductDetailsPage() {
             return pId === searchClean || pSlug === searchSlug || pClean === searchClean || searchClean.includes(pClean) || pClean.includes(searchClean);
         });
 
-        const targetProduct = selected || allAvailable[0];
-        setSelectedProduct(targetProduct);
+        return selected || allAvailable[0] || null;
+    }, [productId, allAvailable]);
 
-        if (targetProduct) {
-            const currRelatedProducts = recommendProducts(allAvailable, targetProduct._id || targetProduct.id || productId);
-            setRelatedProducts(currRelatedProducts);
-        }
-    }, [productId, products]);
+    const relatedProducts = useMemo(() => {
+        if (!selectedProduct) return [];
+        return recommendProducts(allAvailable, selectedProduct._id || selectedProduct.id || productId);
+    }, [selectedProduct, allAvailable, productId]);
 
-    const totalPages = Math.ceil(relatedProducts.length / 10);
-    const startIndex = (page - 1) * 10;
-    const currentItems = relatedProducts.slice(startIndex, startIndex + 10);
+    const itemsPerPage = 5;
+    const totalPages = Math.ceil((relatedProducts?.length || 0) / itemsPerPage);
+    const currentItems = useMemo(() => {
+        const start = (page - 1) * itemsPerPage;
+        return (relatedProducts || []).slice(start, start + itemsPerPage);
+    }, [relatedProducts, page]);
 
-    const handlePageChange = (_, value) => {
+    const handlePageChange = (event, value) => {
         setPage(value);
     };
-
-    if (productLoading) {
-        return <BuffaloLoader variant="inline" text="Loading product details..." />;
-    }
 
     if (!selectedProduct) {
         return (
@@ -116,7 +108,7 @@ export default function ProductDetailsPage() {
                             title="Back to Products"
                         />
                         <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
-                        <span className="text-xs font-extrabold text-[#0756B5] dark:text-emerald-400 capitalize">
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 capitalize">
                             {selectedProduct?.category || "Dairy"}
                         </span>
                         <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">/</span>
@@ -124,6 +116,17 @@ export default function ProductDetailsPage() {
                             {selectedProduct?.name}
                         </span>
                     </div>
+                </div>
+
+                {/* Mobile Top Header: Back Button separately at top-left corner */}
+                <div className="flex md:hidden items-center justify-start px-3.5 pt-1 pb-2">
+                    <BackButton
+                        fallbackPath="/products"
+                        hideOnWeb={false}
+                        variant="circle"
+                        className="shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                        title="Back to Products"
+                    />
                 </div>
 
                 <div className="w-full">
@@ -140,11 +143,11 @@ export default function ProductDetailsPage() {
                             blackText="Related"
                             violetText="Products"
                             className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white"
-                            violetClassName="text-[#0756B5] dark:text-emerald-400"
+                            violetClassName="text-slate-800 dark:text-slate-200"
                         />
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Handpicked dairy essentials from the same category</p>
                     </div>
-                    <Link to="/products" className="text-xs sm:text-sm font-bold text-[#075C2A] dark:text-blue-400 hover:underline">
+                    <Link to="/products" className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:underline">
                         View All →
                     </Link>
                 </div>
@@ -163,13 +166,13 @@ export default function ProductDetailsPage() {
                                         initial={{ opacity: 0, scale: 0.96 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: idx * 0.02, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                                        className="bg-white dark:bg-slate-800/90 border border-gray-200 dark:border-slate-800 hover:border-[#0756B5] dark:hover:border-emerald-500 transition-all duration-200 rounded-2xl shadow-xs hover:shadow-[0_8px_25px_rgba(7,92,42,0.18)] hover:-translate-y-1 flex flex-col justify-between overflow-hidden group"
+                                        className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-all duration-200 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-1 flex flex-col justify-between overflow-hidden group"
                                     >
-                                        <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-44 overflow-hidden bg-gradient-to-br from-[#F5E9D0]/40 via-emerald-50/20 to-[#FFFDF7] dark:from-slate-800 dark:to-slate-900 relative">
+                                        <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-44 overflow-hidden bg-white dark:bg-slate-800/80 relative">
                                             <img
                                                 src={getProductImage(product)}
                                                 alt={product?.name}
-                                                className="w-full h-full object-contain p-2.5 group-hover:scale-108 transition-transform duration-300 ease-out"
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
                                             />
                                             <DiscountBadge discount={prodDiscount} isFloating={true} />
                                         </Link>
@@ -178,7 +181,7 @@ export default function ProductDetailsPage() {
                                             <div>
                                                 <Link
                                                     to={`/product-details/${slugify(product?.name)}`}
-                                                    className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white truncate group-hover:text-[#0756B5] dark:group-hover:text-emerald-400 line-clamp-1 transition-colors block"
+                                                    className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white truncate group-hover:text-slate-700 dark:group-hover:text-slate-200 line-clamp-1 transition-colors block"
                                                 >
                                                     {product?.name}
                                                 </Link>
@@ -190,7 +193,7 @@ export default function ProductDetailsPage() {
 
                                             <div className="mt-2.5 flex items-baseline justify-between pt-2 border-t border-gray-100 dark:border-slate-700/60">
                                                 <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-sm sm:text-base font-black text-[#075C2A] dark:text-blue-400">
+                                                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                                                         &#8377;{formatNumberWithCommas(discounted)}
                                                     </span>
                                                     {prodDiscount > 0 && (
@@ -237,7 +240,7 @@ export default function ProductDetailsPage() {
                         )}
                     </>
                 ) : (
-                    <div className="bg-[#F5E9D0]/50 dark:bg-slate-800/40 p-6 rounded-2xl border border-[#D5A62A] dark:border-slate-700/60 text-center">
+                    <div className="bg-slate-50 dark:bg-slate-800/40 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 text-center">
                         <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
                             No related products found in this category ({selectedProduct?.category || selectedProduct?.type || "Category"}).
                         </p>

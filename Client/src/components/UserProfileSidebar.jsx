@@ -94,6 +94,7 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
     }
 
     const navigationLinks = [
+        { key: "/user-profile/dashboard", icon: <MdDashboard />, label: "Dashboard" },
         { key: "/user-profile", icon: <MdOutlineAccountCircle />, label: "My Profile" },
         { key: "/user-profile/orders", icon: <MdShoppingCart />, label: "My Orders" },
         { key: "/user-profile/addresses", icon: <MdLocationOn />, label: "Saved Addresses" },
@@ -111,7 +112,7 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
     };
 
     return (
-        <aside className={`scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 ${userProfileDrawer ? "rounded-l-none rounded-r-[24px] border-y border-r border-l-0 border-gray-200 dark:border-gray-700/80" : "rounded-[24px] border border-gray-200/90 dark:border-gray-700/80"}`}>
+        <aside className={`scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 font-dashboard ${userProfileDrawer ? "rounded-l-none rounded-r-[24px] border-y border-r border-l-0 border-gray-200 dark:border-gray-700/80" : "rounded-[24px] border border-gray-200/90 dark:border-gray-700/80"}`}>
             <div>
                 <div className="flex flex-col items-center mb-4 relative group">
                     <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-2xl shadow-md border-2 border-purple-100 dark:border-gray-700 select-none">
@@ -131,7 +132,7 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
                                 key={item.key}
                                 to={item.key}
                                 onClick={userProfileDrawer ? () => setUserProfileDrawer(false) : null}
-                                className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl text-xs font-bold transition-all duration-200 ${active ? "bg-[#075C2A] text-white shadow-md shadow-purple-500/20" : "hover:bg-purple-50 dark:hover:bg-purple-950/40 text-[#4A5568] dark:text-gray-300"}`}
+                                className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl text-xs font-bold tracking-tight transition-all duration-200 ${active ? "bg-[#075C2A] text-white shadow-md shadow-emerald-500/20" : "hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-[#4A5568] dark:text-gray-300"}`}
                             >
                                 <span className="text-base">{item.icon}</span> {item.label}
                             </Link>

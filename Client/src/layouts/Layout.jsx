@@ -35,14 +35,16 @@ export default function Layout({ children }) {
     const isWishlistPage = location.pathname.includes("wishlist");
     const hideFooter = isProductsPage || isWishlistPage || location.pathname.startsWith("/product-details") || location.pathname.includes("product-details") || location.pathname.includes("checkout") || location.pathname.includes("cart");
 
+    const isNoBottomNav = location.pathname.startsWith("/product-details") || isCheckoutPage;
+
     return (
         <div ref={scrollRef} className="min-h-screen w-full max-w-full flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">
             <Navbar />
             <main className={`flex-1 min-h-[100dvh] flex flex-col w-full max-w-full overflow-x-clip ${
                 (isProductsCatalog || isCartPage || isCheckoutPage)
                     ? 'pt-0 md:pt-[60px]'
-                    : 'pt-[calc(66px+env(safe-area-inset-top,0px))] sm:pt-[72px] md:pt-[60px]'
-            } ${hideFooter ? 'pb-24 lg:pb-0' : ''}`}>
+                    : 'pt-[48px] sm:pt-[54px] md:pt-[60px]'
+            } ${isNoBottomNav ? 'pb-6 lg:pb-0' : 'pb-[56px] sm:pb-[62px] lg:pb-0'}`}>
                 <PageTransition key={location.pathname}>
                     {children}
                 </PageTransition>

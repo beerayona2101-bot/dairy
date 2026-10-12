@@ -20,8 +20,9 @@ class MobileWebViewScreen extends StatefulWidget {
 }
 
 class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
-  late final WebViewController _controller;
+  WebViewController? _controller;
   bool _isLoading = true;
+  bool _isFirstLoad = true;
   bool _hasError = false;
   Timer? _timeoutTimer;
 
@@ -41,6 +42,8 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   void initState() {
     super.initState();
     _currentUrl = widget.initialUrl ?? _candidateUrls[0];
+    _initWebView();
+    _startTimeoutTimer();
     _initPreferencesAndLoad();
   }
 
@@ -48,21 +51,18 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
-      if (savedUrl != null && savedUrl.isNotEmpty && widget.initialUrl == null) {
+      if (savedUrl != null && savedUrl.isNotEmpty && widget.initialUrl == null && savedUrl != _currentUrl) {
         if (!_candidateUrls.contains(savedUrl)) {
           _candidateUrls.insert(0, savedUrl);
         } else {
           _candidateUrls.remove(savedUrl);
           _candidateUrls.insert(0, savedUrl);
         }
-        _currentUrl = savedUrl;
+        if (mounted) {
+          _loadSpecificUrl(savedUrl);
+        }
       }
     } catch (_) {}
-
-    if (mounted) {
-      _initWebView();
-      _startTimeoutTimer();
-    }
   }
 
   @override
@@ -122,17 +122,20 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               setState(() {
                 _isLoading = false;
                 _hasError = false;
+                _isFirstLoad = false;
                 _timeoutTimer?.cancel();
               });
             }
           },
           onPageStarted: (String url) {
             if (mounted) {
-              setState(() {
-                _isLoading = true;
-                _hasError = false;
-              });
-              _startTimeoutTimer();
+              if (_isFirstLoad) {
+                setState(() {
+                  _isLoading = true;
+                  _hasError = false;
+                });
+                _startTimeoutTimer();
+              }
             }
           },
           onPageFinished: (String url) {
@@ -141,6 +144,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               setState(() {
                 _isLoading = false;
                 _hasError = false;
+                _isFirstLoad = false;
               });
               // Persist confirmed responsive URL for next launch
               SharedPreferences.getInstance().then((prefs) {
@@ -167,17 +171,22 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       setState(() {
         _currentUrl = url;
         _hasError = false;
-        _isLoading = true;
+        if (_isFirstLoad) {
+          _isLoading = true;
+        }
       });
     }
-    _startTimeoutTimer();
-    _controller.loadRequest(Uri.parse(url));
+    if (_isFirstLoad) {
+      _startTimeoutTimer();
+    }
+    _controller?.loadRequest(Uri.parse(url));
   }
 
   Future<void> _reload() async {
     setState(() {
       _hasError = false;
       _isLoading = true;
+      _isFirstLoad = true;
       _candidateIndex = 0;
     });
     _loadSpecificUrl(_candidateUrls[0]);
@@ -281,14 +290,16 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         systemNavigationBarColor: Colors.white,
+        systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
-          if (await _controller.canGoBack()) {
-            await _controller.goBack();
+          final ctrl = _controller;
+          if (ctrl != null && await ctrl.canGoBack()) {
+            await ctrl.goBack();
           } else {
             if (context.mounted) {
               SystemNavigator.pop();
@@ -298,13 +309,15 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
         child: Scaffold(
           backgroundColor: Colors.white,
           body: SafeArea(
+            top: true,
+            bottom: false,
             child: Stack(
               children: [
                 // Render WebView
-                if (!_hasError)
+                if (!_hasError && _controller != null)
                   Positioned.fill(
                     child: WebViewWidget(
-                      controller: _controller,
+                      controller: _controller!,
                       gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
                         Factory<OneSequenceGestureRecognizer>(
                           () => EagerGestureRecognizer(),
@@ -328,26 +341,27 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(0xFF6C5CE7).withValues(alpha: 0.08),
+                                color: const Color(0xFF0756B5).withValues(alpha: 0.06),
                               ),
                               child: Image.asset(
-                                'assets/images/cowLogo.png',
+                                'assets/images/logoLightMode.png',
                                 fit: BoxFit.contain,
                                 filterQuality: FilterQuality.high,
                                 errorBuilder: (_, _, _) => const Icon(
                                   Icons.eco_rounded,
                                   size: 60,
-                                  color: Color(0xFF6C5CE7),
+                                  color: Color(0xFF075C2A),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 22),
-                            const SizedBox(
-                              width: 32,
-                              height: 32,
+                            SizedBox(
+                              width: 36,
+                              height: 36,
                               child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
-                                strokeWidth: 3,
+                                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0756B5)),
+                                backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.3),
+                                strokeWidth: 3.5,
                               ),
                             ),
                             const SizedBox(height: 18),

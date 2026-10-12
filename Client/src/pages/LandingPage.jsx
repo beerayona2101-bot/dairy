@@ -1,4 +1,4 @@
-import { useContext, lazy, Suspense, useState, useEffect, useRef } from "react";
+import { useContext, lazy, Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ThemeContext } from "../context/ThemeProvider";
@@ -31,50 +31,7 @@ export default function LandingPage() {
         ? pageContent.faqs
         : faqs;
 
-    const [shuffledCategories, setShuffledCategories] = useState([]);
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
-
-
-    const categoriesSectionRef = useRef(null);
-    const [catScrollProgress, setCatScrollProgress] = useState(0);
-
-    useEffect(() => {
-        if (displayCategories && displayCategories.length > 0) {
-            const arrayToShuffle = [...displayCategories];
-            for (let i = arrayToShuffle.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arrayToShuffle[i], arrayToShuffle[j]] = [arrayToShuffle[j], arrayToShuffle[i]];
-            }
-            // Show exactly 4 randomly shuffled cards per page visit / refresh
-            setShuffledCategories(arrayToShuffle.slice(0, 4));
-        }
-    }, [displayCategories]);
-
-    useEffect(() => {
-        let ticking = false;
-        const handleCatScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    if (categoriesSectionRef.current) {
-                        const rect = categoriesSectionRef.current.getBoundingClientRect();
-                        const windowHeight = window.innerHeight;
-                        const totalScrollable = rect.height - windowHeight;
-                        if (totalScrollable > 0) {
-                            const scrolled = -rect.top;
-                            const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
-                            setCatScrollProgress(progress);
-                        }
-                    }
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-
-        window.addEventListener("scroll", handleCatScroll, { passive: true });
-        handleCatScroll();
-        return () => window.removeEventListener("scroll", handleCatScroll);
-    }, [shuffledCategories.length]);
 
 
     return (

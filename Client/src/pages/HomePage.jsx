@@ -5,6 +5,7 @@ import { faqs as defaultFaqs } from "../data/products";
 import ScrollReveal from "../components/Common/ScrollReveal";
 
 // Modular Homepage Components
+import MobileWelcomeBanner from "../components/HomeComponents/MobileWelcomeBanner";
 import HomeWelcomeHero from "../components/HomeComponents/HomeWelcomeHero";
 import FeaturedProductsSection from "../components/HomeComponents/FeaturedProductsSection";
 import ProductCategoriesGrid from "../components/HomeComponents/ProductCategoriesGrid";
@@ -26,13 +27,18 @@ export default function HomePage() {
 
     return (
         <div className="bg-[#FAFBFD] dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
-            {/* 1. HERO CAROUSEL: Full-width 100% Viewport on Web, Responsive Card on Mobile */}
-            <div className="w-full max-w-7xl md:max-w-none mx-auto px-3 sm:px-6 md:px-0 pt-2 pb-3 md:pt-0 md:pb-0">
+            {/* 1. WELCOME NOTE BANNER (Mobile Viewports): Positioned at the top of carousels */}
+            <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-1.5 pb-1 md:hidden">
+                <MobileWelcomeBanner />
+            </div>
+
+            {/* 2. HERO CAROUSEL: Rectangular shape from left to right */}
+            <div className="w-full max-w-7xl md:max-w-none mx-auto px-3 sm:px-6 md:px-0 pt-0.5 pb-2 md:pt-0 md:pb-0">
                 <HomeWelcomeHero />
             </div>
 
-            {/* Main Content Sections with Spacious, Elegant Layout */}
-            <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-12 sm:space-y-18">
+            {/* Main Content Sections with Compact, Elegant Mobile Layout */}
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-8 space-y-5 sm:space-y-12">
 
                 {/* 1. FEATURED PRODUCTS (Handpicked Farm Favourites with Instant Cart) */}
                 <ScrollReveal yOffset={30} duration={0.65}>

@@ -43,7 +43,7 @@ void main() {
       SharedPreferences.setMockInitialValues({
         AuthService.keyToken: 'valid_jwt_token_123',
         AuthService.keyUserId: 'user_id_456',
-        AuthService.keyUserEmail: 'testuser@madhudairy.com',
+        AuthService.keyUserEmail: 'testuser@naturalmilkdairy.com',
       });
 
       final auth = AuthProvider();
@@ -80,7 +80,7 @@ void main() {
       await AuthService.saveSession(
         token: 'auth_token_789',
         userId: 'user_789',
-        email: 'guest_converted@madhudairy.com',
+        email: 'guest_converted@naturalmilkdairy.com',
       );
 
       final restartedAuth = AuthProvider();
@@ -94,7 +94,7 @@ void main() {
       await AuthService.saveSession(
         token: 'logout_token',
         userId: 'logout_user',
-        email: 'logout@madhudairy.com',
+        email: 'logout@naturalmilkdairy.com',
       );
 
       final auth = AuthProvider();

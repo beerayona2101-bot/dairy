@@ -102,13 +102,13 @@ export default function ForgetPassword() {
   };
 
   return (
-    <div className="relative min-h-screen lg:h-screen w-full bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center justify-center p-3 sm:p-4 overflow-y-auto lg:overflow-hidden">
-      {/* Top Navigation Bar: Back & Guest */}
-      <div className="absolute top-3 left-4 right-4 sm:top-5 sm:left-6 sm:right-6 flex items-center justify-between z-30 pointer-events-none">
+    <div className="relative min-h-[100dvh] w-full bg-[#FAFBFD] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col justify-between items-center px-4 py-3 sm:py-5 overflow-y-auto">
+      {/* Top Header Navigation: Back & Guest */}
+      <header className="w-full max-w-[440px] flex items-center justify-between shrink-0 pt-1 pb-1">
         <button
           type="button"
           onClick={handleGoBack}
-          className="pointer-events-auto p-1.5 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-colors rounded-full sm:rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-md shadow-xs flex items-center gap-1.5 cursor-pointer"
+          className="p-2 sm:px-3.5 sm:py-2 text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-colors rounded-full sm:rounded-xl hover:bg-white dark:hover:bg-gray-800 shadow-2xs border border-gray-200/60 dark:border-gray-700/60 flex items-center gap-1.5 cursor-pointer"
           aria-label="Back"
         >
           <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#075C2A] dark:text-[#3F9E18]" />
@@ -118,40 +118,40 @@ export default function ForgetPassword() {
         <button
           type="button"
           onClick={() => navigate("/home")}
-          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-all cursor-pointer font-bold text-xs backdrop-blur-md group"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-200 border border-gray-200/80 dark:border-gray-700/80 rounded-full sm:rounded-xl shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-gray-800 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-all cursor-pointer font-bold text-xs group"
           title="Continue as Guest"
         >
           <User className="w-3.5 h-3.5 text-[#075C2A] dark:text-[#3F9E18]" />
           <span>Guest</span>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:translate-x-0.5 transition-transform -ml-0.5" />
         </button>
-      </div>
+      </header>
 
       {/* Main Unified Card Container */}
-      <motion.div
+      <motion.main
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="w-full max-w-[420px] mx-auto my-auto py-2 sm:py-3 flex flex-col justify-center"
+        className="w-full max-w-[440px] flex-1 flex flex-col justify-center my-auto py-2 sm:py-3"
       >
-        {/* Brand Cow Logo Header */}
-        <div className="flex flex-col items-center text-center mb-2 sm:mb-2.5">
+        {/* Brand Cow Logo Header - Increased size for high impact & readability */}
+        <div className="flex flex-col items-center text-center mb-2.5 sm:mb-3.5">
           <img
             src={brandLogo}
             alt={company?.name || "Natural Milk Dairy"}
-            className="h-12 sm:h-14 w-auto object-contain mb-1 drop-shadow-xs transition-transform duration-300 hover:scale-105"
+            className="h-22 sm:h-26 md:h-28 w-auto object-contain mb-1.5 drop-shadow-md transition-transform duration-300 hover:scale-105"
           />
-          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
-            Farm-fresh milk & daily needs delivered to your door
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xs">
+            Farm-fresh milk &amp; daily needs delivered to your door
           </p>
         </div>
 
         {/* Welcome Header */}
-        <div className="mb-2.5 sm:mb-3 text-left">
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+        <div className="mb-2 sm:mb-3 text-left">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
             Forgot Password? 🔐
           </h1>
-          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
             {showOtpInput
               ? "Enter the 5-digit verification code sent to your email"
               : "Enter your registered email address to recover your password"}
@@ -258,7 +258,7 @@ export default function ForgetPassword() {
             Privacy Policy
           </Link>.
         </p>
-      </motion.div>
+      </motion.main>
     </div>
   );
 }

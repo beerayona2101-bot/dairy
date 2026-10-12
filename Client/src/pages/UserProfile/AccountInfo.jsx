@@ -391,12 +391,33 @@ export default function AccountInfo() {
 
             {/* Account Quick Options Menu Cards (Prominent on Mobile) */}
             <div>
-              <h4 className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5 font-dashboard-label">
                 <Sparkles size={14} className="text-[#075C2A]" />
                 Account Menu Options
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                {/* Dashboard Overview Menu Option */}
+                <div
+                  onClick={() => navigate("/user-profile/dashboard")}
+                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-emerald-500 dark:hover:border-emerald-400 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <LayoutDashboard size={22} />
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors font-dashboard-heading">
+                        Dashboard Overview
+                      </h5>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Orders metrics, spent stats & summary
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight size={20} className="text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
+                </div>
 
                 {/* My Orders Menu Option */}
                 <div
@@ -408,7 +429,7 @@ export default function AccountInfo() {
                       <ShoppingBag size={22} />
                     </div>
                     <div>
-                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-[#075C2A] dark:group-hover:text-purple-300 transition-colors">
+                      <h5 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#075C2A] dark:group-hover:text-purple-300 transition-colors font-dashboard-heading">
                         My Orders
                       </h5>
                       <p className="text-xs text-gray-500 dark:text-gray-400">

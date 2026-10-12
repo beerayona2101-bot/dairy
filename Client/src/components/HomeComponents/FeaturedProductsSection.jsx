@@ -4,21 +4,53 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import AnimatedHeading from "../Common/AnimatedHeading";
 import ProductVarietyCard from "../ProductComponents/ProductVarietyCard";
+import { fallbackProducts } from "../../data/fallbackProducts";
 
 export default function FeaturedProductsSection({ products = [] }) {
-    // Top 8 prominent featured products
-    const displayedProducts = useMemo(() => {
-        if (!Array.isArray(products) || products.length === 0) return [];
-        return products.slice(0, 8);
+    // Curate a balanced, diverse selection of 12 top farm dairy products
+    const featuredList = useMemo(() => {
+        const source = Array.isArray(products) && products.length > 0 ? products : fallbackProducts;
+
+        // Pick diverse favorites across categories (Milk, Paneer, Ghee, Curd, Butter, Lassi, etc.)
+        const categoriesOrder = [
+            "Milk", "Paneer", "Ghee", "Curd", "Butter", "Lassi",
+            "Chaas", "Shrikhand", "Basundi", "Khoya", "Cheese", "Dairy Sweets"
+        ];
+
+        const selected = [];
+        const usedIds = new Set();
+
+        // 1. Pick prominent item from each key dairy category
+        for (const cat of categoriesOrder) {
+            const item = source.find(p =>
+                !usedIds.has(String(p._id)) &&
+                p.category?.toLowerCase() === cat.toLowerCase()
+            );
+            if (item) {
+                selected.push(item);
+                usedIds.add(String(item._id));
+            }
+        }
+
+        // 2. Fill remaining items up to 12 from source catalog
+        for (const item of source) {
+            if (selected.length >= 12) break;
+            if (!usedIds.has(String(item._id))) {
+                selected.push(item);
+                usedIds.add(String(item._id));
+            }
+        }
+
+        return selected;
     }, [products]);
 
-    if (!products || products.length === 0) return null;
+    if (!featuredList || featuredList.length === 0) return null;
 
     return (
-        <section id="featured-products" aria-label="Featured Products" className="w-full space-y-6">
+        <section id="featured-products" aria-label="Featured Products" className="w-full space-y-3.5 sm:space-y-6">
             {/* Header with Title and "View All" */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                <div className="space-y-1.5 text-left">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 sm:gap-4">
+                <div className="space-y-0.5 sm:space-y-1.5 text-left">
                     <AnimatedHeading
                         blackText="Featured"
                         violetText="Products"
@@ -41,20 +73,21 @@ export default function FeaturedProductsSection({ products = [] }) {
                 </Link>
             </div>
 
-            {/* Products Grid: Responsive 2-col on mobile, 3-col on tablet, 4-col on desktop */}
-            {displayedProducts.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 dark:text-slate-500 text-sm bg-white dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-                    No products found in this category right now.
-                </div>
-            ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-                    {displayedProducts.map((product, idx) => (
-                        <div key={`featured-${product?._id || idx}`} className="h-full flex flex-col">
+            {/* Products Grid: 8 cards on mobile response (2 cols x 4 rows), 12 cards on web response (4 cols x 3 rows / 3 cols x 4 rows) */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+                {featuredList.slice(0, 12).map((product, idx) => {
+                    // First 8 items visible on mobile & web; items 9-12 (idx >= 8) visible on web response (md+)
+                    const isExtraWebCard = idx >= 8;
+                    return (
+                        <div
+                            key={`featured-${product?._id || idx}`}
+                            className={`${isExtraWebCard ? "hidden md:flex" : "flex"} flex-col h-full`}
+                        >
                             <ProductVarietyCard product={product} />
                         </div>
-                    ))}
-                </div>
-            )}
+                    );
+                })}
+            </div>
 
             {/* Bottom Catalog CTA */}
             <div className="pt-2 text-center">

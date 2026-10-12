@@ -63,12 +63,12 @@ export default function FloatingCart() {
   }
 
   // 3. ADAPTIVE MOBILE POSITIONING:
-  // On pages with the bottom navigation bar (height ~72px), float nicely above it.
+  // On pages with the bottom navigation bar (height ~52px), float nicely above it.
   // On product-details (where bottom nav is hidden), float comfortably above bottom safe area.
   const isProductDetails = pathname.startsWith("/product-details");
   const bottomPositionClass = isProductDetails
-    ? "bottom-[calc(22px+env(safe-area-inset-bottom,0px))]"
-    : "bottom-[calc(84px+env(safe-area-inset-bottom,0px))]";
+    ? "bottom-[calc(18px+env(safe-area-inset-bottom,0px))]"
+    : "bottom-[calc(64px+env(safe-area-inset-bottom,0px))]";
 
   return (
     <div

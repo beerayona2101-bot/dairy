@@ -29,6 +29,7 @@ export default function UserProfileLayout({ children }) {
     const userRole = sessionStorage.getItem("userRole");
 
     const mobileNavTabs = [
+        { key: "/user-profile/dashboard", label: "Dashboard", icon: <LayoutDashboard size={14} /> },
         { key: "/user-profile", label: "My Profile", icon: <User size={14} /> },
         { key: "/user-profile/orders", label: "My Orders", icon: <ShoppingBag size={14} /> },
         { key: "/user-profile/addresses", label: "Saved Addresses", icon: <MapPin size={14} /> },
@@ -38,7 +39,7 @@ export default function UserProfileLayout({ children }) {
         { key: "/contact-us", label: "Contact Us", icon: <Headphones size={14} /> },
     ];
 
-    const isSubProfilePage = location.pathname !== "/user-profile" && location.pathname.startsWith("/user-profile/");
+    const isSubProfilePage = location.pathname !== "/user-profile" && location.pathname !== "/user-profile/dashboard" && location.pathname.startsWith("/user-profile/");
     const currentTabLabel = mobileNavTabs.find(tab => tab.key === location.pathname)?.label || "Profile Options";
 
     if (authUserLoading) {
@@ -51,7 +52,7 @@ export default function UserProfileLayout({ children }) {
 
     return (
         <div
-            className="h-screen flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
+            className="h-screen flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 overflow-hidden relative font-dashboard select-normal"
         >
             <Navbar />
 

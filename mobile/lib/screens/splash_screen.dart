@@ -50,9 +50,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _initializeApp() async {
-    // 1. Precache onboarding slide images concurrently in parallel for instant display
+    // 1. Precache onboarding and brand logo images concurrently in parallel for instant display
     if (mounted) {
       Future.wait([
+        precacheImage(const AssetImage('assets/images/logoLightMode.png'), context),
         precacheImage(const AssetImage('assets/images/freshMilk.jpg'), context),
         precacheImage(const AssetImage('assets/images/hygienicProcessing.jpg'), context),
         precacheImage(const AssetImage('assets/images/deliveryTruck.jpg'), context),
@@ -152,15 +153,55 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                               ),
                               padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Image.asset(
-                                'assets/images/cowLogo.png',
+                                'assets/images/logoLightMode.png',
                                 fit: BoxFit.contain,
                                 filterQuality: FilterQuality.high,
+                                errorBuilder: (_, _, _) => Image.asset(
+                                  'assets/images/cowLogo.png',
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 12),
+
+                      // Brand Name Typography
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'NATURAL ',
+                            style: GoogleFonts.outfit(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF075C2A),
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+                          Text(
+                            'MILK DAIRY',
+                            style: GoogleFonts.outfit(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF0756B5),
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        "Bringing Nature's Best, Straight to Your Home",
+                        style: GoogleFonts.outfit(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF64748B),
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
 
                       // Quality Assurance Pill Badge
                       Container(

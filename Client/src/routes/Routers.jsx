@@ -30,6 +30,7 @@ const ForgetPassword = lazy(() => import("../pages/Auth/User/ForgetPassword"));
 const ResetPassword = lazy(() => import("../pages/Auth/User/ResetPassword"));
 
 // User Profile pages
+const UserDashboard = lazy(() => import("../pages/UserProfile/UserDashboard"));
 const AccountInfo = lazy(() => import("../pages/UserProfile/AccountInfo"));
 const MyAddresses = lazy(() => import("../pages/UserProfile/MyAddresses"));
 const MyOrders = lazy(() => import("../pages/UserProfile/MyOrders"));
@@ -51,8 +52,37 @@ const CustomerDetailsPage = lazy(() => import("../pages/Admin/CustomerDetailsPag
 const AdminProfile = lazy(() => import("../pages/Admin/AdminProfile"));
 const PageContentManager = lazy(() => import("../pages/Admin/PageContentManager"));
 
+// Route Prefetch Helpers for instant 0ms transitions on hover or idle
+export const prefetchRoute = (importer) => {
+    try {
+        if (typeof importer === 'function') importer();
+    } catch (e) {
+        void e;
+    }
+};
+
+export const prefetchUserDashboard = () => import("../pages/UserProfile/UserDashboard");
+export const prefetchMyOrders = () => import("../pages/UserProfile/MyOrders");
+export const prefetchMyWishlist = () => import("../pages/UserProfile/MyWishlist");
+export const prefetchUserLogin = () => import("../pages/Auth/User/UserLogin");
+export const prefetchAdminDashboard = () => import("../pages/Admin/Dashboard");
+
+const TopProgressBar = () => (
+    <div className="fixed top-0 left-0 right-0 z-[9999] h-[3px] overflow-hidden bg-transparent pointer-events-none">
+        <div
+            className="h-full bg-gradient-to-r from-[#0756B5] via-[#35A8E8] to-[#075C2A] w-full"
+            style={{ animation: "topProgressSlide 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite" }}
+        />
+    </div>
+);
+
 const PageLoader = () => (
-  <BuffaloLoader variant="full" text="Loading Natural Milk Dairy..." />
+    <>
+        <TopProgressBar />
+        <div className="w-full min-h-[50vh] flex flex-col items-center justify-center p-6">
+            <BuffaloLoader variant="inline" text="Opening page..." />
+        </div>
+    </>
 );
 
 // Graceful Error Boundary so page crashes never freeze navigation
@@ -72,7 +102,9 @@ class RouteErrorBoundary extends React.Component {
                 stack: error?.stack,
                 componentStack: errorInfo?.componentStack
             };
-        } catch {}
+        } catch (e) {
+            void e;
+        }
     }
     render() {
         if (this.state.hasError) {
@@ -154,6 +186,26 @@ export default function Routers() {
         };
     }, [authAdmin]);
 
+    // Background idle prefetch for instant 0ms page opening
+    useEffect(() => {
+        const idlePrefetch = () => {
+            prefetchUserDashboard();
+            prefetchMyOrders();
+            prefetchMyWishlist();
+            prefetchUserLogin();
+        };
+
+        if (typeof window !== "undefined") {
+            if ("requestIdleCallback" in window) {
+                const handle = window.requestIdleCallback(idlePrefetch, { timeout: 3000 });
+                return () => window.cancelIdleCallback(handle);
+            } else {
+                const timer = setTimeout(idlePrefetch, 1200);
+                return () => clearTimeout(timer);
+            }
+        }
+    }, []);
+
     return (
         <RouteErrorBoundary>
             <Suspense fallback={<PageLoader />}>
@@ -171,7 +223,7 @@ export default function Routers() {
                     <Route path="/signup/info-input" element={<ProfileInfoInput />} />
                     
                     {/* Protected User Profile Routes */}
-                    <Route path="/user-profile/dashboard" element={<Navigate to="/user-profile" replace />} />
+                    <Route path="/user-profile/dashboard" element={<UserProtectedRoute><UserProfileLayout><UserDashboard /></UserProfileLayout></UserProtectedRoute>} />
                     <Route path="/user-profile" element={<UserProtectedRoute><UserProfileLayout><AccountInfo /></UserProfileLayout></UserProtectedRoute>} />
                     <Route path="/user-profile/addresses" element={<UserProtectedRoute><UserProfileLayout><MyAddresses /></UserProfileLayout></UserProtectedRoute>} />
                     <Route path="/user-profile/orders" element={<UserProtectedRoute><UserProfileLayout><MyOrders /></UserProfileLayout></UserProtectedRoute>} />

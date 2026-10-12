@@ -92,22 +92,22 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden font-dashboard">
       {/* Scrollable Container */}
       <div className="flex-1 overflow-y-auto scrollbar-hide space-y-6 pr-1 pb-28 sm:pb-8">
         {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-[#1E88E5] via-[#00ACC1] to-[#43A047] text-white rounded-2xl p-5 sm:p-6 shadow-md flex justify-between items-center gap-4">
+        <div className="bg-gradient-to-r from-[#075C2A] via-[#0B6623] to-[#0756B5] text-white rounded-2xl p-5 sm:p-6 shadow-md flex justify-between items-center gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight font-dashboard-heading">
               Welcome back, {authUser?.firstName || authUser?.username || "Valued Customer"}! 👋
             </h1>
-            <p className="text-white/90 text-xs sm:text-sm mt-1 font-medium">
+            <p className="text-white/90 text-xs sm:text-sm mt-1 font-medium tracking-tight">
               Here is your account overview and recent order activity stats.
             </p>
           </div>
           <Link
             to="/products"
-            className="hidden sm:flex items-center gap-2 bg-white text-[#1E88E5] px-4 py-2 rounded-xl font-bold shadow hover:bg-gray-100 transition whitespace-nowrap text-xs sm:text-sm shrink-0"
+            className="hidden sm:flex items-center gap-2 bg-white text-[#075C2A] px-4 py-2 rounded-xl font-bold shadow hover:bg-emerald-50 transition whitespace-nowrap text-xs sm:text-sm shrink-0"
           >
             <MdLocalShipping className="text-base" /> Shop Essentials
           </Link>
@@ -126,10 +126,10 @@ export default function UserDashboard() {
             >
               <div className="flex justify-between items-start gap-1.5">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] sm:text-xs font-black uppercase tracking-wide text-gray-600 dark:text-gray-300 leading-tight">
+                  <p className="text-[10.5px] sm:text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 font-dashboard-label leading-tight">
                     {card.title}
                   </p>
-                  <h3 className={`text-xl sm:text-2xl font-black mt-1.5 ${card.textColor} truncate`}>
+                  <h3 className={`text-xl sm:text-2xl font-black font-dashboard-num mt-1.5 ${card.textColor} truncate tracking-tight`}>
                     {card.value}
                   </h3>
                 </div>
@@ -138,9 +138,9 @@ export default function UserDashboard() {
                 </div>
               </div>
 
-              <div className="mt-3 pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60 flex items-center justify-between gap-1 text-[11px] font-bold text-gray-500 dark:text-gray-400">
+              <div className="mt-3 pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60 flex items-center justify-between gap-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                 <span className="truncate max-w-[65%] font-medium">{card.subtext}</span>
-                <span className="flex items-center gap-0.5 text-[#1E88E5] dark:text-pink-400 font-black group-hover:translate-x-0.5 transition-transform shrink-0 whitespace-nowrap">
+                <span className="flex items-center gap-0.5 text-[#0756B5] dark:text-blue-400 font-bold group-hover:translate-x-0.5 transition-transform shrink-0 whitespace-nowrap">
                   View <MdArrowForward />
                 </span>
               </div>
@@ -153,12 +153,12 @@ export default function UserDashboard() {
           {/* Recent Orders Overview */}
           <div className="lg:col-span-2 bg-white dark:bg-gray-800/80 rounded-2xl p-5 shadow-xs border border-gray-200/90 dark:border-gray-700/80">
             <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100 dark:border-gray-700/60">
-              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
-                <MdShoppingCart className="text-[#1E88E5] dark:text-pink-400" /> Recent Orders
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 font-dashboard-heading">
+                <MdShoppingCart className="text-[#0756B5] dark:text-blue-400" /> Recent Orders
               </h2>
               <Link
                 to="/user-profile/orders?status=all"
-                className="text-xs font-extrabold text-[#1E88E5] dark:text-pink-400 hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-[#0756B5] dark:text-blue-400 hover:underline flex items-center gap-1"
               >
                 View All Orders <MdArrowForward />
               </Link>
@@ -169,7 +169,7 @@ export default function UserDashboard() {
                 <p className="mb-3 text-sm font-medium">You haven't placed any orders yet.</p>
                 <Link
                   to="/products"
-                  className="inline-block px-5 py-2.5 bg-[#1E88E5] text-white text-xs font-extrabold rounded-xl hover:bg-[#1565C0] transition shadow-xs"
+                  className="inline-block px-5 py-2.5 bg-[#075C2A] text-white text-xs font-bold rounded-xl hover:bg-[#064e23] transition shadow-xs"
                 >
                   Browse Products
                 </Link>
@@ -182,15 +182,15 @@ export default function UserDashboard() {
                     <div
                       key={order._id}
                       onClick={() => navigate(`/user-profile/orders?orderId=${order._id}`)}
-                      className="flex items-center justify-between p-3.5 rounded-xl border border-gray-200/80 dark:border-gray-700/70 hover:border-[#1E88E5] dark:hover:border-blue-400 hover:bg-blue-50/40 dark:hover:bg-gray-700/50 transition cursor-pointer group"
+                      className="flex items-center justify-between p-3.5 rounded-xl border border-gray-200/80 dark:border-gray-700/70 hover:border-[#0756B5] dark:hover:border-blue-400 hover:bg-blue-50/40 dark:hover:bg-gray-700/50 transition cursor-pointer group"
                     >
                       <div className="min-w-0 flex-1 pr-3">
                         <div className="flex items-center gap-2">
-                          <p className="font-extrabold text-sm text-gray-900 dark:text-white truncate">
+                          <p className="font-bold text-sm text-gray-900 dark:text-white truncate font-dashboard-heading">
                             Order #{displayId}
                           </p>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5 font-dashboard-num">
                           {new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN", {
                             day: "numeric",
                             month: "short",
@@ -202,7 +202,7 @@ export default function UserDashboard() {
 
                       <div className="text-right shrink-0">
                         <span
-                          className={`inline-block px-2.5 py-0.5 text-[11px] font-extrabold rounded-full ${
+                          className={`inline-block px-2.5 py-0.5 text-[11px] font-bold rounded-full ${
                             order.status === "Delivered"
                               ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
                               : order.status === "Cancelled"
@@ -212,9 +212,9 @@ export default function UserDashboard() {
                         >
                           {order.status || "Pending"}
                         </span>
-                        <div className="flex items-center justify-end gap-1 mt-1 text-xs font-black text-gray-900 dark:text-white">
+                        <div className="flex items-center justify-end gap-1 mt-1 text-xs font-black font-dashboard-num text-gray-900 dark:text-white">
                           <span>₹{formatNumberWithCommas(order.totalAmount || 0)}</span>
-                          <MdArrowForward className="text-gray-400 group-hover:text-[#1E88E5] dark:group-hover:text-pink-400 group-hover:translate-x-1 transition-transform" />
+                          <MdArrowForward className="text-gray-400 group-hover:text-[#0756B5] dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </div>
@@ -226,7 +226,7 @@ export default function UserDashboard() {
 
           {/* Quick Actions Shortcuts */}
           <div className="bg-white dark:bg-gray-800/80 rounded-2xl p-5 shadow-xs border border-gray-200/90 dark:border-gray-700/80 space-y-4">
-            <h2 className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white pb-2 border-b border-gray-100 dark:border-gray-700/60">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white pb-2 border-b border-gray-100 dark:border-gray-700/60 font-dashboard-heading">
               Quick Actions
             </h2>
 

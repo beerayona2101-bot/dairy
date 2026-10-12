@@ -38,7 +38,7 @@ class AuthProvider with ChangeNotifier {
         if (isValid) {
           _currentUser = UserModel(
             id: userId,
-            email: email ?? 'user@madhudairy.com',
+            email: email ?? 'user@naturalmilkdairy.com',
             token: token,
           );
           _status = AuthStatus.authenticated;

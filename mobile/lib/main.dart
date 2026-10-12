@@ -6,13 +6,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'config/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
-import 'screens/splash_screen.dart';
+import 'screens/mobile_web_view_screen.dart';
+import 'screens/onboarding_screen.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
 
@@ -26,17 +28,17 @@ void main() async {
   } catch (e) {
     debugPrint("Firebase init notice: $e");
   }
-  runApp(const MadhuDairyApp());
+  runApp(const NaturalMilkDairyApp());
 }
 
-class MadhuDairyApp extends StatelessWidget {
-  const MadhuDairyApp({super.key});
+class NaturalMilkDairyApp extends StatelessWidget {
+  const NaturalMilkDairyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()..initAuth()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
@@ -45,8 +47,39 @@ class MadhuDairyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
-        home: const SplashScreen(),
+        home: const AppStartupGate(),
       ),
     );
+  }
+}
+
+class AppStartupGate extends StatelessWidget {
+  const AppStartupGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    if (authProvider.isInitializing || authProvider.isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: SizedBox(
+            width: 28,
+            height: 28,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0756B5)),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (authProvider.isAuthenticated) {
+      return const MobileWebViewScreen();
+    }
+
+    return const OnboardingScreen();
   }
 }

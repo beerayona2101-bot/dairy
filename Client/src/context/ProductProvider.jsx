@@ -21,6 +21,11 @@ export const ProductProvider = ({ children }) => {
             try {
                 const data = await getProducts();
                 if (data?.success && Array.isArray(data.products) && data.products.length > 0) {
+                    if (data.products.length < 12) {
+                        const existingIds = new Set(data.products.map(p => String(p._id)));
+                        const extras = fallbackProducts.filter(p => !existingIds.has(String(p._id)));
+                        return [...data.products, ...extras];
+                    }
                     return data.products;
                 }
             } catch (err) {
@@ -28,9 +33,10 @@ export const ProductProvider = ({ children }) => {
             }
             return fallbackProducts;
         },
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
         retry: 2,
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {

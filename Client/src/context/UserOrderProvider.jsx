@@ -24,8 +24,9 @@ export default function UserOrderProvider({ children }) {
             return res?.success ? res.orders || [] : [];
         },
         enabled: Boolean(userId),
-        staleTime: 1000 * 60 * 3,
+        staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 20,
+        refetchOnWindowFocus: false,
     });
 
     const userOrders = (localOrders !== null && Array.isArray(localOrders)) ? localOrders : queryOrders;

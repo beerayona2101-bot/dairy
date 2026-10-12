@@ -212,14 +212,35 @@ export default function ProductVarietyCard(props) {
         }
     };
 
+    const handleCardPointerEnter = (event) => {
+        if (event.pointerType !== "mouse") return;
+        event.currentTarget.parentElement.style.zIndex = "1";
+        event.currentTarget.style.transform = "scale(1.025)";
+    };
+
+    const handleCardPointerLeave = (event) => {
+        event.currentTarget.parentElement.style.zIndex = "";
+        event.currentTarget.style.transform = "scale(1)";
+    };
+
     return (
         <motion.div
-            className={`relative rounded-[18px] sm:rounded-[24px] overflow-hidden bg-white/95 dark:bg-slate-800/90 backdrop-blur-lg border border-blue-100/80 dark:border-slate-700/80 p-0 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${props.className || ""}`}
+            className="relative"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
+            <div
+                onPointerEnter={handleCardPointerEnter}
+                onPointerLeave={handleCardPointerLeave}
+                style={{
+                    transform: "scale(1)",
+                    transition: "transform 240ms cubic-bezier(0.22, 1, 0.36, 1)",
+                    willChange: "transform",
+                }}
+                className={`relative rounded-[18px] sm:rounded-[24px] overflow-hidden bg-white/95 dark:bg-slate-800/90 backdrop-blur-lg border border-blue-100/80 dark:border-slate-700/80 p-0 shadow-sm hover:shadow-xl transition-shadow duration-200 flex flex-col justify-between ${props.className || ""}`}
+            >
             {/* Square Product Image: Flush with top and side edges with 0 border/margin/padding */}
             <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700/60 p-0 m-0 border-0 rounded-none transition-colors duration-300">
                 {(!finalImage || finalImage === "null") ? (
@@ -242,7 +263,7 @@ export default function ProductVarietyCard(props) {
                                 e.target.onerror = null;
                                 e.target.src = getProductImage({ name });
                             }}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 block p-0 m-0 border-0"
+                            className="w-full h-full object-cover block p-0 m-0 border-0"
                         />
                     </Link>
                 )}
@@ -387,6 +408,7 @@ export default function ProductVarietyCard(props) {
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </motion.div>
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../config/app_theme.dart';
 import '../models/product_model.dart';
@@ -206,33 +207,60 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       title: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(7),
-            decoration: const BoxDecoration(
+            height: 38,
+            width: 38,
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white,
               shape: BoxShape.circle,
-              gradient: AppTheme.primaryGradient,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF075C2A).withValues(alpha: 0.12),
+                  blurRadius: 6,
+                  offset: const Offset(0, 1.5),
+                ),
+              ],
+              border: Border.all(
+                color: const Color(0xFF10B981).withValues(alpha: 0.4),
+                width: 1.4,
+              ),
             ),
-            child: const Icon(Icons.water_drop_rounded, size: 18, color: Colors.white),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/logoLightMode.png',
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (_, _, _) => const Icon(
+                  Icons.local_drink_rounded,
+                  color: Color(0xFF075C2A),
+                  size: 20,
+                ),
+              ),
+            ),
           ),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'MADHU DAIRY',
-                style: TextStyle(
-                  fontSize: 14,
+                'NATURAL',
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                  color: isDark ? Colors.white : AppTheme.textDark,
+                  letterSpacing: 0.8,
+                  color: isDark ? const Color(0xFF34D399) : const Color(0xFF075C2A),
+                  height: 1.05,
                 ),
               ),
               Text(
-                '& DAILY NEEDS',
-                style: TextStyle(
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primary,
-                  letterSpacing: 1.5,
+                'MILK DAIRY',
+                style: GoogleFonts.outfit(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF0756B5),
+                  letterSpacing: 1.2,
+                  height: 1.1,
                 ),
               ),
             ],
@@ -499,7 +527,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 Text(
                   isLoggedIn
                       ? "Welcome back, $userName! 👋"
-                      : "Welcome to Madhu Dairy 🥛",
+                      : "Welcome to Natural Milk Dairy 🥛",
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
@@ -1282,7 +1310,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 20),
           // App Version
           Text(
-            'Madhu Dairy & Daily Needs v1.0.0\nMade with ❤️ for fresh dairy lovers',
+            'Natural Milk Dairy & Daily Needs v1.0.0\nMade with ❤️ for fresh dairy lovers',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: Colors.grey.shade400, height: 1.5),
           ),

@@ -42,7 +42,7 @@ class ApiService {
       }
     }
 
-    return {'success': false, 'message': 'Unable to connect to Madhu Dairy backend servers.'};
+    return {'success': false, 'message': 'Unable to connect to Natural Milk Dairy backend servers.'};
   }
 
   static Future<Map<String, dynamic>> get(String url, {String? token}) async {
@@ -84,7 +84,7 @@ class ApiService {
       }
     }
 
-    return {'success': false, 'message': 'Unable to connect to Madhu Dairy backend servers.'};
+    return {'success': false, 'message': 'Unable to connect to Natural Milk Dairy backend servers.'};
   }
 
   static String _extractPath(String fullUrl) {
