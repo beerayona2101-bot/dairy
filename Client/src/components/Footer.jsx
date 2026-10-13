@@ -43,7 +43,7 @@ const linkSections = [
     heading: "Support",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "FAQ", href: "/about" },
+      { label: "FAQ", href: "/faqs" },
       { label: "T&C", href: "/about" },
     ],
   },

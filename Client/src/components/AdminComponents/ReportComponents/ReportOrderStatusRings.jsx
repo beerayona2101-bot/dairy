@@ -14,22 +14,22 @@ export default function ReportOrderStatusRings({ orderStatusData = {} }) {
       pct: delivered.pct || 92,
       count: delivered.count || 108,
       color: "#075C2A",
-      bgColor: "bg-purple-600",
-      stroke: "stroke-[#075C2A]",
-      bgStroke: "stroke-purple-100 dark:stroke-purple-950",
-      badge: "bg-purple-100 text-purple-900 border border-purple-300 dark:bg-purple-950 dark:text-purple-200",
-      icon: <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-purple-300" />,
+      bgColor: "bg-emerald-600",
+      stroke: "stroke-[#075C2A] dark:stroke-emerald-500",
+      bgStroke: "stroke-emerald-100 dark:stroke-emerald-950",
+      badge: "bg-emerald-100 text-[#075C2A] border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200",
+      icon: <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-emerald-400" />,
     },
     {
       title: "Active / Shipping",
       pct: pending.pct || 6,
       count: pending.count || 7,
-      color: "#3F9E18",
-      bgColor: "bg-purple-500",
-      stroke: "stroke-purple-500",
-      bgStroke: "stroke-purple-100 dark:stroke-purple-950",
-      badge: "bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-900/40 dark:text-purple-300",
-      icon: <LocalShippingIcon className="text-purple-600 dark:text-purple-300" />,
+      color: "#0756B5",
+      bgColor: "bg-[#0756B5]",
+      stroke: "stroke-[#0756B5] dark:stroke-blue-400",
+      bgStroke: "stroke-blue-100 dark:stroke-blue-950",
+      badge: "bg-blue-50 text-[#0756B5] border border-blue-200 dark:bg-blue-900/40 dark:text-blue-300",
+      icon: <LocalShippingIcon className="text-[#0756B5] dark:text-blue-400" />,
     },
     {
       title: "Cancelled Orders",
@@ -49,7 +49,7 @@ export default function ReportOrderStatusRings({ orderStatusData = {} }) {
       <div className="border-b border-gray-100 dark:border-gray-700/60 pb-3 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-purple-300" />
+            <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-emerald-400" />
             Order Fulfillment Circular Progress
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

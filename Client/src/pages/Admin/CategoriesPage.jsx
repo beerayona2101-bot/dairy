@@ -57,7 +57,7 @@ export default function CategoriesPage() {
           <div className="flex items-center gap-3">
             <BackButton fallbackPath="/admin/dashboard" />
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-[#8C7CF0] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+              <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-[#075C2A] dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                 <CategoryIcon sx={{ fontSize: "1.6rem" }} />
               </div>
               <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
@@ -72,7 +72,7 @@ export default function CategoriesPage() {
 
         <button
           onClick={() => setOpenAddModal(true)}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#8C7CF0] hover:bg-[#7b6be0] text-white font-extrabold text-xs md:text-sm shadow-md transition-all duration-200 cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#075C2A] hover:bg-[#064e23] text-white font-extrabold text-xs md:text-sm shadow-md shadow-emerald-700/20 transition-all duration-200 cursor-pointer shrink-0"
         >
           <AddIcon sx={{ fontSize: "1.2rem" }} />
           <span>+ Add Category</span>
@@ -87,83 +87,83 @@ export default function CategoriesPage() {
         custom={0.1}
         className="grid grid-cols-3 gap-2 sm:gap-4 w-full"
       >
-        {/* 1. Total Categories Button */}
+        {/* 1. Total Categories Button (Brand Green) */}
         <button
           type="button"
           onClick={() => setSelectedFilter("all")}
           className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "all"
-              ? "bg-purple-100/90 dark:bg-purple-900/40 border-purple-300 ring-2 ring-[#8C7CF0] shadow-md"
-              : "bg-white dark:bg-gray-800 border-purple-100 dark:border-gray-700 hover:border-purple-300 shadow-xs"
+              ? "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 ring-2 ring-[#075C2A] shadow-md"
+              : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-emerald-300 shadow-xs"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
               <p className="text-[9px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">Total Categories</p>
-              <div className="w-6 h-6 rounded-lg bg-purple-50 dark:bg-purple-900/60 flex sm:hidden items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+              <div className="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-900/60 flex sm:hidden items-center justify-center text-[#075C2A] dark:text-emerald-400 font-bold shrink-0 shadow-xs">
                 <CategoryIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-2xl font-black text-[#8C7CF0] dark:text-purple-300">{totalCategoriesCount}</h3>
-            <span className="text-[11px] font-semibold text-[#8C7CF0] dark:text-purple-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-2xl font-black text-[#075C2A] dark:text-emerald-400">{totalCategoriesCount}</h3>
+            <span className="text-[11px] font-semibold text-[#075C2A] dark:text-emerald-400 hidden sm:block pt-0.5">
               {selectedFilter === "all" ? "✓ Viewing All Categories" : "Click to view all"}
             </span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/60 hidden sm:flex items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/60 hidden sm:flex items-center justify-center text-[#075C2A] dark:text-emerald-400 font-bold shrink-0 shadow-xs">
             <CategoryIcon />
           </div>
         </button>
 
-        {/* 2. Showcase Cards Button */}
+        {/* 2. Showcase Cards Button (Brand Blue) */}
         <button
           type="button"
           onClick={() => setSelectedFilter("showcase")}
           className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "showcase"
-              ? "bg-purple-100/90 dark:bg-purple-900/40 border-purple-300 ring-2 ring-[#8C7CF0] shadow-md"
-              : "bg-white dark:bg-gray-800 border-purple-100 dark:border-gray-700 hover:border-purple-300 shadow-xs"
+              ? "bg-blue-50 dark:bg-blue-950/50 border-blue-300 ring-2 ring-[#0756B5] shadow-md"
+              : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 shadow-xs"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
               <p className="text-[9px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">Showcase Cards</p>
-              <div className="w-6 h-6 rounded-lg bg-purple-50 dark:bg-purple-900/60 flex sm:hidden items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+              <div className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-900/60 flex sm:hidden items-center justify-center text-[#0756B5] dark:text-blue-400 font-bold shrink-0 shadow-xs">
                 <ViewCarouselIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-2xl font-black text-[#8C7CF0] dark:text-purple-300">{showcaseCardsCount}</h3>
-            <span className="text-[11px] font-semibold text-[#8C7CF0] dark:text-purple-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-2xl font-black text-[#0756B5] dark:text-blue-400">{showcaseCardsCount}</h3>
+            <span className="text-[11px] font-semibold text-[#0756B5] dark:text-blue-400 hidden sm:block pt-0.5">
               {selectedFilter === "showcase" ? "✓ Viewing Showcase Cards" : "Click to filter showcase cards"}
             </span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/60 hidden sm:flex items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/60 hidden sm:flex items-center justify-center text-[#0756B5] dark:text-blue-400 font-bold shrink-0 shadow-xs">
             <ViewCarouselIcon />
           </div>
         </button>
 
-        {/* 3. Catalog Products Button */}
+        {/* 3. Catalog Products Button (Brand Green) */}
         <button
           type="button"
           onClick={() => setSelectedFilter("products")}
           className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "products"
-              ? "bg-purple-100/90 dark:bg-purple-900/40 border-purple-300 ring-2 ring-[#8C7CF0] shadow-md"
-              : "bg-white dark:bg-gray-800 border-purple-100 dark:border-gray-700 hover:border-purple-300 shadow-xs"
+              ? "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 ring-2 ring-[#075C2A] shadow-md"
+              : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-emerald-300 shadow-xs"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
               <p className="text-[9px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">Catalog Products</p>
-              <div className="w-6 h-6 rounded-lg bg-purple-50 dark:bg-purple-900/60 flex sm:hidden items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+              <div className="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-900/60 flex sm:hidden items-center justify-center text-[#075C2A] dark:text-emerald-400 font-bold shrink-0 shadow-xs">
                 <ShoppingBagIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-2xl font-black text-[#8C7CF0] dark:text-purple-300">{safeProducts.length}</h3>
-            <span className="text-[11px] font-semibold text-[#8C7CF0] dark:text-purple-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-2xl font-black text-[#075C2A] dark:text-emerald-400">{safeProducts.length}</h3>
+            <span className="text-[11px] font-semibold text-[#075C2A] dark:text-emerald-400 hidden sm:block pt-0.5">
               {selectedFilter === "products" ? "✓ Viewing All Products Table" : "Click to view all products list"}
             </span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/60 hidden sm:flex items-center justify-center text-[#8C7CF0] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/60 hidden sm:flex items-center justify-center text-[#075C2A] dark:text-emerald-400 font-bold shrink-0 shadow-xs">
             <ShoppingBagIcon />
           </div>
         </button>

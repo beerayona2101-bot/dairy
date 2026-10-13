@@ -38,9 +38,9 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
   const currentProducts = topSellingStocks?.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const getRankBadge = (rankIndex) => {
-    if (rankIndex === 0) return "bg-purple-100 text-[#075C2A] border-purple-300 dark:bg-purple-950/60 dark:text-purple-300";
-    if (rankIndex === 1) return "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/60 dark:text-purple-300";
-    if (rankIndex === 2) return "bg-purple-900 text-purple-200 border-purple-700 dark:bg-purple-950 dark:text-purple-200";
+    if (rankIndex === 0) return "bg-[#075C2A] text-white border-[#075C2A] shadow-xs";
+    if (rankIndex === 1) return "bg-[#0756B5] text-white border-[#0756B5] shadow-xs";
+    if (rankIndex === 2) return "bg-emerald-600 text-white border-emerald-600 shadow-xs";
     return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
   };
 
@@ -62,7 +62,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] dark:text-purple-300 text-xs px-3 py-1 rounded-full font-bold">
+        <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/40 text-[#075C2A] dark:text-emerald-300 text-xs px-3 py-1 rounded-full font-bold border border-emerald-200 dark:border-emerald-800">
           <TrendingUpIcon sx={{ fontSize: "1rem" }} />
           <span>{topSellingStocks?.length || 0} Total Dairy Products</span>
         </div>
@@ -150,7 +150,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
                             className={`inline-block px-3 py-0.5 rounded-full font-bold text-xs ${
                               isLowStock
                                 ? "bg-zinc-900 text-white border border-zinc-700 dark:bg-zinc-800 dark:text-gray-200"
-                                : "bg-purple-100 text-purple-900 dark:bg-purple-950/60 dark:text-purple-200 border border-purple-200"
+                                : "bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-200 border border-emerald-200"
                             }`}
                           >
                             {product?.stock || 0} {product?.quantityUnit || "Pack"}
@@ -159,7 +159,7 @@ export default function TopSellingStock({ topSellingStocks = [], loading }) {
 
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex flex-col items-end">
-                            <span className="font-extrabold text-[#075C2A] dark:text-purple-300">
+                            <span className="font-extrabold text-[#075C2A] dark:text-emerald-300">
                               &#8377;{formatNumberWithCommas(discountedPrice)}
                             </span>
                             {hasDiscount && (

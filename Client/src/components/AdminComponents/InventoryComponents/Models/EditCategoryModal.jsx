@@ -214,7 +214,7 @@ export default function EditCategoryModal({ open, onClose, categoryData, onSave 
               {features.map((feat, idx) => (
                 <span
                   key={`feat-${idx}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-200 border border-purple-200 dark:border-purple-800 rounded-full text-xs font-medium"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-[#075C2A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full text-xs font-medium"
                 >
                   {feat}
                   <button type="button" onClick={() => handleRemoveFeature(idx)} className="hover:text-zinc-900 dark:hover:text-white cursor-pointer">

@@ -310,7 +310,7 @@ export default function AdminProfileInfo() {
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                 @{formData.username || "admin_natural"} • {formData.email || "admin@naturalmilkdairy.com"}
               </p>
-              <span className="inline-block mt-2 px-3 py-0.5 text-[10px] font-extrabold bg-purple-100 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 rounded-full">
+              <span className="inline-block mt-2 px-3 py-0.5 text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950/60 text-[#075C2A] dark:text-emerald-300 rounded-full">
                 System Administrator
               </span>
             </div>
@@ -497,7 +497,7 @@ export default function AdminProfileInfo() {
                 Enter OTP
               </h2>
 
-              <p className="text-sm text-center text-purple-700 dark:text-purple-300 mb-1">
+              <p className="text-sm text-center text-[#0756B5] dark:text-blue-300 mb-1">
                 OTP has been sent to: <strong>{authAdmin?.email}</strong>
               </p>
 
@@ -543,7 +543,7 @@ export default function AdminProfileInfo() {
                 Update Your Password
               </h2>
 
-              <p className="text-sm text-center text-purple-700 dark:text-purple-300 mb-3">
+              <p className="text-sm text-center text-[#075C2A] dark:text-emerald-300 mb-3">
                 OTP verified. You can now set a new password for your account.
               </p>
 

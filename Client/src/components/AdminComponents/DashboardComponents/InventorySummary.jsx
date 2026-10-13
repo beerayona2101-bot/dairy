@@ -42,18 +42,18 @@ export default function InventorySummary({
     {
       name: "Total Stock Items",
       value: totalProducts,
-      icon: <FormatListNumberedIcon className="text-[#075C2A] dark:text-purple-300" />,
-      bg: "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
+      icon: <FormatListNumberedIcon className="text-[#075C2A] dark:text-emerald-300" />,
+      bg: "bg-emerald-50/90 hover:bg-emerald-100/90 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800/40",
       route: "/admin/inventory",
     },
     {
       name: "Low Stock",
       value: lowStockCount,
-      icon: <ReportProblemIcon className="text-purple-600 dark:text-purple-300" />,
+      icon: <ReportProblemIcon className="text-[#0756B5] dark:text-blue-300" />,
       bg:
         lowStockCount > 0
-          ? "bg-purple-100/90 hover:bg-purple-200/90 dark:bg-purple-900/50 dark:hover:bg-purple-800/60 animate-pulse border-purple-300 dark:border-purple-700/60"
-          : "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
+          ? "bg-blue-100/90 hover:bg-blue-200/90 dark:bg-blue-900/50 dark:hover:bg-blue-800/60 animate-pulse border-blue-300 dark:border-blue-700/60"
+          : "bg-blue-50/90 hover:bg-blue-100/90 dark:bg-blue-950/40 dark:hover:bg-blue-950/60 border-blue-200 dark:border-blue-800/40",
       route: "/admin/inventory",
     },
     {
@@ -69,11 +69,11 @@ export default function InventorySummary({
     {
       name: "Near Expiry",
       value: expiringSoonCount,
-      icon: <AccessTimeIcon className="text-purple-700 dark:text-purple-300" />,
+      icon: <AccessTimeIcon className="text-[#059669] dark:text-emerald-300" />,
       bg:
         expiringSoonCount > 0
-          ? "bg-purple-100/90 hover:bg-purple-200/90 dark:bg-purple-900/50 dark:hover:bg-purple-800/60 animate-pulse border-purple-300 dark:border-purple-700/60"
-          : "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
+          ? "bg-emerald-100/90 hover:bg-emerald-200/90 dark:bg-emerald-900/50 dark:hover:bg-emerald-800/60 animate-pulse border-emerald-300 dark:border-emerald-700/60"
+          : "bg-emerald-50/90 hover:bg-emerald-100/90 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800/40",
       route: "/admin/inventory",
     },
   ];

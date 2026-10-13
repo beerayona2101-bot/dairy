@@ -488,7 +488,7 @@ export default function PageContentManager() {
         <div className="flex items-start sm:items-center gap-3">
           <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-2 text-[#075C2A] dark:text-purple-400">
+            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-2 text-[#075C2A] dark:text-emerald-400">
               <LayoutIcon className="w-6 h-6" /> Page Content & Store Info Manager
             </h1>
             <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
@@ -500,7 +500,7 @@ export default function PageContentManager() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#075C2A] hover:bg-[#054593] text-white font-bold text-sm shadow-md transition hover:scale-105 cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#075C2A] hover:bg-[#064e23] text-white font-bold text-sm shadow-md transition hover:scale-105 cursor-pointer disabled:opacity-50"
         >
           {saving ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -512,16 +512,16 @@ export default function PageContentManager() {
       </div>
 
       {/* Category Management Info Banner */}
-      <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/80 p-4 rounded-2xl flex items-center justify-between gap-4">
+      <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 p-4 rounded-2xl flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Layers className="w-5 h-5 text-[#075C2A] dark:text-purple-400 shrink-0" />
+          <Layers className="w-5 h-5 text-[#075C2A] dark:text-emerald-400 shrink-0" />
           <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300 font-medium">
-            <strong className="text-[#075C2A] dark:text-purple-300">Category Showcase Cards:</strong> Are managed under <strong className="underline">Admin → Inventory → Total Categories</strong>.
+            <strong className="text-[#075C2A] dark:text-emerald-300">Category Showcase Cards:</strong> Are managed under <strong className="underline">Admin → Inventory → Total Categories</strong>.
           </p>
         </div>
         <Link
           to="/admin/inventory"
-          className="px-3.5 py-1.5 rounded-xl bg-[#075C2A] hover:bg-[#054593] text-white text-xs font-bold shadow-xs whitespace-nowrap"
+          className="px-3.5 py-1.5 rounded-xl bg-[#075C2A] hover:bg-[#064e23] text-white text-xs font-bold shadow-xs whitespace-nowrap"
         >
           Go to Inventory →
         </Link>
@@ -543,7 +543,7 @@ export default function PageContentManager() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition cursor-pointer whitespace-nowrap ${
               activeTab === tab.id
                 ? tab.id === "3dcards"
-                  ? "bg-gradient-to-r from-[#075C2A] to-indigo-600 text-white shadow-lg shadow-violet-500/30"
+                  ? "bg-gradient-to-r from-[#075C2A] to-[#0756B5] text-white shadow-lg shadow-blue-500/30"
                   : "bg-[#075C2A] text-white shadow-sm"
                 : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
             }`}
@@ -551,7 +551,7 @@ export default function PageContentManager() {
             {tab.icon}
             <span>{tab.label}</span>
             {tab.id === "3dcards" && (
-              <span className="bg-violet-100 dark:bg-violet-900/50 text-[#0756B5] dark:text-violet-300 text-[10px] font-black px-1.5 py-0.5 rounded-full">
+              <span className="bg-white/20 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
                 {(formData.showcase3DCards || []).filter(c => c.enabled !== false).length}
               </span>
             )}
@@ -649,7 +649,7 @@ export default function PageContentManager() {
                       <span>Slide {idx + 1}</span>
                       <span
                         className={`text-[10px] truncate max-w-[120px] ${
-                          isActive ? "text-purple-100" : "text-gray-400"
+                          isActive ? "text-emerald-100" : "text-gray-400"
                         }`}
                       >
                         {slideData?.title ? `• ${slideData.title.slice(0, 18)}...` : ""}
@@ -670,7 +670,7 @@ export default function PageContentManager() {
                     {/* Header with Title and Reset */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-lg bg-[#075C2A]/10 text-[#075C2A] dark:text-purple-300 font-extrabold text-xs">
+                        <span className="px-2.5 py-1 rounded-lg bg-[#075C2A]/10 text-[#075C2A] dark:text-emerald-300 font-extrabold text-xs">
                           Slide {activeHeroSlide + 1} of 3
                         </span>
                         <h4 className="text-sm font-bold text-gray-900 dark:text-white">
@@ -723,7 +723,7 @@ export default function PageContentManager() {
                           onChange={(e) => handleHeroSlideChange(activeHeroSlide, "image", e.target.value)}
                           className="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:border-[#075C2A]"
                         />
-                        <label className="px-4 py-2 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] dark:text-purple-300 font-bold text-xs cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/50 flex items-center justify-center gap-1.5 transition shrink-0 border border-purple-200 dark:border-purple-800">
+                        <label className="px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] dark:text-emerald-300 font-bold text-xs cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/50 flex items-center justify-center gap-1.5 transition shrink-0 border border-emerald-200 dark:border-emerald-800">
                           <Upload className="w-3.5 h-3.5" /> Upload Image
                           <input
                             type="file"
@@ -813,7 +813,7 @@ export default function PageContentManager() {
                         type="button"
                         disabled={activeHeroSlide === 2}
                         onClick={() => setActiveHeroSlide((prev) => Math.min(2, prev + 1))}
-                        className="px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-600 text-xs font-bold text-[#075C2A] hover:bg-purple-50 dark:hover:bg-purple-900/30 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-600 text-xs font-bold text-[#075C2A] hover:bg-emerald-50 dark:hover:bg-emerald-900/30 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                       >
                         Next Slide →
                       </button>
@@ -916,7 +916,7 @@ export default function PageContentManager() {
                 <button
                   type="button"
                   onClick={addAboutStat}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-[#075C2A] dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-[#075C2A] dark:text-emerald-300 font-bold text-xs border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Stat Badge
                 </button>
@@ -1026,7 +1026,7 @@ export default function PageContentManager() {
               <div className="space-y-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div>
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-purple-600" /> Full Office & Factory Address
+                    <MapPin className="w-3.5 h-3.5 text-[#075C2A]" /> Full Office & Factory Address
                   </label>
                   <input
                     type="text"
@@ -1051,7 +1051,7 @@ export default function PageContentManager() {
 
                   <div>
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5 text-purple-600" /> Support Email
+                      <Mail className="w-3.5 h-3.5 text-[#0756B5]" /> Support Email
                     </label>
                     <input
                       type="email"
@@ -1063,7 +1063,7 @@ export default function PageContentManager() {
 
                   <div>
                     <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                      <MessageSquare className="w-3.5 h-3.5 text-purple-600" /> WhatsApp Number
+                      <MessageSquare className="w-3.5 h-3.5 text-[#075C2A]" /> WhatsApp Number
                     </label>
                     <input
                       type="text"
@@ -1100,7 +1100,7 @@ export default function PageContentManager() {
             </h2>
             <button
               onClick={addGoodnessOffering}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-purple-100"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-emerald-100"
             >
               <Plus className="w-3.5 h-3.5" /> Add Card
             </button>
@@ -1139,7 +1139,7 @@ export default function PageContentManager() {
                       placeholder="Paste image URL..."
                       className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-medium focus:outline-none focus:border-[#075C2A]"
                     />
-                    <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] dark:text-purple-300 font-bold text-[11px] cursor-pointer hover:bg-purple-100 transition">
+                    <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] dark:text-emerald-300 font-bold text-[11px] cursor-pointer hover:bg-emerald-100 transition">
                       <Upload className="w-3 h-3" /> Upload Image
                       <input
                         type="file"
@@ -1185,7 +1185,7 @@ export default function PageContentManager() {
             </h2>
             <button
               onClick={addFaq}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-purple-100"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-emerald-100"
             >
               <Plus className="w-3.5 h-3.5" /> Add Question
             </button>
@@ -1235,7 +1235,7 @@ export default function PageContentManager() {
       {activeTab === "3dcards" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           {/* Header Bar */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#075C2A] via-indigo-600 to-[#063B22] p-5 shadow-xl">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#075C2A] via-[#0756B5] to-[#043e86] p-5 shadow-xl">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
             <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
@@ -1243,17 +1243,17 @@ export default function PageContentManager() {
                   <Box className="w-5 h-5 text-white" />
                   <h2 className="text-lg font-black text-white">3D Product Showcase Manager</h2>
                 </div>
-                <p className="text-violet-200 text-xs font-medium">
+                <p className="text-emerald-100 text-xs font-medium">
                   Control which products appear in the interactive 3D showcase on your homepage. Drag to reorder, toggle visibility, and set prices.
                 </p>
                 <div className="flex items-center gap-3 mt-3">
                   <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
                     <Eye className="w-3 h-3" /> {(formData.showcase3DCards || []).filter(c => c.enabled !== false).length} Active
                   </span>
-                  <span className="inline-flex items-center gap-1 bg-white/10 text-violet-200 text-[11px] font-medium px-2.5 py-1 rounded-full">
+                  <span className="inline-flex items-center gap-1 bg-white/10 text-emerald-100 text-[11px] font-medium px-2.5 py-1 rounded-full">
                     <EyeOff className="w-3 h-3" /> {(formData.showcase3DCards || []).filter(c => c.enabled === false).length} Hidden
                   </span>
-                  <span className="inline-flex items-center gap-1 bg-white/10 text-violet-200 text-[11px] font-medium px-2.5 py-1 rounded-full">
+                  <span className="inline-flex items-center gap-1 bg-white/10 text-emerald-100 text-[11px] font-medium px-2.5 py-1 rounded-full">
                     <Layers className="w-3 h-3" /> {(formData.showcase3DCards || []).length} Total
                   </span>
                 </div>
@@ -1270,7 +1270,7 @@ export default function PageContentManager() {
           {/* Live Preview Strip */}
           <div className="bg-gray-900 rounded-2xl p-4 border border-gray-700">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-              <Eye className="w-3.5 h-3.5 text-violet-400" /> Live Preview — Active Cards in Showcase Order
+              <Eye className="w-3.5 h-3.5 text-[#0756B5]" /> Live Preview — Active Cards in Showcase Order
             </p>
             <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {(formData.showcase3DCards || []).filter(c => c.enabled !== false).length === 0 ? (
@@ -1280,15 +1280,15 @@ export default function PageContentManager() {
               ) : (
                 (formData.showcase3DCards || []).filter(c => c.enabled !== false).map((card, i) => (
                   <div key={i} className="shrink-0 w-20 text-center">
-                    <div className="w-16 h-16 mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-violet-900/60 to-indigo-900/60 border border-violet-700/40 flex items-center justify-center shadow-lg shadow-violet-900/30">
+                    <div className="w-16 h-16 mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-950/60 to-blue-950/60 border border-emerald-700/40 flex items-center justify-center shadow-lg shadow-emerald-950/30">
                       {card.pngImage ? (
                         <img src={card.pngImage} alt={card.title} className="w-full h-full object-contain" />
                       ) : (
-                        <Box className="w-7 h-7 text-violet-400/60" />
+                        <Box className="w-7 h-7 text-emerald-400/60" />
                       )}
                     </div>
                     <p className="text-[10px] text-gray-300 font-bold mt-1.5 truncate w-20">{card.title || "Untitled"}</p>
-                    <p className="text-[9px] text-violet-400 font-medium">₹{card.price || 0}</p>
+                    <p className="text-[9px] text-emerald-400 font-medium">₹{card.price || 0}</p>
                   </div>
                 ))
               )}
@@ -1304,7 +1304,7 @@ export default function PageContentManager() {
                 <p className="text-gray-400 dark:text-gray-500 text-xs mt-1 mb-4">Add cards to populate the homepage 3D showcase</p>
                 <button
                   onClick={add3DCard}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#075C2A] text-white text-sm font-bold hover:bg-violet-700 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#075C2A] text-white text-sm font-bold hover:bg-[#054593] transition cursor-pointer"
                 >
                   <Plus className="w-4 h-4" /> Add First Card
                 </button>
@@ -1320,7 +1320,7 @@ export default function PageContentManager() {
                   className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                     card.enabled === false
                       ? "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60"
-                      : "border-violet-200 dark:border-violet-800/50 bg-white dark:bg-gray-800 shadow-sm"
+                      : "border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-gray-800 shadow-sm"
                   }`}
                 >
                   {/* Card Header Row */}
@@ -1346,11 +1346,11 @@ export default function PageContentManager() {
                     </div>
 
                     {/* Card Thumbnail */}
-                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/40 dark:to-indigo-900/40 border border-violet-200 dark:border-violet-700/40 flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-emerald-100 to-blue-100 dark:from-emerald-900/40 dark:to-blue-900/40 border border-emerald-200 dark:border-emerald-700/40 flex items-center justify-center shrink-0">
                       {card.pngImage ? (
                         <img src={card.pngImage} alt={card.title} className="w-full h-full object-contain" />
                       ) : (
-                        <Box className="w-6 h-6 text-violet-400/60" />
+                        <Box className="w-6 h-6 text-emerald-400/60" />
                       )}
                     </div>
 
@@ -1358,14 +1358,14 @@ export default function PageContentManager() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{card.title || "Untitled Card"}</span>
-                        <span className="text-[10px] bg-violet-100 dark:bg-violet-900/50 text-[#0756B5] dark:text-violet-300 px-2 py-0.5 rounded-full font-bold">{card.badge || ""}</span>
+                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/50 text-[#0756B5] dark:text-blue-300 px-2 py-0.5 rounded-full font-bold">{card.badge || ""}</span>
                         {card.enabled === false && (
                           <span className="text-[10px] bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full font-bold">HIDDEN</span>
                         )}
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                         ₹{card.price || 0} &nbsp;·&nbsp; {card.discount || 0}% off
-                        <span className="ml-2 text-violet-500 font-bold">
+                        <span className="ml-2 text-[#0756B5] font-bold">
                           → ₹{Math.round((card.price || 0) * (1 - (card.discount || 0) / 100))}
                         </span>
                       </p>
@@ -1399,7 +1399,7 @@ export default function PageContentManager() {
                       <button
                         onClick={() => setCard3DExpanded((prev) => (prev === idx ? null : idx))}
                         title="Edit Card"
-                        className="p-1.5 rounded-xl bg-[#F5E9D0] dark:bg-violet-900/30 text-[#075C2A] dark:text-violet-400 hover:bg-violet-100 transition cursor-pointer"
+                        className="p-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] dark:text-emerald-400 hover:bg-emerald-100 transition cursor-pointer"
                       >
                         {card3DExpanded === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
@@ -1424,9 +1424,9 @@ export default function PageContentManager() {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="overflow-hidden border-t border-[#D5A62A] dark:border-violet-900/50"
+                        className="overflow-hidden border-t border-[#D5A62A] dark:border-gray-700"
                       >
-                        <div className="p-4 space-y-4 bg-[#F5E9D0]/30 dark:bg-violet-950/20">
+                        <div className="p-4 space-y-4 bg-emerald-50/30 dark:bg-emerald-950/20">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Title */}
                             <div>
@@ -1438,7 +1438,7 @@ export default function PageContentManager() {
                                 value={card.title || ""}
                                 onChange={(e) => handle3DCardChange(idx, "title", e.target.value)}
                                 placeholder="e.g. Fresh Milk, Paneer, Ghee..."
-                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20"
+                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
                               />
                             </div>
 
@@ -1453,7 +1453,7 @@ export default function PageContentManager() {
                                   value={card.badge || ""}
                                   onChange={(e) => handle3DCardChange(idx, "badge", e.target.value)}
                                   placeholder="e.g. ⭐ BESTSELLER"
-                                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20"
+                                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
                                 />
                                 <div className="flex gap-1 shrink-0">
                                   {["⭐ BESTSELLER", "🔥 HOT PICK", "🌟 TOP RATED", "✨ FRESH DAILY", "💎 PREMIUM"].map((b) => (
@@ -1463,8 +1463,8 @@ export default function PageContentManager() {
                                       title={b}
                                       className={`text-[11px] px-1.5 py-1 rounded-lg border transition cursor-pointer ${
                                         card.badge === b
-                                          ? "border-violet-500 bg-violet-100 dark:bg-violet-900/50 text-[#0756B5]"
-                                          : "border-gray-200 dark:border-gray-600 text-gray-500 hover:border-violet-300"
+                                          ? "border-[#0756B5] bg-blue-100 dark:bg-blue-900/50 text-[#0756B5]"
+                                          : "border-gray-200 dark:border-gray-600 text-gray-500 hover:border-blue-300"
                                       }`}
                                     >
                                       {b.split(" ")[0]}
@@ -1484,7 +1484,7 @@ export default function PageContentManager() {
                               rows={2}
                               value={card.description || ""}
                               onChange={(e) => handle3DCardChange(idx, "description", e.target.value)}
-                              className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20 resize-none"
+                              className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20 resize-none"
                             />
                           </div>
 
@@ -1499,7 +1499,7 @@ export default function PageContentManager() {
                                 min={0}
                                 value={card.price || 0}
                                 onChange={(e) => handle3DCardChange(idx, "price", Number(e.target.value))}
-                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-bold focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20"
+                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-bold focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
                               />
                             </div>
                             <div>
@@ -1512,7 +1512,7 @@ export default function PageContentManager() {
                                 max={100}
                                 value={card.discount || 0}
                                 onChange={(e) => handle3DCardChange(idx, "discount", Number(e.target.value))}
-                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-bold focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20"
+                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-bold focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
                               />
                             </div>
                             <div>
@@ -1531,11 +1531,11 @@ export default function PageContentManager() {
                               <ImageIcon className="w-3 h-3" /> Product PNG Image (transparent background preferred)
                             </label>
                             <div className="flex items-start gap-4">
-                              <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-700 bg-[#F5E9D0] dark:bg-violet-950/30 flex items-center justify-center overflow-hidden shrink-0">
+                              <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center overflow-hidden shrink-0">
                                 {card.pngImage ? (
                                   <img src={card.pngImage} alt={card.title} className="w-full h-full object-contain" />
                                 ) : (
-                                  <Box className="w-8 h-8 text-violet-300" />
+                                  <Box className="w-8 h-8 text-emerald-400" />
                                 )}
                               </div>
                               <div className="flex-1 space-y-2">
@@ -1544,9 +1544,9 @@ export default function PageContentManager() {
                                   value={card.pngImage || ""}
                                   onChange={(e) => handle3DCardChange(idx, "pngImage", e.target.value)}
                                   placeholder="Paste image URL or upload file below"
-                                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-violet-500"
+                                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
                                 />
-                                <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-[#0756B5] dark:text-violet-300 font-bold text-xs cursor-pointer hover:bg-violet-200 transition">
+                                <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-[#0756B5] dark:text-blue-300 font-bold text-xs cursor-pointer hover:bg-blue-200 transition">
                                   <Upload className="w-3.5 h-3.5" /> Upload PNG File
                                   <input
                                     type="file"
@@ -1563,7 +1563,7 @@ export default function PageContentManager() {
                           </div>
 
                           {/* Visibility Toggle */}
-                          <div className="flex items-center justify-between pt-2 border-t border-[#D5A62A] dark:border-violet-900/50">
+                          <div className="flex items-center justify-between pt-2 border-t border-[#D5A62A] dark:border-gray-700">
                             <div>
                               <p className="text-xs font-bold text-gray-700 dark:text-gray-300">Card Visibility</p>
                               <p className="text-[10px] text-gray-500 dark:text-gray-400">
@@ -1597,7 +1597,7 @@ export default function PageContentManager() {
           {/* Quick-add from catalog */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-violet-500" /> Quick-Add from Product Catalog
+              <Sparkles className="w-4 h-4 text-[#075C2A]" /> Quick-Add from Product Catalog
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
               {products.map((p, i) => {
@@ -1632,7 +1632,7 @@ export default function PageContentManager() {
                     className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-left transition ${
                       alreadyAdded
                         ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 cursor-not-allowed"
-                        : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-violet-400 hover:bg-[#F5E9D0] dark:hover:bg-violet-900/20 hover:text-[#0756B5] cursor-pointer"
+                        : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-[#0756B5] hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-[#0756B5] cursor-pointer"
                     }`}
                   >
                     <span className="text-base leading-none">

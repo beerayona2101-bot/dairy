@@ -41,7 +41,7 @@ export default function AddCategoryModel({ open, onClose, onCategoryCreated }) {
     >
       <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <FolderPlus className="text-[#075C2A] dark:text-purple-400 w-5 h-5" />
+          <FolderPlus className="text-[#075C2A] dark:text-emerald-400 w-5 h-5" />
           Add New Category
         </h3>
         <button

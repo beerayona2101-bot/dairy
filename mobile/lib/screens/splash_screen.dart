@@ -13,7 +13,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -53,11 +54,27 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // 1. Precache onboarding and brand logo images concurrently in parallel for instant display
     if (mounted) {
       Future.wait([
-        precacheImage(const AssetImage('assets/images/logoLightMode.png'), context),
+        precacheImage(
+          const AssetImage('assets/images/splash_logo.png'),
+          context,
+        ),
+        precacheImage(
+          const AssetImage('assets/images/logoLightMode.png'),
+          context,
+        ),
         precacheImage(const AssetImage('assets/images/freshMilk.jpg'), context),
-        precacheImage(const AssetImage('assets/images/hygienicProcessing.jpg'), context),
-        precacheImage(const AssetImage('assets/images/deliveryTruck.jpg'), context),
-        precacheImage(const AssetImage('assets/images/freshProducts.jpg'), context),
+        precacheImage(
+          const AssetImage('assets/images/hygienicProcessing.jpg'),
+          context,
+        ),
+        precacheImage(
+          const AssetImage('assets/images/deliveryTruck.jpg'),
+          context,
+        ),
+        precacheImage(
+          const AssetImage('assets/images/freshProducts.jpg'),
+          context,
+        ),
       ]).catchError((_) => []);
     }
 
@@ -102,166 +119,184 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFF6FAF8),
-              Color(0xFFEFF8F3),
-            ],
+            colors: [Color(0xFFFFFFFF), Color(0xFFF6FAF8), Color(0xFFEFF8F3)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(flex: 3),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final maxLogoWidth = constraints.maxWidth < 422
+                  ? constraints.maxWidth * 0.88
+                  : 360.0;
+              final maxLogoWidthByHeight =
+                  (constraints.maxHeight * 0.38) / (795.0 / 1024.0);
+              final logoWidth = maxLogoWidth < maxLogoWidthByHeight
+                  ? maxLogoWidth
+                  : maxLogoWidthByHeight;
+              final logoHeight = logoWidth * (795.0 / 1024.0);
 
-              // Animated Hero Brand Logo
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Column(
-                    children: [
-                      // Ambient Glow behind the logo
-                      Stack(
-                        alignment: Alignment.center,
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Spacer(flex: 3),
+
+                  // Animated Hero Brand Logo
+                  ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Column(
                         children: [
-                          Container(
-                            width: 240,
-                            height: 240,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
-                                colors: [
-                                  const Color(0xFF10B981).withValues(alpha: 0.18),
-                                  const Color(0xFF10B981).withValues(alpha: 0.04),
-                                  Colors.transparent,
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          // Brand Logo PNG
-                          Hero(
-                            tag: 'app_brand_logo',
-                            child: Container(
-                              constraints: const BoxConstraints(
-                                maxWidth: 290,
-                                maxHeight: 290,
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: Image.asset(
-                                'assets/images/logoLightMode.png',
-                                fit: BoxFit.contain,
-                                filterQuality: FilterQuality.high,
-                                errorBuilder: (_, _, _) => Image.asset(
-                                  'assets/images/cowLogo.png',
-                                  fit: BoxFit.contain,
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: logoWidth * 0.88,
+                                height: logoHeight * 0.88,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      const Color(
+                                        0xFF10B981,
+                                      ).withValues(alpha: 0.16),
+                                      const Color(
+                                        0xFF10B981,
+                                      ).withValues(alpha: 0.03),
+                                      Colors.transparent,
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Brand Name Typography
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'NATURAL ',
-                            style: GoogleFonts.outfit(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF075C2A),
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                          Text(
-                            'MILK DAIRY',
-                            style: GoogleFonts.outfit(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF0756B5),
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        "Bringing Nature's Best, Straight to Your Home",
-                        style: GoogleFonts.outfit(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF64748B),
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Quality Assurance Pill Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.4),
-                            width: 1.2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                              blurRadius: 14,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text('🌱', style: TextStyle(fontSize: 13)),
-                            const SizedBox(width: 7),
-                            Text(
-                              '100% PURE & FARM-FRESH DAIRY',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFF047857),
-                                letterSpacing: 0.9,
+                              Hero(
+                                tag: 'app_brand_logo',
+                                child: SizedBox(
+                                  width: logoWidth,
+                                  height: logoHeight,
+                                  child: Image.asset(
+                                    'assets/images/splash_logo.png',
+                                    fit: BoxFit.contain,
+                                    filterQuality: FilterQuality.high,
+                                    errorBuilder: (_, _, _) => Image.asset(
+                                      'assets/images/logoLightMode.png',
+                                      fit: BoxFit.contain,
+                                      filterQuality: FilterQuality.high,
+                                    ),
+                                  ),
+                                ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Brand Name Typography
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'NATURAL ',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFF075C2A),
+                                  letterSpacing: 1.1,
+                                ),
+                              ),
+                              Text(
+                                'MILK DAIRY',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFF0756B5),
+                                  letterSpacing: 1.1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            "Bringing Nature's Best, Straight to Your Home",
+                            style: GoogleFonts.outfit(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF64748B),
+                              letterSpacing: 0.2,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Quality Assurance Pill Badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.4),
+                                width: 1.2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.1),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  '🌱',
+                                  style: TextStyle(fontSize: 13),
+                                ),
+                                const SizedBox(width: 7),
+                                Text(
+                                  '100% PURE & FARM-FRESH DAIRY',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF047857),
+                                    letterSpacing: 0.9,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              const Spacer(flex: 2),
+                  const Spacer(flex: 2),
 
-              // Bottom Loading Spinner & Slogan
-              const SpinKitThreeBounce(
-                color: Color(0xFF10B981),
-                size: 22,
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Delivering Farm Purity Daily...',
-                style: GoogleFonts.outfit(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF475569),
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 38),
-            ],
+                  // Bottom Loading Spinner & Slogan
+                  const SpinKitThreeBounce(color: Color(0xFF10B981), size: 22),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Delivering Farm Purity Daily...',
+                    style: GoogleFonts.outfit(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF475569),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 38),
+                ],
+              );
+            },
           ),
         ),
       ),

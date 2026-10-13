@@ -1,22 +1,19 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
-import Footer from "../components/Footer";
+import { useLocation, Navigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import UserProfileSidebar from "../components/UserProfileSidebar";
-import { UserAuthContext, AdminAuthContext } from "../context/AuthProvider";
+import { UserAuthContext } from "../context/AuthProvider";
 import PropTypes from "prop-types";
 import BuffaloLoader from "../components/BuffaloLoader";
 import PageTransition from "../components/PageTransition";
-import { Menu, X, User, ShoppingBag, MapPin, Heart, CreditCard, ChevronRight, Info, Headphones, ArrowLeft } from "lucide-react";
+import { X } from "lucide-react";
 import { Drawer } from "@mui/material";
 import BackButton from "../components/Common/BackButton";
 
 export default function UserProfileLayout({ children }) {
     const scrollRef = useRef(null);
     const location = useLocation();
-    const navigate = useNavigate();
     const { authUser, authUserLoading } = useContext(UserAuthContext);
-    const { authAdmin, authAdminLoading } = useContext(AdminAuthContext);
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     useEffect(() => {
@@ -28,19 +25,7 @@ export default function UserProfileLayout({ children }) {
     const userToken = sessionStorage.getItem("userToken");
     const userRole = sessionStorage.getItem("userRole");
 
-    const mobileNavTabs = [
-        { key: "/user-profile/dashboard", label: "Dashboard", icon: <LayoutDashboard size={14} /> },
-        { key: "/user-profile", label: "My Profile", icon: <User size={14} /> },
-        { key: "/user-profile/orders", label: "My Orders", icon: <ShoppingBag size={14} /> },
-        { key: "/user-profile/addresses", label: "Saved Addresses", icon: <MapPin size={14} /> },
-        { key: "/user-profile/wishlist", label: "My Wishlist", icon: <Heart size={14} /> },
-        { key: "/user-profile/payments", label: "Payments", icon: <CreditCard size={14} /> },
-        { key: "/about", label: "About Us", icon: <Info size={14} /> },
-        { key: "/contact-us", label: "Contact Us", icon: <Headphones size={14} /> },
-    ];
-
     const isSubProfilePage = location.pathname !== "/user-profile" && location.pathname !== "/user-profile/dashboard" && location.pathname.startsWith("/user-profile/");
-    const currentTabLabel = mobileNavTabs.find(tab => tab.key === location.pathname)?.label || "Profile Options";
 
     if (authUserLoading) {
         return <BuffaloLoader variant="full" text="Loading your profile... Please wait." />;

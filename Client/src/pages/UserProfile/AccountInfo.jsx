@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa";
 import { Close } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard, LayoutDashboard, LogOut, LogIn, ArrowLeft } from "lucide-react";
+import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard, LayoutDashboard, LogOut, LogIn, ArrowLeft, HelpCircle } from "lucide-react";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import { UserAuthContext } from "../../context/AuthProvider";
 import { getUserProfile, updateUserProfile, deleteUserAccount, updateUserProfilePhoto } from "../../services/userProfileService";
@@ -543,6 +543,27 @@ export default function AccountInfo() {
                     </div>
                   </div>
                   <ChevronRight size={20} className="text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                </div>
+
+                {/* Frequently Asked Questions Menu Option */}
+                <div
+                  onClick={() => navigate("/faqs")}
+                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-[#0756B5] dark:hover:border-blue-400 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-950/70 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <HelpCircle size={22} />
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-[#0756B5] dark:group-hover:text-blue-300 transition-colors">
+                        Frequently Asked Questions
+                      </h5>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Purity standards, delivery timings & FAQs
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight size={20} className="text-gray-400 group-hover:text-[#0756B5] group-hover:translate-x-1 transition-all" />
                 </div>
 
                 {/* Login / Logout Menu Option */}

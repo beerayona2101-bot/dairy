@@ -233,7 +233,7 @@ export default function AddProductModel({ open, onClose, initialCategory = "" })
                     className="absolute bottom-0 right-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-1.5 rounded-full cursor-pointer shadow-sm hover:scale-105 transition"
                     title="Upload normal photo"
                   >
-                    <Image className="w-3.5 h-3.5 text-[#075C2A] dark:text-purple-400" />
+                    <Image className="w-3.5 h-3.5 text-[#075C2A] dark:text-emerald-400" />
                   </label>
                   <input
                     type="file"
@@ -260,13 +260,13 @@ export default function AddProductModel({ open, onClose, initialCategory = "" })
               </div>
 
               {/* Option 2: Transparent Cutout Image (PNG Only for 3D Showcase Card) */}
-              <div className="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-purple-200 dark:border-gray-700">
-                <span className="text-xs font-bold text-[#075C2A] dark:text-purple-300">2. Transparent Cutout (PNG Only)</span>
+              <div className="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-emerald-200 dark:border-gray-700">
+                <span className="text-xs font-bold text-[#075C2A] dark:text-emerald-300">2. Transparent Cutout (PNG Only)</span>
                 <div className="relative w-20 h-20">
                   <img
                     src={pngImagePreview || productDetails?.pngImage || productDetails?.image || "/assets/showcase/milk_hd.png"}
                     alt="PNG Cutout Preview"
-                    className="w-20 h-20 rounded-xl object-contain bg-purple-50/50 dark:bg-gray-900 border border-purple-200 dark:border-gray-700 shadow-xs p-1"
+                    className="w-20 h-20 rounded-xl object-contain bg-emerald-50/50 dark:bg-gray-900 border border-emerald-200 dark:border-gray-700 shadow-xs p-1"
                   />
                   <label
                     htmlFor="addPngPhotoInput"

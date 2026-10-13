@@ -112,13 +112,13 @@ export default function StoreOrdersHistory() {
                                 <div className="text-sm space-y-2">
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-purple-400" fontSize="small" />
+                                        <AssignmentTurnedInIcon className="text-[#075C2A] dark:text-emerald-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Order ID:</span>
                                         <span className="text-gray-600 dark:text-gray-300 break-all">{order._id}</span>
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <LocationOnIcon className="text-[#075C2A] dark:text-purple-400" fontSize="small" />
+                                        <LocationOnIcon className="text-[#075C2A] dark:text-emerald-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Address:</span>
                                         <span className="text-gray-600 dark:text-gray-300 break-all">
                                             {formatFullAddress(order?.address)}
@@ -126,13 +126,13 @@ export default function StoreOrdersHistory() {
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <CallIcon className="text-[#075C2A] dark:text-purple-400" fontSize="small" />
+                                        <CallIcon className="text-[#075C2A] dark:text-emerald-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Mobile:</span>
                                         <span className="text-gray-600 dark:text-gray-300">{order?.address?.phone}</span>
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 break-words">
-                                        <CalendarMonthIcon className="text-[#075C2A] dark:text-purple-400" fontSize="small" />
+                                        <CalendarMonthIcon className="text-[#075C2A] dark:text-emerald-400" fontSize="small" />
                                         <span className="font-semibold text-gray-700 dark:text-gray-200">Ordered On:</span>
                                         <span className="text-gray-600 dark:text-gray-300">
                                             {new Date(order.createdAt).toLocaleString("en-IN", {
@@ -176,12 +176,12 @@ export default function StoreOrdersHistory() {
 
                                 <div className="flex flex-wrap gap-x-6 gap-y-2 justify-between text-sm pt-4 text-gray-700 dark:text-gray-300">
                                     <p className="flex items-center gap-1">
-                                        <span className="font-semibold text-[#075C2A] dark:text-purple-300">Status:</span>
+                                        <span className="font-semibold text-[#075C2A] dark:text-emerald-300">Status:</span>
                                         <span>{order.status}</span>
                                     </p>
 
                                     <p className="flex items-center gap-1">
-                                        <span className="font-semibold text-[#075C2A] dark:text-purple-300">Payment Mode:</span>
+                                        <span className="font-semibold text-[#075C2A] dark:text-emerald-300">Payment Mode:</span>
                                         <span>{order.paymentMode}</span>
                                     </p>
 

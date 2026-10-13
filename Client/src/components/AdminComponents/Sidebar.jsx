@@ -148,8 +148,8 @@ export default function Sidebar() {
                                 onClick={closeSidebar}
                                 className={`flex items-center justify-between p-3 rounded-2xl transition-all font-extrabold text-xs ${
                                     isActive
-                                        ? "bg-[#075C2A] text-white shadow-[0_8px_20px_rgba(108,92,231,0.3)]"
-                                        : "text-[#718096] dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-[#075C2A]"
+                                        ? "bg-[#075C2A] text-white shadow-[0_8px_20px_rgba(7,92,42,0.28)]"
+                                        : "text-[#718096] dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:text-[#075C2A]"
                                 }`}
                             >
                                 <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ export default function Sidebar() {
                                 onClick={() => toggleGroup(group.key)}
                                 className={`w-full flex items-center justify-between p-3 text-xs uppercase tracking-wider font-black transition-colors cursor-pointer ${
                                     isGroupActive
-                                        ? "text-[#075C2A] bg-purple-50/80 dark:bg-purple-950/40"
+                                        ? "text-[#075C2A] bg-emerald-50/80 dark:bg-emerald-950/40"
                                         : "text-[#718096] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                                 }`}
                             >
@@ -180,7 +180,7 @@ export default function Sidebar() {
                                     {group.icon}
                                     <span>{group.label}</span>
                                     {group.badge > 0 && (
-                                        <span className="px-1.5 py-0.5 text-[10px] bg-[#075C2A] text-white rounded-full font-extrabold shadow-xs">
+                                        <span className="px-1.5 py-0.5 text-[10px] bg-[#0756B5] text-white rounded-full font-extrabold shadow-xs">
                                             {group.badge}
                                         </span>
                                     )}
@@ -211,12 +211,12 @@ export default function Sidebar() {
                                                         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                                                             isSubActive
                                                                 ? "bg-[#075C2A] text-white shadow-xs font-black"
-                                                                : "text-[#718096] dark:text-gray-300 hover:text-[#075C2A] hover:bg-purple-50 dark:hover:bg-purple-950/30"
+                                                                : "text-[#718096] dark:text-gray-300 hover:text-[#075C2A] hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
                                                         }`}
                                                     >
                                                         <span>{subItem.label}</span>
                                                         {subItem?.orderCount > 0 && (
-                                                            <span className="text-[10px] bg-[#075C2A] px-2 py-0.5 rounded-full text-white font-bold">
+                                                            <span className="text-[10px] bg-[#0756B5] px-2 py-0.5 rounded-full text-white font-bold">
                                                                 {subItem.orderCount}
                                                             </span>
                                                         )}
@@ -236,21 +236,21 @@ export default function Sidebar() {
             <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-700/60 space-y-2">
                 <button
                     onClick={toggleTheme}
-                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-extrabold text-[#718096] dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition cursor-pointer"
+                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-extrabold text-[#718096] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
                     title="Toggle Light/Dark Theme"
                 >
                     <div className="flex items-center gap-3">
                         {theme === "light" ? <DarkModeIcon sx={{ fontSize: "1.2rem" }} /> : <LightModeIcon sx={{ fontSize: "1.2rem" }} />}
                         <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-extrabold bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-200">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-extrabold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200">
                         {theme === "light" ? "OFF" : "ON"}
                     </span>
                 </button>
 
                 <button
                     onClick={handleLogout}
-                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-black text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 transition cursor-pointer"
+                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-900/60 transition cursor-pointer"
                 >
                     <div className="flex items-center gap-2.5">
                         <LogoutIcon sx={{ fontSize: "1.1rem" }} />

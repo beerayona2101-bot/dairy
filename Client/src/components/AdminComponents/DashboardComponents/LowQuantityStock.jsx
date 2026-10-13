@@ -39,7 +39,7 @@ export default function LowQuantityStock({ fetchedProducts, loading }) {
     <div className="w-full bg-white dark:bg-gray-500/20 rounded p-3">
       <div className="flex justify-between px-2">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Low Quantity Stocks</h2>
-        <button className="text-[#075C2A] dark:text-purple-300 hover:underline text-sm font-bold">See all</button>
+        <button className="text-[#075C2A] dark:text-emerald-300 hover:underline text-sm font-bold cursor-pointer">See all</button>
       </div>
 
       <div className="space-y-4 mt-5">
@@ -73,7 +73,7 @@ export default function LowQuantityStock({ fetchedProducts, loading }) {
                 </h4>
                 <h5
                   className={`text-sm ${product.stock < product.thresholdVal
-                    ? "text-purple-700 dark:text-purple-300 font-bold animate-pulse"
+                    ? "text-[#0756B5] dark:text-blue-300 font-bold animate-pulse"
                     : "text-gray-600 dark:text-gray-300"
                     }`}
                 >
@@ -89,7 +89,7 @@ export default function LowQuantityStock({ fetchedProducts, loading }) {
                   setSelectedProduct(product)
                   setOpenUpdateModal(true)
                 }}
-                className="absolute bottom-3 right-3 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 text-xs p-1.5 rounded shadow-md transition"
+                className="absolute bottom-3 right-3 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 text-[#075C2A] dark:text-emerald-300 text-xs p-1.5 rounded shadow-md transition cursor-pointer"
               >
                 <Plus size={16} />
               </button>

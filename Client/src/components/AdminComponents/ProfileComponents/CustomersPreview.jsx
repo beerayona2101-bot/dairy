@@ -120,7 +120,7 @@ export default function CustomersList() {
             key={cust?._id}
             className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30"
           >
-            <td className="px-3 py-2 font-medium text-purple-600 whitespace-nowrap max-w-50 line-clamp-1 dark:text-purple-400">
+            <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap max-w-50 line-clamp-1 dark:text-white">
               {cust?.firstName ?? ""} {cust?.lastName ?? ""}
             </td>
             <td className="px-3 py-2">{cust?.mobileNo ?? "N/A"}</td>
@@ -129,7 +129,7 @@ export default function CustomersList() {
             <td className="px-3 py-2 font-semibold text-gray-800 dark:text-white">
               <Link
                 to={`/admin/customers/${cust?._id}/orders-history`}
-                className="text-purple-600 dark:text-purple-400 hover:underline font-bold"
+                className="text-[#0756B5] dark:text-blue-400 hover:underline font-bold"
                 title="View user order history"
               >
                 {cust?.orders?.length ?? 0}
@@ -188,7 +188,7 @@ export default function CustomersList() {
           <div className="pt-2 flex justify-center">
             <button
               onClick={() => setVisibleCount((prev) => prev + 10)}
-              className="text-sm text-purple-600 hover:underline flex items-center gap-1"
+              className="text-sm text-[#075C2A] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
             >
               <Plus size={18} /> Load More
             </button>

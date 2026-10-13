@@ -17,7 +17,7 @@ import { cancelOrderApi } from "../../services/orderService";
 import api from "../../services/api";
 import { formatOrderDate, formatFullAddress } from "../../utils/dateUtils";
 import OrderStatusTracker from "../../components/OrderStatusTracker";
-import { ChevronRight, Headphones, Search, Filter, X, FileText, Download, Eye } from "lucide-react";
+import { ChevronRight, Headphones, Search, Filter, X, FileText, Download, Eye, ArrowLeft } from "lucide-react";
 import InvoiceModal from "../../components/InvoiceModal";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -462,7 +462,7 @@ export default function MyOrders() {
         {content}
       </div>
 
-      {/* Order Details View Dialog Modal */}
+      {/* Full Screen Order Details View */}
       <Dialog
         open={!!selectedOrder}
         onClose={() => {
@@ -474,23 +474,18 @@ export default function MyOrders() {
           }
         }}
         TransitionComponent={Transition}
-        fullScreen={isMobile}
-        fullWidth
-        maxWidth="md"
+        fullScreen
         slotProps={{
           paper: {
-            className: "!bg-gray-50 dark:!bg-gray-900 sm:!rounded-3xl !rounded-none !shadow-2xl !p-0 !overflow-hidden flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh]",
-          },
-          backdrop: {
-            className: "!bg-black/60 !backdrop-blur-md",
+            className: "!bg-gray-50 dark:!bg-gray-950 !rounded-none !shadow-none !p-0 !overflow-hidden flex flex-col w-full h-full",
           },
         }}
       >
         {activeSelectedOrder && (
-          <div className="flex flex-col h-full sm:max-h-[92vh] overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-            {/* Header Bar */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3 bg-white dark:bg-gray-800 sticky top-0 z-20 shrink-0">
-              <div className="flex items-center gap-3">
+          <div className="flex flex-col h-full w-full overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white">
+            {/* Header Bar with Back Button at Top Left */}
+            <div className="px-4 py-3 sm:px-6 sm:py-3.5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3 bg-white dark:bg-gray-900 sticky top-0 z-20 shrink-0 shadow-2xs">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -501,16 +496,17 @@ export default function MyOrders() {
                       setSearchParams(newParams, { replace: true });
                     }
                   }}
-                  className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer text-gray-700 dark:text-gray-200"
-                  aria-label="Back"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold text-xs sm:text-sm transition cursor-pointer shrink-0 group"
+                  aria-label="Back to orders"
                 >
-                  <CloseIcon fontSize="small" />
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 group-hover:-translate-x-0.5 transition-transform" />
+                  <span>Back</span>
                 </button>
-                <div>
-                  <h3 className="font-extrabold text-base sm:text-lg text-gray-900 dark:text-white leading-tight">
+                <div className="min-w-0">
+                  <h3 className="font-extrabold text-sm sm:text-lg text-gray-900 dark:text-white leading-tight truncate">
                     Order #{activeSelectedOrder?.orderId || activeSelectedOrder?._id?.slice(-8)?.toUpperCase() || `ORD-1234`}
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">
                     {activeSelectedOrder?.productsData?.length || 0} Items
                   </p>
                 </div>
@@ -522,7 +518,7 @@ export default function MyOrders() {
                   setSelectedOrder(null);
                   navigate("/contact-us");
                 }}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/50 text-[#FF2E63] dark:text-pink-300 font-extrabold text-xs hover:bg-pink-100 transition cursor-pointer shadow-2xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/50 text-[#FF2E63] dark:text-pink-300 font-extrabold text-xs hover:bg-pink-100 transition cursor-pointer shadow-2xs shrink-0"
               >
                 <Headphones size={14} />
                 <span>Get Help</span>
@@ -530,7 +526,8 @@ export default function MyOrders() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
+            <div className="flex-1 overflow-y-auto">
+              <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4">
               {/* Live Order Progress Status Tracking Timeline */}
               <OrderStatusTracker status={activeSelectedOrder?.status} />
 
@@ -671,9 +668,11 @@ export default function MyOrders() {
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Bottom Action Footer */}
-            <div className="p-4 border-t border-gray-100 dark:border-gray-800/80 bg-gray-50/80 dark:bg-gray-900/90 backdrop-blur-md flex items-center justify-between gap-3 sticky bottom-0 z-20 shrink-0 rounded-b-[24px]">
+          {/* Bottom Action Footer */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md sticky bottom-0 z-20 shrink-0 shadow-xs">
+            <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 w-full">
               {(activeSelectedOrder?.status === "Pending" || activeSelectedOrder?.status === "Confirmed") && (
                 <button
                   disabled={loading}
@@ -706,6 +705,7 @@ export default function MyOrders() {
               </button>
             </div>
           </div>
+        </div>
         )}
       </Dialog>
 

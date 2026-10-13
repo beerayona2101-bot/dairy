@@ -7,11 +7,7 @@ import {
   MdPendingActions,
   MdAttachMoney,
   MdArrowForward,
-  MdLocationOn,
-  MdFavorite,
-  MdOutlineAccountCircle,
   MdLocalShipping,
-  MdPayment,
   MdCancel,
 } from "react-icons/md";
 import { UserAuthContext } from "../../context/AuthProvider";
@@ -148,154 +144,78 @@ export default function UserDashboard() {
           ))}
         </div>
 
-        {/* Quick Access & Recent Activity Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Orders Overview */}
-          <div className="lg:col-span-2 bg-white dark:bg-gray-800/80 rounded-2xl p-5 shadow-xs border border-gray-200/90 dark:border-gray-700/80">
-            <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100 dark:border-gray-700/60">
-              <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 font-dashboard-heading">
-                <MdShoppingCart className="text-[#0756B5] dark:text-blue-400" /> Recent Orders
-              </h2>
+        {/* Recent Orders Overview */}
+        <div className="bg-white dark:bg-gray-800/80 rounded-2xl p-5 sm:p-6 shadow-xs border border-gray-200/90 dark:border-gray-700/80">
+          <div className="flex justify-between items-center mb-4 pb-2.5 border-b border-gray-100 dark:border-gray-700/60">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 font-dashboard-heading">
+              <MdShoppingCart className="text-[#0756B5] dark:text-blue-400" /> Recent Orders
+            </h2>
+            <Link
+              to="/user-profile/orders?status=all"
+              className="text-xs font-bold text-[#0756B5] dark:text-blue-400 hover:underline flex items-center gap-1"
+            >
+              View All Orders <MdArrowForward />
+            </Link>
+          </div>
+
+          {orders.length === 0 ? (
+            <div className="text-center py-10 text-gray-500 dark:text-gray-400">
+              <p className="mb-3 text-sm font-medium">You haven't placed any orders yet.</p>
               <Link
-                to="/user-profile/orders?status=all"
-                className="text-xs font-bold text-[#0756B5] dark:text-blue-400 hover:underline flex items-center gap-1"
+                to="/products"
+                className="inline-block px-5 py-2.5 bg-[#075C2A] text-white text-xs font-bold rounded-xl hover:bg-[#064e23] transition shadow-xs"
               >
-                View All Orders <MdArrowForward />
+                Browse Products
               </Link>
             </div>
-
-            {orders.length === 0 ? (
-              <div className="text-center py-10 text-gray-500 dark:text-gray-400">
-                <p className="mb-3 text-sm font-medium">You haven't placed any orders yet.</p>
-                <Link
-                  to="/products"
-                  className="inline-block px-5 py-2.5 bg-[#075C2A] text-white text-xs font-bold rounded-xl hover:bg-[#064e23] transition shadow-xs"
-                >
-                  Browse Products
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {orders.slice(0, 4).map((order) => {
-                  const displayId = order.orderId || order._id?.slice(-8)?.toUpperCase() || "ORD-1234";
-                  return (
-                    <div
-                      key={order._id}
-                      onClick={() => navigate(`/user-profile/orders?orderId=${order._id}`)}
-                      className="flex items-center justify-between p-3.5 rounded-xl border border-gray-200/80 dark:border-gray-700/70 hover:border-[#0756B5] dark:hover:border-blue-400 hover:bg-blue-50/40 dark:hover:bg-gray-700/50 transition cursor-pointer group"
-                    >
-                      <div className="min-w-0 flex-1 pr-3">
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-sm text-gray-900 dark:text-white truncate font-dashboard-heading">
-                            Order #{displayId}
-                          </p>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5 font-dashboard-num">
-                          {new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}{" "}
-                          • {order.productsData?.length || 1} item{order.productsData?.length > 1 ? "s" : ""}
+          ) : (
+            <div className="space-y-3">
+              {orders.slice(0, 5).map((order) => {
+                const displayId = order.orderId || order._id?.slice(-8)?.toUpperCase() || "ORD-1234";
+                return (
+                  <div
+                    key={order._id}
+                    onClick={() => navigate(`/user-profile/orders?orderId=${order._id}`)}
+                    className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/70 hover:border-[#0756B5] dark:hover:border-blue-400 hover:bg-blue-50/40 dark:hover:bg-gray-700/50 transition cursor-pointer group"
+                  >
+                    <div className="min-w-0 flex-1 pr-3">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-sm text-gray-900 dark:text-white truncate font-dashboard-heading">
+                          Order #{displayId}
                         </p>
                       </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5 font-dashboard-num">
+                        {new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}{" "}
+                        • {order.productsData?.length || 1} item{order.productsData?.length > 1 ? "s" : ""}
+                      </p>
+                    </div>
 
-                      <div className="text-right shrink-0">
-                        <span
-                          className={`inline-block px-2.5 py-0.5 text-[11px] font-bold rounded-full ${
-                            order.status === "Delivered"
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
-                              : order.status === "Cancelled"
-                              ? "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300"
-                              : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-                          }`}
-                        >
-                          {order.status || "Pending"}
-                        </span>
-                        <div className="flex items-center justify-end gap-1 mt-1 text-xs font-black font-dashboard-num text-gray-900 dark:text-white">
-                          <span>₹{formatNumberWithCommas(order.totalAmount || 0)}</span>
-                          <MdArrowForward className="text-gray-400 group-hover:text-[#0756B5] dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
-                        </div>
+                    <div className="text-right shrink-0">
+                      <span
+                        className={`inline-block px-2.5 py-0.5 text-[11px] font-bold rounded-full ${
+                          order.status === "Delivered"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+                            : order.status === "Cancelled"
+                            ? "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300"
+                            : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                        }`}
+                      >
+                        {order.status || "Pending"}
+                      </span>
+                      <div className="flex items-center justify-end gap-1 mt-1 text-xs font-black font-dashboard-num text-gray-900 dark:text-white">
+                        <span>₹{formatNumberWithCommas(order.totalAmount || 0)}</span>
+                        <MdArrowForward className="text-gray-400 group-hover:text-[#0756B5] dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Quick Actions Shortcuts */}
-          <div className="bg-white dark:bg-gray-800/80 rounded-2xl p-5 shadow-xs border border-gray-200/90 dark:border-gray-700/80 space-y-4">
-            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white pb-2 border-b border-gray-100 dark:border-gray-700/60 font-dashboard-heading">
-              Quick Actions
-            </h2>
-
-            <div className="grid grid-cols-1 gap-3">
-              <Link
-                to="/user-profile"
-                className="flex items-center justify-between p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 hover:bg-blue-100/80 dark:hover:bg-blue-900/50 transition border border-blue-100 dark:border-blue-900/40 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-blue-100 text-[#1E88E5] dark:bg-blue-900/60 dark:text-blue-300 shrink-0">
-                    <MdOutlineAccountCircle className="text-xl" />
                   </div>
-                  <div>
-                    <p className="text-sm font-extrabold text-gray-900 dark:text-white">Account Details</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Edit name, email & phone</p>
-                  </div>
-                </div>
-                <MdArrowForward className="text-gray-400 group-hover:text-[#1E88E5] group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                to="/user-profile/addresses"
-                className="flex items-center justify-between p-3.5 rounded-xl bg-green-50/70 dark:bg-green-950/30 hover:bg-green-100/80 dark:hover:bg-green-900/50 transition border border-green-100 dark:border-green-900/40 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-green-100 text-[#43A047] dark:bg-green-900/60 dark:text-green-300 shrink-0">
-                    <MdLocationOn className="text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-extrabold text-gray-900 dark:text-white">Saved Addresses</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Manage delivery locations</p>
-                  </div>
-                </div>
-                <MdArrowForward className="text-gray-400 group-hover:text-[#43A047] group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                to="/user-profile/wishlist"
-                className="flex items-center justify-between p-3.5 rounded-xl bg-cyan-50/70 dark:bg-cyan-950/30 hover:bg-cyan-100/80 dark:hover:bg-cyan-900/50 transition border border-cyan-100 dark:border-cyan-900/40 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-cyan-100 text-[#00ACC1] dark:bg-cyan-900/60 dark:text-cyan-300 shrink-0">
-                    <MdFavorite className="text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-extrabold text-gray-900 dark:text-white">My Wishlist</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Saved favorite dairy items</p>
-                  </div>
-                </div>
-                <MdArrowForward className="text-gray-400 group-hover:text-[#00ACC1] group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                to="/user-profile/payments"
-                className="flex items-center justify-between p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 hover:bg-purple-100/80 dark:hover:bg-purple-900/50 transition border border-purple-100 dark:border-purple-900/40 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-purple-100 text-[#075C2A] dark:bg-purple-900/60 dark:text-purple-300 shrink-0">
-                    <MdPayment className="text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-extrabold text-gray-900 dark:text-white">Payments & Billing</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Transaction history & invoices</p>
-                  </div>
-                </div>
-                <MdArrowForward className="text-gray-400 group-hover:text-[#075C2A] group-hover:translate-x-1 transition-transform" />
-              </Link>
+                );
+              })}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

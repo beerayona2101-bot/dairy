@@ -146,7 +146,7 @@ export default function AdminNavbar() {
                 {/* Left: Sidebar Toggle */}
                 <div className="flex items-center gap-2.5 sm:gap-3 z-10">
                     <button
-                        className="w-9 h-9 rounded-full bg-purple-50 dark:bg-gray-700 text-[#075C2A] dark:text-purple-300 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-purple-100 dark:border-gray-600 shrink-0"
+                        className="w-9 h-9 rounded-full bg-emerald-50 dark:bg-gray-800 text-[#075C2A] dark:text-emerald-400 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-emerald-200/60 dark:border-gray-700 shrink-0"
                         onClick={handleSidebarToggle}
                         title="Toggle Sidebar Menu"
                     >
@@ -162,7 +162,7 @@ export default function AdminNavbar() {
                     <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
                         Natural Milk Dairy
                     </span>
-                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#075C2A] dark:text-[#3F9E18] tracking-widest uppercase leading-tight mt-0.5">
+                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#075C2A] dark:text-emerald-400 tracking-widest uppercase leading-tight mt-0.5">
                         Pure &amp; Fresh A2
                     </span>
                 </Link>
@@ -182,7 +182,7 @@ export default function AdminNavbar() {
                             <Bell className="w-[18px] h-[18px]" strokeWidth={2} />
                             {notification?.length > 0 && authAdmin && (
                                 <span
-                                    className={`absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-[#075C2A] text-white rounded-full text-[9px] font-black leading-none shadow-[0_2px_8px_rgba(108,92,231,0.5)] ${animate ? "animate-bounce" : ""}`}
+                                    className={`absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-[#075C2A] text-white rounded-full text-[9px] font-black leading-none shadow-[0_2px_8px_rgba(7,92,42,0.45)] ${animate ? "animate-bounce" : ""}`}
                                 >
                                     {unreadCount > 0 ? unreadCount : notification.length}
                                 </span>
@@ -254,7 +254,7 @@ export default function AdminNavbar() {
                                     {unreadCount > 0 && (
                                         <button
                                             onClick={handleMarkAllAsRead}
-                                            className="flex items-center gap-1 text-[11px] font-bold text-[#075C2A] dark:text-purple-400 hover:text-[#5b4bc4] dark:hover:text-purple-300 transition cursor-pointer"
+                                            className="flex items-center gap-1 text-[11px] font-bold text-[#075C2A] dark:text-emerald-400 hover:text-[#05431e] dark:hover:text-emerald-300 transition cursor-pointer"
                                         >
                                             <CheckCheck size={12} strokeWidth={2.5} />
                                             <span>Mark all read</span>
@@ -263,7 +263,7 @@ export default function AdminNavbar() {
                                     <button
                                         disabled={notificationLoadingIndex !== null}
                                         onClick={() => handleRemoveNotification(-1, "all")}
-                                        className="flex items-center gap-1 text-[11px] font-bold text-purple-700 dark:text-purple-300 hover:text-[#075C2A] dark:hover:text-purple-200 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                        className="flex items-center gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                                     >
                                         {notificationLoadingIndex === "all" ? (
                                             <div className="w-3 h-3 border-2 border-t-transparent border-[#075C2A] rounded-full animate-spin" />
@@ -328,7 +328,7 @@ export default function AdminNavbar() {
                                                             e.stopPropagation();
                                                             handleRemoveNotification(idx, "index", item?._id);
                                                         }}
-                                                        className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-[#075C2A] hover:bg-purple-50 dark:hover:bg-purple-900/40 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
+                                                        className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
                                                         title="Dismiss"
                                                     >
                                                         {notificationLoadingIndex === idx ? (

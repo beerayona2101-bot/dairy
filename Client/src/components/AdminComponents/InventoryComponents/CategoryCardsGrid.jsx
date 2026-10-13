@@ -298,24 +298,25 @@ export default function CategoryCardsGrid({
           className="space-y-4 w-full"
         >
           {/* Header with Back Button, Category Title and Add Product Action */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-gray-800/80 p-4 rounded-2xl border border-purple-100 dark:border-gray-700/80 shadow-sm">
+          {/* Header with Back Button, Category Title and Add Product Action */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-gray-800/80 p-4 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-sm">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => handleSelectCategory(null)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-gray-700 text-[#8C7CF0] dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-gray-600 text-xs font-bold shadow-xs border border-purple-200 dark:border-gray-600 transition cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-gray-700 text-[#075C2A] dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-gray-600 text-xs font-bold shadow-xs border border-emerald-200 dark:border-gray-600 transition cursor-pointer"
               >
                 <ArrowBackIcon sx={{ fontSize: "1rem" }} />
                 <span>Back to All Categories</span>
               </button>
 
-              <div className="h-5 w-px bg-purple-200 dark:bg-gray-600 hidden sm:block" />
+              <div className="h-5 w-px bg-gray-200 dark:bg-gray-600 hidden sm:block" />
 
               <div className="flex items-center gap-2">
-                <CategoryIcon className="text-[#8C7CF0] dark:text-purple-300" />
+                <CategoryIcon className="text-[#075C2A] dark:text-emerald-400" />
                 <h3 className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white">
                   {selectedCategory} Category Products
                 </h3>
-                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200">
                   {categoryProducts.length} {categoryProducts.length === 1 ? "Item" : "Items"}
                 </span>
               </div>
@@ -323,7 +324,7 @@ export default function CategoryCardsGrid({
 
             <button
               onClick={() => setOpenAddProductModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#8C7CF0] hover:bg-[#7b6be0] text-white font-extrabold text-xs shadow-sm transition cursor-pointer self-start sm:self-auto"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#075C2A] hover:bg-[#064e23] text-white font-extrabold text-xs shadow-sm transition cursor-pointer self-start sm:self-auto"
             >
               <AddIcon sx={{ fontSize: "1.1rem" }} />
               <span>+ Add Product to {selectedCategory}</span>
@@ -331,10 +332,10 @@ export default function CategoryCardsGrid({
           </div>
 
           {/* Category Products Data Table */}
-          <div className="overflow-x-auto rounded-2xl border border-purple-100 dark:border-gray-700/80 bg-white dark:bg-gray-800/90 shadow-sm">
+          <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700/80 bg-white dark:bg-gray-800/90 shadow-sm">
             <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
-                <tr className="bg-purple-50/50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold border-b border-purple-100 dark:border-gray-700 uppercase tracking-wider text-[11px]">
+                <tr className="bg-gray-50/80 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold border-b border-gray-200 dark:border-gray-700 uppercase tracking-wider text-[11px]">
                   <th className="py-3 px-3.5 text-center whitespace-nowrap w-12">RANK</th>
                   <th className="py-3.5 px-4 whitespace-nowrap">PRODUCT NAME</th>
                   <th className="py-3.5 px-4 whitespace-nowrap">SELLING PRICE</th>
@@ -344,7 +345,7 @@ export default function CategoryCardsGrid({
                   <th className="py-3.5 px-4 text-center whitespace-nowrap">STOCK CONTROLS</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-purple-100/60 dark:divide-gray-700/50">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
                 {categoryProducts.map((product, idx) => {
                   const rankNumber = idx + 1;
                   const isLowStock = Number(product?.stock || 0) < Number(product?.thresholdVal || 10);
@@ -354,13 +355,13 @@ export default function CategoryCardsGrid({
                   const getRankBadge = (num) => {
                     if (num === 1) {
                       return (
-                        <span className="w-7 h-7 rounded-full bg-[#8C7CF0] text-white font-black text-xs flex items-center justify-center shadow-xs border border-purple-300 mx-auto">
+                        <span className="w-7 h-7 rounded-full bg-[#075C2A] text-white font-black text-xs flex items-center justify-center shadow-xs border border-emerald-300 mx-auto">
                           #1
                         </span>
                       );
                     }
                     return (
-                      <span className="w-7 h-7 rounded-full bg-purple-50 dark:bg-gray-700 text-[#8C7CF0] dark:text-purple-300 font-bold text-xs flex items-center justify-center border border-purple-200 dark:border-gray-600 mx-auto">
+                      <span className="w-7 h-7 rounded-full bg-emerald-50 dark:bg-gray-700 text-[#075C2A] dark:text-emerald-400 font-bold text-xs flex items-center justify-center border border-emerald-200 dark:border-gray-600 mx-auto">
                         #{num}
                       </span>
                     );
@@ -369,7 +370,7 @@ export default function CategoryCardsGrid({
                   return (
                     <tr
                       key={product?._id || product?.name || `cat-table-row-${idx}`}
-                      className="hover:bg-purple-50/40 dark:hover:bg-gray-700/30 transition-colors text-gray-800 dark:text-gray-200"
+                      className="hover:bg-emerald-50/30 dark:hover:bg-gray-700/30 transition-colors text-gray-800 dark:text-gray-200"
                     >
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
                         {getRankBadge(rankNumber)}
@@ -383,7 +384,7 @@ export default function CategoryCardsGrid({
                             e.target.onerror = null;
                             e.target.src = "/images/natural_cow_milk.png";
                           }}
-                          className="w-10 h-10 object-cover rounded-xl border border-purple-100 dark:border-gray-700 shrink-0"
+                          className="w-10 h-10 object-cover rounded-xl border border-gray-200 dark:border-gray-700 shrink-0"
                         />
                         <span className="line-clamp-1 font-bold text-gray-900 dark:text-white">
                           {product.name}
@@ -406,15 +407,15 @@ export default function CategoryCardsGrid({
                       <td className="py-3.5 px-4 text-center">
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-black shadow-2xs border ${
                           isLowStock
-                            ? "bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/60 dark:text-purple-300 border-purple-300 animate-pulse"
-                            : "bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/60 dark:text-purple-300 border-purple-200"
+                            ? "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300 animate-pulse"
+                            : "bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200"
                         }`}>
                           {product?.stock || 0} {product.quantityUnit || "Pack"}
                         </span>
                       </td>
 
                       <td className="py-3.5 px-4 text-center">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/40 dark:text-purple-300 font-bold text-xs border border-purple-200">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0756B5] dark:bg-blue-950/40 dark:text-blue-300 font-bold text-xs border border-blue-200">
                           {product.category || selectedCategory}
                         </span>
                       </td>
@@ -434,7 +435,7 @@ export default function CategoryCardsGrid({
                               setSelectedProductForModal(product);
                               setOpenUpdateProductModal(true);
                             }}
-                            className="px-2.5 py-1.5 text-xs font-extrabold bg-purple-50 hover:bg-purple-100 text-[#8C7CF0] rounded-xl transition cursor-pointer shadow-xs border border-purple-200"
+                            className="px-2.5 py-1.5 text-xs font-extrabold bg-gray-50 hover:bg-emerald-50 text-gray-700 hover:text-[#075C2A] rounded-xl transition cursor-pointer shadow-xs border border-gray-200 hover:border-emerald-200"
                             title="Update Stock & Price"
                           >
                             Update
@@ -444,7 +445,7 @@ export default function CategoryCardsGrid({
                               setSelectedProductForModal(product);
                               setOpenEditProductModal(true);
                             }}
-                            className="px-2.5 py-1.5 text-xs font-extrabold bg-purple-50 hover:bg-purple-100 text-[#8C7CF0] rounded-xl transition cursor-pointer shadow-xs border border-purple-200"
+                            className="px-2.5 py-1.5 text-xs font-extrabold bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-[#0756B5] rounded-xl transition cursor-pointer shadow-xs border border-gray-200 hover:border-blue-200"
                             title="Edit Product"
                           >
                             Edit
@@ -454,8 +455,8 @@ export default function CategoryCardsGrid({
                               setSelectedProductForModal(product);
                               setOpenRemoveProductModal(true);
                             }}
-                            className="px-2.5 py-1.5 text-xs font-extrabold bg-purple-50 hover:bg-purple-100 text-gray-700 rounded-xl transition cursor-pointer shadow-xs border border-purple-200"
-                            title="Delete Product"
+                            className="px-2.5 py-1.5 text-xs font-extrabold bg-gray-50 hover:bg-rose-50 text-gray-700 hover:text-rose-600 rounded-xl transition cursor-pointer shadow-xs border border-gray-200 hover:border-rose-200"
+                            title="Remove Product"
                           >
                             Delete
                           </button>
@@ -536,12 +537,12 @@ export default function CategoryCardsGrid({
                     onClick={(e) => handleToggleShowcase(e, category)}
                     className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-extrabold shadow-sm border backdrop-blur-md flex items-center gap-1.5 transition-all cursor-pointer z-10 ${
                       isCurrentlyInShowcase
-                        ? "bg-purple-50/95 hover:bg-purple-100 text-[#8C7CF0] border-purple-200"
+                        ? "bg-emerald-50/95 hover:bg-emerald-100 text-[#075C2A] border-emerald-300"
                         : "bg-white/90 hover:bg-gray-100 text-gray-700 border-gray-200"
                     }`}
                     title={`Toggle ${category} visibility in Showcase Cards`}
                   >
-                    <span className={`w-2.5 h-2.5 rounded-full ${isCurrentlyInShowcase ? "bg-[#8C7CF0] animate-pulse" : "bg-gray-400"}`} />
+                    <span className={`w-2.5 h-2.5 rounded-full ${isCurrentlyInShowcase ? "bg-[#075C2A] animate-pulse" : "bg-gray-400"}`} />
                     <span>Showcase Cards: {isCurrentlyInShowcase ? "ON" : "OFF"}</span>
                   </button>
 
@@ -559,7 +560,7 @@ export default function CategoryCardsGrid({
                         });
                         setModalOpen(true);
                       }}
-                      className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-purple-50 hover:bg-purple-100 text-[#8C7CF0] shadow-sm border border-purple-200 transition flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/95 hover:bg-emerald-50 text-gray-800 hover:text-[#075C2A] shadow-sm border border-gray-200 hover:border-emerald-200 transition flex items-center gap-1 cursor-pointer"
                       title={`Edit ${category} category details`}
                     >
                       <EditIcon sx={{ fontSize: "0.85rem" }} />
@@ -567,7 +568,7 @@ export default function CategoryCardsGrid({
                     </button>
                     <button
                       onClick={(e) => handleDeleteCategory(e, category)}
-                      className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-purple-50 hover:bg-purple-100 text-gray-700 shadow-sm border border-purple-200 transition flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/95 hover:bg-rose-50 text-gray-700 hover:text-rose-600 shadow-sm border border-gray-200 hover:border-rose-200 transition flex items-center gap-1 cursor-pointer"
                       title={`Delete ${category} category`}
                     >
                       <DeleteOutlineIcon sx={{ fontSize: "0.85rem" }} />
@@ -580,7 +581,7 @@ export default function CategoryCardsGrid({
                     <h4 className="text-xl font-black text-white tracking-wide drop-shadow-md">
                       {category}
                     </h4>
-                    <span className="text-[11px] font-bold text-purple-200 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    <span className="text-[11px] font-bold text-emerald-200 group-hover:translate-x-1 transition-transform flex items-center gap-1">
                       <span>View Items</span>
                       <ArrowForwardIcon sx={{ fontSize: "0.85rem" }} />
                     </span>

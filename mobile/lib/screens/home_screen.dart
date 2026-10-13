@@ -1282,6 +1282,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   title: 'Help & Support',
                   subtitle: 'Get help with your orders',
                   onTap: () => _showComingSoon(context, 'Help & Support'),
+                ),
+                _buildMenuTile(
+                  icon: Icons.quiz_outlined,
+                  title: 'FAQs',
+                  subtitle: 'Frequently asked questions & answers',
+                  onTap: () => _showFaqBottomSheet(context),
                   isLast: true,
                 ),
               ],
@@ -2182,6 +2188,243 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.primary,
       ),
+    );
+  }
+
+  void _showFaqBottomSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final List<Map<String, String>> faqData = [
+      {
+        'q': 'Why is Natural Milk Dairy & Daily Needs best for me?',
+        'a': 'Natural Milk Dairy provides 100% pure, unadulterated dairy products with no preservatives, artificial colors, or harmful additives. Our products come directly from our own farms where cattle are grass-fed and raised in hygienic conditions.',
+      },
+      {
+        'q': 'How do you ensure quality & cold-chain freshness?',
+        'a': 'We maintain strict quality control at every step from farm to table. Milk is tested across 20+ parameters, chilled to 4°C immediately upon milking, and delivered in insulated temperature-controlled vehicles every morning.',
+      },
+      {
+        'q': 'Are your dairy products organic and hormone-free?',
+        'a': 'Yes, all our dairy products are obtained from cattle raised without oxytocin, artificial hormones, or antibiotics. We practice natural dairy farming and organic fodder cultivation.',
+      },
+      {
+        'q': 'What makes indigenous A2 milk different?',
+        'a': 'Our milk comes from native indigenous breeds producing pure A2 beta-casein protein, which is significantly easier to digest, gentle on the gut, and superior in natural nutritional value.',
+      },
+      {
+        'q': 'What are your delivery timings and frequency?',
+        'a': 'We deliver farm-fresh milk every morning right to your doorstep before 7:00 AM. You can set daily, alternate day, or custom weekly schedules via subscriptions.',
+      },
+      {
+        'q': 'Can I pause or modify my delivery schedule?',
+        'a': 'Yes, you can pause, resume, or change quantity anytime before 9:00 PM the previous evening without any penalty or hidden charges.',
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      backgroundColor: isDark ? AppTheme.darkCard : Colors.white,
+      builder: (ctx) {
+        String query = '';
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final filtered = faqData.where((item) {
+              final q = item['q']!.toLowerCase();
+              final a = item['a']!.toLowerCase();
+              return query.isEmpty || q.contains(query.toLowerCase()) || a.contains(query.toLowerCase());
+            }).toList();
+
+            return DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.85,
+              minChildSize: 0.5,
+              maxChildSize: 0.95,
+              builder: (_, scrollCtrl) {
+                return Column(
+                  children: [
+                    // Handle
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        width: 44,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.quiz_outlined, color: AppTheme.primary, size: 22),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Frequently Asked Questions',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Answers on purity, delivery & orders',
+                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.pop(ctx),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Search field
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search questions...',
+                          hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+                          prefixIcon: const Icon(Icons.search, size: 20),
+                          filled: true,
+                          fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onChanged: (val) {
+                          setSheetState(() => query = val);
+                        },
+                      ),
+                    ),
+
+                    const Divider(height: 1),
+
+                    // FAQ Accordion List
+                    Expanded(
+                      child: filtered.isEmpty
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.search_off, size: 48, color: Colors.grey.shade300),
+                                    const SizedBox(height: 8),
+                                    const Text('No matching questions found', style: TextStyle(fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              controller: scrollCtrl,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              itemCount: filtered.length,
+                              separatorBuilder: (_, _) => const SizedBox(height: 8),
+                              itemBuilder: (context, i) {
+                                final faq = filtered[i];
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: isDark ? Colors.grey.shade900 : Colors.white,
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                                    ),
+                                  ),
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                                    child: ExpansionTile(
+                                      tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                                      childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                                      leading: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.primary.withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          '${i + 1}',
+                                          style: const TextStyle(
+                                            color: AppTheme.primary,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                      title: Text(
+                                        faq['q']!,
+                                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+                                      ),
+                                      children: [
+                                        Text(
+                                          faq['a']!,
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                                            height: 1.45,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+
+                    // Quick help banner at bottom
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+                        border: Border(top: BorderSide(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.support_agent, color: AppTheme.primary, size: 22),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Text(
+                              'Have more questions?',
+                              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              _showComingSoon(context, 'Customer Support');
+                            },
+                            child: const Text('Contact Us', style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold, fontSize: 13)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 

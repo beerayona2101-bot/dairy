@@ -41,9 +41,9 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             trend: "+14.2%",
             trendUp: true,
             icon: <TrendingUpIcon className="text-[#075C2A]" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
-            iconBg: "bg-purple-100 dark:bg-purple-900/60",
-            textColor: "text-[#075C2A] dark:text-purple-300",
+            bg: "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200/80 dark:border-emerald-800/40",
+            iconBg: "bg-emerald-100 dark:bg-emerald-900/60",
+            textColor: "text-[#075C2A] dark:text-emerald-300",
             route: "/admin/orders",
         },
         {
@@ -51,10 +51,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalSales,
             trend: "+18.5%",
             trendUp: true,
-            icon: <PercentIcon className="text-purple-600" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
-            iconBg: "bg-purple-100 dark:bg-purple-900/60",
-            textColor: "text-purple-600 dark:text-purple-300",
+            icon: <PercentIcon className="text-[#0756B5]" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-blue-50/90 dark:bg-blue-950/40 border-blue-200/80 dark:border-blue-800/40",
+            iconBg: "bg-blue-100 dark:bg-blue-900/60",
+            textColor: "text-[#0756B5] dark:text-blue-300",
             route: "/admin/orders",
         },
         {
@@ -62,10 +62,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalProfit,
             trend: "+9.4%",
             trendUp: true,
-            icon: <BarChartIcon className="text-purple-500" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
-            iconBg: "bg-purple-100 dark:bg-purple-900/60",
-            textColor: "text-purple-500 dark:text-purple-300",
+            icon: <BarChartIcon className="text-[#059669]" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200/80 dark:border-emerald-800/40",
+            iconBg: "bg-emerald-100 dark:bg-emerald-900/60",
+            textColor: "text-[#059669] dark:text-emerald-300",
             route: "/admin/orders",
         },
         {
@@ -73,10 +73,10 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
             value: totalRevenue - totalProfit,
             trend: "-2.1%",
             trendUp: false,
-            icon: <MoneyOffIcon className="text-purple-700 dark:text-purple-300" sx={{ fontSize: "1.3rem" }} />,
-            bg: "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40",
-            iconBg: "bg-purple-100 dark:bg-purple-900/60",
-            textColor: "text-purple-700 dark:text-purple-300",
+            icon: <MoneyOffIcon className="text-[#0284C7] dark:text-sky-300" sx={{ fontSize: "1.3rem" }} />,
+            bg: "bg-sky-50/90 dark:bg-sky-950/40 border-sky-200/80 dark:border-sky-800/40",
+            iconBg: "bg-sky-100 dark:bg-sky-900/60",
+            textColor: "text-[#0284C7] dark:text-sky-300",
             route: "/admin/inventory",
         },
         {
@@ -101,7 +101,7 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
         >
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">Sales & Revenue Metrics</h2>
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#075C2A] dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-[#075C2A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                     Live Performance
                 </span>
             </div>
@@ -133,7 +133,7 @@ export default function SalesOverview({ totalRevenue, totalSales, totalProfit, t
                                 </div>
                                 <span className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${
                                     item.trendUp
-                                        ? "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-200 border border-purple-300"
+                                        ? "bg-emerald-100 text-[#075C2A] dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-300"
                                         : "bg-zinc-900 text-white dark:bg-zinc-800 dark:text-gray-200 border border-zinc-700"
                                 }`}>
                                     {item.trendUp ? `↗ ${item.trend}` : `↘ ${item.trend}`}

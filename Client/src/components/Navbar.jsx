@@ -19,6 +19,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import { motion } from "framer-motion";
@@ -36,6 +37,8 @@ import UserProfileSidebar from './UserProfileSidebar';
 import company from "../data/company.json";
 import logoDarkMode from "../assets/logoDarkMode.png";
 import logoLightMode from "../assets/logoLightMode.png";
+import logoDarkMode2x from "../assets/logoDarkMode_2x.png";
+import logoLightMode2x from "../assets/logoLightMode_2x.png";
 import cowLogoImg from "../assets/cow.png";
 import brandNameTxtImg from "../assets/brand name txt.png";
 
@@ -184,6 +187,7 @@ export default function Navbar() {
         { label: 'Products', icon: <StorefrontIcon sx={{ fontSize: '1.2rem' }} />, path: '/products' },
         { label: 'About Us', icon: <Diversity3Icon sx={{ fontSize: '1.2rem' }} />, path: '/about' },
         { label: 'Contact Us', icon: <CallIcon sx={{ fontSize: '1.2rem' }} />, path: '/contact-us' },
+        { label: 'FAQs', icon: <HelpOutlineIcon sx={{ fontSize: '1.2rem' }} />, path: '/faqs' },
     ];
 
     const handleLogout = () => {
@@ -300,6 +304,7 @@ export default function Navbar() {
     };
 
     const displayLogo = theme === "dark" ? logoDarkMode : logoLightMode;
+    const displayLogo2x = theme === "dark" ? logoDarkMode2x : logoLightMode2x;
 
     const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
     const openProfileMenu = Boolean(profileMenuAnchor);
@@ -383,11 +388,17 @@ export default function Navbar() {
                     {/* Desktop View Brand Logo: Emblem + NATURAL (Main) / Milk Dairy (Child) */}
                     <Link to="/" className="hidden md:flex items-center gap-2.5 hover:scale-105 transition-transform py-0.5 z-10 no-underline">
                         <img
-                            src={displayLogo}
+                            src={displayLogo2x}
+                            srcSet={`${displayLogo} 1x, ${displayLogo2x} 2x`}
                             alt={company?.name || "Natural Milk Dairy"}
                             loading="eager"
                             decoding="sync"
                             className="h-9 md:h-10 lg:h-11 w-auto object-contain drop-shadow-sm transition-all duration-300"
+                            style={{
+                                imageRendering: "-webkit-optimize-contrast",
+                                WebkitBackfaceVisibility: "hidden",
+                                transform: "translateZ(0)",
+                            }}
                         />
                         <div className="flex flex-col items-start justify-center leading-none">
                             <span className="font-black text-lg lg:text-xl tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
@@ -402,11 +413,17 @@ export default function Navbar() {
                     {/* Mobile View Brand Logo: NATURAL (Main) / Milk Dairy (Child) */}
                     <Link to="/" className="flex md:hidden items-center gap-2 hover:scale-105 transition-transform py-0 z-10 no-underline">
                         <img
-                            src={displayLogo}
+                            src={displayLogo2x}
+                            srcSet={`${displayLogo} 1x, ${displayLogo2x} 2x`}
                             alt="Natural Milk Dairy Logo"
                             loading="eager"
                             decoding="sync"
                             className="h-8 sm:h-9 w-auto object-contain drop-shadow-sm shrink-0 transition-all duration-300"
+                            style={{
+                                imageRendering: "-webkit-optimize-contrast",
+                                WebkitBackfaceVisibility: "hidden",
+                                transform: "translateZ(0)",
+                            }}
                         />
                         <div className="flex flex-col items-start justify-center leading-none">
                             <span className="font-black text-sm sm:text-base tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">

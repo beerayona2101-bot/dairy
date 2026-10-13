@@ -167,7 +167,7 @@ export default function AdminEnquiries() {
         <button
           onClick={loadEnquiries}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 dark:bg-gray-700 text-[#075C2A] dark:text-purple-300 rounded-full font-bold text-xs hover:bg-purple-100 transition cursor-pointer border border-purple-100 dark:border-gray-600"
+          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-[#075C2A] dark:text-emerald-300 rounded-full font-bold text-xs hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition cursor-pointer border border-emerald-200 dark:border-emerald-800"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           <span>Refresh Enquiries</span>
@@ -182,15 +182,15 @@ export default function AdminEnquiries() {
           onClick={() => setStatusFilter("All")}
           className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border flex items-center justify-between relative overflow-hidden ${
             statusFilter === "All"
-              ? "bg-purple-50/90 dark:bg-purple-950/40 border-[#075C2A] ring-2 ring-[#075C2A] shadow-md scale-[1.02]"
-              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-purple-300 hover:shadow-xs"
+              ? "bg-emerald-50/90 dark:bg-emerald-950/40 border-[#075C2A] ring-2 ring-[#075C2A] shadow-md scale-[1.02]"
+              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-emerald-300 hover:shadow-xs"
           }`}
         >
           <div>
             <div className="flex items-center gap-2">
               <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Total Enquiries</p>
               {statusFilter === "All" && (
-                <span className="text-[10px] font-black text-[#075C2A] bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full border border-purple-200">
+                <span className="text-[10px] font-black text-[#075C2A] bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                   ✓ Active View
                 </span>
               )}
@@ -199,7 +199,7 @@ export default function AdminEnquiries() {
               {enquiries.length}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-[#075C2A] flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#075C2A] flex items-center justify-center shadow-xs">
             <MessageSquare className="w-5 h-5" />
           </div>
         </button>
@@ -210,24 +210,24 @@ export default function AdminEnquiries() {
           onClick={() => setStatusFilter("Pending")}
           className={`p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer border flex items-center justify-between relative overflow-hidden ${
             statusFilter === "Pending"
-              ? "bg-purple-100/90 dark:bg-purple-900/40 border-[#3F9E18] ring-2 ring-[#3F9E18] shadow-md scale-[1.02]"
-              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-purple-300 hover:shadow-xs"
+              ? "bg-blue-50/90 dark:bg-blue-950/40 border-[#0756B5] ring-2 ring-[#0756B5] shadow-md scale-[1.02]"
+              : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-blue-300 hover:shadow-xs"
           }`}
         >
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase">Pending Reply</p>
+              <p className="text-xs font-bold text-[#0756B5] dark:text-blue-300 uppercase">Pending Reply</p>
               {statusFilter === "Pending" && (
-                <span className="text-[10px] font-black text-purple-800 bg-purple-200 dark:bg-purple-950 px-2 py-0.5 rounded-full border border-purple-300">
+                <span className="text-[10px] font-black text-[#0756B5] bg-blue-100 dark:bg-blue-950 px-2 py-0.5 rounded-full border border-blue-300 dark:border-blue-800">
                   ✓ Active View
                 </span>
               )}
             </div>
-            <p className="text-2xl font-black text-purple-700 dark:text-purple-300 mt-1">
+            <p className="text-2xl font-black text-[#0756B5] dark:text-blue-300 mt-1">
               {pendingCount}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-[#3F9E18] flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#0756B5] flex items-center justify-center shadow-xs">
             <Clock className="w-5 h-5" />
           </div>
         </button>
@@ -255,7 +255,7 @@ export default function AdminEnquiries() {
               {repliedCount}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-zinc-800 text-purple-400 flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-zinc-800 text-emerald-400 flex items-center justify-center shadow-xs">
             <CheckCircle className="w-5 h-5" />
           </div>
         </button>
@@ -270,7 +270,7 @@ export default function AdminEnquiries() {
             {statusFilter === "Replied" && "Showing Replied Customer Enquiries"}
           </span>
         </h2>
-        <span className="text-xs font-extrabold text-[#075C2A] bg-purple-50 dark:bg-gray-800 px-3 py-1 rounded-full border border-purple-200 dark:border-gray-700">
+        <span className="text-xs font-extrabold text-[#075C2A] bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
           {filteredEnquiries.length} Enquiries
         </span>
       </div>
@@ -294,7 +294,7 @@ export default function AdminEnquiries() {
           {filteredEnquiries.map((enquiry) => (
             <div
               key={enquiry._id}
-              className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-between space-y-4 hover:border-purple-200 transition"
+              className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-between space-y-4 hover:border-emerald-200 dark:hover:border-emerald-800 transition"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
@@ -305,13 +305,13 @@ export default function AdminEnquiries() {
                     </h3>
                     <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <span className="flex items-center gap-1">
-                        <Mail className="w-3.5 h-3.5 text-purple-500" />
+                        <Mail className="w-3.5 h-3.5 text-[#0756B5]" />
                         <a href={`mailto:${enquiry.email}`} className="hover:underline font-semibold">
                           {enquiry.email}
                         </a>
                       </span>
                       <span className="flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5 text-purple-600" />
+                        <Phone className="w-3.5 h-3.5 text-[#075C2A]" />
                         <a href={`tel:${enquiry.phone}`} className="hover:underline font-semibold">
                           {enquiry.phone}
                         </a>
@@ -322,8 +322,8 @@ export default function AdminEnquiries() {
                   <span
                     className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
                       enquiry.status === "Replied"
-                        ? "bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200 border border-purple-300"
-                        : "bg-zinc-900 text-white dark:bg-zinc-800 dark:text-zinc-200 border border-zinc-700"
+                        ? "bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                        : "bg-blue-50 text-[#0756B5] dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
                     }`}
                   >
                     {enquiry.status}
@@ -344,10 +344,10 @@ export default function AdminEnquiries() {
                     {enquiry.replies.map((rep, idx) => (
                       <div
                         key={idx}
-                        className="bg-purple-50/70 dark:bg-purple-950/30 p-2.5 rounded-lg text-xs text-purple-900 dark:text-purple-200 border border-purple-100 dark:border-purple-900"
+                        className="bg-blue-50/70 dark:bg-blue-950/30 p-2.5 rounded-lg text-xs text-blue-950 dark:text-blue-200 border border-blue-100 dark:border-blue-900"
                       >
                         <p className="font-semibold">{rep.replyMessage}</p>
-                        <p className="text-[10px] text-purple-500 mt-1">
+                        <p className="text-[10px] text-blue-600 dark:text-blue-400 mt-1">
                           Sent by {rep.adminEmail} on {new Date(rep.repliedAt).toLocaleString()}
                         </p>
                       </div>
@@ -402,7 +402,7 @@ export default function AdminEnquiries() {
 
         <DialogContent dividers className="space-y-4">
           {/* Recipient Details Card */}
-          <div className="bg-purple-50 p-3.5 rounded-xl border border-purple-100 text-xs text-purple-900 space-y-1">
+          <div className="bg-emerald-50 dark:bg-emerald-950/40 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-950 dark:text-emerald-200 space-y-1">
             <p>
               <strong>Recipient:</strong> {selectedEnquiry?.fullName} &lt;
               {selectedEnquiry?.email}&gt;
@@ -411,7 +411,7 @@ export default function AdminEnquiries() {
               <strong>From Mail ID (SMTP):</strong> beerayona143@gmail.com
             </p>
             {selectedEnquiry?.message && (
-              <p className="text-purple-700 italic border-t border-purple-200 pt-1.5 mt-1">
+              <p className="text-[#075C2A] dark:text-emerald-300 italic border-t border-emerald-200 dark:border-emerald-800 pt-1.5 mt-1">
                 "Enquiry: {selectedEnquiry?.message}"
               </p>
             )}

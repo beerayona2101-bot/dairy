@@ -14,6 +14,7 @@ import ProductDetailsPage from "../pages/ProductDetailsPage";
 import CartPage from "../pages/CartPage";
 import ContactPage from "../pages/ContactPage";
 import OrderCheckoutPage from "../pages/OrderCheckoutPage";
+import FaqPage from "../pages/FaqPage";
 
 // Lazy loaded secondary layout components
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
@@ -251,6 +252,8 @@ export default function Routers() {
                     <Route path="/admin/customers/:userId/orders-History" element={<AdminProtectedRoute><AdminLayout><CustomerDetailsPage /></AdminLayout></AdminProtectedRoute>} />
 
                     <Route path="/about" element={<Layout><AboutPage /></Layout>} />
+                    <Route path="/faqs" element={<Layout><FaqPage /></Layout>} />
+                    <Route path="/faq" element={<Navigate to="/faqs" replace />} />
                     <Route path="/products/:productId?" element={<Layout><ProductPage /></Layout>} />
                     <Route path="/product-details/:productId?" element={<Layout><ProductDetailsPage /></Layout>} />
 

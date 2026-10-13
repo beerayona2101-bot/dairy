@@ -1,7 +1,6 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { PageContentContext } from "../context/PageContentProvider";
 import { ProductContext } from "../context/ProductProvider";
-import { faqs as defaultFaqs } from "../data/products";
 import ScrollReveal from "../components/Common/ScrollReveal";
 
 // Modular Homepage Components
@@ -13,17 +12,11 @@ import AboutBrandPreview from "../components/HomeComponents/AboutBrandPreview";
 import WhyChooseUsSection from "../components/HomeComponents/WhyChooseUsSection";
 import FarmToTableSection from "../components/HomeComponents/FarmToTableSection";
 import CustomerTrustSection from "../components/HomeComponents/CustomerTrustSection";
-import HomeFaqSection from "../components/HomeComponents/HomeFaqSection";
 import HomeContactCta from "../components/HomeComponents/HomeContactCta";
 
 export default function HomePage() {
     const { pageContent } = useContext(PageContentContext);
     const { products: liveProducts } = useContext(ProductContext);
-
-    // FAQs fallback
-    const displayFaqs = useMemo(() => {
-        return pageContent?.faqs?.length > 0 ? pageContent.faqs : defaultFaqs;
-    }, [pageContent]);
 
     return (
         <div className="bg-[#FAFBFD] dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
@@ -70,10 +63,6 @@ export default function HomePage() {
                     <CustomerTrustSection />
                 </ScrollReveal>
 
-                {/* 9. FAQ ACCORDION */}
-                <ScrollReveal yOffset={30} duration={0.65}>
-                    <HomeFaqSection faqs={displayFaqs} />
-                </ScrollReveal>
 
                 {/* 10. CONTACT / DELIVERY CTA ("Freshness Delivered to Your Door Every Morning") */}
                 <ScrollReveal yOffset={30} duration={0.65}>

@@ -57,7 +57,7 @@ export default function ProductsPage() {
           <div className="flex items-center gap-3">
             <BackButton fallbackPath="/admin/dashboard" />
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-[#075C2A] dark:text-purple-300">
+              <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-[#075C2A] dark:text-emerald-300">
                 <ShoppingBagIcon />
               </div>
               <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
@@ -84,23 +84,23 @@ export default function ProductsPage() {
           onClick={() => setSelectedFilter("all")}
           className={`p-2.5 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "all"
-              ? "bg-purple-100/90 dark:bg-purple-900/40 border-purple-400 ring-2 ring-[#075C2A] shadow-md"
-              : "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40 hover:border-purple-300"
+              ? "bg-emerald-100/90 dark:bg-emerald-900/40 border-emerald-400 ring-2 ring-[#075C2A] shadow-md"
+              : "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200/80 dark:border-emerald-800/40 hover:border-emerald-300"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
               <p className="text-[9px] sm:text-xs font-black text-[#64748B] dark:text-gray-400 uppercase tracking-wider truncate">Total Products</p>
-              <div className="w-6 h-6 rounded-lg bg-purple-100 dark:bg-purple-900/60 flex sm:hidden items-center justify-center text-[#075C2A] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+              <div className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 flex sm:hidden items-center justify-center text-[#075C2A] dark:text-emerald-300 font-bold shrink-0 shadow-xs">
                 <InventoryIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-3xl font-black text-[#075C2A] dark:text-purple-300">{totalProducts(safeProducts)}</h3>
-            <span className="text-[11px] font-semibold text-[#075C2A] dark:text-purple-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-3xl font-black text-[#075C2A] dark:text-emerald-300">{totalProducts(safeProducts)}</h3>
+            <span className="text-[11px] font-semibold text-[#075C2A] dark:text-emerald-400 hidden sm:block pt-0.5">
               {selectedFilter === "all" ? "✓ Active Filter" : "Click to view all"}
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/60 hidden sm:flex items-center justify-center text-[#075C2A] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/60 hidden sm:flex items-center justify-center text-[#075C2A] dark:text-emerald-300 font-bold shrink-0 shadow-xs">
             <InventoryIcon sx={{ fontSize: "1.5rem" }} />
           </div>
         </button>
@@ -110,23 +110,23 @@ export default function ProductsPage() {
           onClick={() => setSelectedFilter("lowStock")}
           className={`p-2.5 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border flex flex-col sm:flex-row items-start sm:items-center justify-between ${
             selectedFilter === "lowStock"
-              ? "bg-purple-200/90 dark:bg-purple-800/40 border-purple-500 ring-2 ring-[#3F9E18] shadow-md"
-              : "bg-purple-50/90 dark:bg-purple-950/40 border-purple-200/80 dark:border-purple-800/40 hover:border-purple-300"
+              ? "bg-blue-100/90 dark:bg-blue-900/40 border-blue-400 ring-2 ring-[#0756B5] shadow-md"
+              : "bg-blue-50/90 dark:bg-blue-950/40 border-blue-200/80 dark:border-blue-800/40 hover:border-blue-300"
           }`}
         >
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
               <p className="text-[9px] sm:text-xs font-black text-[#64748B] dark:text-gray-400 uppercase tracking-wider truncate">Low Stock</p>
-              <div className="w-6 h-6 rounded-lg bg-purple-200 dark:bg-purple-800/60 flex sm:hidden items-center justify-center text-[#3F9E18] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+              <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/60 flex sm:hidden items-center justify-center text-[#0756B5] dark:text-blue-300 font-bold shrink-0 shadow-xs">
                 <WarningAmberIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
-            <h3 className="text-sm sm:text-3xl font-black text-[#3F9E18] dark:text-purple-300">{lowStock}</h3>
-            <span className="text-[11px] font-semibold text-[#3F9E18] dark:text-purple-400 hidden sm:block pt-0.5">
+            <h3 className="text-sm sm:text-3xl font-black text-[#0756B5] dark:text-blue-300">{lowStock}</h3>
+            <span className="text-[11px] font-semibold text-[#0756B5] dark:text-blue-400 hidden sm:block pt-0.5">
               {selectedFilter === "lowStock" ? "✓ Active Filter" : "Click to view low stock"}
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-purple-200 dark:bg-purple-800/60 hidden sm:flex items-center justify-center text-[#3F9E18] dark:text-purple-300 font-bold shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/60 hidden sm:flex items-center justify-center text-[#0756B5] dark:text-blue-300 font-bold shrink-0 shadow-xs">
             <WarningAmberIcon sx={{ fontSize: "1.5rem" }} />
           </div>
         </button>
@@ -143,16 +143,16 @@ export default function ProductsPage() {
           <div className="space-y-0.5 sm:space-y-1 min-w-0 pr-1 w-full">
             <div className="flex items-center justify-between sm:block">
               <p className="text-[9px] sm:text-xs font-black text-zinc-300 uppercase tracking-wider truncate">Expiring Soon</p>
-              <div className="w-6 h-6 rounded-lg bg-zinc-700 flex sm:hidden items-center justify-center text-purple-300 font-bold shrink-0 shadow-xs">
+              <div className="w-6 h-6 rounded-lg bg-zinc-700 flex sm:hidden items-center justify-center text-zinc-300 font-bold shrink-0 shadow-xs">
                 <HourglassEmptyIcon sx={{ fontSize: "1rem" }} />
               </div>
             </div>
             <h3 className="text-sm sm:text-3xl font-black text-white">{expiringSoonCount}</h3>
-            <span className="text-[11px] font-semibold text-purple-300 hidden sm:block pt-0.5">
+            <span className="text-[11px] font-semibold text-zinc-300 hidden sm:block pt-0.5">
               {selectedFilter === "expiringSoon" ? "✓ Active Filter" : "Click to view expiring soon"}
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-zinc-700 hidden sm:flex items-center justify-center text-purple-300 font-bold shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-zinc-700 hidden sm:flex items-center justify-center text-zinc-300 font-bold shrink-0 shadow-xs">
             <HourglassEmptyIcon sx={{ fontSize: "1.5rem" }} />
           </div>
         </button>

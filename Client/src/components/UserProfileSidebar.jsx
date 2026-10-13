@@ -9,6 +9,7 @@ import {
     MdArrowForward,
     MdInfo,
     MdHeadphones,
+    MdHelpOutline,
 } from "react-icons/md";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -102,6 +103,7 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
         { key: "/user-profile/payments", icon: <MdPayment />, label: "Payments" },
         { key: "/about", icon: <MdInfo />, label: "About Us" },
         { key: "/contact-us", icon: <MdHeadphones />, label: "Contact Us" },
+        { key: "/faqs", icon: <MdHelpOutline />, label: "FAQs" },
     ];
 
     const isLinkActive = (key) => {
@@ -114,17 +116,20 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
     return (
         <aside className={`scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 font-dashboard ${userProfileDrawer ? "rounded-l-none rounded-r-[24px] border-y border-r border-l-0 border-gray-200 dark:border-gray-700/80" : "rounded-[24px] border border-gray-200/90 dark:border-gray-700/80"}`}>
             <div>
-                <div className="flex flex-col items-center mb-4 relative group">
-                    <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-2xl shadow-md border-2 border-purple-100 dark:border-gray-700 select-none">
-                        {(authUser?.firstName || authUser?.name || authUser?.username || authAdmin?.name || "U").charAt(0).toUpperCase()}
+                {/* Mobile Drawer Only: Avatar & Name (Removed on Web Response) */}
+                {userProfileDrawer && (
+                    <div className="flex md:hidden flex-col items-center mb-4 relative group">
+                        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-2xl shadow-md border-2 border-purple-100 dark:border-gray-700 select-none">
+                            {(authUser?.firstName || authUser?.name || authUser?.username || authAdmin?.name || "U").charAt(0).toUpperCase()}
+                        </div>
+
+                        <h2 className="text-base font-extrabold mt-2 text-[#2D3748] dark:text-white tracking-tight text-center">
+                            {authAdmin ? (authAdmin?.name || "Natural Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}
+                        </h2>
                     </div>
+                )}
 
-                    <h2 className="text-base font-extrabold mt-2 text-[#2D3748] dark:text-white tracking-tight text-center">
-                        {authAdmin ? (authAdmin?.name || "Natural Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}
-                    </h2>
-                </div>
-
-                <nav className="mt-4 space-y-1.5">
+                <nav className={`${userProfileDrawer ? "mt-4" : "mt-0"} space-y-1.5`}>
                     {navigationLinks.map((item) => {
                         const active = isLinkActive(item.key);
                         return (

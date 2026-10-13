@@ -33,15 +33,15 @@ export default function OrdersOverview({ totalOrdersRecieved, totalPendingOrders
     {
       name: "Total Orders Recieved",
       value: totalOrdersRecieved,
-      icon: <ShoppingCartIcon className="text-[#075C2A] dark:text-purple-300" />,
-      bg: "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
+      icon: <ShoppingCartIcon className="text-[#075C2A] dark:text-emerald-300" />,
+      bg: "bg-emerald-50/90 hover:bg-emerald-100/90 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800/40",
       route: "/admin/orders",
     },
     {
       name: "Total Delivered",
       value: countDeliveredOrders || 0,
-      icon: <UndoIcon className="text-purple-600 dark:text-purple-300" />,
-      bg: "bg-purple-100/70 hover:bg-purple-200/70 dark:bg-purple-900/40 dark:hover:bg-purple-900/60 border-purple-200 dark:border-purple-800/40",
+      icon: <UndoIcon className="text-[#059669] dark:text-emerald-300" />,
+      bg: "bg-emerald-50/90 hover:bg-emerald-100/90 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800/40",
       route: "/admin/orders",
     },
     {
@@ -54,8 +54,8 @@ export default function OrdersOverview({ totalOrdersRecieved, totalPendingOrders
     {
       name: "Total Pending Orders",
       value: totalPendingOrders,
-      icon: <Timer className="text-purple-700 dark:text-purple-300" />,
-      bg: "bg-purple-50/90 hover:bg-purple-100/90 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 border-purple-200 dark:border-purple-800/40",
+      icon: <Timer className="text-[#0756B5] dark:text-blue-300" />,
+      bg: "bg-blue-50/90 hover:bg-blue-100/90 dark:bg-blue-950/40 dark:hover:bg-blue-950/60 border-blue-200 dark:border-blue-800/40",
       route: "/admin/orders",
     },
   ];

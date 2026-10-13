@@ -21,9 +21,9 @@ const CustomBarTooltip = ({ active, payload }) => {
       <div className="bg-white dark:bg-gray-800 p-3 shadow-xl rounded-xl border border-gray-200 dark:border-gray-700 text-xs space-y-1">
         <p className="font-bold text-gray-800 dark:text-white line-clamp-1">{data.name}</p>
         <p className="text-gray-500 dark:text-gray-400">Category: {data.category}</p>
-        <p className="text-[#075C2A] font-bold">Units Sold: {data.sold} units</p>
-        <p className="text-purple-600 font-bold">Revenue: ₹{formatNumberWithCommas(data.revenue)}</p>
-        <p className="text-purple-400 font-semibold flex items-center gap-1">
+        <p className="text-[#075C2A] dark:text-emerald-400 font-bold">Units Sold: {data.sold} units</p>
+        <p className="text-[#0756B5] dark:text-blue-400 font-bold">Revenue: ₹{formatNumberWithCommas(data.revenue)}</p>
+        <p className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
           <TrendingUpIcon sx={{ fontSize: "0.9rem" }} />
           Growth Rate: +{data.growth}%
         </p>
@@ -39,14 +39,14 @@ CustomBarTooltip.propTypes = {
 };
 
 export default function ReportProductGrowthBar({ productGrowthData = [] }) {
-  const barColors = ["#075C2A", "#3F9E18", "#3F9E18", "#4C1D95", "#C4B5FD", "#6D28D9"];
+  const barColors = ["#075C2A", "#0756B5", "#10B981", "#1E88E5", "#059669", "#2563EB"];
 
   return (
     <div className="bg-white dark:bg-gray-500/20 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-4">
       <div className="border-b border-gray-100 dark:border-gray-700/60 pb-3 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <BarChartIcon className="text-[#075C2A] dark:text-purple-300" />
+            <BarChartIcon className="text-[#075C2A] dark:text-emerald-400" />
             Top Product Sales & Revenue Growth
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

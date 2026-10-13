@@ -36,19 +36,19 @@ export default function OrdersPreview() {
   const getStatusClass = (status) => {
     switch (status) {
       case "Pending":
-        return "bg-purple-100/20 text-[#075C2A]";
+        return "bg-blue-50 dark:bg-blue-950/40 text-[#0756B5] border border-blue-200 dark:border-blue-800";
       case "Processing":
-        return "bg-purple-100/20 text-[#3F9E18]";
+        return "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800";
       case "Shipped":
-        return "bg-purple-100/20 text-[#0756B5]";
+        return "bg-blue-50 dark:bg-blue-950/40 text-[#0756B5] border border-blue-200 dark:border-blue-800";
       case "Delivered":
-        return "bg-purple-100/20 text-[#075C2A]";
+        return "bg-emerald-50 dark:bg-emerald-950/40 text-[#075C2A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800";
       case "Cancelled":
         return "bg-zinc-900 text-white border border-zinc-700";
       case "Confirmed":
-        return "bg-purple-100/20 text-[#075C2A]";
+        return "bg-emerald-50 dark:bg-emerald-950/40 text-[#075C2A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800";
       default:
-        return "bg-gray-100/10 text-gray-500";
+        return "bg-gray-100 dark:bg-gray-800 text-gray-500 border border-gray-200 dark:border-gray-700";
     }
   };
 

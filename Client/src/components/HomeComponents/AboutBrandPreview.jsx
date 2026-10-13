@@ -52,12 +52,12 @@ export default function AboutBrandPreview() {
                     </div>
 
                     {/* Right Column: Clean Dairy Brand Visual */}
-                    <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden h-64 sm:h-80 md:h-[340px] w-full bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 shadow-sm group">
+                    <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden h-64 sm:h-80 md:h-[340px] w-full bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 shadow-sm">
                         <img
                             src={dairyImg}
                             alt="Natural Milk Dairy farm fresh products"
                             loading="lazy"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
                         

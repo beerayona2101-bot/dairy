@@ -34,7 +34,7 @@ export default function ShowcaseProfileEditor({
     <div className="space-y-4 bg-[#075C2A]/5 dark:bg-gray-800/40 p-4 sm:p-5 rounded-2xl border border-[#075C2A]/20 dark:border-gray-700">
       
       {/* Nutritional & Health Profile Header & AI Button */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-purple-100 dark:border-gray-700 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#075C2A]/20 dark:border-gray-700 pb-3">
         <div>
           <h3 className="text-xs font-black uppercase tracking-wider text-[#2D3748] dark:text-white flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[#075C2A]" />
@@ -48,9 +48,9 @@ export default function ShowcaseProfileEditor({
           type="button"
           disabled={disabled}
           onClick={handleAiGenerate}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#075C2A] to-purple-800 hover:from-[#054593] hover:to-[#063B22] text-white text-xs font-black shadow-xs transition-all cursor-pointer border border-purple-300"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#075C2A] to-[#0756B5] hover:from-[#054593] hover:to-[#043e86] text-white text-xs font-black shadow-xs transition-all cursor-pointer border border-emerald-400/40"
         >
-          <Sparkles className="w-3.5 h-3.5 text-purple-200" />
+          <Sparkles className="w-3.5 h-3.5 text-emerald-200" />
           <span>✨ AI Auto Generate Profile</span>
         </button>
       </div>

@@ -74,9 +74,9 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
         type="button"
         onClick={handleClick}
         disabled={isProcessing || currentStatus === "Delivered" || currentStatus === "Cancelled"}
-        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl border border-purple-200 dark:border-gray-700 shadow-xs hover:border-[#075C2A] dark:hover:border-purple-400 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
+        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold text-xs px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xs hover:border-[#075C2A] dark:hover:border-emerald-500 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group"
       >
-        <span className="text-[#075C2A] dark:text-purple-300">{currentOption.icon}</span>
+        <span className="text-[#075C2A] dark:text-emerald-400">{currentOption.icon}</span>
         <span>{currentOption.label}</span>
         <KeyboardArrowDownIcon
           className={`transition-transform duration-200 text-gray-400 group-hover:text-[#075C2A] ${isOpen ? "rotate-180" : ""}`}
@@ -91,7 +91,7 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
         onClose={handleClose}
         slotProps={{
           paper: {
-            className: "!bg-white/95 dark:!bg-gray-900/95 !backdrop-blur-2xl !border !border-purple-100 dark:!border-gray-700/80 !shadow-2xl !rounded-2xl !p-1.5 !mt-1.5 !min-w-[250px]",
+            className: "!bg-white/95 dark:!bg-gray-900/95 !backdrop-blur-2xl !border !border-gray-100 dark:!border-gray-700/80 !shadow-2xl !rounded-2xl !p-1.5 !mt-1.5 !min-w-[250px]",
           },
         }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
@@ -110,10 +110,10 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
               disabled={disabled}
               className={`!text-xs !font-bold !py-2.5 !px-3 !rounded-xl !my-0.5 !flex !items-center !justify-between !gap-3 !transition-all ${
                 isCurrent
-                  ? "!bg-purple-50 dark:!bg-purple-950/60 !text-[#075C2A] dark:!text-purple-300 !font-black"
+                  ? "!bg-emerald-50 dark:!bg-emerald-950/60 !text-[#075C2A] dark:!text-emerald-300 !font-black"
                   : isCancel
-                  ? "!text-gray-600 dark:!text-gray-300 hover:!bg-purple-50 dark:hover:!bg-purple-950/40"
-                  : "!text-gray-900 dark:!text-gray-200 hover:!bg-purple-50 dark:hover:!bg-purple-950/40"
+                  ? "!text-gray-600 dark:!text-gray-300 hover:!bg-emerald-50 dark:hover:!bg-emerald-950/40"
+                  : "!text-gray-900 dark:!text-gray-200 hover:!bg-emerald-50 dark:hover:!bg-emerald-950/40"
               } ${disabled ? "!opacity-50 !cursor-not-allowed !bg-gray-50/50 dark:!bg-gray-800/30" : ""}`}
             >
               <div className="flex items-center gap-2.5">
@@ -124,13 +124,13 @@ export default function OrderStatusDropdown({ currentStatus, onUpdateStatus, isP
               </div>
 
               {isPassed && (
-                <span className="text-[10px] font-black uppercase text-[#075C2A] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
+                <span className="text-[10px] font-black uppercase text-[#075C2A] dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                   ✓ Passed
                 </span>
               )}
 
               {isCurrent && (
-                <span className="text-[10px] font-black uppercase text-[#075C2A] dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full border border-purple-200">
+                <span className="text-[10px] font-black uppercase text-[#075C2A] dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
                   Current
                 </span>
               )}

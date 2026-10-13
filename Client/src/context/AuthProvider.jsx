@@ -151,6 +151,20 @@ export const AuthProvider = ({ children }) => {
         }
     }, [fetchUserData, fetchAdminData]);
 
+    useEffect(() => {
+        const handleFlutterAuth = (event) => {
+            const token = event.detail?.token;
+            if (typeof token !== "string" || !token) return;
+
+            sessionStorage.setItem("userToken", token);
+            sessionStorage.setItem("userRole", "user");
+            fetchUserData();
+        };
+
+        window.addEventListener("flutterAuthChanged", handleFlutterAuth);
+        return () => window.removeEventListener("flutterAuthChanged", handleFlutterAuth);
+    }, [fetchUserData]);
+
     const handleUserLogout = useCallback(() => {
         if (wsManager && authUser?._id) {
             wsManager.emit("client:logout", { userId: authUser._id });

@@ -165,42 +165,63 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
   }
 
   const getMarkerColor = (event) => {
+    if (event.type === "user") {
+      return {
+        border: "border-[#075C2A] dark:border-emerald-400 ring-4 ring-emerald-100 dark:ring-emerald-950/50",
+        dot: "bg-[#075C2A] dark:bg-emerald-400",
+      };
+    }
+    if (event.status === "Delivered" || event.status === "Confirmed") {
+      return {
+        border: "border-[#075C2A] dark:border-emerald-400 ring-4 ring-emerald-100 dark:ring-emerald-950/50",
+        dot: "bg-[#075C2A] dark:bg-emerald-400",
+      };
+    }
+    if (event.status === "Cancelled") {
+      return {
+        border: "border-gray-400 dark:border-gray-500 ring-4 ring-gray-100 dark:ring-gray-800",
+        dot: "bg-gray-500 dark:bg-gray-400",
+      };
+    }
     return {
-      border: "border-[#8C7CF0] dark:border-purple-400 ring-4 ring-purple-100 dark:ring-purple-950/50",
-      dot: "bg-[#8C7CF0] dark:bg-purple-400",
+      border: "border-[#0756B5] dark:border-blue-400 ring-4 ring-blue-100 dark:ring-blue-950/50",
+      dot: "bg-[#0756B5] dark:bg-blue-400",
     };
   };
 
   const getEventIcon = (event) => {
     if (event.type === "user") {
-      return <PersonAddIcon className="text-[#8C7CF0] dark:text-purple-300 drop-shadow-xs" />;
+      return <PersonAddIcon className="text-[#075C2A] dark:text-emerald-400 drop-shadow-xs" />;
     }
     switch (event.status) {
       case "Pending":
-        return <ShoppingBagIcon className="text-[#8C7CF0] dark:text-purple-300 drop-shadow-xs" />;
+        return <ShoppingBagIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
       case "Confirmed":
-        return <CheckCircleIcon className="text-[#8C7CF0] dark:text-purple-300 drop-shadow-xs" />;
+        return <CheckCircleIcon className="text-[#075C2A] dark:text-emerald-400 drop-shadow-xs" />;
       case "Processing":
-        return <InventoryIcon className="text-[#8C7CF0] dark:text-purple-300 drop-shadow-xs" />;
+        return <InventoryIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
       case "Shipped":
-        return <LocalShippingIcon className="text-[#8C7CF0] dark:text-purple-300 drop-shadow-xs" />;
+        return <LocalShippingIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
       case "Delivered":
-        return <CheckCircleIcon className="text-[#8C7CF0] dark:text-purple-300 drop-shadow-xs" />;
+        return <CheckCircleIcon className="text-[#075C2A] dark:text-emerald-400 drop-shadow-xs" />;
       case "Cancelled":
         return <CancelIcon className="text-gray-500 dark:text-gray-400 drop-shadow-xs" />;
       default:
-        return <ShoppingBagIcon className="text-[#8C7CF0] dark:text-purple-300 drop-shadow-xs" />;
+        return <ShoppingBagIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
     }
   };
 
   const getBadgeClass = (status, type) => {
     if (type === "user") {
-      return "bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800";
+      return "bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
+    }
+    if (status === "Delivered" || status === "Confirmed") {
+      return "bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
     }
     if (status === "Cancelled") {
       return "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600";
     }
-    return "bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800";
+    return "bg-blue-50 text-[#0756B5] dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800";
   };
 
   // Filter events
@@ -226,17 +247,17 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 md:p-6 shadow-[0_4px_20px_rgba(140,124,240,0.06)] border border-purple-100/70 dark:border-gray-700/80 w-full space-y-5">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 md:p-6 shadow-[0_4px_20px_rgba(7,92,42,0.05)] border border-gray-200/80 dark:border-gray-700/80 w-full space-y-5">
       {/* Header bar with Live pulse badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-700/60 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <SignalCellularAltIcon className="text-[#8C7CF0] dark:text-purple-300" />
+            <SignalCellularAltIcon className="text-[#075C2A] dark:text-emerald-400" />
             <h2 className="text-xl font-extrabold text-gray-900 dark:text-white">
               Live Activity Timeline Feed
             </h2>
-            <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black bg-purple-50 text-[#8C7CF0] dark:bg-purple-950/60 dark:text-purple-300 animate-pulse border border-purple-200 dark:border-purple-800">
-              <span className="w-2 h-2 rounded-full bg-[#8C7CF0] animate-ping" />
+            <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 animate-pulse border border-emerald-200 dark:border-emerald-800">
+              <span className="w-2 h-2 rounded-full bg-[#075C2A] animate-ping" />
               LIVE
             </span>
           </div>
@@ -245,7 +266,7 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
           </p>
         </div>
 
-        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/50 text-[#8C7CF0] dark:text-purple-300 border border-purple-100 dark:border-purple-800 shrink-0 self-start sm:self-auto">
+        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-[#075C2A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0 self-start sm:self-auto">
           {filteredEvents.length} Total Events
         </span>
       </div>
@@ -260,8 +281,8 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
               onClick={() => setFilter(tab)}
               className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
                 isActive
-                  ? "bg-[#8C7CF0] text-white shadow-md shadow-purple-500/20"
-                  : "bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-purple-50 hover:text-[#8C7CF0] dark:hover:bg-purple-950/40"
+                  ? "bg-[#075C2A] text-white shadow-md shadow-emerald-700/20"
+                  : "bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-emerald-50 hover:text-[#075C2A] dark:hover:bg-emerald-950/40"
               }`}
             >
               {tab}
@@ -273,7 +294,7 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
       {/* Live Stream List - Timeline Layout */}
       {loading ? (
         <div className="flex items-center justify-center py-16 text-gray-500 gap-3">
-          <div className="w-7 h-7 border-4 border-dashed rounded-full animate-spin border-[#8C7CF0]" />
+          <div className="w-7 h-7 border-4 border-dashed rounded-full animate-spin border-[#075C2A]" />
           <span className="text-sm font-semibold">Loading live feed...</span>
         </div>
       ) : filteredEvents.length === 0 ? (
@@ -282,7 +303,7 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
           <p className="text-xs">Select another filter tab or wait for live store activity.</p>
         </div>
       ) : (
-        <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1 scrollbar-hide relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-purple-100 dark:before:bg-gray-700">
+        <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1 scrollbar-hide relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700">
           <AnimatePresence>
             {filteredEvents.map((event, idx) => {
               const markerColors = getMarkerColor(event);
@@ -295,7 +316,7 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
                   animate="visible"
                   exit={{ opacity: 0, x: -20 }}
                   onClick={() => handleEventClick(event)}
-                  className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 group relative ml-3 pl-8 bg-white dark:bg-gray-700/40 hover:bg-purple-50/50 dark:hover:bg-purple-950/20 border-purple-100/80 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-[#8C7CF0]`}
+                  className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 group relative ml-3 pl-8 bg-white dark:bg-gray-700/40 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 border-gray-200/90 dark:border-gray-700 shadow-xs hover:shadow-md hover:border-[#075C2A]/60`}
                 >
                   {/* Timeline Dot Marker */}
                   <div className={`absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white dark:bg-gray-800 border-2 ${markerColors.border} flex items-center justify-center shadow-xs shrink-0 z-10`}>
@@ -303,13 +324,13 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
                   </div>
 
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 shadow-xs border border-purple-100 dark:border-purple-800 shrink-0">
+                    <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 shadow-xs border border-gray-200/70 dark:border-gray-700 shrink-0">
                       {getEventIcon(event)}
                     </div>
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white line-clamp-1 group-hover:text-[#8C7CF0] dark:group-hover:text-purple-300 transition">
+                        <h4 className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white line-clamp-1 group-hover:text-[#075C2A] dark:group-hover:text-emerald-400 transition">
                           {event.title}
                         </h4>
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${getBadgeClass(event.status, event.type)}`}>
@@ -329,8 +350,8 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
                         ? event.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                         : "Just now"}
                     </span>
-                    <div className="p-1.5 rounded-xl group-hover:bg-[#8C7CF0] group-hover:text-white transition shadow-xs">
-                      <ArrowForwardIcon className="text-[#8C7CF0] group-hover:text-white transition-transform group-hover:translate-x-0.5" sx={{ fontSize: "1.1rem" }} />
+                    <div className="p-1.5 rounded-xl group-hover:bg-[#075C2A] group-hover:text-white transition shadow-xs">
+                      <ArrowForwardIcon className="text-[#075C2A] group-hover:text-white transition-transform group-hover:translate-x-0.5" sx={{ fontSize: "1.1rem" }} />
                     </div>
                   </div>
                 </motion.div>

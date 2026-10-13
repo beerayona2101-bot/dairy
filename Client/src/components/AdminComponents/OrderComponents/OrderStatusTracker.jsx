@@ -69,7 +69,7 @@ export default function OrderStatusTracker({ currentStatus }) {
     return (
       <div className="w-full p-4 rounded-2xl bg-zinc-900 text-white border border-zinc-800 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-zinc-800 text-purple-400 flex items-center justify-center shadow-md">
+          <div className="w-10 h-10 rounded-full bg-zinc-800 text-rose-400 flex items-center justify-center shadow-md">
             <CancelOutlinedIcon />
           </div>
           <div>
@@ -85,13 +85,13 @@ export default function OrderStatusTracker({ currentStatus }) {
   }
 
   return (
-    <div className="w-full p-4 sm:p-5 rounded-2xl bg-white/90 dark:bg-gray-800/90 border border-purple-100 dark:border-gray-700 shadow-sm space-y-4">
+    <div className="w-full p-4 sm:p-5 rounded-2xl bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-xs font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[#075C2A] animate-pulse" />
           <span>Live Order Progress</span>
         </h4>
-        <span className="text-xs font-extrabold text-[#075C2A] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-3 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
+        <span className="text-xs font-extrabold text-[#075C2A] dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
           Step {activeIndex + 1} of {ORDER_STEPS.length}: {ORDER_STEPS[activeIndex]?.label}
         </span>
       </div>
@@ -103,7 +103,7 @@ export default function OrderStatusTracker({ currentStatus }) {
 
         {/* Colored Progress Line Bar */}
         <div
-          className="absolute top-3.5 sm:top-5 left-3 sm:left-4 h-1 sm:h-1.5 bg-gradient-to-r from-[#075C2A] via-purple-600 to-violet-500 rounded-full z-0 transition-all duration-500 ease-out"
+          className="absolute top-3.5 sm:top-5 left-3 sm:left-4 h-1 sm:h-1.5 bg-gradient-to-r from-[#075C2A] via-[#0756B5] to-emerald-500 rounded-full z-0 transition-all duration-500 ease-out"
           style={{ width: `calc(${progressPercent}% * 0.9 + 2%)` }}
         />
 
@@ -119,9 +119,9 @@ export default function OrderStatusTracker({ currentStatus }) {
                 <div
                   className={`w-7 h-7 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                     isPassed
-                      ? "bg-gradient-to-tr from-[#075C2A] to-violet-600 text-white shadow-md shadow-purple-500/30 scale-105"
+                      ? "bg-gradient-to-tr from-[#075C2A] to-[#0756B5] text-white shadow-md shadow-emerald-500/20 scale-105"
                       : "bg-gray-100 dark:bg-gray-800 text-gray-400 border border-gray-300 dark:border-gray-600"
-                  } ${isCurrent ? "ring-2 sm:ring-4 ring-purple-300/50 dark:ring-purple-800/50" : ""}`}
+                  } ${isCurrent ? "ring-2 sm:ring-4 ring-emerald-300/60 dark:ring-emerald-700/60" : ""}`}
                 >
                   <span className="scale-75 sm:scale-100 flex items-center justify-center">
                     {step.icon}
