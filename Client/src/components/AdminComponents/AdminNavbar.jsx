@@ -139,14 +139,14 @@ export default function AdminNavbar() {
     const isDark = theme === "dark";
 
     return (
-        <nav className="sticky top-0 z-50 w-full py-3 px-3 sm:px-6 lg:px-8 transition-all duration-300 bg-[#EFF1F5]/80 dark:bg-gray-900/80 backdrop-blur-md">
+        <nav className="sticky top-0 z-50 w-full py-3 px-3 sm:px-6 lg:px-8 transition-all duration-300 bg-[#F4F7FB]/85 dark:bg-slate-900/85 backdrop-blur-md">
             {/* Pill Container */}
-            <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800/95 rounded-full px-4 sm:px-6 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-white/80 dark:border-gray-700 flex items-center justify-between transition-all duration-300 relative">
+            <div className="max-w-7xl mx-auto bg-white dark:bg-slate-800/95 rounded-full px-4 sm:px-6 py-2 shadow-[0_4px_24px_rgba(37,99,235,0.04)] border border-slate-200/90 dark:border-slate-700 flex items-center justify-between transition-all duration-300 relative">
 
                 {/* Left: Sidebar Toggle */}
                 <div className="flex items-center gap-2.5 sm:gap-3 z-10">
                     <button
-                        className="w-9 h-9 rounded-full bg-emerald-50 dark:bg-gray-800 text-[#075C2A] dark:text-emerald-400 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-emerald-200/60 dark:border-gray-700 shrink-0"
+                        className="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-blue-200/60 dark:border-slate-700 shrink-0"
                         onClick={handleSidebarToggle}
                         title="Toggle Sidebar Menu"
                     >
@@ -159,10 +159,10 @@ export default function AdminNavbar() {
                     to="/admin/dashboard"
                     className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 no-underline cursor-pointer select-none"
                 >
-                    <span className="font-black text-xs sm:text-sm tracking-tight text-[#0F2742] dark:text-white uppercase leading-none">
+                    <span className="font-black text-xs sm:text-sm tracking-tight text-slate-900 dark:text-white uppercase leading-none">
                         Natural Milk Dairy
                     </span>
-                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-[#075C2A] dark:text-emerald-400 tracking-widest uppercase leading-tight mt-0.5">
+                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-blue-600 dark:text-blue-400 tracking-widest uppercase leading-tight mt-0.5">
                         Pure &amp; Fresh A2
                     </span>
                 </Link>
@@ -175,14 +175,14 @@ export default function AdminNavbar() {
                             onClick={() => setNotificationOpen((prev) => !prev)}
                             className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer relative ${
                                 notificationOpen
-                                    ? "bg-[#075C2A]/15 text-[#075C2A] scale-105"
-                                    : "text-gray-600 dark:text-gray-300 hover:bg-[#075C2A]/10 hover:text-[#075C2A]"
+                                    ? "bg-blue-50 text-blue-600 scale-105"
+                                    : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 hover:text-blue-600"
                             }`}
                         >
                             <Bell className="w-[18px] h-[18px]" strokeWidth={2} />
                             {notification?.length > 0 && authAdmin && (
                                 <span
-                                    className={`absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-[#075C2A] text-white rounded-full text-[9px] font-black leading-none shadow-[0_2px_8px_rgba(7,92,42,0.45)] ${animate ? "animate-bounce" : ""}`}
+                                    className={`absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-blue-600 text-white rounded-full text-[9px] font-black leading-none shadow-[0_2px_8px_rgba(37,99,235,0.45)] ${animate ? "animate-bounce" : ""}`}
                                 >
                                     {unreadCount > 0 ? unreadCount : notification.length}
                                 </span>
@@ -196,16 +196,16 @@ export default function AdminNavbar() {
             {notificationOpen && (
                 <div
                     ref={panelRef}
-                    className="fixed inset-0 sm:inset-auto sm:top-[70px] sm:right-[16px] z-[9999] w-full h-full sm:w-[400px] sm:h-auto sm:max-h-[520px] flex flex-col bg-white dark:bg-gray-900 sm:rounded-[20px] overflow-hidden shadow-2xl border-0 sm:border sm:border-gray-200 dark:sm:border-gray-800 transition-all duration-200"
+                    className="fixed inset-0 sm:inset-auto sm:top-[70px] sm:right-[16px] z-[9999] w-full h-full sm:w-[400px] sm:h-auto sm:max-h-[520px] flex flex-col bg-white dark:bg-slate-900 sm:rounded-[20px] overflow-hidden shadow-2xl border-0 sm:border sm:border-slate-200 dark:sm:border-slate-800 transition-all duration-200"
                 >
-                    <div className="flex flex-col w-full h-full sm:max-h-[520px] overflow-hidden bg-white dark:bg-gray-900">
+                    <div className="flex flex-col w-full h-full sm:max-h-[520px] overflow-hidden bg-white dark:bg-slate-900">
                         {/* Header */}
-                        <div className="flex items-center justify-between px-4 py-3.5 sm:py-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+                        <div className="flex items-center justify-between px-4 py-3.5 sm:py-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
                             <div className="flex items-center gap-2.5">
                                 {/* Back Button for Mobile Viewports (< sm) */}
                                 <button
                                     onClick={() => setNotificationOpen(false)}
-                                    className="sm:hidden w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition cursor-pointer shrink-0"
+                                    className="sm:hidden w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition cursor-pointer shrink-0"
                                     aria-label="Go Back"
                                     title="Back"
                                 >
@@ -213,23 +213,23 @@ export default function AdminNavbar() {
                                 </button>
 
                                 {/* Bell Icon for Desktop Viewports (sm+) */}
-                                <div className="hidden sm:flex w-8 h-8 rounded-full bg-[#075C2A]/12 dark:bg-[#075C2A]/20 items-center justify-center shrink-0">
-                                    <Bell className="w-[15px] h-[15px] text-[#075C2A]" strokeWidth={2.2} />
+                                <div className="hidden sm:flex w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/40 items-center justify-center shrink-0">
+                                    <Bell className="w-[15px] h-[15px] text-blue-600 dark:text-blue-400" strokeWidth={2.2} />
                                 </div>
 
                                 <div>
-                                    <h2 className="text-base sm:text-[13px] font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                                    <h2 className="text-base sm:text-[13px] font-black text-slate-900 dark:text-white leading-none tracking-tight">
                                         Notifications
                                     </h2>
-                                    <p className="text-[11px] sm:text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
+                                    <p className="text-[11px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">
                                         {notification.length === 0
                                             ? 'All caught up'
-                                            : `${notification.length} notification${notification.length !== 1 ? 's' : ''}`}
+                                             : `${notification.length} notification${notification.length !== 1 ? 's' : ''}`}
                                     </p>
                                 </div>
 
                                 {unreadCount > 0 && (
-                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-[#075C2A] text-white shadow-[0_2px_8px_rgba(108,92,231,0.4)] ml-1">
+                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.4)] ml-1">
                                         {unreadCount} new
                                     </span>
                                 )}
@@ -238,7 +238,7 @@ export default function AdminNavbar() {
                             {/* Close Button for Desktop Viewports */}
                             <button
                                 onClick={() => setNotificationOpen(false)}
-                                className="hidden sm:flex w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
+                                className="hidden sm:flex w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
                             >
                                 <X size={13} />
                             </button>
@@ -246,15 +246,15 @@ export default function AdminNavbar() {
 
                         {/* Action Row */}
                         {notification.length > 0 && (
-                            <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800/70 border-b border-gray-100 dark:border-gray-800 shrink-0">
-                                <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500">
+                            <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-800/70 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
                                     {unreadCount > 0 ? `${unreadCount} unread` : 'All read'}
                                 </span>
                                 <div className="flex items-center gap-3">
                                     {unreadCount > 0 && (
                                         <button
                                             onClick={handleMarkAllAsRead}
-                                            className="flex items-center gap-1 text-[11px] font-bold text-[#075C2A] dark:text-emerald-400 hover:text-[#05431e] dark:hover:text-emerald-300 transition cursor-pointer"
+                                            className="flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition cursor-pointer"
                                         >
                                             <CheckCheck size={12} strokeWidth={2.5} />
                                             <span>Mark all read</span>
@@ -266,7 +266,7 @@ export default function AdminNavbar() {
                                         className="flex items-center gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                                     >
                                         {notificationLoadingIndex === "all" ? (
-                                            <div className="w-3 h-3 border-2 border-t-transparent border-[#075C2A] rounded-full animate-spin" />
+                                            <div className="w-3 h-3 border-2 border-t-transparent border-blue-600 rounded-full animate-spin" />
                                         ) : (
                                             <>
                                                 <X size={11} />
@@ -282,9 +282,9 @@ export default function AdminNavbar() {
                         <div className="overflow-y-auto flex-1" style={{ overscrollBehavior: 'contain' }}>
                             {notification.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
-                                    <div className="w-14 h-14 rounded-full bg-[#075C2A]/10 dark:bg-[#075C2A]/20 flex items-center justify-center text-2xl mb-3">🎉</div>
-                                    <p className="font-black text-sm text-gray-800 dark:text-white">All caught up!</p>
-                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">No new notifications right now.</p>
+                                    <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-2xl mb-3">🎉</div>
+                                    <p className="font-black text-sm text-slate-800 dark:text-white">All caught up!</p>
+                                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No new notifications right now.</p>
                                 </div>
                             ) : (
                                 <ul className="p-3 space-y-2">
@@ -296,14 +296,14 @@ export default function AdminNavbar() {
                                                 onClick={() => handleNotificationClick(item, idx)}
                                                 className={`group relative p-3 rounded-2xl border transition-all duration-150 cursor-pointer ${
                                                     isUnread
-                                                        ? 'bg-[#075C2A]/06 dark:bg-[#075C2A]/12 border-[#075C2A]/20 dark:border-[#075C2A]/30 hover:bg-[#075C2A]/10 dark:hover:bg-[#075C2A]/20'
-                                                        : 'bg-white dark:bg-gray-800/50 border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                        ? 'bg-blue-50/60 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-900/40 hover:bg-blue-50 dark:hover:bg-blue-950/50'
+                                                        : 'bg-white dark:bg-slate-800/50 border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800'
                                                 }`}
                                             >
                                                 <div className="flex items-start gap-2.5">
                                                     {/* Status Dot */}
                                                     <div className="mt-[5px] shrink-0">
-                                                        <span className={`block w-2 h-2 rounded-full ${isUnread ? 'bg-[#075C2A]' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                                                        <span className={`block w-2 h-2 rounded-full ${isUnread ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`} />
                                                     </div>
 
                                                     {/* Content */}

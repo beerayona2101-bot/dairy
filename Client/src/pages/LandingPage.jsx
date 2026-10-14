@@ -10,7 +10,6 @@ import { PageContentContext } from "../context/PageContentProvider";
 import company from "../data/company.json";
 import MadhuLoader from "../components/MadhuLoader";
 import { MilkHealthBenefitsHero, DairyPromiseCardsSection } from "../components/HomeComponents/MilkHealthBenefitsSection";
-import ProductShowcase3D from "../components/HomeComponents/ProductShowcase3D";
 import ProductCategoriesSection from "../components/HomeComponents/ProductCategoriesSection";
 import ScrollReveal from "../components/Common/ScrollReveal";
 
@@ -36,9 +35,6 @@ export default function LandingPage() {
 
     return (
         <>
-            {/* Interactive 3D Product Showcase Card Section */}
-            <ProductShowcase3D />
-
             {/* Discover Our Delicious Dairy Range Carousel Section */}
             <ScrollReveal yOffset={45} duration={0.85}>
                 <section className="px-4 py-8 sm:px-8 md:py-10 max-w-7xl mx-auto my-8 glass-panel rounded-[36px] bg-white/60 dark:bg-slate-900/65 backdrop-blur-2xl border border-white/80 dark:border-white/15 shadow-xl">

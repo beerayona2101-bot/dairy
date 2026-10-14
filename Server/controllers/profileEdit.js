@@ -12,30 +12,87 @@ const findUserOrAdmin = async (userId) => {
   return doc;
 };
 
+import { normalizeEmail, normalizeMobile, isValidMobile, isValidEmail } from "../utils/authHelpers.js";
+
 export const editProfile = async (req, res) => {
-  const { editData, userId } = req.body;
+  try {
+    const { editData, userId } = req.body;
 
-  if (!userId || !editData) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Missing required data" });
+    if (!userId || !editData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required data" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid user ID" });
+    }
+
+    // Check unique email if email is being updated
+    if (editData.email) {
+      const cleanEmail = normalizeEmail(editData.email);
+      if (!isValidEmail(cleanEmail)) {
+        return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+      }
+      const existingEmail = await User.findOne({
+        email: new RegExp(`^${cleanEmail}$`, "i"),
+        _id: { $ne: userId },
+      });
+      if (existingEmail) {
+        return res.status(400).json({
+          success: false,
+          message: "An account with this email address already exists. Please sign in instead.",
+        });
+      }
+      editData.email = cleanEmail;
+    }
+
+    // Check unique mobile number if mobileNo is being updated
+    if (editData.mobileNo && String(editData.mobileNo).trim()) {
+      const cleanMobile = normalizeMobile(editData.mobileNo);
+      if (!isValidMobile(cleanMobile)) {
+        return res.status(400).json({ success: false, message: "Please enter a valid 10-digit mobile number." });
+      }
+      const existingMobile = await User.findOne({
+        mobileNo: cleanMobile,
+        _id: { $ne: userId },
+      });
+      if (existingMobile) {
+        return res.status(400).json({
+          success: false,
+          message: "An account with this mobile number already exists. Please use a unique mobile number.",
+        });
+      }
+      editData.mobileNo = cleanMobile;
+    } else if (editData.hasOwnProperty("mobileNo")) {
+      editData.mobileNo = undefined;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: editData },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      newUser: updatedUser,
+    });
+  } catch (err) {
+    console.error("editProfile error:", err);
+    if (err.code === 11000) {
+      if (err.keyPattern?.mobileNo || err.message?.includes("mobileNo")) {
+        return res.status(400).json({ success: false, message: "An account with this mobile number already exists." });
+      }
+      return res.status(400).json({ success: false, message: "An account with this email address already exists." });
+    }
+    return res.status(500).json({ success: false, message: "Failed to update profile." });
   }
-
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    { $set: editData },
-    { new: true }
-  );
-
-  if (!updatedUser) {
-    return res.status(404).json({ success: false, message: "User not found" });
-  }
-
-  res.status(200).json({
-    success: true,
-    message: "Profile updated successfully",
-    newUser: updatedUser,
-  });
 };
 
 export const getAddresses = async (req, res) => {

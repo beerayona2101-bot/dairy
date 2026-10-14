@@ -1,9 +1,16 @@
 class ApiConfig {
+  // Environment mode toggle:
+  // Set to true to connect to production server on any remote host/domain
+  // Set to false to run only against local server (Wi-Fi LAN, emulator, localhost)
+  static const bool isProduction = false;
+  static const String productionServerUrl = 'http://192.168.1.39:9000';
+
   // Host machine local Wi-Fi IP
   static const String lanIp = '192.168.1.39';
 
   // Supported candidate servers (Wi-Fi LAN, Android Emulator, USB ADB bridge, Localhost)
   static final List<String> candidateServers = [
+    if (isProduction) productionServerUrl,
     'http://$lanIp:9000',
     'http://10.0.2.2:9000',
     'http://127.0.0.1:9000',

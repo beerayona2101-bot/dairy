@@ -8,6 +8,7 @@ import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
 import 'screens/mobile_web_view_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/splash_screen.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -47,7 +48,7 @@ class NaturalMilkDairyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
-        home: const AppStartupGate(),
+        home: const SplashScreen(),
       ),
     );
   }

@@ -174,64 +174,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
 
-                    // Step Badge + Skip Button
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: currentAccent.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: currentAccent.withValues(alpha: 0.35),
-                              width: 1,
+                    // Skip Button on Right
+                    if (_currentPage < _slides.length - 1)
+                      TextButton(
+                        onPressed: () {
+                          _pageController.animateToPage(
+                            _slides.length - 1,
+                            duration: const Duration(milliseconds: 320),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: isDark
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.white,
+                          elevation: isDark ? 0 : 1,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color: isDark ? Colors.white12 : Colors.grey.shade200,
                             ),
                           ),
-                          child: Text(
-                            '${_currentPage + 1} of ${_slides.length}',
-                            style: GoogleFonts.outfit(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: currentAccent,
-                            ),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        ),
+                        child: Text(
+                          'Skip',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.grey.shade300 : const Color(0xFF64748B),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        if (_currentPage < _slides.length - 1)
-                          TextButton(
-                            onPressed: () {
-                              _pageController.animateToPage(
-                                _slides.length - 1,
-                                duration: const Duration(milliseconds: 320),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: isDark
-                                  ? Colors.white.withValues(alpha: 0.08)
-                                  : Colors.white,
-                              elevation: isDark ? 0 : 1,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                side: BorderSide(
-                                  color: isDark ? Colors.white12 : Colors.grey.shade200,
-                                ),
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                            ),
-                            child: Text(
-                              'Skip',
-                              style: GoogleFonts.outfit(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w700,
-                                color: isDark ? Colors.grey.shade300 : const Color(0xFF64748B),
-                              ),
-                            ),
-                          )
-                        else
-                          const SizedBox(width: 32),
-                      ],
-                    ),
+                      )
+                    else
+                      const SizedBox(width: 48),
                   ],
                 ),
               ),
@@ -256,46 +232,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       final availableHeight = constraints.maxHeight;
                       final isCompact = availableHeight < 580;
                       final double imageHeight = isCompact
-                          ? 145.0
-                          : (availableHeight * 0.28).clamp(150.0, 192.0);
+                          ? 155.0
+                          : (availableHeight * 0.30).clamp(165.0, 205.0);
 
                       return SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 4.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                            borderRadius: BorderRadius.circular(26),
-                            border: Border.all(
-                              color: isDark
-                                  ? slideColor.withValues(alpha: 0.3)
-                                  : slideColor.withValues(alpha: 0.22),
-                              width: 1.5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: slideColor.withValues(alpha: 0.14),
-                                blurRadius: 24,
-                                offset: const Offset(0, 8),
-                              ),
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.04),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.all(isCompact ? 13.0 : 16.0),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: availableHeight - 8),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Hero Image Container with Rounded Corners & Floating Glass Badges
-                              Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    height: imageHeight,
+                              // Clean Hero Image Container with Rounded Corners & Subtle Shadow
+                              Container(
+                                width: double.infinity,
+                                height: imageHeight,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
@@ -326,107 +278,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ),
                               ),
 
-                              // Gradient Shade at Bottom of Image
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                height: 60,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.only(
-                                      bottomLeft: Radius.circular(20),
-                                      bottomRight: Radius.circular(20),
-                                    ),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.transparent,
-                                        Colors.black.withValues(alpha: 0.65),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              // Category / Feature Badge (Top Left)
-                              Positioned(
-                                top: 12,
-                                left: 12,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.72),
-                                    borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.25),
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.2),
-                                        blurRadius: 6,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        slide['badgeIcon'] as String,
-                                        style: const TextStyle(fontSize: 11),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        slide['badgeText'] as String,
-                                        style: GoogleFonts.outfit(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.white,
-                                          letterSpacing: 0.6,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-                              // Metric Pill Badge (Bottom Right)
-                              Positioned(
-                                bottom: 10,
-                                right: 10,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: slideColor.withValues(alpha: 0.95),
-                                    borderRadius: BorderRadius.circular(14),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.25),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    slide['metric'] as String,
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      letterSpacing: 0.3,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
                           const SizedBox(height: 16),
 
                           // Category Subhead
                           Text(
                             slide['category'] as String,
+                            textAlign: TextAlign.center,
                             style: GoogleFonts.outfit(
                               fontSize: 11,
                               fontWeight: FontWeight.w900,
@@ -434,11 +291,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               letterSpacing: 1.2,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 3),
 
                           // Card Header Title
                           Text(
                             slide['title'] as String,
+                            textAlign: TextAlign.center,
                             style: GoogleFonts.outfit(
                               fontSize: 21,
                               fontWeight: FontWeight.w900,
@@ -448,11 +306,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           ),
 
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 6),
 
                           // Card Subtitle
                           Text(
                             slide['subtitle'] as String,
+                            textAlign: TextAlign.center,
                             style: GoogleFonts.outfit(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w400,

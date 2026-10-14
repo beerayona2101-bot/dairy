@@ -88,7 +88,6 @@ const OrderSchema = new Schema(
 OrderSchema.index({ user: 1, createdAt: -1 });
 OrderSchema.index({ status: 1, createdAt: -1 });
 OrderSchema.index({ createdAt: -1 });
-OrderSchema.index({ orderId: 1 });
 
 OrderSchema.pre("save", async function (next) {
   if (!this.orderId) {

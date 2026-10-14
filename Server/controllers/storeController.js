@@ -3,6 +3,7 @@ import User from "../models/UserSchema.js";
 import Order from "../models/OrderSchema.js";
 import bcryptjs from "bcryptjs";
 import { notifyNewUserRegistration } from "../socket/helper.js";
+import { normalizeEmail, normalizeMobile, isValidMobile, isValidEmail } from "../utils/authHelpers.js";
 
 // READ: Get all customers with accurate aggregated order counts
 export const getAllStores = async (req, res) => {
@@ -59,82 +60,159 @@ export const getAllStores = async (req, res) => {
 
 // CREATE: Admin Add Customer
 export const createCustomer = async (req, res) => {
-  const { firstName, lastName, email, mobileNo, gender, password } = req.body;
-
-  if (!email || !firstName) {
-    return res.status(400).json({ success: false, message: "First Name and Email are required." });
-  }
-
-  const cleanEmail = email.trim().toLowerCase();
-  const existing = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
-  if (existing) {
-    return res.status(400).json({ success: false, message: "A customer account with this email already exists." });
-  }
-
-  const effectivePassword = (password && password.trim())
-    ? password.trim()
-    : `MADHU@${Math.floor(1000 + Math.random() * 9000)}`;
-
-  const hashedPassword = await bcryptjs.hash(effectivePassword, 10);
-  const photo = gender === "Female"
-    ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcQ6xalcUqiwlcrMkGuc7NJW6txojdE57QMw&s"
-    : "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
-
-  const newUser = new User({
-    firstName: firstName.trim(),
-    lastName: (lastName || "").trim(),
-    username: `${firstName.trim()}_${Math.floor(100 + Math.random() * 900)}`,
-    email: cleanEmail,
-    mobileNo: (mobileNo || "").trim(),
-    gender: gender || "Male",
-    password: hashedPassword,
-    photo,
-  });
-
-  const savedUser = await newUser.save();
-  console.log("✅ [ADMIN_CREATE_USER] Saved user ID: %s, Email: %s", savedUser._id, savedUser.email);
-
-  // Trigger registration notifications for User & Admin
   try {
-    await notifyNewUserRegistration(savedUser, req.app.get("io"), { createdByAdmin: true });
-  } catch (notifErr) {
-    console.warn("Admin create customer notification notice:", notifErr?.message);
+    const { firstName, lastName, email, mobileNo, gender, password } = req.body;
+
+    if (!email || !firstName) {
+      return res.status(400).json({ success: false, message: "First Name and Email are required." });
+    }
+
+    const cleanEmail = normalizeEmail(email);
+    if (!isValidEmail(cleanEmail)) {
+      return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+    }
+
+    const existing = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
+    if (existing) {
+      return res.status(400).json({ success: false, message: "A customer account with this email already exists." });
+    }
+
+    let cleanMobile = undefined;
+    if (mobileNo && String(mobileNo).trim()) {
+      cleanMobile = normalizeMobile(mobileNo);
+      if (!isValidMobile(cleanMobile)) {
+        return res.status(400).json({ success: false, message: "Please enter a valid 10-digit mobile number." });
+      }
+      const existingPhone = await User.findOne({ mobileNo: cleanMobile });
+      if (existingPhone) {
+        return res.status(400).json({ success: false, message: "A customer account with this mobile number already exists." });
+      }
+    }
+
+    const effectivePassword = (password && password.trim())
+      ? password.trim()
+      : `Natural@${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const hashedPassword = await bcryptjs.hash(effectivePassword, 10);
+    const photo = gender === "Female"
+      ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcQ6xalcUqiwlcrMkGuc7NJW6txojdE57QMw&s"
+      : "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
+
+    const newUser = new User({
+      firstName: firstName.trim(),
+      lastName: (lastName || "").trim(),
+      username: `${firstName.trim().toLowerCase().replace(/\s+/g, "_")}_${Math.floor(100 + Math.random() * 900)}`,
+      email: cleanEmail,
+      mobileNo: cleanMobile,
+      gender: gender || "Male",
+      password: hashedPassword,
+      photo,
+    });
+
+    const savedUser = await newUser.save();
+    console.log("✅ [ADMIN_CREATE_USER] Saved user ID: %s, Email: %s", savedUser._id, savedUser.email);
+
+    // Trigger registration notifications for User & Admin
+    try {
+      await notifyNewUserRegistration(savedUser, req.app.get("io"), { createdByAdmin: true });
+    } catch (notifErr) {
+      console.warn("Admin create customer notification notice:", notifErr?.message);
+    }
+
+    const customerObject = savedUser.toObject ? savedUser.toObject() : { ...savedUser };
+    delete customerObject.password;
+
+    return res.status(201).json({
+      success: true,
+      message: "Customer created successfully.",
+      customer: customerObject,
+    });
+  } catch (err) {
+    console.error("createCustomer error:", err);
+    if (err.code === 11000) {
+      if (err.keyPattern?.mobileNo || err.message?.includes("mobileNo")) {
+        return res.status(400).json({ success: false, message: "A customer account with this mobile number already exists." });
+      }
+      return res.status(400).json({ success: false, message: "A customer account with this email already exists." });
+    }
+    return res.status(500).json({ success: false, message: "Failed to create customer." });
   }
-
-  const customerObject = savedUser.toObject ? savedUser.toObject() : { ...savedUser };
-  delete customerObject.password;
-
-  return res.status(201).json({
-    success: true,
-    message: "User created successfully.",
-    customer: customerObject,
-  });
 };
 
 // UPDATE: Admin Update Customer
 export const updateCustomer = async (req, res) => {
-  const { userId } = req.params;
-  const { firstName, lastName, email, mobileNo } = req.body;
+  try {
+    const { userId } = req.params;
+    const { firstName, lastName, email, mobileNo } = req.body;
 
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ success: false, message: "Invalid customer ID." });
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid customer ID." });
+    }
+
+    const updateFields = {};
+    if (firstName) updateFields.firstName = firstName.trim();
+    if (lastName !== undefined) updateFields.lastName = (lastName || "").trim();
+
+    if (email) {
+      const cleanEmail = normalizeEmail(email);
+      if (!isValidEmail(cleanEmail)) {
+        return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+      }
+      const existingEmail = await User.findOne({
+        email: new RegExp(`^${cleanEmail}$`, "i"),
+        _id: { $ne: userId },
+      });
+      if (existingEmail) {
+        return res.status(400).json({ success: false, message: "A customer account with this email already exists." });
+      }
+      updateFields.email = cleanEmail;
+    }
+
+    if (mobileNo !== undefined) {
+      const rawMobile = String(mobileNo || "").trim();
+      if (rawMobile) {
+        const cleanMobile = normalizeMobile(rawMobile);
+        if (!isValidMobile(cleanMobile)) {
+          return res.status(400).json({ success: false, message: "Please enter a valid 10-digit mobile number." });
+        }
+        const existingPhone = await User.findOne({
+          mobileNo: cleanMobile,
+          _id: { $ne: userId },
+        });
+        if (existingPhone) {
+          return res.status(400).json({ success: false, message: "A customer account with this mobile number already exists." });
+        }
+        updateFields.mobileNo = cleanMobile;
+      } else {
+        updateFields.mobileNo = undefined;
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "Customer not found." });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Customer updated successfully.",
+      customer: updatedUser,
+    });
+  } catch (err) {
+    console.error("updateCustomer error:", err);
+    if (err.code === 11000) {
+      if (err.keyPattern?.mobileNo || err.message?.includes("mobileNo")) {
+        return res.status(400).json({ success: false, message: "A customer account with this mobile number already exists." });
+      }
+      return res.status(400).json({ success: false, message: "A customer account with this email already exists." });
+    }
+    return res.status(500).json({ success: false, message: "Failed to update customer." });
   }
-
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    { firstName, lastName, email, mobileNo },
-    { new: true }
-  );
-
-  if (!updatedUser) {
-    return res.status(404).json({ success: false, message: "Customer not found." });
-  }
-
-  return res.status(200).json({
-    success: true,
-    message: "Customer updated successfully.",
-    customer: updatedUser,
-  });
 };
 
 // DELETE: Admin Delete Customer

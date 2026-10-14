@@ -8,6 +8,7 @@ import { OAuth2Client } from "google-auth-library";
 import { sendOtpEmail } from "../../config/nodemailer.js";
 import { sendSMS } from "../../config/fast2sms.js";
 import { addNotification, notifyNewUserRegistration } from "../../socket/helper.js";
+import { normalizeEmail, normalizeMobile, isValidMobile, isValidEmail } from "../../utils/authHelpers.js";
 
 const googleClientId = (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "dummy_google_client_id")
   ? process.env.GOOGLE_CLIENT_ID
@@ -16,60 +17,96 @@ const googleClientId = (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIEN
 const client = new OAuth2Client(googleClientId);
 
 export const signUpUser = async (req, res) => {
-  const { email, password, confirmPassword } = req.body;
-
-  if (!email || !password || !confirmPassword) {
-    return res
-      .status(400)
-      .json({ success: false, message: "All fields are required" });
-  }
-
-  if (password !== confirmPassword) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Password doesn't match" });
-  }
-
-  const isPasswordValidated = /^(?=.*\d).{8,}$/.test(password);
-
-  if (!isPasswordValidated) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Password format doesn't match." });
-  }
-
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return res
-      .status(400)
-      .json({ success: false, message: "User already exists" });
-  }
-
-  const hashedPass = await bcryptjs.hash(password, 10);
-
-  const newUser = new User({
-    email: email.trim().toLowerCase(),
-    password: hashedPass,
-  });
-
-  await newUser.save();
-
-  // Trigger registration notifications for User & Admin
   try {
-    await notifyNewUserRegistration(newUser, req.app.get("io"));
-  } catch (notifErr) {
-    console.warn("New user registration notification notice:", notifErr?.message);
-  }
+    const { email, password, confirmPassword, mobileNo } = req.body;
 
-  res.status(201).json({
-    success: true,
-    message: "Account Created Successfully!",
-    user: {
-      _id: newUser._id,
-      email: newUser.email,
-      notifications: newUser.notifications || [],
-    },
-  });
+    if (!email || !password || !confirmPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+
+    const cleanEmail = normalizeEmail(email);
+    if (!isValidEmail(cleanEmail)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please enter a valid email address." });
+    }
+
+    if (password !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Passwords do not match." });
+    }
+
+    const isPasswordValidated = /^(?=.*\d).{8,}$/.test(password);
+
+    if (!isPasswordValidated) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Password must be at least 8 characters long and contain at least 1 number." });
+    }
+
+    // Check unique email
+    const existingUser = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "An account with this email address already exists. Please sign in instead." });
+    }
+
+    // Check unique mobile number if provided
+    let cleanMobile = undefined;
+    if (mobileNo && String(mobileNo).trim()) {
+      cleanMobile = normalizeMobile(mobileNo);
+      if (cleanMobile) {
+        if (!isValidMobile(cleanMobile)) {
+          return res.status(400).json({ success: false, message: "Please enter a valid 10-digit mobile number." });
+        }
+        const existingPhone = await User.findOne({ mobileNo: cleanMobile });
+        if (existingPhone) {
+          return res.status(400).json({ success: false, message: "An account with this mobile number already exists." });
+        }
+      }
+    }
+
+    const hashedPass = await bcryptjs.hash(password, 10);
+
+    const newUser = new User({
+      email: cleanEmail,
+      password: hashedPass,
+      ...(cleanMobile ? { mobileNo: cleanMobile } : {}),
+    });
+
+    await newUser.save();
+
+    // Trigger registration notifications for User & Admin
+    try {
+      await notifyNewUserRegistration(newUser, req.app.get("io"));
+    } catch (notifErr) {
+      console.warn("New user registration notification notice:", notifErr?.message);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Account Created Successfully!",
+      user: {
+        _id: newUser._id,
+        email: newUser.email,
+        mobileNo: newUser.mobileNo,
+        notifications: newUser.notifications || [],
+      },
+    });
+  } catch (err) {
+    console.error("Sign up user error:", err);
+    if (err.code === 11000) {
+      if (err.keyPattern?.mobileNo || err.message?.includes("mobileNo")) {
+        return res.status(400).json({ success: false, message: "An account with this mobile number already exists." });
+      }
+      return res.status(400).json({ success: false, message: "An account with this email address already exists. Please sign in instead." });
+    }
+    return res.status(500).json({ success: false, message: "Server error occurred during account creation. Please try again." });
+  }
 };
 
 export const sendOtpController = async (req, res) => {
@@ -105,28 +142,36 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({
         success: false,
         statusCode: 400,
-        message: "400 Error: Invalid input. Please enter both email and password.",
+        message: "400 Error: Invalid input. Please enter both email/mobile and password.",
       });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanPassword = password.trim();
+    const rawInput = String(email).trim();
+    const cleanPassword = String(password).trim();
+    const cleanEmail = normalizeEmail(rawInput);
+    const cleanMobile = normalizeMobile(rawInput);
+    const isMobileInput = cleanMobile && cleanMobile.length === 10;
 
     // 1. Check if login credentials belong to an Admin account
     let admin = null;
     try {
-      admin = await Admin.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
+      const adminQueries = [];
+      if (cleanEmail) adminQueries.push({ email: new RegExp(`^${cleanEmail}$`, "i") });
+      if (isMobileInput) adminQueries.push({ mobileNo: cleanMobile });
+      if (adminQueries.length > 0) {
+        admin = await Admin.findOne({ $or: adminQueries });
+      }
     } catch (dbErr) {
       console.warn("Admin lookup warning:", dbErr.message);
     }
 
-    if (!admin && (cleanEmail === "admin@MADHUdairy.com" || cleanEmail.startsWith("admin"))) {
+    if (!admin && (cleanEmail === "admin@madhudairy.com" || cleanEmail.startsWith("admin"))) {
       try {
         const defaultHashedPassword = await bcryptjs.hash("Admin@12345", 10);
         admin = await Admin.create({
-          name: "MADHU Admin",
-          username: "admin_MADHU",
-          email: cleanEmail === "admin@MADHUdairy.com" ? "admin@MADHUdairy.com" : cleanEmail,
+          name: "Natural Admin",
+          username: "admin_natural",
+          email: cleanEmail === "admin@madhudairy.com" ? "admin@naturalmilkdairy.com" : cleanEmail,
           password: defaultHashedPassword,
           mobileNo: "9876543210",
           factoryAddress: {
@@ -168,7 +213,15 @@ export const loginUser = async (req, res) => {
       }
     }
 
-    let user = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
+    // 2. User lookup by email OR mobile number
+    const userQueries = [];
+    if (cleanEmail) userQueries.push({ email: new RegExp(`^${cleanEmail}$`, "i") });
+    if (isMobileInput) userQueries.push({ mobileNo: cleanMobile });
+
+    let user = null;
+    if (userQueries.length > 0) {
+      user = await User.findOne({ $or: userQueries });
+    }
 
     if (!user) {
       return res.status(404).json({
@@ -385,86 +438,180 @@ export const verifyUser = async (req, res) => {
 };
 
 export const verifyOtp = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Email and password are required." });
-  }
-
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return res.status(400).json({ success: false, message: "User already exists with this email." });
-  }
-
-  const hashedPass = await bcryptjs.hash(password, 10);
-
-  const newUser = new User({
-    email,
-    password: hashedPass,
-  });
-
-  await newUser.save();
-
-  // Trigger registration notifications for User & Admin
   try {
-    await notifyNewUserRegistration(newUser, req.app.get("io"));
-  } catch (notifErr) {
-    console.warn("OTP signup registration notification notice:", notifErr?.message);
+    const { email, password, mobileNo } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required." });
+    }
+
+    const cleanEmail = normalizeEmail(email);
+    if (!isValidEmail(cleanEmail)) {
+      return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+    }
+
+    const existingUser = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "An account with this email address already exists. Please sign in instead.",
+      });
+    }
+
+    let cleanMobile = undefined;
+    if (mobileNo && String(mobileNo).trim()) {
+      cleanMobile = normalizeMobile(mobileNo);
+      if (cleanMobile) {
+        if (!isValidMobile(cleanMobile)) {
+          return res.status(400).json({ success: false, message: "Please enter a valid 10-digit mobile number." });
+        }
+        const existingPhone = await User.findOne({ mobileNo: cleanMobile });
+        if (existingPhone) {
+          return res.status(400).json({ success: false, message: "An account with this mobile number already exists." });
+        }
+      }
+    }
+
+    const hashedPass = await bcryptjs.hash(password, 10);
+
+    const newUser = new User({
+      email: cleanEmail,
+      password: hashedPass,
+      ...(cleanMobile ? { mobileNo: cleanMobile } : {}),
+    });
+
+    await newUser.save();
+
+    // Trigger registration notifications for User & Admin
+    try {
+      await notifyNewUserRegistration(newUser, req.app.get("io"));
+    } catch (notifErr) {
+      console.warn("OTP signup registration notification notice:", notifErr?.message);
+    }
+
+    const userToken = jwt.sign(
+      { id: newUser._id, role: "user", email: newUser.email },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(201).json({
+      message: "Account Created Successfully!",
+      success: true,
+      userToken,
+      user: {
+        _id: newUser._id,
+        email: newUser.email,
+        mobileNo: newUser.mobileNo,
+        notifications: newUser.notifications || [],
+      },
+    });
+  } catch (err) {
+    console.error("verifyOtp error:", err);
+    if (err.code === 11000) {
+      if (err.keyPattern?.mobileNo || err.message?.includes("mobileNo")) {
+        return res.status(400).json({ success: false, message: "An account with this mobile number already exists." });
+      }
+      return res.status(400).json({ success: false, message: "An account with this email address already exists. Please sign in instead." });
+    }
+    return res.status(500).json({ success: false, message: "Server error during account verification. Please try again." });
   }
-
-  const userToken = jwt.sign(
-    { id: newUser._id, role: "user", email: newUser.email },
-    JWT_SECRET,
-    { expiresIn: "1d" }
-  );
-
-  res.status(201).json({
-    message: "Account Created Successfully!",
-    success: true,
-    userToken,
-    user: {
-      _id: newUser._id,
-      email: newUser.email,
-      notifications: newUser.notifications || [],
-    },
-  });
 };
 
 export const handleInfoInput = async (req, res) => {
-  const { id } = req.body;
+  try {
+    const { id } = req.body;
 
-  const profileInfo = JSON.parse(req?.body?.profileInfo);
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Valid user ID is required." });
+    }
 
-  const photoUrl = req?.file?.url || req?.file?.path;
+    const profileInfo = JSON.parse(req?.body?.profileInfo || "{}");
 
-  let photo;
-  if (photoUrl) {
-    photo = photoUrl;
-  } else if (profileInfo?.gender === "Male") {
-    photo =
-      "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
-  } else if (profileInfo?.gender === "Female") {
-    photo =
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcQ6xalcUqiwlcrMkGuc7NJW6txojdE57QMw&s";
-  } else {
-    photo =
-      "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQAlAMBIgACEQEDEQH/xAAaAAEAAwEBAQAAAAAAAAAAAAAAAgMEAQUH/8QALRABAAICAAMHAwQDAQAAAAAAAAECAxEEITESFUFRU2GRE3GBMjNS0QVCoSL/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+4gAAAAAAjNojrMAkITlr5ufVr5/8BYIRkrPSYTjmAAAAAAAAAAAAArvlrXpzn2QyZd8q9PNUCdslreOkAAAAdiZjpMw4AtrmncRaPyui0W6MjtbTWdwDWIY7xaPfxTAAAAAAAUZr7nsx08U8tuzXXjLOAAACGfLXDTtW/EeYJuvIy8TlyzO7ajyhCt70ndbWj7SD2Ri4XjJtMUzTuZ6WbQAAdidTuGmlotXfiyp47dm2waQAAAARvOqzIKMk7vKAAAAPN/yF5tnmvhWI09J5nH0mvETaelogGcAB6/DX+pgpaeunkPX4ak04elZ662CwAAAGnFO6c+sJqME6mYXgAAIZp/8SmrzfokGcAAABVxGGM2Psz1jnE+S0mYiNzMa9wePlw5MVtXrP3johETL17cRgjlbJX7RO0a8Tw8dLxH4Bm4XhJm0Xyxqsc4rPi3o1yY7/ovWftKQAAAAJ4v3IaWbF+5DSAAAhljdJTAYx20amY8pcABi/wAhm1H0q9Z52/oHeI43szNcOpn+UsV8l8k7taZn3lEAAA91+HisuPUTPar5WUAPXwZqZqbrPOOsT4LHjYsk4rxanWPB7FLxekWr0mAdABZhjd/s0KsEctrQAAAAUZ684mFTXaO1GmW0dmdSDjyeLmZ4nJ93rMuXgoyZLX7cx2p3rQPOG7u+vqT8Hd9fUn4BhG7u+vqT8Hd9fUn4BhG7u+vqT8Hd9fUn4BhenwE74aPaZVd319SfhpwYvo4+xFt8970Cx2I3OnF2Gn+0/gFtY7NYh0AAAAAEMlItHv5pgMkxMTqXGq9ItHPr5qL0mv8AYIAAAAAADsRvotpi8bfAI48e+c9GgAAAAAAAAAAAQtirPtKucM+ErwGacV/I+nf+LSAzxitPhpOuGPGVoDlaxXpDoAAAAAAAAAAAAAAAAAAAAAAAAAAA/9k=";
+    // Check email uniqueness if email provided
+    if (profileInfo.email) {
+      const cleanEmail = normalizeEmail(profileInfo.email);
+      if (!isValidEmail(cleanEmail)) {
+        return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+      }
+      const existingEmail = await User.findOne({
+        email: new RegExp(`^${cleanEmail}$`, "i"),
+        _id: { $ne: id },
+      });
+      if (existingEmail) {
+        return res.status(400).json({
+          success: false,
+          message: "An account with this email address already exists. Please sign in instead.",
+        });
+      }
+      profileInfo.email = cleanEmail;
+    }
+
+    // Check unique mobile number
+    if (profileInfo.mobileNo && String(profileInfo.mobileNo).trim()) {
+      const cleanMobile = normalizeMobile(profileInfo.mobileNo);
+      if (!isValidMobile(cleanMobile)) {
+        return res.status(400).json({ success: false, message: "Please enter a valid 10-digit mobile number." });
+      }
+      const existingPhone = await User.findOne({
+        mobileNo: cleanMobile,
+        _id: { $ne: id },
+      });
+      if (existingPhone) {
+        return res.status(400).json({
+          success: false,
+          message: "An account with this mobile number already exists. Please use a unique mobile number.",
+        });
+      }
+      profileInfo.mobileNo = cleanMobile;
+    } else {
+      delete profileInfo.mobileNo;
+    }
+
+    const photoUrl = req?.file?.url || req?.file?.path;
+
+    let photo;
+    if (photoUrl) {
+      photo = photoUrl;
+    } else if (profileInfo?.gender === "Male") {
+      photo =
+        "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
+    } else if (profileInfo?.gender === "Female") {
+      photo =
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcQ6xalcUqiwlcrMkGuc7NJW6txojdE57QMw&s";
+    } else {
+      photo =
+        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQAlAMBIgACEQEDEQH/xAAaAAEAAwEBAQAAAAAAAAAAAAAAAgMEAQUH/8QALRABAAICAAMHAwQDAQAAAAAAAAECAxEEITESFUFRU2GRE3GBMjNS0QVCoSL/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+4gAAAAAAjNojrMAkITlr5ufVr5/8BYIRkrPSYTjmAAAAAAAAAAAAArvlrXpzn2QyZd8q9PNUCdslreOkAAAAdiZjpMw4AtrmncRaPyui0W6MjtbTWdwDWIY7xaPfxTAAAAAAAUZr7nsx08U8tuzXXjLOAAACGfLXDTtW/EeYJuvIy8TlyzO7ajyhCt70ndbWj7SD2Ri4XjJtMUzTuZ6WbQAAdidTuGmlotXfiyp47dm2waQAAAARvOqzIKMk7vKAAAAPN/yF5tnmvhWI09J5nH0mvETaelogGcAB6/DX+pgpaeunkPX4ak04elZ662CwAAAGnFO6c+sJqME6mYXgAAIZp/8SmrzfokGcAAABVxGGM2Psz1jnE+S0mYiNzMa9wePlw5MVtXrP3johETL17cRgjlbJX7RO0a8Tw8dLxH4Bm4XhJm0Xyxqsc4rPi3o1yY7/ovWftKQAAAAJ4v3IaWbF+5DSAAAhljdJTAYx20amY8pcABi/wAhm1H0q9Z52/oHeI43szNcOpn+UsV8l8k7taZn3lEAAA91+HisuPUTPar5WUAPXwZqZqbrPOOsT4LHjYsk4rxanWPB7FLxekWr0mAdABZhjd/s0KsEctrQAAAAUZ684mFTXaO1GmW0dmdSDjyeLmZ4nJ93rMuXgoyZLX7cx2p3rQPOG7u+vqT8Hd9fUn4BhG7u+vqT8Hd9fUn4BhG7u+vqT8Hd9fUn4BhenwE74aPaZVd319SfhpwYvo4+xFt8970Cx2I3OnF2Gn+0/gFtY7NYh0AAAAAEMlItHv5pgMkxMTqXGq9ItHPr5qL0mv8AYIAAAAAADsRvotpi8bfAI48e+c9GgAAAAAAAAAAAQtirPtKucM+ErwGacV/I+nf+LSAzxitPhpOuGPGVoDlaxXpDoAAAAAAAAAAAAAAAAAAAAAAAAAAA/9k=";
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        ...profileInfo,
+        photo: photo,
+      },
+      { new: true }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "User updated",
+      user: {
+        _id: updatedUser?._id,
+        email: updatedUser?.email,
+        mobileNo: updatedUser?.mobileNo,
+      },
+    });
+  } catch (err) {
+    console.error("handleInfoInput error:", err);
+    if (err.code === 11000) {
+      if (err.keyPattern?.mobileNo || err.message?.includes("mobileNo")) {
+        return res.status(400).json({ success: false, message: "An account with this mobile number already exists." });
+      }
+      return res.status(400).json({ success: false, message: "An account with this email address already exists." });
+    }
+    return res.status(500).json({ success: false, message: "Failed to update profile details." });
   }
-
-  const updatedUser = await User.findByIdAndUpdate(
-    id,
-    {
-      ...profileInfo,
-      photo: photo,
-    },
-    { new: true }
-  );
-
-  res.status(201).json({
-    success: true,
-    message: "User updated",
-    user: { _id: updatedUser?._id, email: updatedUser?.email },
-  });
 };
 
 export const getUser = async (req, res) => {

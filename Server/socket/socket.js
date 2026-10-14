@@ -114,12 +114,12 @@ export const broadcastOrderStatusUpdate = async (io, { orderId, status, userId }
   }
 };
 
-export const connectToSocket = (server) => {
+export const connectToSocket = (server, customCors) => {
   const userSocketMap = new Map();
   const adminSocketMap = new Map();
 
   const io = new Server(server, {
-    cors: {
+    cors: customCors || {
       origin: (origin, callback) => callback(null, true),
       methods: ["GET", "POST", "DELETE", "PUT"],
       credentials: true,

@@ -1,30 +1,55 @@
 import axios from "axios";
 import { getFriendlyErrorMessage } from "../utils/errorHelper";
 
-export const getBaseUrl = () => {
-  // 1. If VITE_API_URL is configured in environment, use it directly
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && typeof envUrl === "string" && envUrl.trim()) {
-    return envUrl.trim().replace(/\/+$/, "");
-  }
+export const isProductionMode = () => {
+  const envVal = import.meta.env.VITE_IS_PRODUCTION;
+  if (envVal === "true") return true;
+  if (envVal === "false") return false;
+  return Boolean(import.meta.env.PROD);
+};
 
-  // 2. In browser environments:
+export const getBaseUrl = () => {
+  const isProd = isProductionMode();
+
+  // In browser environments:
   if (typeof window !== "undefined" && window.location) {
-    const hostname = window.location.hostname;
-    // Local development (localhost, 127.0.0.1, or local WiFi network IP)
-    if (
-      hostname === "localhost" ||
-      hostname === "127.0.0.1" ||
-      hostname.startsWith("192.168.") ||
-      hostname.startsWith("10.")
-    ) {
-      const protocol = window.location.protocol === "https:" ? "https:" : "http:";
-      return `${protocol}//${hostname}:9000`;
+    const { hostname, protocol, origin } = window.location;
+
+    // 1. In Production Mode: Open / connect to application on ANY server or domain
+    if (isProd) {
+      const envUrl = import.meta.env.VITE_API_URL;
+      if (envUrl && typeof envUrl === "string" && envUrl.trim()) {
+        const trimmed = envUrl.trim().replace(/\/+$/, "");
+        const isEnvLocal = trimmed.includes("localhost") || trimmed.includes("127.0.0.1");
+        // If a non-local production URL is specified in .env, use it
+        if (!isEnvLocal) {
+          return trimmed;
+        }
+      }
+      // When deployed or accessed on any server IP/domain, use the active origin
+      return origin.replace(/\/+$/, "");
     }
 
-    // Cloud deployment (Vercel, Netlify, Render, or custom domain):
-    // Use the origin without appending :9000
-    return window.location.origin.replace(/\/+$/, "");
+    // 2. In Local Mode: Strictly connect to local backend server
+    const isLanIp =
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.") ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
+
+    if (isLanIp) {
+      const scheme = protocol === "https:" ? "https:" : "http:";
+      return `${scheme}//${hostname}:9000`;
+    }
+
+    return "http://localhost:9000";
+  }
+
+  // Non-browser fallback
+  if (isProd) {
+    const envUrl = import.meta.env.VITE_API_URL;
+    if (envUrl && typeof envUrl === "string" && envUrl.trim()) {
+      return envUrl.trim().replace(/\/+$/, "");
+    }
   }
 
   return "http://localhost:9000";

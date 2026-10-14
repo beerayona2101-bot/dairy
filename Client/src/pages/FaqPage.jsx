@@ -157,15 +157,7 @@ export default function FaqPage() {
                     <div className="md:hidden flex items-center justify-start mb-2">
                         <BackButton fallbackPath="/home" />
                     </div>
-
                     <div className="text-center space-y-3">
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/80 shadow-2xs">
-                            <HelpCircle className="w-3.5 h-3.5 text-[#0756B5] dark:text-blue-400" />
-                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#0756B5] dark:text-blue-400">
-                                Help & Support Center
-                            </span>
-                        </div>
-
                         <AnimatedHeading
                             blackText="Frequently Asked"
                             violetText="Questions"

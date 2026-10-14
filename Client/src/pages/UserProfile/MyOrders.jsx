@@ -334,13 +334,15 @@ export default function MyOrders() {
                   View Details <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#1E88E5] transition" />
                 </button>
 
-                <button
-                  type="button"
-                  onClick={(e) => handleOrderAgain(order, e)}
-                  className="text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 px-4.5 py-1.5 rounded-full transition cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
-                >
-                  <FaShoppingCart className="text-xs" /> Order Again
-                </button>
+                {order?.status?.toLowerCase() === "delivered" && (
+                  <button
+                    type="button"
+                    onClick={(e) => handleOrderAgain(order, e)}
+                    className="text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 px-4.5 py-1.5 rounded-full transition cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
+                  >
+                    <FaShoppingCart className="text-xs" /> Order Again
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -671,40 +673,53 @@ export default function MyOrders() {
           </div>
 
           {/* Bottom Action Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md sticky bottom-0 z-20 shrink-0 shadow-xs">
-            <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 w-full">
-              {(activeSelectedOrder?.status === "Pending" || activeSelectedOrder?.status === "Confirmed") && (
-                <button
-                  disabled={loading}
-                  onClick={() => {
-                    handleUserCancelOrder(activeSelectedOrder?._id);
-                    setSelectedOrder(null);
-                  }}
-                  className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-rose-50 text-rose-600 border border-rose-200/80 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60 dark:hover:bg-rose-900/60 transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap shadow-2xs"
-                >
-                  <FaTimesCircle className="text-sm shrink-0" /> Cancel Order
-                </button>
-              )}
+          {(() => {
+            const currentStatus = (activeSelectedOrder?.status || "").toLowerCase().trim();
+            const canCancel = ["pending", "confirmed"].includes(currentStatus);
+            const canMarkReceived = ["confirmed", "packed", "shipped", "ready to deliver", "processing", "out for delivery"].includes(currentStatus);
+            const isDelivered = currentStatus === "delivered";
 
-              {activeSelectedOrder?.status === "Confirmed" && (
-                <button
-                  disabled={loading}
-                  onClick={handleOrderReceived}
-                  className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm whitespace-nowrap"
-                >
-                  <FaCheckCircle className="text-sm shrink-0" /> Mark Received
-                </button>
-              )}
+            if (!canCancel && !canMarkReceived && !isDelivered) return null;
 
-              <button
-                type="button"
-                onClick={(e) => handleOrderAgain(activeSelectedOrder, e)}
-                className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 text-white transition cursor-pointer flex items-center justify-center gap-2 shadow-md active:scale-98 whitespace-nowrap"
-              >
-                <FaShoppingCart className="text-sm shrink-0" /> Order Again
-              </button>
-            </div>
-          </div>
+            return (
+              <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md sticky bottom-0 z-20 shrink-0 shadow-xs">
+                <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 w-full">
+                  {canCancel && (
+                    <button
+                      disabled={loading}
+                      onClick={() => {
+                        handleUserCancelOrder(activeSelectedOrder?._id);
+                        setSelectedOrder(null);
+                      }}
+                      className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-rose-50 text-rose-600 border border-rose-200/80 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/60 dark:hover:bg-rose-900/60 transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap shadow-2xs"
+                    >
+                      <FaTimesCircle className="text-sm shrink-0" /> Cancel Order
+                    </button>
+                  )}
+
+                  {canMarkReceived && (
+                    <button
+                      disabled={loading}
+                      onClick={handleOrderReceived}
+                      className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm whitespace-nowrap"
+                    >
+                      <FaCheckCircle className="text-sm shrink-0" /> Mark Received
+                    </button>
+                  )}
+
+                  {isDelivered && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleOrderAgain(activeSelectedOrder, e)}
+                      className="flex-1 py-3 px-3 text-xs sm:text-sm font-extrabold rounded-xl bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 text-white transition cursor-pointer flex items-center justify-center gap-2 shadow-md active:scale-98 whitespace-nowrap"
+                    >
+                      <FaShoppingCart className="text-sm shrink-0" /> Order Again
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
         )}
       </Dialog>

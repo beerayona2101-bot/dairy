@@ -34,8 +34,6 @@ import {
   ToggleRight,
   ChevronUp,
   ChevronDown,
-  Box,
-  Wand2,
 } from "lucide-react";
 import { convertToBase64 } from "../../utils/InventoryHelpers/imageBase64Converter";
 import homeHeroBgDefault from "../../assets/hero_carousel_slide_1.png";
@@ -76,7 +74,6 @@ export default function PageContentManager() {
 
   const [activeTab, setActiveTab] = useState("branding");
   const [saving, setSaving] = useState(false);
-  const [card3DExpanded, setCard3DExpanded] = useState(null);
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
 
   const [formData, setFormData] = useState({
@@ -128,16 +125,6 @@ export default function PageContentManager() {
     features: p.features || [],
   }));
 
-  const default3DCards = products.slice(0, 8).map((p, idx) => ({
-    title: p.title,
-    description: p.description || "Farm-fresh, pure & natural dairy product.",
-    pngImage: p.pngImage || p.image || "",
-    badge: idx === 0 ? "⭐ BESTSELLER" : idx === 1 ? "🔥 HOT PICK" : idx % 3 === 0 ? "🌟 TOP RATED" : "✨ FRESH DAILY",
-    price: p.price || 60,
-    discount: p.discount || 10,
-    enabled: true,
-    sortOrder: idx,
-  }));
 
   useEffect(() => {
     if (pageContent) {
@@ -169,9 +156,7 @@ export default function PageContentManager() {
         faqs: (pageContent.faqs && pageContent.faqs.length > 0)
           ? pageContent.faqs
           : defaultFaqs,
-        showcase3DCards: (pageContent.showcase3DCards && pageContent.showcase3DCards.length > 0)
-          ? pageContent.showcase3DCards
-          : default3DCards,
+        showcase3DCards: pageContent.showcase3DCards || [],
         aboutUs: pageContent.aboutUs || {
           badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
           title: "About Natural Milk Dairy",
@@ -365,82 +350,6 @@ export default function PageContentManager() {
     }));
   };
 
-  // --- 3D CARDS HANDLERS ---
-  const handle3DCardChange = (index, field, value) => {
-    setFormData((prev) => {
-      const updated = [...(prev.showcase3DCards || [])];
-      updated[index] = { ...updated[index], [field]: value };
-      return { ...prev, showcase3DCards: updated };
-    });
-  };
-
-  const handle3DCardImageUpload = async (index, file) => {
-    if (file) {
-      const base64 = await convertToBase64(file);
-      handle3DCardChange(index, "pngImage", base64);
-    }
-  };
-
-  const add3DCard = () => {
-    setFormData((prev) => ({
-      ...prev,
-      showcase3DCards: [
-        ...(prev.showcase3DCards || []),
-        {
-          title: "New Product",
-          description: "A fresh, pure dairy product delivered to your door.",
-          pngImage: "",
-          badge: "✨ FRESH DAILY",
-          price: 60,
-          discount: 10,
-          enabled: true,
-          sortOrder: (prev.showcase3DCards || []).length,
-        },
-      ],
-    }));
-  };
-
-  const remove3DCard = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      showcase3DCards: (prev.showcase3DCards || []).filter((_, i) => i !== index),
-    }));
-    if (card3DExpanded === index) setCard3DExpanded(null);
-  };
-
-  const toggle3DCardEnabled = (index) => {
-    handle3DCardChange(index, "enabled", !(formData.showcase3DCards?.[index]?.enabled ?? true));
-  };
-
-  const move3DCard = (index, direction) => {
-    setFormData((prev) => {
-      const cards = [...(prev.showcase3DCards || [])];
-      const targetIdx = index + direction;
-      if (targetIdx < 0 || targetIdx >= cards.length) return prev;
-      [cards[index], cards[targetIdx]] = [cards[targetIdx], cards[index]];
-      return { ...prev, showcase3DCards: cards.map((c, i) => ({ ...c, sortOrder: i })) };
-    });
-  };
-
-  const autoFill3DCard = (index) => {
-    const card = formData.showcase3DCards?.[index];
-    if (!card) return;
-    const match = products.find((p) => p.title?.toLowerCase() === card.title?.toLowerCase());
-    if (match) {
-      setFormData((prev) => {
-        const updated = [...(prev.showcase3DCards || [])];
-        updated[index] = {
-          ...updated[index],
-          description: match.description || updated[index].description,
-          pngImage: match.pngImage || match.image || updated[index].pngImage,
-        };
-        return { ...prev, showcase3DCards: updated };
-      });
-      enqueueSnackbar(`Auto-filled data for "${match.title}"!`, { variant: "success" });
-    } else {
-      enqueueSnackbar("No matching product found for auto-fill.", { variant: "info" });
-    }
-  };
 
   // --- SAVE CONTENT ---
   const handleSave = async () => {
@@ -535,26 +444,18 @@ export default function PageContentManager() {
           { id: "contact", label: "Contact Us Page", icon: <PhoneCall className="w-4 h-4" /> },
           { id: "goodness", label: "Why Choose Us Cards", icon: <Sparkles className="w-4 h-4" /> },
           { id: "faqs", label: "FAQs Management", icon: <HelpCircle className="w-4 h-4" /> },
-          { id: "3dcards", label: "3D Cards Manager", icon: <Box className="w-4 h-4" /> },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition cursor-pointer whitespace-nowrap ${
               activeTab === tab.id
-                ? tab.id === "3dcards"
-                  ? "bg-gradient-to-r from-[#075C2A] to-[#0756B5] text-white shadow-lg shadow-blue-500/30"
-                  : "bg-[#075C2A] text-white shadow-sm"
+                ? "bg-[#075C2A] text-white shadow-sm"
                 : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
             }`}
           >
             {tab.icon}
             <span>{tab.label}</span>
-            {tab.id === "3dcards" && (
-              <span className="bg-white/20 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                {(formData.showcase3DCards || []).filter(c => c.enabled !== false).length}
-              </span>
-            )}
           </button>
         ))}
       </div>
@@ -1227,431 +1128,6 @@ export default function PageContentManager() {
                 </div>
               </div>
             ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* TAB 6: 3D CARDS MANAGER */}
-      {activeTab === "3dcards" && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-          {/* Header Bar */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#075C2A] via-[#0756B5] to-[#043e86] p-5 shadow-xl">
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
-            <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Box className="w-5 h-5 text-white" />
-                  <h2 className="text-lg font-black text-white">3D Product Showcase Manager</h2>
-                </div>
-                <p className="text-emerald-100 text-xs font-medium">
-                  Control which products appear in the interactive 3D showcase on your homepage. Drag to reorder, toggle visibility, and set prices.
-                </p>
-                <div className="flex items-center gap-3 mt-3">
-                  <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
-                    <Eye className="w-3 h-3" /> {(formData.showcase3DCards || []).filter(c => c.enabled !== false).length} Active
-                  </span>
-                  <span className="inline-flex items-center gap-1 bg-white/10 text-emerald-100 text-[11px] font-medium px-2.5 py-1 rounded-full">
-                    <EyeOff className="w-3 h-3" /> {(formData.showcase3DCards || []).filter(c => c.enabled === false).length} Hidden
-                  </span>
-                  <span className="inline-flex items-center gap-1 bg-white/10 text-emerald-100 text-[11px] font-medium px-2.5 py-1 rounded-full">
-                    <Layers className="w-3 h-3" /> {(formData.showcase3DCards || []).length} Total
-                  </span>
-                </div>
-              </div>
-              <button
-                onClick={add3DCard}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#0756B5] font-bold text-sm shadow-lg hover:bg-[#F5E9D0] transition hover:scale-105 cursor-pointer shrink-0"
-              >
-                <Plus className="w-4 h-4" /> Add 3D Card
-              </button>
-            </div>
-          </div>
-
-          {/* Live Preview Strip */}
-          <div className="bg-gray-900 rounded-2xl p-4 border border-gray-700">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-              <Eye className="w-3.5 h-3.5 text-[#0756B5]" /> Live Preview — Active Cards in Showcase Order
-            </p>
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-              {(formData.showcase3DCards || []).filter(c => c.enabled !== false).length === 0 ? (
-                <div className="text-gray-500 text-xs font-medium py-6 w-full text-center">
-                  No active 3D cards. Enable some cards below.
-                </div>
-              ) : (
-                (formData.showcase3DCards || []).filter(c => c.enabled !== false).map((card, i) => (
-                  <div key={i} className="shrink-0 w-20 text-center">
-                    <div className="w-16 h-16 mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-950/60 to-blue-950/60 border border-emerald-700/40 flex items-center justify-center shadow-lg shadow-emerald-950/30">
-                      {card.pngImage ? (
-                        <img src={card.pngImage} alt={card.title} className="w-full h-full object-contain" />
-                      ) : (
-                        <Box className="w-7 h-7 text-emerald-400/60" />
-                      )}
-                    </div>
-                    <p className="text-[10px] text-gray-300 font-bold mt-1.5 truncate w-20">{card.title || "Untitled"}</p>
-                    <p className="text-[9px] text-emerald-400 font-medium">₹{card.price || 0}</p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Cards List */}
-          <div className="space-y-3">
-            {(formData.showcase3DCards || []).length === 0 ? (
-              <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-                <Box className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500 dark:text-gray-400 font-semibold text-sm">No 3D cards yet</p>
-                <p className="text-gray-400 dark:text-gray-500 text-xs mt-1 mb-4">Add cards to populate the homepage 3D showcase</p>
-                <button
-                  onClick={add3DCard}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#075C2A] text-white text-sm font-bold hover:bg-[#054593] transition cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" /> Add First Card
-                </button>
-              </div>
-            ) : (
-              (formData.showcase3DCards || []).map((card, idx) => (
-                <motion.div
-                  key={idx}
-                  layout
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-                    card.enabled === false
-                      ? "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60"
-                      : "border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-gray-800 shadow-sm"
-                  }`}
-                >
-                  {/* Card Header Row */}
-                  <div className="flex items-center gap-3 p-3">
-                    {/* Drag Handle / Order Buttons */}
-                    <div className="flex flex-col gap-0.5 shrink-0">
-                      <button
-                        onClick={() => move3DCard(idx, -1)}
-                        disabled={idx === 0}
-                        className="w-6 h-6 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white disabled:opacity-30 transition cursor-pointer"
-                        title="Move Up"
-                      >
-                        <ChevronUp className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => move3DCard(idx, 1)}
-                        disabled={idx === (formData.showcase3DCards || []).length - 1}
-                        className="w-6 h-6 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white disabled:opacity-30 transition cursor-pointer"
-                        title="Move Down"
-                      >
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    {/* Card Thumbnail */}
-                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-emerald-100 to-blue-100 dark:from-emerald-900/40 dark:to-blue-900/40 border border-emerald-200 dark:border-emerald-700/40 flex items-center justify-center shrink-0">
-                      {card.pngImage ? (
-                        <img src={card.pngImage} alt={card.title} className="w-full h-full object-contain" />
-                      ) : (
-                        <Box className="w-6 h-6 text-emerald-400/60" />
-                      )}
-                    </div>
-
-                    {/* Title & Badge */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{card.title || "Untitled Card"}</span>
-                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/50 text-[#0756B5] dark:text-blue-300 px-2 py-0.5 rounded-full font-bold">{card.badge || ""}</span>
-                        {card.enabled === false && (
-                          <span className="text-[10px] bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full font-bold">HIDDEN</span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        ₹{card.price || 0} &nbsp;·&nbsp; {card.discount || 0}% off
-                        <span className="ml-2 text-[#0756B5] font-bold">
-                          → ₹{Math.round((card.price || 0) * (1 - (card.discount || 0) / 100))}
-                        </span>
-                      </p>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {/* Enable/Disable Toggle */}
-                      <button
-                        onClick={() => toggle3DCardEnabled(idx)}
-                        title={card.enabled === false ? "Enable Card" : "Hide Card"}
-                        className={`p-1.5 rounded-xl transition cursor-pointer ${
-                          card.enabled === false
-                            ? "bg-gray-100 dark:bg-gray-700 text-gray-400 hover:bg-green-50 hover:text-green-600"
-                            : "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-red-50 hover:text-red-500"
-                        }`}
-                      >
-                        {card.enabled === false ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-
-                      {/* Auto Fill */}
-                      <button
-                        onClick={() => autoFill3DCard(idx)}
-                        title="Auto-fill from product catalog"
-                        className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 transition cursor-pointer"
-                      >
-                        <Wand2 className="w-4 h-4" />
-                      </button>
-
-                      {/* Expand/Collapse */}
-                      <button
-                        onClick={() => setCard3DExpanded((prev) => (prev === idx ? null : idx))}
-                        title="Edit Card"
-                        className="p-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] dark:text-emerald-400 hover:bg-emerald-100 transition cursor-pointer"
-                      >
-                        {card3DExpanded === idx ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                      </button>
-
-                      {/* Delete */}
-                      <button
-                        onClick={() => remove3DCard(idx)}
-                        title="Remove Card"
-                        className="p-1.5 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 transition cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Expanded Edit Panel */}
-                  <AnimatePresence initial={false}>
-                    {card3DExpanded === idx && (
-                      <motion.div
-                        key="edit-panel"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="overflow-hidden border-t border-[#D5A62A] dark:border-gray-700"
-                      >
-                        <div className="p-4 space-y-4 bg-emerald-50/30 dark:bg-emerald-950/20">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Title */}
-                            <div>
-                              <label className="text-[11px] font-bold text-gray-600 dark:text-gray-400 block mb-1 flex items-center gap-1">
-                                <FileText className="w-3 h-3" /> Product Title
-                              </label>
-                              <input
-                                type="text"
-                                value={card.title || ""}
-                                onChange={(e) => handle3DCardChange(idx, "title", e.target.value)}
-                                placeholder="e.g. Fresh Milk, Paneer, Ghee..."
-                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
-                              />
-                            </div>
-
-                            {/* Badge */}
-                            <div>
-                              <label className="text-[11px] font-bold text-gray-600 dark:text-gray-400 block mb-1 flex items-center gap-1">
-                                <Tag className="w-3 h-3" /> Card Badge
-                              </label>
-                              <div className="flex items-center gap-2">
-                                <input
-                                  type="text"
-                                  value={card.badge || ""}
-                                  onChange={(e) => handle3DCardChange(idx, "badge", e.target.value)}
-                                  placeholder="e.g. ⭐ BESTSELLER"
-                                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
-                                />
-                                <div className="flex gap-1 shrink-0">
-                                  {["⭐ BESTSELLER", "🔥 HOT PICK", "🌟 TOP RATED", "✨ FRESH DAILY", "💎 PREMIUM"].map((b) => (
-                                    <button
-                                      key={b}
-                                      onClick={() => handle3DCardChange(idx, "badge", b)}
-                                      title={b}
-                                      className={`text-[11px] px-1.5 py-1 rounded-lg border transition cursor-pointer ${
-                                        card.badge === b
-                                          ? "border-[#0756B5] bg-blue-100 dark:bg-blue-900/50 text-[#0756B5]"
-                                          : "border-gray-200 dark:border-gray-600 text-gray-500 hover:border-blue-300"
-                                      }`}
-                                    >
-                                      {b.split(" ")[0]}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Description */}
-                          <div>
-                            <label className="text-[11px] font-bold text-gray-600 dark:text-gray-400 block mb-1 flex items-center gap-1">
-                              <FileText className="w-3 h-3" /> Product Description
-                            </label>
-                            <textarea
-                              rows={2}
-                              value={card.description || ""}
-                              onChange={(e) => handle3DCardChange(idx, "description", e.target.value)}
-                              className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20 resize-none"
-                            />
-                          </div>
-
-                          {/* Price & Discount */}
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <div>
-                              <label className="text-[11px] font-bold text-gray-600 dark:text-gray-400 block mb-1 flex items-center gap-1">
-                                <DollarSign className="w-3 h-3" /> Base Price (₹)
-                              </label>
-                              <input
-                                type="number"
-                                min={0}
-                                value={card.price || 0}
-                                onChange={(e) => handle3DCardChange(idx, "price", Number(e.target.value))}
-                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-bold focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[11px] font-bold text-gray-600 dark:text-gray-400 block mb-1 flex items-center gap-1">
-                                <Percent className="w-3 h-3" /> Discount (%)
-                              </label>
-                              <input
-                                type="number"
-                                min={0}
-                                max={100}
-                                value={card.discount || 0}
-                                onChange={(e) => handle3DCardChange(idx, "discount", Number(e.target.value))}
-                                className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-bold focus:outline-none focus:border-[#075C2A] focus:ring-1 focus:ring-[#075C2A]/20"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[11px] font-bold text-gray-600 dark:text-gray-400 block mb-1 flex items-center gap-1">
-                                <CreditCard className="w-3 h-3" /> Final Price (₹)
-                              </label>
-                              <div className="px-3 py-2 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-xs font-black text-green-700 dark:text-green-400">
-                                ₹{Math.round((card.price || 0) * (1 - (card.discount || 0) / 100))}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Image Upload */}
-                          <div>
-                            <label className="text-[11px] font-bold text-gray-600 dark:text-gray-400 block mb-2 flex items-center gap-1">
-                              <ImageIcon className="w-3 h-3" /> Product PNG Image (transparent background preferred)
-                            </label>
-                            <div className="flex items-start gap-4">
-                              <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center overflow-hidden shrink-0">
-                                {card.pngImage ? (
-                                  <img src={card.pngImage} alt={card.title} className="w-full h-full object-contain" />
-                                ) : (
-                                  <Box className="w-8 h-8 text-emerald-400" />
-                                )}
-                              </div>
-                              <div className="flex-1 space-y-2">
-                                <input
-                                  type="text"
-                                  value={card.pngImage || ""}
-                                  onChange={(e) => handle3DCardChange(idx, "pngImage", e.target.value)}
-                                  placeholder="Paste image URL or upload file below"
-                                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
-                                />
-                                <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-[#0756B5] dark:text-blue-300 font-bold text-xs cursor-pointer hover:bg-blue-200 transition">
-                                  <Upload className="w-3.5 h-3.5" /> Upload PNG File
-                                  <input
-                                    type="file"
-                                    accept="image/png,image/webp,image/*"
-                                    className="hidden"
-                                    onChange={(e) => handle3DCardImageUpload(idx, e.target.files?.[0])}
-                                  />
-                                </label>
-                                <p className="text-[10px] text-gray-400 dark:text-gray-500">
-                                  Tip: Use PNG with transparent background for best 3D effect.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Visibility Toggle */}
-                          <div className="flex items-center justify-between pt-2 border-t border-[#D5A62A] dark:border-gray-700">
-                            <div>
-                              <p className="text-xs font-bold text-gray-700 dark:text-gray-300">Card Visibility</p>
-                              <p className="text-[10px] text-gray-500 dark:text-gray-400">
-                                {card.enabled === false ? "This card is hidden from the homepage showcase." : "This card is visible on the homepage."}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => toggle3DCardEnabled(idx)}
-                              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-                                card.enabled === false
-                                  ? "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-green-100 hover:text-green-700"
-                                  : "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 hover:bg-red-100 hover:text-red-600"
-                              }`}
-                            >
-                              {card.enabled === false ? (
-                                <><EyeOff className="w-3.5 h-3.5" /> Enable Card</>
-                              ) : (
-                                <><Eye className="w-3.5 h-3.5" /> Visible — Click to Hide</>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))
-            )}
-          </div>
-
-          {/* Quick-add from catalog */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
-            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#075C2A]" /> Quick-Add from Product Catalog
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-              {products.map((p, i) => {
-                const alreadyAdded = (formData.showcase3DCards || []).some(
-                  (c) => c.title?.toLowerCase() === p.title?.toLowerCase()
-                );
-                return (
-                  <button
-                    key={i}
-                    disabled={alreadyAdded}
-                    onClick={() => {
-                      if (!alreadyAdded) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          showcase3DCards: [
-                            ...(prev.showcase3DCards || []),
-                            {
-                              title: p.title,
-                              description: p.description || "A fresh, pure dairy product.",
-                              pngImage: p.pngImage || p.image || "",
-                              badge: i === 0 ? "⭐ BESTSELLER" : i % 3 === 0 ? "🌟 TOP RATED" : "✨ FRESH DAILY",
-                              price: p.price || 60,
-                              discount: p.discount || 10,
-                              enabled: true,
-                              sortOrder: (prev.showcase3DCards || []).length,
-                            },
-                          ],
-                        }));
-                        enqueueSnackbar(`"${p.title}" added to 3D showcase!`, { variant: "success" });
-                      }
-                    }}
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-left transition ${
-                      alreadyAdded
-                        ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 cursor-not-allowed"
-                        : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-[#0756B5] hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-[#0756B5] cursor-pointer"
-                    }`}
-                  >
-                    <span className="text-base leading-none">
-                      {p.title?.toLowerCase().includes("milk") ? "🥛" :
-                        p.title?.toLowerCase().includes("paneer") ? "🧀" :
-                        p.title?.toLowerCase().includes("ghee") ? "🫙" :
-                        p.title?.toLowerCase().includes("curd") ? "🍶" :
-                        p.title?.toLowerCase().includes("butter") ? "🧈" :
-                        p.title?.toLowerCase().includes("lassi") ? "🥤" :
-                        p.title?.toLowerCase().includes("cream") ? "🍦" :
-                        p.title?.toLowerCase().includes("cheese") ? "🧀" :
-                        p.title?.toLowerCase().includes("sweet") ? "🍬" : "📦"}
-                    </span>
-                    <span className="truncate flex-1">{p.title}</span>
-                    {alreadyAdded && <span className="text-[9px] bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-300 px-1 rounded">Added</span>}
-                  </button>
-                );
-              })}
-            </div>
           </div>
         </motion.div>
       )}

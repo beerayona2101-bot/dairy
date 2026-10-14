@@ -167,61 +167,61 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
   const getMarkerColor = (event) => {
     if (event.type === "user") {
       return {
-        border: "border-[#075C2A] dark:border-emerald-400 ring-4 ring-emerald-100 dark:ring-emerald-950/50",
-        dot: "bg-[#075C2A] dark:bg-emerald-400",
+        border: "border-indigo-600 dark:border-indigo-400 ring-4 ring-indigo-100 dark:ring-indigo-950/50",
+        dot: "bg-indigo-600 dark:bg-indigo-400",
       };
     }
     if (event.status === "Delivered" || event.status === "Confirmed") {
       return {
-        border: "border-[#075C2A] dark:border-emerald-400 ring-4 ring-emerald-100 dark:ring-emerald-950/50",
-        dot: "bg-[#075C2A] dark:bg-emerald-400",
+        border: "border-blue-600 dark:border-blue-400 ring-4 ring-blue-100 dark:ring-blue-950/50",
+        dot: "bg-blue-600 dark:bg-blue-400",
       };
     }
     if (event.status === "Cancelled") {
       return {
-        border: "border-gray-400 dark:border-gray-500 ring-4 ring-gray-100 dark:ring-gray-800",
-        dot: "bg-gray-500 dark:bg-gray-400",
+        border: "border-slate-400 dark:border-slate-500 ring-4 ring-slate-100 dark:ring-slate-800",
+        dot: "bg-slate-500 dark:bg-slate-400",
       };
     }
     return {
-      border: "border-[#0756B5] dark:border-blue-400 ring-4 ring-blue-100 dark:ring-blue-950/50",
-      dot: "bg-[#0756B5] dark:bg-blue-400",
+      border: "border-sky-500 dark:border-sky-400 ring-4 ring-sky-100 dark:ring-sky-950/50",
+      dot: "bg-sky-500 dark:bg-sky-400",
     };
   };
 
   const getEventIcon = (event) => {
     if (event.type === "user") {
-      return <PersonAddIcon className="text-[#075C2A] dark:text-emerald-400 drop-shadow-xs" />;
+      return <PersonAddIcon className="text-indigo-600 dark:text-indigo-400 drop-shadow-xs" />;
     }
     switch (event.status) {
       case "Pending":
-        return <ShoppingBagIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
+        return <ShoppingBagIcon className="text-sky-600 dark:text-sky-400 drop-shadow-xs" />;
       case "Confirmed":
-        return <CheckCircleIcon className="text-[#075C2A] dark:text-emerald-400 drop-shadow-xs" />;
+        return <CheckCircleIcon className="text-blue-600 dark:text-blue-400 drop-shadow-xs" />;
       case "Processing":
-        return <InventoryIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
+        return <InventoryIcon className="text-sky-600 dark:text-sky-400 drop-shadow-xs" />;
       case "Shipped":
-        return <LocalShippingIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
+        return <LocalShippingIcon className="text-sky-600 dark:text-sky-400 drop-shadow-xs" />;
       case "Delivered":
-        return <CheckCircleIcon className="text-[#075C2A] dark:text-emerald-400 drop-shadow-xs" />;
+        return <CheckCircleIcon className="text-blue-600 dark:text-blue-400 drop-shadow-xs" />;
       case "Cancelled":
-        return <CancelIcon className="text-gray-500 dark:text-gray-400 drop-shadow-xs" />;
+        return <CancelIcon className="text-slate-500 dark:text-slate-400 drop-shadow-xs" />;
       default:
-        return <ShoppingBagIcon className="text-[#0756B5] dark:text-blue-400 drop-shadow-xs" />;
+        return <ShoppingBagIcon className="text-sky-600 dark:text-sky-400 drop-shadow-xs" />;
     }
   };
 
   const getBadgeClass = (status, type) => {
     if (type === "user") {
-      return "bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
+      return "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800";
     }
     if (status === "Delivered" || status === "Confirmed") {
-      return "bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
+      return "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800";
     }
     if (status === "Cancelled") {
-      return "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600";
+      return "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600";
     }
-    return "bg-blue-50 text-[#0756B5] dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800";
+    return "bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border-sky-200 dark:border-sky-800";
   };
 
   // Filter events
@@ -247,26 +247,26 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 md:p-6 shadow-[0_4px_20px_rgba(7,92,42,0.05)] border border-gray-200/80 dark:border-gray-700/80 w-full space-y-5">
+    <div className="bg-white dark:bg-slate-800/95 rounded-2xl p-5 md:p-6 shadow-[0_4px_24px_rgba(37,99,235,0.05)] border border-slate-200/90 dark:border-slate-700/80 w-full space-y-5">
       {/* Header bar with Live pulse badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-700/60 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700/60 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <SignalCellularAltIcon className="text-[#075C2A] dark:text-emerald-400" />
-            <h2 className="text-xl font-extrabold text-gray-900 dark:text-white">
+            <SignalCellularAltIcon className="text-blue-600 dark:text-blue-400" />
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
               Live Activity Timeline Feed
             </h2>
-            <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black bg-emerald-50 text-[#075C2A] dark:bg-emerald-950/60 dark:text-emerald-300 animate-pulse border border-emerald-200 dark:border-emerald-800">
-              <span className="w-2 h-2 rounded-full bg-[#075C2A] animate-ping" />
+            <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-300 animate-pulse border border-blue-200 dark:border-blue-800">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
               LIVE
             </span>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden sm:block">
             Real-time activity feed for orders, customer signups, shipping updates, and deliveries.
           </p>
         </div>
 
-        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-[#075C2A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0 self-start sm:self-auto">
+        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shrink-0 self-start sm:self-auto">
           {filteredEvents.length} Total Events
         </span>
       </div>
@@ -281,8 +281,8 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
               onClick={() => setFilter(tab)}
               className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
                 isActive
-                  ? "bg-[#075C2A] text-white shadow-md shadow-emerald-700/20"
-                  : "bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-emerald-50 hover:text-[#075C2A] dark:hover:bg-emerald-950/40"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                  : "bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40"
               }`}
             >
               {tab}
@@ -293,17 +293,17 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
 
       {/* Live Stream List - Timeline Layout */}
       {loading ? (
-        <div className="flex items-center justify-center py-16 text-gray-500 gap-3">
-          <div className="w-7 h-7 border-4 border-dashed rounded-full animate-spin border-[#075C2A]" />
+        <div className="flex items-center justify-center py-16 text-slate-500 gap-3">
+          <div className="w-7 h-7 border-4 border-dashed rounded-full animate-spin border-blue-600" />
           <span className="text-sm font-semibold">Loading live feed...</span>
         </div>
       ) : filteredEvents.length === 0 ? (
-        <div className="py-12 text-center text-gray-400 space-y-1">
+        <div className="py-12 text-center text-slate-400 space-y-1">
           <p className="text-sm font-bold">No updates found for &ldquo;{filter}&rdquo;</p>
           <p className="text-xs">Select another filter tab or wait for live store activity.</p>
         </div>
       ) : (
-        <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1 scrollbar-hide relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700">
+        <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1 scrollbar-hide relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-blue-100 dark:before:bg-slate-700">
           <AnimatePresence>
             {filteredEvents.map((event, idx) => {
               const markerColors = getMarkerColor(event);
@@ -316,21 +316,21 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
                   animate="visible"
                   exit={{ opacity: 0, x: -20 }}
                   onClick={() => handleEventClick(event)}
-                  className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 group relative ml-3 pl-8 bg-white dark:bg-gray-700/40 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 border-gray-200/90 dark:border-gray-700 shadow-xs hover:shadow-md hover:border-[#075C2A]/60`}
+                  className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 group relative ml-3 pl-8 bg-white dark:bg-slate-800/80 hover:bg-blue-50/40 dark:hover:bg-blue-950/20 border-slate-200/90 dark:border-slate-700 shadow-xs hover:shadow-md hover:border-blue-400`}
                 >
                   {/* Timeline Dot Marker */}
-                  <div className={`absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white dark:bg-gray-800 border-2 ${markerColors.border} flex items-center justify-center shadow-xs shrink-0 z-10`}>
+                  <div className={`absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white dark:bg-slate-800 border-2 ${markerColors.border} flex items-center justify-center shadow-xs shrink-0 z-10`}>
                     <span className={`w-2.5 h-2.5 rounded-full ${markerColors.dot}`} />
                   </div>
 
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 shadow-xs border border-gray-200/70 dark:border-gray-700 shrink-0">
+                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 shadow-xs border border-slate-200/70 dark:border-slate-700 shrink-0">
                       {getEventIcon(event)}
                     </div>
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white line-clamp-1 group-hover:text-[#075C2A] dark:group-hover:text-emerald-400 transition">
+                        <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
                           {event.title}
                         </h4>
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${getBadgeClass(event.status, event.type)}`}>
@@ -338,20 +338,20 @@ export default function LiveUpdatesDashboard({ allOrders = [], stores = [], load
                         </span>
                       </div>
 
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium line-clamp-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium line-clamp-1">
                         {event.subtitle}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-400 hidden sm:block">
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400 hidden sm:block">
                       {event.timestamp instanceof Date && !isNaN(event.timestamp)
                         ? event.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                         : "Just now"}
                     </span>
-                    <div className="p-1.5 rounded-xl group-hover:bg-[#075C2A] group-hover:text-white transition shadow-xs">
-                      <ArrowForwardIcon className="text-[#075C2A] group-hover:text-white transition-transform group-hover:translate-x-0.5" sx={{ fontSize: "1.1rem" }} />
+                    <div className="p-1.5 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition shadow-xs">
+                      <ArrowForwardIcon className="text-blue-600 group-hover:text-white transition-transform group-hover:translate-x-0.5" sx={{ fontSize: "1.1rem" }} />
                     </div>
                   </div>
                 </motion.div>

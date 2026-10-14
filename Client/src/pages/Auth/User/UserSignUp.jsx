@@ -11,6 +11,7 @@ import { ThemeContext } from "../../../context/ThemeProvider";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
 import logoLightMode from "../../../assets/logoLightMode.png";
 import TermsModal from "../../../components/Common/TermsModal";
+import { getFriendlyErrorMessage } from "../../../utils/errorHelper";
 
 export default function UserSignUp() {
   const navigate = useNavigate();
@@ -88,11 +89,10 @@ export default function UserSignUp() {
         enqueueSnackbar(res?.message || "Signup failed.", { variant: "error" });
       }
     } catch (error) {
-      enqueueSnackbar(
+      const errorMsg =
         error?.response?.data?.message ||
-          "User already exists or server error.",
-        { variant: "error" }
-      );
+        getFriendlyErrorMessage(error, "An account with this email address already exists. Please sign in instead.");
+      enqueueSnackbar(errorMsg, { variant: "error" });
     } finally {
       setIsLoading(false);
     }

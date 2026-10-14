@@ -10,6 +10,7 @@ import { ThemeContext } from "../../../context/ThemeProvider";
 import company from "../../../data/company.json";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
 import logoLightMode from "../../../assets/logoLightMode.png";
+import { getFriendlyErrorMessage } from "../../../utils/errorHelper";
 
 export default function OtpVerification() {
   const navigate = useNavigate();
@@ -113,10 +114,10 @@ export default function OtpVerification() {
         enqueueSnackbar(data?.message || "OTP verification failed.", { variant: "error" });
       }
     } catch (error) {
-      enqueueSnackbar(
-        error?.response?.data?.message || "User already exists or server error.",
-        { variant: "error" }
-      );
+      const errorMsg =
+        error?.response?.data?.message ||
+        getFriendlyErrorMessage(error, "An account with this email address already exists. Please sign in instead.");
+      enqueueSnackbar(errorMsg, { variant: "error" });
     } finally {
       setLoading(false);
     }

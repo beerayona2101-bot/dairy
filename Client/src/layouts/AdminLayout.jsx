@@ -37,9 +37,9 @@ export default function AdminLayout({ children }) {
     return (
         <AdminOrderProvider>
             <SidebarProvider>
-                <div ref={scrollRef} className="min-h-dvh h-screen w-full max-w-full scroll-smooth flex overflow-hidden bg-fixed bg-cover bg-center text-[#2D3748] dark:text-white transition-colors duration-300 relative">
+                <div ref={scrollRef} className="admin-theme min-h-dvh h-screen w-full max-w-full scroll-smooth flex overflow-hidden bg-[#F4F7FB] dark:bg-[#0B132B] text-slate-800 dark:text-slate-100 font-['Poppins',sans-serif] transition-colors duration-300 relative">
                     <Sidebar />
-                    <main className="flex-1 h-full w-full max-w-full overflow-y-auto overflow-x-hidden flex flex-col">
+                    <main className="flex-1 h-full w-full max-w-full overflow-y-auto overflow-x-hidden flex flex-col bg-[#F4F7FB] dark:bg-[#0B132B]">
                         <AdminNavbar />
                         <PageTransition key={location.pathname}>
                             {children}

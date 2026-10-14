@@ -115,9 +115,9 @@ export default function Sidebar() {
     };
 
     const renderSidebarContent = () => (
-        <div className="h-full w-64 flex flex-col justify-between bg-white/85 dark:bg-gray-800/85 backdrop-blur-[16px]">
+        <div className="h-full w-64 flex flex-col justify-between bg-white/95 dark:bg-slate-900/95 backdrop-blur-[16px]">
             {/* Header / Logo */}
-            <div className="sticky top-0 left-0 h-16 shrink-0 px-4 flex justify-between items-center border-b border-gray-100 dark:border-gray-700/60 z-10 box-border">
+            <div className="sticky top-0 left-0 h-16 shrink-0 px-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 z-10 box-border">
                 <Link to="/home" onClick={closeSidebar} className="flex items-center hover:scale-105 transition-transform">
                     <img
                         src={theme === "dark" ? logoDarkMode : logoLightMode}
@@ -129,7 +129,7 @@ export default function Sidebar() {
                 </Link>
                 <button
                     onClick={closeSidebar}
-                    className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition cursor-pointer"
+                    className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition cursor-pointer"
                     title="Close Sidebar"
                 >
                     <CloseIcon fontSize="small" />
@@ -148,8 +148,8 @@ export default function Sidebar() {
                                 onClick={closeSidebar}
                                 className={`flex items-center justify-between p-3 rounded-2xl transition-all font-extrabold text-xs ${
                                     isActive
-                                        ? "bg-[#075C2A] text-white shadow-[0_8px_20px_rgba(7,92,42,0.28)]"
-                                        : "text-[#718096] dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:text-[#075C2A]"
+                                        ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-[0_6px_20px_rgba(37,99,235,0.32)]"
+                                        : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400"
                                 }`}
                             >
                                 <div className="flex items-center gap-3">
@@ -166,21 +166,21 @@ export default function Sidebar() {
                     const isExpanded = expandedGroup === group.key;
 
                     return (
-                        <div key={group.key} className="rounded-2xl border border-white/80 dark:border-gray-700/80 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xs">
+                        <div key={group.key} className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-800/70 backdrop-blur-md overflow-hidden shadow-xs">
                             {/* Accordion Group Header (Icons ONLY on Main Headings) */}
                             <button
                                 onClick={() => toggleGroup(group.key)}
                                 className={`w-full flex items-center justify-between p-3 text-xs uppercase tracking-wider font-black transition-colors cursor-pointer ${
                                     isGroupActive
-                                        ? "text-[#075C2A] bg-emerald-50/80 dark:bg-emerald-950/40"
-                                        : "text-[#718096] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                                        ? "text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/40"
+                                        : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
                                 }`}
                             >
                                 <div className="flex items-center gap-2">
                                     {group.icon}
                                     <span>{group.label}</span>
                                     {group.badge > 0 && (
-                                        <span className="px-1.5 py-0.5 text-[10px] bg-[#0756B5] text-white rounded-full font-extrabold shadow-xs">
+                                        <span className="px-1.5 py-0.5 text-[10px] bg-blue-600 text-white rounded-full font-extrabold shadow-xs">
                                             {group.badge}
                                         </span>
                                     )}
@@ -210,13 +210,13 @@ export default function Sidebar() {
                                                         onClick={closeSidebar}
                                                         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                                                             isSubActive
-                                                                ? "bg-[#075C2A] text-white shadow-xs font-black"
-                                                                : "text-[#718096] dark:text-gray-300 hover:text-[#075C2A] hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                                                ? "bg-blue-600 text-white shadow-xs font-black"
+                                                                : "text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30"
                                                         }`}
                                                     >
                                                         <span>{subItem.label}</span>
                                                         {subItem?.orderCount > 0 && (
-                                                            <span className="text-[10px] bg-[#0756B5] px-2 py-0.5 rounded-full text-white font-bold">
+                                                            <span className="text-[10px] bg-blue-600 px-2 py-0.5 rounded-full text-white font-bold">
                                                                 {subItem.orderCount}
                                                             </span>
                                                         )}
@@ -233,10 +233,10 @@ export default function Sidebar() {
             </nav>
 
             {/* Footer / Theme & Logout */}
-            <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-700/60 space-y-2">
+            <div className="px-3 py-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
                 <button
                     onClick={toggleTheme}
-                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-extrabold text-[#718096] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
+                    className="flex items-center justify-between w-full p-2.5 rounded-xl text-xs font-extrabold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                     title="Toggle Light/Dark Theme"
                 >
                     <div className="flex items-center gap-3">
@@ -265,8 +265,8 @@ export default function Sidebar() {
         <Drawer open={isSidebarOpen} onClose={() => setIsSidebarOpen(false)}>
             <div className={`h-screen overflow-auto transition-colors duration-300 ${
                 theme === "light"
-                    ? "bg-white text-[#1E293B]"
-                    : "bg-[#0F172A] text-white"
+                    ? "bg-white text-slate-800"
+                    : "bg-[#0B132B] text-white"
             }`}>
                 {renderSidebarContent()}
             </div>

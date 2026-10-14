@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Printer, Download, FileText, RefreshCw } from "lucide-react";
-import api from "../services/api";
+import api, { getBaseUrl } from "../services/api";
 import BackButton from "../components/Common/BackButton";
 
 export default function InvoiceViewPage() {
@@ -10,7 +10,7 @@ export default function InvoiceViewPage() {
   const iframeRef = useRef(null);
   const [loading, setLoading] = useState(true);
 
-  const baseUrl = api.defaults.baseURL || "http://localhost:9000";
+  const baseUrl = api.defaults.baseURL || getBaseUrl();
   const iframeSrc = `${baseUrl}/pdf/generate-bill/${orderId}`;
   const downloadSrc = `${baseUrl}/pdf/generate-bill/${orderId}?download=true`;
 

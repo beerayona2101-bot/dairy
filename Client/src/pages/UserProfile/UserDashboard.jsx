@@ -92,18 +92,19 @@ export default function UserDashboard() {
       {/* Scrollable Container */}
       <div className="flex-1 overflow-y-auto scrollbar-hide space-y-6 pr-1 pb-28 sm:pb-8">
         {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-[#075C2A] via-[#0B6623] to-[#0756B5] text-white rounded-2xl p-5 sm:p-6 shadow-md flex justify-between items-center gap-4">
+        <div className="relative overflow-hidden bg-white dark:bg-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/90 dark:border-slate-700/80 flex justify-between items-center gap-4">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#075C2A] via-emerald-500 to-[#0756B5]" />
           <div>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight font-dashboard-heading">
-              Welcome back, {authUser?.firstName || authUser?.username || "Valued Customer"}! 👋
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white font-dashboard-heading">
+              Welcome back, <span className="text-[#075C2A] dark:text-emerald-400">{authUser?.firstName || authUser?.username || "Valued Customer"}</span>! 👋
             </h1>
-            <p className="text-white/90 text-xs sm:text-sm mt-1 font-medium tracking-tight">
+            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 font-medium tracking-tight">
               Here is your account overview and recent order activity stats.
             </p>
           </div>
           <Link
             to="/products"
-            className="hidden sm:flex items-center gap-2 bg-white text-[#075C2A] px-4 py-2 rounded-xl font-bold shadow hover:bg-emerald-50 transition whitespace-nowrap text-xs sm:text-sm shrink-0"
+            className="hidden sm:flex items-center gap-2 bg-[#075C2A] hover:bg-[#064e23] text-white px-4 py-2.5 rounded-xl font-bold shadow-xs hover:shadow-md transition whitespace-nowrap text-xs sm:text-sm shrink-0"
           >
             <MdLocalShipping className="text-base" /> Shop Essentials
           </Link>

@@ -22,7 +22,17 @@
   --color-text-muted: #526B5C;
   --color-discount-bg: #FEF9C3;
   --color-discount-border: #D5A62A;
-  --color-discount-text: #854D0E;
+  --font-poppins: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-admin-bg: #F4F7FB;
+  --color-admin-card: #FFFFFF;
+  --color-admin-blue: #2563EB;
+  --color-admin-blue-hover: #1D4ED8;
+  --color-admin-blue-light: #EFF6FF;
+  --color-admin-blue-border: #DBEAFE;
+}
+
+.admin-theme {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 :root {

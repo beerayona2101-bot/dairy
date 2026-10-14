@@ -8,6 +8,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --no-deprecation -e js,mjs,json index.js",
+    "start:prod": "node --no-deprecation index.js",
+    "start:local": "nodemon --no-deprecation -e js,mjs,json index.js",
     "dev": "nodemon --no-deprecation -e js,mjs,json index.js",
     "seed:admin": "node --no-deprecation seeds/adminSeed.mjs",
     "test:qa": "node --no-deprecation scripts/qaReportRunner.js"

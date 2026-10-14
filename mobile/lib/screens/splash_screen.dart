@@ -18,26 +18,37 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _glowAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 1500),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    // Powerful, smooth zoom-in scale animation
+    _scaleAnimation = Tween<double>(begin: 0.35, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+        curve: Curves.easeOutBack,
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.82, end: 1.0).animate(
+    // Smooth opacity fade-in
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.85, curve: Curves.easeOutBack),
+        curve: const Interval(0.0, 0.45, curve: Curves.easeOut),
+      ),
+    );
+
+    // Radiant backdrop glow pulse expansion
+    _glowAnimation = Tween<double>(begin: 0.25, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.1, 0.85, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -52,44 +63,56 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _initializeApp() async {
     // 1. Precache onboarding and brand logo images concurrently in parallel for instant display
-    if (mounted) {
-      Future.wait([
-        precacheImage(
-          const AssetImage('assets/images/splash_logo.png'),
-          context,
-        ),
-        precacheImage(
-          const AssetImage('assets/images/logoLightMode.png'),
-          context,
-        ),
-        precacheImage(const AssetImage('assets/images/freshMilk.jpg'), context),
-        precacheImage(
-          const AssetImage('assets/images/hygienicProcessing.jpg'),
-          context,
-        ),
-        precacheImage(
-          const AssetImage('assets/images/deliveryTruck.jpg'),
-          context,
-        ),
-        precacheImage(
-          const AssetImage('assets/images/freshProducts.jpg'),
-          context,
-        ),
-      ]).catchError((_) => []);
-    }
+    final precacheFuture = mounted
+        ? Future.wait([
+            precacheImage(
+              const AssetImage('assets/images/splash_logo.png'),
+              context,
+            ),
+            precacheImage(
+              const AssetImage('assets/images/logoLightMode.png'),
+              context,
+            ),
+            precacheImage(
+              const AssetImage('assets/images/freshMilk.jpg'),
+              context,
+            ),
+            precacheImage(
+              const AssetImage('assets/images/hygienicProcessing.jpg'),
+              context,
+            ),
+            precacheImage(
+              const AssetImage('assets/images/deliveryTruck.jpg'),
+              context,
+            ),
+            precacheImage(
+              const AssetImage('assets/images/freshProducts.jpg'),
+              context,
+            ),
+          ]).catchError((_) => [])
+        : Future.value([]);
 
     // 2. Initialize auth provider and restore session tokens
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.initAuth();
+    final authFuture = authProvider.isInitializing
+        ? authProvider.initAuth()
+        : Future.value(null);
 
-    // 3. Fast & responsive startup delay
-    await Future.delayed(const Duration(milliseconds: 400));
+    // 3. Minimum display duration to ensure user experiences the full zoom-in animation smoothly
+    final minDisplayFuture = Future.delayed(const Duration(milliseconds: 1800));
+
+    // Wait for all concurrent initialization tasks
+    await Future.wait([
+      precacheFuture,
+      authFuture,
+      minDisplayFuture,
+    ]);
 
     if (!mounted) return;
 
     // Routing decision:
     // - Authenticated: go directly to main app (MobileWebViewScreen). Skip onboarding completely!
-    // - Not authenticated (including new and guest users on restart): show onboarding flow.
+    // - Not authenticated: show onboarding flow.
     final Widget targetScreen = authProvider.isAuthenticated
         ? const MobileWebViewScreen()
         : const OnboardingScreen();
@@ -97,8 +120,15 @@ class _SplashScreenState extends State<SplashScreen>
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, anim, secAnim) => targetScreen,
-        transitionsBuilder: (context, animation, secAnim, child) =>
-            FadeTransition(opacity: animation, child: child),
+        transitionsBuilder: (context, animation, secAnim, child) {
+          return FadeTransition(
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOut,
+            ),
+            child: child,
+          );
+        },
         transitionDuration: const Duration(milliseconds: 500),
       ),
     );
@@ -127,11 +157,11 @@ class _SplashScreenState extends State<SplashScreen>
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final maxLogoWidth = constraints.maxWidth < 422
-                  ? constraints.maxWidth * 0.88
-                  : 360.0;
+              final maxLogoWidth = constraints.maxWidth < 460
+                  ? constraints.maxWidth * 0.90
+                  : 380.0;
               final maxLogoWidthByHeight =
-                  (constraints.maxHeight * 0.38) / (795.0 / 1024.0);
+                  (constraints.maxHeight * 0.48) / (795.0 / 1024.0);
               final logoWidth = maxLogoWidth < maxLogoWidthByHeight
                   ? maxLogoWidth
                   : maxLogoWidthByHeight;
@@ -142,136 +172,53 @@ class _SplashScreenState extends State<SplashScreen>
                 children: [
                   const Spacer(flex: 3),
 
-                  // Animated Hero Brand Logo
+                  // Animated Hero Brand Logo with Zoom-In effect and Radiant Glow
                   ScaleTransition(
                     scale: _scaleAnimation,
                     child: FadeTransition(
                       opacity: _fadeAnimation,
-                      child: Column(
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                width: logoWidth * 0.88,
-                                height: logoHeight * 0.88,
+                          AnimatedBuilder(
+                            animation: _glowAnimation,
+                            builder: (context, _) {
+                              return Container(
+                                width: logoWidth * (0.95 + 0.15 * _glowAnimation.value),
+                                height: logoHeight * (0.95 + 0.15 * _glowAnimation.value),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: RadialGradient(
                                     colors: [
-                                      const Color(
-                                        0xFF10B981,
-                                      ).withValues(alpha: 0.16),
-                                      const Color(
-                                        0xFF10B981,
-                                      ).withValues(alpha: 0.03),
+                                      const Color(0xFF10B981).withValues(
+                                        alpha: 0.18 * _glowAnimation.value,
+                                      ),
+                                      const Color(0xFF0756B5).withValues(
+                                        alpha: 0.06 * _glowAnimation.value,
+                                      ),
                                       Colors.transparent,
                                     ],
+                                    stops: const [0.0, 0.55, 1.0],
                                   ),
                                 ),
-                              ),
-                              Hero(
-                                tag: 'app_brand_logo',
-                                child: SizedBox(
-                                  width: logoWidth,
-                                  height: logoHeight,
-                                  child: Image.asset(
-                                    'assets/images/splash_logo.png',
-                                    fit: BoxFit.contain,
-                                    filterQuality: FilterQuality.high,
-                                    errorBuilder: (_, _, _) => Image.asset(
-                                      'assets/images/logoLightMode.png',
-                                      fit: BoxFit.contain,
-                                      filterQuality: FilterQuality.high,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                          const SizedBox(height: 12),
-
-                          // Brand Name Typography
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'NATURAL ',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.w900,
-                                  color: const Color(0xFF075C2A),
-                                  letterSpacing: 1.1,
+                          Hero(
+                            tag: 'app_brand_logo',
+                            child: SizedBox(
+                              width: logoWidth,
+                              height: logoHeight,
+                              child: Image.asset(
+                                'assets/images/splash_logo.png',
+                                fit: BoxFit.contain,
+                                filterQuality: FilterQuality.high,
+                                errorBuilder: (_, _, _) => Image.asset(
+                                  'assets/images/logoLightMode.png',
+                                  fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.high,
                                 ),
                               ),
-                              Text(
-                                'MILK DAIRY',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.w900,
-                                  color: const Color(0xFF0756B5),
-                                  letterSpacing: 1.1,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            "Bringing Nature's Best, Straight to Your Home",
-                            style: GoogleFonts.outfit(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF64748B),
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Quality Assurance Pill Badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(
-                                0xFF10B981,
-                              ).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
-                                color: const Color(
-                                  0xFF10B981,
-                                ).withValues(alpha: 0.4),
-                                width: 1.2,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFF10B981,
-                                  ).withValues(alpha: 0.1),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  '🌱',
-                                  style: TextStyle(fontSize: 13),
-                                ),
-                                const SizedBox(width: 7),
-                                Text(
-                                  '100% PURE & FARM-FRESH DAIRY',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF047857),
-                                    letterSpacing: 0.9,
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         ],
@@ -282,15 +229,26 @@ class _SplashScreenState extends State<SplashScreen>
                   const Spacer(flex: 2),
 
                   // Bottom Loading Spinner & Slogan
-                  const SpinKitThreeBounce(color: Color(0xFF10B981), size: 22),
-                  const SizedBox(height: 14),
-                  Text(
-                    'Delivering Farm Purity Daily...',
-                    style: GoogleFonts.outfit(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF475569),
-                      letterSpacing: 0.5,
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SpinKitThreeBounce(
+                          color: Color(0xFF10B981),
+                          size: 20,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Delivering Farm Purity Daily...',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF64748B),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 38),

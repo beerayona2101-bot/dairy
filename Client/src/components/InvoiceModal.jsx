@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Dialog, Slide } from "@mui/material";
 import { X, Printer, Download, FileText } from "lucide-react";
-import api from "../services/api";
+import api, { getBaseUrl } from "../services/api";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -9,7 +9,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function InvoiceModal({ open, onClose, orderId }) {
   const iframeRef = useRef(null);
-  const baseUrl = api.defaults.baseURL || "http://localhost:9000";
+  const baseUrl = api.defaults.baseURL || getBaseUrl();
   const iframeSrc = orderId ? `${baseUrl}/pdf/generate-bill/${orderId}` : "";
   const downloadSrc = orderId ? `${baseUrl}/pdf/generate-bill/${orderId}?download=true` : "";
 

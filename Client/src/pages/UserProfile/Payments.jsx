@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { UserOrderContext } from "../../context/UserOrderProvider";
 import { formatNumberWithCommas } from "../../utils/format";
 import { formatOrderDate } from "../../utils/dateUtils";
-import api from "../../services/api";
+import api, { getBaseUrl } from "../../services/api";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import {
   MdAttachMoney,
@@ -56,7 +56,7 @@ export default function Payments() {
     !o?.paymentMode?.toLowerCase().includes("online")
   ).length;
 
-  const baseUrl = api.defaults.baseURL || "http://localhost:9000";
+  const baseUrl = api.defaults.baseURL || getBaseUrl();
 
   // Filtered Orders Calculation
   const filteredOrders = (userOrders || []).filter((order) => {

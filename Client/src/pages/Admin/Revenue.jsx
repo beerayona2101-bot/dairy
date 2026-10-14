@@ -141,23 +141,23 @@ export default function Revenue() {
         <div className="flex items-start sm:items-center gap-3">
           <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-              <TrendingUpIcon className="text-[#075C2A] dark:text-emerald-400 !text-2xl sm:!text-3xl" />
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <TrendingUpIcon className="text-blue-600 dark:text-blue-400 !text-2xl sm:!text-3xl" />
               Revenue & Financial Analytics
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mt-1 hidden sm:block">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 mt-1 hidden sm:block">
               Click any metric card below to switch and view detailed reports & breakdown at the bottom.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700/50 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600">
-            <FilterListIcon className="text-gray-500 dark:text-gray-300 !text-sm" />
+          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700">
+            <FilterListIcon className="text-slate-500 dark:text-slate-300 !text-sm" />
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="bg-transparent text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none cursor-pointer"
+              className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer"
             >
               <option value="all">All Time</option>
               <option value="today">Today</option>
@@ -168,7 +168,7 @@ export default function Revenue() {
 
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 bg-[#075C2A] hover:bg-[#064e23] text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
           >
             <DownloadIcon className="!text-base" /> Export Financial Summary
           </button>
@@ -186,23 +186,23 @@ export default function Revenue() {
           onClick={() => setActiveMetricTab("revenue")}
           className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "revenue"
-              ? "bg-emerald-50 dark:bg-emerald-950/40 border-[#075C2A] ring-2 ring-[#075C2A] shadow-md"
-              : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/80 dark:border-emerald-800/40 hover:border-[#075C2A] hover:shadow-xs"
+              ? "bg-blue-50 dark:bg-blue-950/40 border-blue-600 ring-2 ring-blue-600 shadow-md"
+              : "bg-white dark:bg-slate-800 border-blue-100/90 dark:border-slate-700 hover:border-blue-500 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider gap-1">
             <span className="truncate">Total Gross Revenue</span>
-            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#075C2A] dark:text-emerald-400 shadow-xs shrink-0">
+            <div className="p-1 sm:p-1.5 rounded-lg bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-xs shrink-0">
               <PaidIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-sm sm:text-3xl font-extrabold text-[#075C2A] dark:text-emerald-400 truncate">
+          <div className="text-sm sm:text-3xl font-extrabold text-blue-600 dark:text-blue-400 truncate">
             &#8377; {formatNumberWithCommas(totalRevenue)}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">From all customer orders</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">From all customer orders</p>
             {activeMetricTab === "revenue" && (
-              <span className="text-[8px] sm:text-[10px] font-black text-[#075C2A] bg-emerald-100 dark:bg-emerald-900/60 dark:text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
+              <span className="text-[8px] sm:text-[10px] font-black text-blue-700 bg-blue-100 dark:bg-blue-900/60 dark:text-blue-300 px-1.5 py-0.5 rounded-full border border-blue-300 dark:border-blue-700">
                 ✓ Active View
               </span>
             )}
@@ -215,23 +215,23 @@ export default function Revenue() {
           onClick={() => setActiveMetricTab("profit")}
           className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "profit"
-              ? "bg-blue-50 dark:bg-blue-950/40 border-[#0756B5] ring-2 ring-[#0756B5] shadow-md"
-              : "bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/80 dark:border-blue-800/40 hover:border-[#0756B5] hover:shadow-xs"
+              ? "bg-sky-50 dark:bg-sky-950/40 border-sky-500 ring-2 ring-sky-500 shadow-md"
+              : "bg-white dark:bg-slate-800 border-sky-100/90 dark:border-slate-700 hover:border-sky-500 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider gap-1">
             <span className="truncate">Estimated Profit</span>
-            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#0756B5] dark:text-blue-400 shadow-xs shrink-0">
+            <div className="p-1 sm:p-1.5 rounded-lg bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-xs shrink-0">
               <AccountBalanceWalletIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-sm sm:text-3xl font-extrabold text-[#0756B5] dark:text-blue-400 truncate">
+          <div className="text-sm sm:text-3xl font-extrabold text-sky-600 dark:text-sky-400 truncate">
             &#8377; {formatNumberWithCommas(totalProfit)}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">Net margin earnings</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Net margin earnings</p>
             {activeMetricTab === "profit" && (
-              <span className="text-[8px] sm:text-[10px] font-black text-[#0756B5] bg-blue-100 dark:bg-blue-900/60 dark:text-blue-300 px-1.5 py-0.5 rounded-full border border-blue-300 dark:border-blue-700">
+              <span className="text-[8px] sm:text-[10px] font-black text-sky-700 bg-sky-100 dark:bg-sky-900/60 dark:text-sky-300 px-1.5 py-0.5 rounded-full border border-sky-300 dark:border-sky-700">
                 ✓ Active View
               </span>
             )}
@@ -244,23 +244,23 @@ export default function Revenue() {
           onClick={() => setActiveMetricTab("delivered")}
           className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "delivered"
-              ? "bg-emerald-50 dark:bg-emerald-950/40 border-[#075C2A] ring-2 ring-[#075C2A] shadow-md"
-              : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/80 dark:border-emerald-800/40 hover:border-[#075C2A] hover:shadow-xs"
+              ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-600 ring-2 ring-indigo-600 shadow-md"
+              : "bg-white dark:bg-slate-800 border-indigo-100/90 dark:border-slate-700 hover:border-indigo-500 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider gap-1">
             <span className="truncate">Delivered Sales</span>
-            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#075C2A] dark:text-emerald-400 shadow-xs shrink-0">
+            <div className="p-1 sm:p-1.5 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs shrink-0">
               <ShoppingBagIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-sm sm:text-3xl font-extrabold text-[#075C2A] dark:text-emerald-400 truncate">
+          <div className="text-sm sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 truncate">
             &#8377; {formatNumberWithCommas(deliveredRevenue)}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">{deliveredOrders.length} orders delivered</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">{deliveredOrders.length} orders delivered</p>
             {activeMetricTab === "delivered" && (
-              <span className="text-[8px] sm:text-[10px] font-black text-[#075C2A] bg-emerald-100 dark:bg-emerald-900/60 dark:text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
+              <span className="text-[8px] sm:text-[10px] font-black text-indigo-700 bg-indigo-100 dark:bg-indigo-900/60 dark:text-indigo-300 px-1.5 py-0.5 rounded-full border border-indigo-300 dark:border-indigo-700">
                 ✓ Active View
               </span>
             )}
@@ -273,23 +273,23 @@ export default function Revenue() {
           onClick={() => setActiveMetricTab("avgOrder")}
           className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-200 cursor-pointer border space-y-1 sm:space-y-2 relative overflow-hidden flex flex-col justify-between ${
             activeMetricTab === "avgOrder"
-              ? "bg-blue-50 dark:bg-blue-950/40 border-[#0756B5] ring-2 ring-[#0756B5] shadow-md"
-              : "bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/80 dark:border-blue-800/40 hover:border-[#0756B5] hover:shadow-xs"
+              ? "bg-blue-50 dark:bg-blue-950/40 border-blue-700 ring-2 ring-blue-700 shadow-md"
+              : "bg-white dark:bg-slate-800 border-blue-100/90 dark:border-slate-700 hover:border-blue-600 hover:shadow-xs"
           }`}
         >
-          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider gap-1">
+          <div className="flex justify-between items-center text-[9px] sm:text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider gap-1">
             <span className="truncate">Avg. Order Value</span>
-            <div className="p-1 sm:p-1.5 rounded-lg bg-white dark:bg-gray-800 text-[#0756B5] dark:text-blue-400 shadow-xs shrink-0">
+            <div className="p-1 sm:p-1.5 rounded-lg bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-300 shadow-xs shrink-0">
               <TrendingUpIcon className="!text-sm sm:!text-xl" />
             </div>
           </div>
-          <div className="text-sm sm:text-3xl font-extrabold text-[#0756B5] dark:text-blue-400 truncate">
+          <div className="text-sm sm:text-3xl font-extrabold text-blue-700 dark:text-blue-300 truncate">
             &#8377; {formatNumberWithCommas(avgOrderValue.toFixed(2))}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:block">Average ticket size</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Average ticket size</p>
             {activeMetricTab === "avgOrder" && (
-              <span className="text-[8px] sm:text-[10px] font-black text-[#0756B5] bg-blue-100 dark:bg-blue-900/60 dark:text-blue-300 px-1.5 py-0.5 rounded-full border border-blue-300 dark:border-blue-700">
+              <span className="text-[8px] sm:text-[10px] font-black text-blue-700 bg-blue-100 dark:bg-blue-900/60 dark:text-blue-300 px-1.5 py-0.5 rounded-full border border-blue-300 dark:border-blue-700">
                 ✓ Active View
               </span>
             )}

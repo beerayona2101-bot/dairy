@@ -75,13 +75,14 @@ const UserSchema = new mongoose.Schema(
 
     mobileNo: {
       type: String,
+      trim: true,
       validate: {
         validator: function (v) {
           if (!v) return true;
-          const clean = String(v).trim().replace(/\s+/g, "");
-          return /^(\+91|0)?[6-9]\d{9}$/.test(clean) || /^\d{10,12}$/.test(clean);
+          const clean = String(v).trim().replace(/\D/g, "");
+          return clean.length >= 10 && clean.length <= 12;
         },
-        message: (props) => `${props.value} is not a valid phone number!`,
+        message: (props) => `${props.value} is not a valid 10-digit mobile number!`,
       },
     },
 
@@ -123,5 +124,33 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Enforce strictly unique mobile numbers across all users (ignoring null/empty/undefined)
+UserSchema.index(
+  { mobileNo: 1 },
+  {
+    unique: true,
+    sparse: true,
+  }
+);
+
+// Normalization pre-save hook
+UserSchema.pre("save", function (next) {
+  if (this.email) {
+    this.email = this.email.trim().toLowerCase();
+  }
+  if (this.mobileNo) {
+    let clean = String(this.mobileNo).trim().replace(/\D/g, "");
+    if (clean.length === 12 && clean.startsWith("91")) {
+      clean = clean.slice(2);
+    } else if (clean.length === 11 && clean.startsWith("0")) {
+      clean = clean.slice(1);
+    }
+    this.mobileNo = clean || undefined;
+  } else if (this.mobileNo === "" || this.mobileNo === null) {
+    this.mobileNo = undefined;
+  }
+  next();
+});
 
 export default mongoose.model("User", UserSchema);
