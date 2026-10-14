@@ -121,6 +121,11 @@ const UserSchema = new mongoose.Schema(
         type: { type: String, default: "order" },
       },
     ],
+    fcmTokens: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

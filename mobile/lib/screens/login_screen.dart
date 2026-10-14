@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _acceptTerms = true;
 
   @override
   void dispose() {
@@ -31,6 +32,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (!_acceptTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ Please accept the Terms & Conditions to sign in.'),
+          backgroundColor: Color(0xFFF59E0B),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.login(
@@ -237,7 +249,72 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
+
+                      // Terms and Conditions Checklist Box
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 14.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: Checkbox(
+                                value: _acceptTerms,
+                                activeColor: const Color(0xFF10B981),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                side: BorderSide(
+                                  color: isDark ? Colors.white38 : const Color(0xFFCBD5E1),
+                                  width: 1.5,
+                                ),
+                                onChanged: (val) {
+                                  setState(() {
+                                    _acceptTerms = val ?? true;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _showTermsModal(context),
+                                child: Text.rich(
+                                  TextSpan(
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 12.5,
+                                      color: isDark ? Colors.grey.shade400 : const Color(0xFF64748B),
+                                      height: 1.35,
+                                    ),
+                                    children: [
+                                      const TextSpan(text: 'I agree to the '),
+                                      TextSpan(
+                                        text: 'Terms & Conditions',
+                                        style: GoogleFonts.outfit(
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFF0284C7),
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                      const TextSpan(text: ' and '),
+                                      TextSpan(
+                                        text: 'Privacy Policy',
+                                        style: GoogleFonts.outfit(
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFF0284C7),
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
                       // Sign In Button
                       CustomButton(
@@ -405,6 +482,238 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _showTermsModal(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.80,
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              // Drag Handle
+              Container(
+                width: 44,
+                height: 4.5,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Modal Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.verified_user_outlined,
+                        color: Color(0xFF10B981),
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Terms & Privacy Policy',
+                            style: GoogleFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: isDark ? Colors.white : const Color(0xFF0F2742),
+                            ),
+                          ),
+                          Text(
+                            'Natural Milk Dairy & Daily Needs',
+                            style: GoogleFonts.outfit(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: isDark ? Colors.white70 : const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 24),
+
+              // Scrollable Terms Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTermsSection(
+                        icon: Icons.eco_rounded,
+                        title: '1. 100% Purity & Farm Freshness',
+                        desc:
+                            'All milk and dairy products are sourced fresh from healthy cows daily. Guaranteed zero chemical preservatives, adulterants, or synthetic hormones.',
+                        isDark: isDark,
+                      ),
+                      _buildTermsSection(
+                        icon: Icons.local_shipping_outlined,
+                        title: '2. Morning Doorstep Delivery',
+                        desc:
+                            'Fresh dairy products are delivered right to your doorstep every morning between 5:30 AM and 7:30 AM. Orders placed or modified before 10:00 PM will take effect the following morning.',
+                        isDark: isDark,
+                      ),
+                      _buildTermsSection(
+                        icon: Icons.pause_circle_outline_rounded,
+                        title: '3. Flexible Vacation & Pause',
+                        desc:
+                            'Travelling or taking a break? You can pause, adjust quantities, or resume subscriptions anytime through your user profile before 10:00 PM with zero extra charges.',
+                        isDark: isDark,
+                      ),
+                      _buildTermsSection(
+                        icon: Icons.account_balance_wallet_outlined,
+                        title: '4. Transparent Billing & Refunds',
+                        desc:
+                            'We support UPI, Online Payment, and Cash on Delivery. In the rare event of a missed delivery or bottle damage, refund credits are instantly applied to your account.',
+                        isDark: isDark,
+                      ),
+                      _buildTermsSection(
+                        icon: Icons.security_rounded,
+                        title: '5. Privacy & Data Confidentiality',
+                        desc:
+                            'Your personal contact details, addresses, and transaction records are securely encrypted. We never sell, rent, or share customer data with third parties.',
+                        isDark: isDark,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Accept Button Container
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E293B) : Colors.grey.shade50,
+                  border: Border(
+                    top: BorderSide(
+                      color: isDark ? Colors.white12 : Colors.grey.shade200,
+                    ),
+                  ),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 2,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _acceptTerms = true;
+                      });
+                      Navigator.pop(ctx);
+                    },
+                    child: Text(
+                      'I Understand & Accept',
+                      style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTermsSection({
+    required IconData icon,
+    required String title,
+    required String desc,
+    required bool isDark,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 20, color: const Color(0xFF10B981)),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : const Color(0xFF0F2742),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  desc,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12.5,
+                    color: isDark ? Colors.grey.shade400 : const Color(0xFF64748B),
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

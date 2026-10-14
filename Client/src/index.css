@@ -29,6 +29,11 @@
   --color-admin-blue-hover: #1D4ED8;
   --color-admin-blue-light: #EFF6FF;
   --color-admin-blue-border: #DBEAFE;
+  --font-serif-display: 'Playfair Display', Georgia, serif;
+}
+
+.font-serif-display {
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 .admin-theme {

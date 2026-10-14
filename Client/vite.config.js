@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
 
     server: {
-      host: isProd ? true : '127.0.0.1',
+      host: true,
       port: 5173,
     },
 

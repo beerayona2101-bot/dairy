@@ -70,6 +70,11 @@ const AdminSchema = new mongoose.Schema(
         type: { type: String, default: "order" },
       },
     ],
+    fcmTokens: [
+      {
+        type: String,
+      },
+    ],
 
     wishlistedProducts: [
       {

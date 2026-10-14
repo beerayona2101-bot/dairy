@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../config/api_config.dart';
 import '../providers/auth_provider.dart';
 import 'onboarding_screen.dart';
 
@@ -26,21 +27,27 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   bool _hasError = false;
   Timer? _timeoutTimer;
 
-  // Candidate connection URLs ordered by likelihood
-  static const String _primaryLanUrl = 'http://192.168.1.39:5173';
-  static final List<String> _candidateUrls = [
-    _primaryLanUrl,
-    'http://10.0.2.2:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:5173',
-  ];
+  static List<String> get _defaultCandidateUrls {
+    if (ApiConfig.isProduction) {
+      return [
+        ApiConfig.webUrl,
+      ];
+    }
+    return [
+      'http://${ApiConfig.lanIp}:5173',
+      'http://${ApiConfig.lanIp}:9000',
+      'http://10.0.2.2:5173',
+    ];
+  }
 
+  late final List<String> _candidateUrls;
   int _candidateIndex = 0;
   late String _currentUrl;
 
   @override
   void initState() {
     super.initState();
+    _candidateUrls = List<String>.from(_defaultCandidateUrls);
     _currentUrl = widget.initialUrl ?? _candidateUrls[0];
     _initWebView();
     _startTimeoutTimer();
@@ -235,9 +242,9 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               spacing: 6,
               runSpacing: 6,
               children: [
-                _buildQuickChip('Wi-Fi LAN', 'http://192.168.1.39:5173', hostController),
-                _buildQuickChip('Emulator', 'http://10.0.2.2:5173', hostController),
-                _buildQuickChip('USB / Local', 'http://127.0.0.1:5173', hostController),
+                _buildQuickChip('Wi-Fi (5173)', 'http://${ApiConfig.lanIp}:5173', hostController),
+                _buildQuickChip('Wi-Fi (9000)', 'http://${ApiConfig.lanIp}:9000', hostController),
+                _buildQuickChip('Production', ApiConfig.productionServerUrl, hostController),
               ],
             ),
           ],

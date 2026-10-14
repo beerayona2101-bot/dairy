@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Product from "../models/ProductSchema.js";
 import Admin from "../models/AdminSchema.js";
+import User from "../models/UserSchema.js";
+import { sendPushNotification, sendNotificationToAdmin } from "../services/fcmService.js";
 
 export const validateOrderData = (data) => {
   const { address, productsData, paymentMode, totalAmount, userId } =
@@ -153,6 +155,34 @@ export const addNotification = async (target, notification) => {
   target.notifications.unshift(notification);
   target.notifications = target.notifications.slice(0, 50);
   await target.save();
+
+  // Asynchronously dispatch FCM push notification to user's/admin's device(s)
+  try {
+    if (!isLoginNotification) {
+      let tokens = target.fcmTokens;
+      if ((!tokens || tokens.length === 0) && target._id) {
+        const fresh = (await User.findById(target._id).select("fcmTokens")) ||
+                      (await Admin.findById(target._id).select("fcmTokens"));
+        if (fresh && Array.isArray(fresh.fcmTokens)) {
+          tokens = fresh.fcmTokens;
+        }
+      }
+
+      if (Array.isArray(tokens) && tokens.length > 0) {
+        sendPushNotification({
+          fcmTokens: tokens,
+          title: notification.title || "Natural Milk Dairy",
+          body: notification.description || "",
+          data: {
+            orderId: notification.orderId ? String(notification.orderId) : "",
+            type: notification.type || "notification",
+          },
+        }).catch((err) => console.warn("[FCM] Push error in addNotification:", err?.message));
+      }
+    }
+  } catch (pushErr) {
+    console.warn("[FCM] Push dispatch error:", pushErr?.message);
+  }
 };
 
 export const notifyNewUserRegistration = async (user, io, options = {}) => {
@@ -203,6 +233,13 @@ export const notifyNewUserRegistration = async (user, io, options = {}) => {
       adminDoc.notifications = adminDoc.notifications.slice(0, 50);
       await adminDoc.save();
     }
+
+    // Send push notification to all admin devices
+    sendNotificationToAdmin({
+      title: adminNotif.title,
+      body: adminNotif.description,
+      data: { type: "user_signup", userId: String(user._id) },
+    }).catch(() => {});
 
     // 3. Live Socket Broadcasting
     if (io) {

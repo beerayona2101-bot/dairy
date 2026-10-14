@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import User from "../models/UserSchema.js";
 import Admin from "../models/AdminSchema.js";
 import { addNotification } from "../socket/helper.js";
+import { sendNotificationToUser, sendNotificationToAllUsers } from "../services/fcmService.js";
 
 // GET /api/notifications/:userId - Get all notifications for a user or admin
 export const getUserNotifications = async (req, res) => {
@@ -203,7 +204,7 @@ export const sendCustomNotification = async (req, res) => {
         io.to(`user:${String(userId)}`).emit("user:notification", notificationPayload);
       }
     } else {
-      // Broadcast to all users
+      // Broadcast to all users in database
       const users = await User.find({});
       for (const u of users) {
         await addNotification(u, notificationPayload);
@@ -211,6 +212,15 @@ export const sendCustomNotification = async (req, res) => {
       if (io) {
         io.emit("user:notification", notificationPayload);
       }
+      // Broadcast FCM push notification to all registered devices
+      sendNotificationToAllUsers({
+        title,
+        body: description,
+        data: {
+          orderId: orderId ? String(orderId) : "",
+          type: type || "system",
+        },
+      }).catch((err) => console.warn("[FCM] Broadcast push error:", err?.message));
     }
 
     return res.status(200).json({
@@ -220,5 +230,33 @@ export const sendCustomNotification = async (req, res) => {
   } catch (error) {
     console.error("sendCustomNotification error:", error);
     return res.status(500).json({ success: false, message: error.message || "Failed to send notification." });
+  }
+};
+
+// POST /api/notifications/test-push - Immediate test push notification
+export const testPushNotification = async (req, res) => {
+  try {
+    const {
+      userId,
+      title = "Test Push Notification 🔔",
+      body = "This is a real-time push test from Natural Milk Dairy!",
+      data = {},
+    } = req.body;
+
+    let result;
+    if (userId) {
+      result = await sendNotificationToUser(userId, { title, body, data });
+    } else {
+      result = await sendNotificationToAllUsers({ title, body, data });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Push notification trigger attempted.",
+      result,
+    });
+  } catch (error) {
+    console.error("testPushNotification error:", error);
+    return res.status(500).json({ success: false, message: error.message || "Failed to trigger test push." });
   }
 };

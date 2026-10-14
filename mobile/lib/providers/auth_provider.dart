@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../services/fcm_service.dart';
 
 enum AuthStatus {
   initializing,
@@ -42,6 +43,7 @@ class AuthProvider with ChangeNotifier {
             token: token,
           );
           _status = AuthStatus.authenticated;
+          FcmService.syncTokenWithBackend(userId);
         } else {
           // Session expired or rejected -> clear invalid storage
           await AuthService.clearSession();
@@ -78,6 +80,7 @@ class AuthProvider with ChangeNotifier {
     if (result['success'] == true && result['user'] is UserModel) {
       _currentUser = result['user'] as UserModel;
       _status = AuthStatus.authenticated;
+      FcmService.syncTokenWithBackend(_currentUser!.id);
       notifyListeners();
       return true;
     } else {
@@ -106,6 +109,9 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    if (_currentUser != null) {
+      await FcmService.removeTokenFromBackend(_currentUser!.id);
+    }
     await AuthService.clearSession();
     _currentUser = null;
     _status = AuthStatus.unauthenticated;
