@@ -1,0 +1,758 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-green: #075C2A;
+  --color-brand-leaf: #3F9E18;
+  --color-dairy-blue: #0756B5;
+  --color-sky-blue: #35A8E8;
+  --color-premium-gold: #D5A62A;
+  --color-milk-white: #FFFDF7;
+  --color-cream-bg: #F5E9D0;
+  --color-dark-green-text: #063B22;
+
+  --color-primary-green: #075C2A;
+  --color-primary-blue: #0756B5;
+  --color-accent-sky: #35A8E8;
+  --color-accent-gold: #D5A62A;
+  --color-bg-main: #FFFDF7;
+  --color-card-white: #FFFFFF;
+  --color-card-cream: #F5E9D0;
+  --color-text-dark: #063B22;
+  --color-text-muted: #526B5C;
+  --color-discount-bg: #FEF9C3;
+  --color-discount-border: #D5A62A;
+  --font-poppins: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-admin-bg: #F4F7FB;
+  --color-admin-card: #FFFFFF;
+  --color-admin-blue: #2563EB;
+  --color-admin-blue-hover: #1D4ED8;
+  --color-admin-blue-light: #EFF6FF;
+  --color-admin-blue-border: #DBEAFE;
+  --font-serif-display: 'Playfair Display', Georgia, serif;
+}
+
+.font-serif-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.admin-theme {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+:root {
+  --brand-green: #075C2A;
+  --brand-leaf: #3F9E18;
+  --dairy-blue: #0756B5;
+  --sky-blue: #35A8E8;
+  --premium-gold: #D5A62A;
+  --milk-white: #FFFDF7;
+  --cream-bg: #F5E9D0;
+  --dark-green-text: #063B22;
+
+  --primary-green: #075C2A;
+  --primary-blue: #0756B5;
+  --sky-accent: #35A8E8;
+  --gold-accent: #D5A62A;
+  --bg-main: #FFFDF7;
+  --card-white: #FFFFFF;
+  --text-dark: #063B22;
+  --text-muted: #526B5C;
+}
+
+html {
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep scrolling functional */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #FFFDF7;
+  color: #063B22;
+  overflow-x: clip;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pan-x;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-color: #FFFFFF;
+  pointer-events: none;
+}
+
+.dark body {
+  background-color: #0F172A;
+  color: #F8FAFC;
+}
+
+.dark body::before {
+  background-color: #0F172A;
+}
+
+/* Fast & Smooth Hardware Accelerated Global Transitions */
+.transition-all,
+.transition,
+.transition-colors,
+.transition-opacity,
+.transition-transform,
+.transition-shadow {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+a, button, input, select, textarea, [role="button"] {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+/* Global Form Input & Select Thin, Sleek Styling (Exclude custom-wrapped & transparent inputs) */
+input[type="text"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="email"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="password"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="tel"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+input[type="number"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+select:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input),
+textarea:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input) {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="text"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="email"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="password"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="tel"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+input[type="number"]:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+select:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus,
+textarea:not([class*="bg-transparent"]):not([class*="border-none"]):not([class*="border-0"]):not(.no-border-input):focus {
+  border-color: #1E88E5;
+  box-shadow: 0 0 0 2px rgba(0, 80, 158, 0.15);
+  outline: none;
+}
+
+/* Disable inner border completely on borderless and custom-wrapped transparent inputs */
+.no-border-input,
+.composite-input-wrapper > input,
+.composite-input-wrapper input,
+input.border-none,
+input.border-0,
+input[class*="border-none"],
+input[class*="border-0"],
+input[class*="bg-transparent"],
+textarea.border-none,
+textarea.border-0,
+textarea[class*="border-none"],
+textarea[class*="border-0"],
+textarea[class*="bg-transparent"] {
+  border: none !important;
+  border-style: none !important;
+  border-width: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+}
+
+.no-border-input:focus,
+.composite-input-wrapper > input:focus,
+.composite-input-wrapper input:focus,
+input.border-none:focus,
+input.border-0:focus,
+input[class*="border-none"]:focus,
+input[class*="border-0"]:focus,
+input[class*="bg-transparent"]:focus,
+textarea.border-none:focus,
+textarea.border-0:focus,
+textarea[class*="border-none"]:focus,
+textarea[class*="border-0"]:focus,
+textarea[class*="bg-transparent"]:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Material UI Outlined Inputs Thin Single Border */
+.MuiOutlinedInput-root fieldset {
+  border-width: 1px !important;
+  border-color: #cbd5e1 !important;
+}
+
+.MuiOutlinedInput-root:hover fieldset,
+.MuiOutlinedInput-root.Mui-focused fieldset {
+  border-width: 1.5px !important;
+  border-color: #1E88E5 !important;
+  box-shadow: 0 0 0 2px rgba(0, 80, 158, 0.15) !important;
+}
+
+.MuiFormLabel-root.Mui-focused {
+  color: #1E88E5 !important;
+  font-weight: 600 !important;
+}
+
+/* Glassmorphism System Utility Classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(36px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.dark .glass-card {
+  background: rgba(15, 23, 42, 0.7) !important;
+  backdrop-filter: blur(36px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.58) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 36px !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4) !important;
+}
+
+.glass-navbar {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+.dark .glass-navbar {
+  background: rgba(15, 23, 42, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Global Dialog & Modal Glassmorphism Overrides */
+.MuiDialog-paper,
+.MuiPaper-elevation {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.dark .MuiDialog-paper,
+.dark .MuiPaper-elevation {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Soft Light Palette Utility Classes to Differentiate Cards */
+/* Soft Light Palette Utility Classes to Differentiate Cards */
+.card-light-blue {
+  background-color: #F4F8FC !important;
+  border: 1px solid rgba(30, 136, 229, 0.15) !important;
+}
+
+.card-light-green {
+  background-color: #F0FDF4 !important;
+  border: 1px solid rgba(67, 160, 71, 0.2) !important;
+}
+
+.card-light-cyan {
+  background-color: #ECFEFF !important;
+  border: 1px solid rgba(0, 172, 193, 0.2) !important;
+}
+
+.card-light-gold {
+  background-color: #FFFBEB !important;
+  border: 1px solid rgba(251, 140, 0, 0.3) !important;
+}
+
+/* Brand Utility Classes matching Palette */
+.bg-primary-blue,
+.bg-madhu-blue,
+.bg-madhur-blue {
+  background-color: #1E88E5 !important;
+}
+.hover\:bg-madhu-blue-dark:hover,
+.hover\:bg-madhur-blue-dark:hover,
+.hover\:bg-primary-blue-dark:hover {
+  background-color: #1565C0 !important;
+}
+.text-primary-blue,
+.text-madhu-blue,
+.text-madhur-blue {
+  color: #1E88E5 !important;
+}
+.border-primary-blue,
+.border-madhu-blue,
+.border-madhur-blue {
+  border-color: #1E88E5 !important;
+}
+
+.bg-deep-navy {
+  background-color: #0F2742 !important;
+}
+.text-deep-navy {
+  color: #0F2742 !important;
+}
+.border-deep-navy {
+  border-color: #0F2742 !important;
+}
+
+.bg-farm-green,
+.bg-madhu-green,
+.bg-madhur-green {
+  background-color: #43A047 !important;
+}
+.hover\:bg-madhu-green-dark:hover,
+.hover\:bg-madhur-green-dark:hover,
+.hover\:bg-farm-green-dark:hover {
+  background-color: #2E7D32 !important;
+}
+.text-farm-green,
+.text-madhu-green,
+.text-madhur-green {
+  color: #43A047 !important;
+}
+.border-farm-green {
+  border-color: #43A047 !important;
+}
+
+.bg-accent-teal,
+.bg-madhu-cyan,
+.bg-madhur-cyan {
+  background-color: #00ACC1 !important;
+}
+.text-accent-teal,
+.text-madhu-cyan,
+.text-madhur-cyan {
+  color: #00ACC1 !important;
+}
+.border-accent-teal {
+  border-color: #00ACC1 !important;
+}
+
+.bg-madhu-gold,
+.bg-madhur-gold {
+  background-color: #FB8C00 !important;
+}
+.text-madhu-gold,
+.text-madhur-gold {
+  color: #FB8C00 !important;
+}
+
+.hide-input-spin::-webkit-outer-spin-button,
+.hide-input-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Named utility for horizontal scroll containers on mobile */
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+
+/* Hide scrollbars globally across the entire application for all browsers while maintaining smooth scrolling */
+html,
+body,
+*,
+*::before,
+*::after {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge, and Opera */
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+/* Premium Light Reflection / Gloss Shimmer Sweep Animation */
+@keyframes reflectionSweep {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  35%, 100% {
+    transform: translateX(350%) skewX(-25deg);
+  }
+}
+
+.btn-reflection {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.btn-reflection::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -30% !important;
+  left: 0 !important;
+  width: 60% !important;
+  height: 160% !important;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 25%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.3) 75%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.9) !important;
+  transform: translateX(-150%) skewX(-25deg) !important;
+  animation: reflectionSweep 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
+
+.dark .btn-reflection::before {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+}
+
+.btn-reflection:hover::before {
+  animation: reflectionSweep 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Premium Floating Perimeter Border Light Effect */
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes spinBorderLight {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
+}
+
+.floating-border-light {
+  position: relative !important;
+  isolation: isolate;
+  will-change: transform;
+}
+
+.floating-border-light::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -1.5px !important;
+  border-radius: inherit !important;
+  padding: 2px !important;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0deg,
+    transparent 260deg,
+    rgba(108, 92, 231, 0.5) 300deg,
+    rgba(167, 139, 250, 0.95) 340deg,
+    #ffffff 355deg,
+    transparent 360deg
+  ) !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  opacity: 0.65 !important;
+  animation: spinBorderLight 3.2s linear infinite !important;
+  transition: opacity 0.35s ease-in-out !important;
+  pointer-events: none !important;
+  z-index: 30 !important;
+}
+
+.floating-border-light:hover::before,
+.floating-border-light:active::before,
+.floating-border-light.active-touch::before {
+  opacity: 1 !important;
+  animation: spinBorderLight 2.2s linear infinite !important;
+}
+
+/* Always vibrant light traveling on mobile touch screens */
+@media (max-width: 768px), (pointer: coarse) {
+  .floating-border-light::before {
+    opacity: 0.85 !important;
+    animation: spinBorderLight 2.8s linear infinite !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-border-light::before {
+    animation: none !important;
+  }
+}
+
+/* Premium Glassmorphism & Moving Mirror Light Reflection Sweep Animation (Continuous Every 2s) */
+@keyframes mirrorReflectionSweep {
+  0% {
+    transform: translateX(-160%) skewX(-25deg);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 1;
+  }
+  42% {
+    transform: translateX(360%) skewX(-25deg);
+    opacity: 0;
+  }
+  42.1%, 100% {
+    transform: translateX(360%) skewX(-25deg);
+    opacity: 0;
+  }
+}
+
+@keyframes mirrorReflectionHoverSweep {
+  0% {
+    transform: translateX(-160%) skewX(-25deg);
+    opacity: 0.2;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(360%) skewX(-25deg);
+    opacity: 0;
+  }
+}
+
+.periodic-glass-shine,
+.btn-reflection,
+.glass-shine-card {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08),
+              inset 0 1px 1.5px rgba(255, 255, 255, 0.45) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease !important;
+}
+
+/* Ensure inner text, icons, and card contents stay layered above the light reflection */
+.periodic-glass-shine > :not(.absolute),
+.btn-reflection > :not(.absolute),
+.glass-shine-card > :not(.absolute) {
+  position: relative;
+  z-index: 10;
+}
+
+/* Diagonal Moving Mirror Reflection Bar */
+.periodic-glass-shine::before,
+.btn-reflection::before,
+.glass-shine-card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -50% !important;
+  bottom: -50% !important;
+  left: 0 !important;
+  width: 50% !important;
+  height: 200% !important;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.12) 20%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.12) 80%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  transform: translateX(-160%) skewX(-25deg) !important;
+  animation: mirrorReflectionSweep 2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  pointer-events: none !important;
+  z-index: 8 !important;
+  will-change: transform, opacity !important;
+}
+
+.dark .periodic-glass-shine::before,
+.dark .btn-reflection::before,
+.dark .glass-shine-card::before {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.08) 80%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+}
+
+.periodic-glass-shine:hover::before,
+.btn-reflection:hover::before,
+.glass-shine-card:hover::before {
+  animation: mirrorReflectionHoverSweep 0.85s cubic-bezier(0.16, 1, 0.3, 1) 1 forwards !important;
+}
+
+.periodic-glass-shine:hover,
+.btn-reflection:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 24px rgba(30, 136, 229, 0.25),
+              inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+
+.periodic-glass-shine:active,
+.btn-reflection:active {
+  transform: scale(0.98) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .periodic-glass-shine::before,
+  .btn-reflection::before,
+  .glass-shine-card::before,
+  .animate-banner-zoom,
+  .animate-banner-zoom-hero {
+    animation: none !important;
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Continuous Banner Zoom In & Out Animation (Ken Burns Breathing Effect)
+   Buttery smooth GPU-accelerated 60fps infinite breathing zoom across all screen sizes
+   ========================================================================== */
+@keyframes bannerZoomInOut {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-banner-zoom {
+  animation: bannerZoomInOut 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite !important;
+  transform-origin: center center;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Home Welcome Hero Banner with focal point preservation across responsive breakpoints */
+.animate-banner-zoom-hero {
+  animation: bannerZoomInOut 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite !important;
+  transform-origin: 50% 25%;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+@media (min-width: 768px) {
+  .animate-banner-zoom-hero {
+    animation-duration: 14s !important;
+    transform-origin: 80% 50%;
+  }
+}
+
+/* ==========================================================================
+   USER DASHBOARD & PROFILE MODERN TYPOGRAPHY SYSTEM
+   Font: Plus Jakarta Sans with Outfit geometric fallback
+   ========================================================================== */
+.font-dashboard,
+.user-dashboard-root {
+  font-family: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  letter-spacing: -0.015em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-dashboard h1,
+.font-dashboard h2,
+.font-dashboard h3,
+.font-dashboard h4,
+.font-dashboard h5,
+.font-dashboard h6 {
+  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  letter-spacing: -0.025em;
+}
+
+.font-dashboard-heading {
+  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+
+.font-dashboard-num {
+  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.02em;
+}
+
+.font-dashboard-label {
+  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   HIGH-PERFORMANCE ULTRA-SMOOTH NAVIGATION & RENDERING UTILITIES
+   ========================================================================== */
+@keyframes topProgressSlide {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+
+.performance-lazy-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 600px;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}

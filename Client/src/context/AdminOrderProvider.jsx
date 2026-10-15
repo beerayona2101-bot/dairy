@@ -1,0 +1,199 @@
+import React, { createContext, useState, useMemo, useContext, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
+import { useSnackbar } from "notistack";
+import { AdminAuthContext } from "./AuthProvider";
+import { getAdminOrders, getAllOrders } from "../services/orderService";
+import { getUserNotifications } from "../services/notificationService";
+import { deduplicateNotifications } from "../utils/notificationUtils";
+import wsManager from "../socket/WebSocketManager";
+import { playOrderAlertChime, playNotificationChime } from "../utils/soundService";
+
+export const AdminOrderContext = createContext();
+
+export default function AdminOrderProvider({ children }) {
+
+    const { authAdmin } = useContext(AdminAuthContext);
+    const { enqueueSnackbar } = useSnackbar();
+    const [adminOrders, setAdminOrders] = useState([]);
+    const [allOrders, setAllOrders] = useState([]);
+    const [orderLoading, setOrderLoading] = useState(true);
+    const [allOrdersLoading, setAllOrdersLoading] = useState(true);
+    const [notification, setNotification] = useState([]);
+
+    const setSafeNotification = useCallback((updater) => {
+        setNotification((prev) => {
+            const next = typeof updater === "function" ? updater(prev) : updater;
+            return deduplicateNotifications(next);
+        });
+    }, []);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const res = await getAdminOrders();
+                if (res?.success) {
+                    setAdminOrders(res?.orders || []);
+                }
+            } catch (error) {
+                console.warn("Fetch admin orders error:", error?.message);
+            } finally {
+                setOrderLoading(false);
+            }
+        };
+
+        const adminId = authAdmin?._id;
+
+        if (adminId) {
+            setNotification(deduplicateNotifications(authAdmin?.notifications || []));
+            getUserNotifications(adminId).then((res) => {
+                if (res?.success && Array.isArray(res.notifications)) {
+                    setNotification(deduplicateNotifications(res.notifications));
+                }
+            }).catch(() => {});
+
+            wsManager.connect({ role: "admin", adminId, _id: adminId });
+            fetchOrders();
+        } else {
+            setOrderLoading(false);
+        }
+    }, [authAdmin]);
+
+    const fetchAllOrders = useCallback(async () => {
+        try {
+            const res = await getAllOrders();
+            if (res?.success) {
+                setAllOrders(res?.orders || []);
+            }
+        } catch (error) {
+            console.warn("Fetch all orders error:", error?.message);
+        } finally {
+            setAllOrdersLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchAllOrders();
+    }, [fetchAllOrders]);
+
+    const handleAdminNotification = useCallback((notifPayload) => {
+        if (!notifPayload) return;
+        const newNotif = {
+            title: notifPayload.title || "New Notification",
+            description: notifPayload.description || "",
+            date: notifPayload.date || new Date().toISOString(),
+            isRead: notifPayload.isRead ?? false,
+            type: notifPayload.type || "system",
+            _id: notifPayload._id || `admin-notif-${Date.now()}-${Math.random()}`,
+        };
+        setNotification((prev) => deduplicateNotifications([newNotif, ...(prev || [])]));
+
+        // Audible alert
+        if (newNotif.type === "new_order" || (newNotif.title && newNotif.title.toLowerCase().includes("order"))) {
+            playOrderAlertChime();
+        } else {
+            playNotificationChime();
+        }
+
+        // Live admin toast
+        if (enqueueSnackbar) {
+            enqueueSnackbar(newNotif.title, {
+                variant: newNotif.type === "new_order" ? "warning" : "info",
+                autoHideDuration: 5000,
+            });
+        }
+    }, [enqueueSnackbar]);
+
+    const handleNewPendingOrder = useCallback(({ order }) => {
+        playOrderAlertChime();
+        if (order && order._id) {
+            const orderNum = order?.orderId || String(order._id).slice(-6).toUpperCase();
+            if (enqueueSnackbar) {
+                enqueueSnackbar(`New Order Received 📦 #${orderNum} for ₹${order?.totalAmount || ""}`, {
+                    variant: "warning",
+                    autoHideDuration: 6000,
+                });
+            }
+            setAdminOrders((prevOrders) => {
+                if (prevOrders.some(o => String(o?._id) === String(order?._id))) return prevOrders;
+                return [order, ...prevOrders];
+            });
+            setAllOrders((prevOrders) => {
+                if (prevOrders.some(o => String(o?._id) === String(order?._id))) return prevOrders;
+                return [order, ...prevOrders];
+            });
+        }
+        fetchAllOrders();
+    }, [fetchAllOrders, enqueueSnackbar]);
+
+    const handleGenericOrderUpdate = useCallback(({ orderId, status }) => {
+        if (!orderId) {
+            fetchAllOrders();
+            return;
+        }
+
+        if (status) {
+            setAdminOrders((prevOrders) =>
+                status === "Pending"
+                    ? prevOrders
+                    : prevOrders?.filter((order) => String(order?._id) !== String(orderId))
+            );
+
+            setAllOrders((prevOrders) =>
+                prevOrders?.map((order) =>
+                    String(order._id) === String(orderId) ? { ...order, status } : order
+                )
+            );
+        }
+
+        fetchAllOrders();
+    }, [fetchAllOrders]);
+
+    useEffect(() => {
+        const unsubs = [
+            wsManager.subscribe("order:new-pending-order", handleNewPendingOrder),
+            wsManager.subscribe("order:accept-success", handleGenericOrderUpdate),
+            wsManager.subscribe("order:reject-success", handleGenericOrderUpdate),
+            wsManager.subscribe("admin:notification", handleAdminNotification),
+            wsManager.subscribe("user:new-registered", (data) => {
+                if (data?.notification) {
+                    handleAdminNotification(data.notification);
+                }
+            }),
+            wsManager.subscribe("admin-order:delivered-success", handleGenericOrderUpdate),
+            wsManager.subscribe("admin:order-updated", handleGenericOrderUpdate),
+            wsManager.subscribe("order:global-status-update", handleGenericOrderUpdate),
+            wsManager.subscribe("user-order:updated-status", handleGenericOrderUpdate),
+            wsManager.subscribe("order:status-updated", handleGenericOrderUpdate),
+            wsManager.subscribe("order.updated", handleGenericOrderUpdate),
+            wsManager.subscribe("order.created", handleNewPendingOrder),
+        ];
+
+        return () => {
+            unsubs.forEach((unsub) => unsub());
+        };
+    }, [handleAdminNotification, handleGenericOrderUpdate, handleNewPendingOrder]);
+
+    const value = useMemo(() => ({
+        adminOrders,
+        allOrders,
+        orderLoading,
+        allOrdersLoading,
+        notification,
+        refetchAllOrders: fetchAllOrders,
+        setAdminOrders,
+        setAllOrders,
+        setOrderLoading,
+        setAllOrdersLoading,
+        setNotification: setSafeNotification
+    }), [adminOrders, orderLoading, allOrders, notification, allOrdersLoading, fetchAllOrders, setSafeNotification]);
+
+    return (
+        <AdminOrderContext.Provider value={value}>
+            {children}
+        </AdminOrderContext.Provider>
+    );
+}
+
+AdminOrderProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};

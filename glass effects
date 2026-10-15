@@ -1,0 +1,61 @@
+# 30-Second Periodic Diagonal Glass Shine Animation Implementation Plan
+
+Implement a GPU-accelerated **30-Second Periodic Diagonal Glass Shine Sweep Animation** (*Glossy Reflection Pass*) across all **Login buttons**, **"Our Promise of Dairy Excellence" cards**, and the **Category Hero Banner Card** (from the user reference image).
+
+## Effect Mechanism & Mathematics
+
+> [!NOTE]
+> **Effect Name**: **Periodic Diagonal Glass Shine Sweep** (*30s Glass Reflection Pass*).  
+> **Keyframe Mathematics**:
+> - Total Animation Cycle: **30 seconds** (`infinite` loop).
+> - Active Sweep Duration: **1.5 seconds** (0% to 5% keyframe timeline).
+> - Path: Enters from **Left Edge** (`-140%`), sweeps diagonally at 30°, and exits past the **Right Edge** (`220%`).
+> - Wait Period: **28.5 seconds** (5.1% to 100% keyframe timeline, hidden & off-screen).
+> - Boundary Clipping: `overflow: hidden !important` following the element's exact `border-radius`.
+> - Performance: 100% GPU-accelerated with zero JS timers, state updates, or authentication interference.
+
+## User Review Required
+
+> [!IMPORTANT]
+> - **Login Buttons**: Applied to Navbar Login button (`Navbar.jsx`), User Login submit button (`UserLogin.jsx`), User SignUp submit button (`UserSignUp.jsx`), and Admin Login submit button (`AdminLogin.jsx`).
+> - **Promise of Dairy Excellence Cards**: Applied to all purity guarantee feature cards in `MilkHealthBenefitsSection.jsx`.
+> - **Category Hero Banner Card**: Applied to the category header banner card in `ProductPage.jsx` (featured in the user reference image).
+> - All buttons/cards remain 100% functional, clickable, and responsive in both dark and light modes.
+
+## Proposed Changes
+
+### CSS Stylesheet (`Client`)
+
+#### [MODIFY] [index.css](file:///c:/Users/Lenovo/Desktop/milkapp/Client/src/index.css)
+- Add `@keyframes periodicGlassShineSweep` with 30s timing (1.5s active sweep + 28.5s silent wait).
+- Add `.periodic-glass-shine` utility class with clipped pseudo-element layer (`pointer-events: none; z-index: 25`).
+
+### Components & Pages (`Client`)
+
+#### [MODIFY] [Navbar.jsx](file:///c:/Users/Lenovo/Desktop/milkapp/Client/src/components/Navbar.jsx)
+- Add `.periodic-glass-shine` class to the Navbar Login Account button.
+
+#### [MODIFY] [UserLogin.jsx](file:///c:/Users/Lenovo/Desktop/milkapp/Client/src/pages/Auth/User/UserLogin.jsx) & [UserSignUp.jsx](file:///c:/Users/Lenovo/Desktop/milkapp/Client/src/pages/Auth/User/UserSignUp.jsx) & [AdminLogin.jsx](file:///c:/Users/Lenovo/Desktop/milkapp/Client/src/pages/Auth/Admin/AdminLogin.jsx)
+- Add `.periodic-glass-shine` class to the primary submit Login/SignUp buttons.
+
+#### [MODIFY] [MilkHealthBenefitsSection.jsx](file:///c:/Users/Lenovo/Desktop/milkapp/Client/src/components/HomeComponents/MilkHealthBenefitsSection.jsx)
+- Add `.periodic-glass-shine` class to the "Our Promise of Dairy Excellence" cards.
+
+#### [MODIFY] [ProductPage.jsx](file:///c:/Users/Lenovo/Desktop/milkapp/Client/src/pages/ProductPage.jsx)
+- Add `.periodic-glass-shine` class to the Category Hero Banner Card (`Milk`, `Ghee`, `Paneer`, etc.) shown in the user screenshot.
+
+---
+
+## Verification Plan
+
+### Automated Build Verification
+- Run `npm run build` in `Client` to verify zero CSS or JSX compilation errors.
+
+### Manual Verification
+1. **Timing & Sweep Verification**:
+   - Open `/login`, `/home`, and `/products/milk`.
+   - Observe Login buttons, Promise cards, and Category Hero Banner.
+   - Verify glass reflection enters from the LEFT, sweeps diagonally across the element, and exits past the RIGHT in ~1.5s.
+   - Verify the element returns to normal and waits for 30 seconds before repeating.
+2. **Functionality Check**:
+   - Click Login button during animation to verify form submission & authentication work flawlessly.

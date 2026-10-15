@@ -1,0 +1,352 @@
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { SidebarContext } from "../../context/SidebarProvider";
+import { AdminAuthContext } from "../../context/AuthProvider";
+import { formatDistanceToNow } from "date-fns";
+
+import MenuIcon from "@mui/icons-material/Menu";
+import { Dialog, Slide, Tooltip } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { Bell, X, CheckCheck, ArrowLeft } from "lucide-react";
+import { enqueueSnackbar } from "notistack";
+import { removeAdminNotification } from "../../services/adminService";
+import { removeUserNotification } from "../../services/userProfileService";
+import { markNotificationAsRead } from "../../services/notificationService";
+import { ThemeContext } from "../../context/ThemeProvider";
+import { AdminOrderContext } from "../../context/AdminOrderProvider";
+import { UserAuthContext } from "../../context/AuthProvider";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="down" ref={ref} {...props} />;
+});
+
+export default function AdminNavbar() {
+
+    const navigate = useNavigate();
+    const { theme } = useContext(ThemeContext);
+
+    const { authAdmin, setAuthAdmin } = useContext(AdminAuthContext);
+    const { authUser, setAuthUser } = useContext(UserAuthContext);
+    const { setIsSidebarOpen } = useContext(SidebarContext);
+    const { notification, setNotification } = useContext(AdminOrderContext);
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationLoadingIndex, setNotificationLoadingIndex] = useState(null);
+    const [animate, setAnimate] = useState(false);
+    const bellRef = useRef(null);
+    const panelRef = useRef(null);
+
+    const prevCountRef = useRef(notification.length);
+    const unreadCount = notification.filter(n => !n?.isRead).length;
+
+    const handleSidebarToggle = () => {
+        setIsSidebarOpen((prev) => !prev);
+    };
+
+    useEffect(() => {
+        if (notification.length > prevCountRef.current) {
+            setAnimate(true);
+            setTimeout(() => setAnimate(false), 2600);
+        }
+        prevCountRef.current = notification.length;
+    }, [notification.length]);
+
+    // Close on outside click
+    useEffect(() => {
+        if (!notificationOpen) return;
+        const handleOutside = (e) => {
+            if (
+                panelRef.current && !panelRef.current.contains(e.target) &&
+                bellRef.current && !bellRef.current.contains(e.target)
+            ) {
+                setNotificationOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleOutside);
+        return () => document.removeEventListener("mousedown", handleOutside);
+    }, [notificationOpen]);
+
+    const handleRemoveNotification = async (index, mode, notificationId = null) => {
+        const adminId = authAdmin?._id;
+        const userId = authUser?._id;
+
+        if (!adminId && !userId) {
+            enqueueSnackbar("Please login to manage notifications.", { variant: "warning" });
+            return;
+        }
+
+        setNotificationLoadingIndex(mode === "all" ? "all" : index);
+
+        try {
+            let res;
+            if (adminId) {
+                res = await removeAdminNotification(adminId, mode, index, notificationId);
+            } else {
+                res = await removeUserNotification(userId, mode, index, notificationId);
+            }
+
+            if (res?.success) {
+                if (mode === "all") {
+                    setNotification([]);
+                    if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: [] } : null);
+                    if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: [] } : null);
+                    enqueueSnackbar("All notifications cleared.", { variant: "success" });
+                } else if (mode === "index") {
+                    setNotification((prev) => prev.filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index));
+                    if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index) } : null);
+                    if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: (prev.notifications || []).filter((n, i) => notificationId ? String(n._id) !== String(notificationId) : i !== index) } : null);
+                }
+            } else {
+                enqueueSnackbar(res?.message || "Failed to remove notification.", { variant: "error" });
+            }
+        } catch (error) {
+            enqueueSnackbar(error?.response?.data?.message || "Server error.", { variant: "error" });
+        } finally {
+            setNotificationLoadingIndex(null);
+        }
+    };
+
+    const handleMarkAllAsRead = async () => {
+        const targetId = authAdmin?._id || authUser?._id;
+        if (!targetId) return;
+        try {
+            await markNotificationAsRead(targetId, null, "all");
+            setNotification((prev) => prev.map((n) => ({ ...n, isRead: true })));
+            if (setAuthAdmin) setAuthAdmin((prev) => prev ? { ...prev, notifications: (prev.notifications || []).map(n => ({ ...n, isRead: true })) } : null);
+            if (setAuthUser) setAuthUser((prev) => prev ? { ...prev, notifications: (prev.notifications || []).map(n => ({ ...n, isRead: true })) } : null);
+            enqueueSnackbar("All notifications marked as read.", { variant: "success" });
+        } catch (err) {
+            console.error("handleMarkAllAsRead error:", err);
+        }
+    };
+
+    const handleNotificationClick = async (item, idx) => {
+        const targetId = authAdmin?._id || authUser?._id;
+        if (targetId && item?._id) {
+            markNotificationAsRead(targetId, item._id, "single").catch(() => {});
+            setNotification((prev) => prev.map((n, i) => (i === idx || n._id === item._id) ? { ...n, isRead: true } : n));
+        }
+        setNotificationOpen(false);
+
+        const targetOrderId = item?.orderId || item?.order?._id;
+        const isOrderNotif = item?.type === "order" || Boolean(targetOrderId) || (item?.title && /order/i.test(item.title));
+
+        if (isOrderNotif && targetOrderId) {
+            navigate(`/admin/orders?orderId=${targetOrderId}`, { state: { orderId: targetOrderId } });
+        } else {
+            navigate("/admin/orders");
+        }
+    };
+
+    const isDark = theme === "dark";
+
+    return (
+        <nav className="sticky top-0 z-50 w-full py-3 px-3 sm:px-6 lg:px-8 transition-all duration-300 bg-[#F4F7FB]/85 dark:bg-slate-900/85 backdrop-blur-md">
+            {/* Pill Container */}
+            <div className="max-w-7xl mx-auto bg-white dark:bg-slate-800/95 rounded-full px-4 sm:px-6 py-2 shadow-[0_4px_24px_rgba(37,99,235,0.04)] border border-slate-200/90 dark:border-slate-700 flex items-center justify-between transition-all duration-300 relative">
+
+                {/* Left: Sidebar Toggle */}
+                <div className="flex items-center gap-2.5 sm:gap-3 z-10">
+                    <button
+                        className="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:scale-105 transition cursor-pointer border border-blue-200/60 dark:border-slate-700 shrink-0"
+                        onClick={handleSidebarToggle}
+                        title="Toggle Sidebar Menu"
+                    >
+                        <MenuIcon sx={{ fontSize: "1.2rem" }} />
+                    </button>
+                </div>
+
+                {/* Center: Brand Name */}
+                <Link
+                    to="/admin/dashboard"
+                    className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 no-underline cursor-pointer select-none"
+                >
+                    <span className="font-black text-xs sm:text-sm tracking-tight text-slate-900 dark:text-white uppercase leading-none">
+                        Natural Milk Dairy
+                    </span>
+                    <span className="text-[8.5px] sm:text-[9.5px] font-extrabold text-blue-600 dark:text-blue-400 tracking-widest uppercase leading-tight mt-0.5">
+                        Pure &amp; Fresh A2
+                    </span>
+                </Link>
+
+                {/* Right: Bell Button */}
+                <div className="flex items-center gap-2 sm:gap-3 z-10">
+                    <Tooltip title="Notifications">
+                        <button
+                            ref={bellRef}
+                            onClick={() => setNotificationOpen((prev) => !prev)}
+                            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer relative ${
+                                notificationOpen
+                                    ? "bg-blue-50 text-blue-600 scale-105"
+                                    : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 hover:text-blue-600"
+                            }`}
+                        >
+                            <Bell className="w-[18px] h-[18px]" strokeWidth={2} />
+                            {notification?.length > 0 && authAdmin && (
+                                <span
+                                    className={`absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-blue-600 text-white rounded-full text-[9px] font-black leading-none shadow-[0_2px_8px_rgba(37,99,235,0.45)] ${animate ? "animate-bounce" : ""}`}
+                                >
+                                    {unreadCount > 0 ? unreadCount : notification.length}
+                                </span>
+                            )}
+                        </button>
+                    </Tooltip>
+                </div>
+            </div>
+
+            {/* Admin Notification Panel — Full screen on Mobile (< sm), Floating Dropdown on Desktop (sm+) */}
+            {notificationOpen && (
+                <div
+                    ref={panelRef}
+                    className="fixed inset-0 sm:inset-auto sm:top-[70px] sm:right-[16px] z-[9999] w-full h-full sm:w-[400px] sm:h-auto sm:max-h-[520px] flex flex-col bg-white dark:bg-slate-900 sm:rounded-[20px] overflow-hidden shadow-2xl border-0 sm:border sm:border-slate-200 dark:sm:border-slate-800 transition-all duration-200"
+                >
+                    <div className="flex flex-col w-full h-full sm:max-h-[520px] overflow-hidden bg-white dark:bg-slate-900">
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-4 py-3.5 sm:py-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+                            <div className="flex items-center gap-2.5">
+                                {/* Back Button for Mobile Viewports (< sm) */}
+                                <button
+                                    onClick={() => setNotificationOpen(false)}
+                                    className="sm:hidden w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition cursor-pointer shrink-0"
+                                    aria-label="Go Back"
+                                    title="Back"
+                                >
+                                    <ArrowLeft size={18} strokeWidth={2.5} />
+                                </button>
+
+                                {/* Bell Icon for Desktop Viewports (sm+) */}
+                                <div className="hidden sm:flex w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/40 items-center justify-center shrink-0">
+                                    <Bell className="w-[15px] h-[15px] text-blue-600 dark:text-blue-400" strokeWidth={2.2} />
+                                </div>
+
+                                <div>
+                                    <h2 className="text-base sm:text-[13px] font-black text-slate-900 dark:text-white leading-none tracking-tight">
+                                        Notifications
+                                    </h2>
+                                    <p className="text-[11px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">
+                                        {notification.length === 0
+                                            ? 'All caught up'
+                                             : `${notification.length} notification${notification.length !== 1 ? 's' : ''}`}
+                                    </p>
+                                </div>
+
+                                {unreadCount > 0 && (
+                                    <span className="text-[10px] font-black px-2 py-[3px] rounded-full bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.4)] ml-1">
+                                        {unreadCount} new
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Close Button for Desktop Viewports */}
+                            <button
+                                onClick={() => setNotificationOpen(false)}
+                                className="hidden sm:flex w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                            >
+                                <X size={13} />
+                            </button>
+                        </div>
+
+                        {/* Action Row */}
+                        {notification.length > 0 && (
+                            <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-800/70 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                                    {unreadCount > 0 ? `${unreadCount} unread` : 'All read'}
+                                </span>
+                                <div className="flex items-center gap-3">
+                                    {unreadCount > 0 && (
+                                        <button
+                                            onClick={handleMarkAllAsRead}
+                                            className="flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition cursor-pointer"
+                                        >
+                                            <CheckCheck size={12} strokeWidth={2.5} />
+                                            <span>Mark all read</span>
+                                        </button>
+                                    )}
+                                    <button
+                                        disabled={notificationLoadingIndex !== null}
+                                        onClick={() => handleRemoveNotification(-1, "all")}
+                                        className="flex items-center gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        {notificationLoadingIndex === "all" ? (
+                                            <div className="w-3 h-3 border-2 border-t-transparent border-blue-600 rounded-full animate-spin" />
+                                        ) : (
+                                            <>
+                                                <X size={11} />
+                                                <span>Clear all</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* List */}
+                        <div className="overflow-y-auto flex-1" style={{ overscrollBehavior: 'contain' }}>
+                            {notification.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
+                                    <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-2xl mb-3">🎉</div>
+                                    <p className="font-black text-sm text-slate-800 dark:text-white">All caught up!</p>
+                                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No new notifications right now.</p>
+                                </div>
+                            ) : (
+                                <ul className="p-3 space-y-2">
+                                    {notification.map((item, idx) => {
+                                        const isUnread = !item?.isRead;
+                                        return (
+                                            <li
+                                                key={item?._id || item?.id || `admin-notif-${idx}`}
+                                                onClick={() => handleNotificationClick(item, idx)}
+                                                className={`group relative p-3 rounded-2xl border transition-all duration-150 cursor-pointer ${
+                                                    isUnread
+                                                        ? 'bg-blue-50/60 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-900/40 hover:bg-blue-50 dark:hover:bg-blue-950/50'
+                                                        : 'bg-white dark:bg-slate-800/50 border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800'
+                                                }`}
+                                            >
+                                                <div className="flex items-start gap-2.5">
+                                                    {/* Status Dot */}
+                                                    <div className="mt-[5px] shrink-0">
+                                                        <span className={`block w-2 h-2 rounded-full ${isUnread ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`} />
+                                                    </div>
+
+                                                    {/* Content */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={`text-[12px] font-bold leading-tight ${isUnread ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>
+                                                            {item?.title}
+                                                        </p>
+                                                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed line-clamp-2">
+                                                            {item?.description}
+                                                        </p>
+                                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 font-semibold">
+                                                            {item?.date
+                                                                ? formatDistanceToNow(new Date(item.date), { addSuffix: true })
+                                                                : 'Just now'}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Per-item Dismiss */}
+                                                    <button
+                                                        disabled={notificationLoadingIndex !== null}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleRemoveNotification(idx, "index", item?._id);
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 mt-0.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer disabled:cursor-not-allowed shrink-0"
+                                                        title="Dismiss"
+                                                    >
+                                                        {notificationLoadingIndex === idx ? (
+                                                            <div className="w-3 h-3 border-2 border-t-transparent border-gray-400 rounded-full animate-spin" />
+                                                        ) : (
+                                                            <X size={11} />
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </nav>
+    );
+}

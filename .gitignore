@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+Client/node_modules/
+Server/node_modules/
+
+# Build outputs
+dist/
+Client/dist/
+Server/dist/
+
+# Environment variables
+.env
+Client/.env
+Server/.env
+
+# Logs and scratch
+*.log
+scratch/
+Server/scratch/
+
+# IDE and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

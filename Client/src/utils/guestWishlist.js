@@ -1,0 +1,50 @@
+export const getGuestWishlist = () => {
+    try {
+        const stored = localStorage.getItem("guestWishlist");
+        if (!stored) return [];
+        const parsed = JSON.parse(stored);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(id => id && id !== "null" && id !== "undefined" && String(id).trim() !== "");
+    } catch {
+        return [];
+    }
+};
+
+export const toggleGuestWishlist = (productId) => {
+    if (!productId) return { updated: getGuestWishlist(), added: false };
+    const current = getGuestWishlist();
+    const strId = String(productId);
+    let updated;
+    let added = false;
+    
+    if (current.map(String).includes(strId)) {
+        updated = current.filter(id => String(id) !== strId);
+        added = false;
+    } else {
+        updated = [...current, productId];
+        added = true;
+    }
+    
+    localStorage.setItem("guestWishlist", JSON.stringify(updated));
+    window.dispatchEvent(new Event("guestWishlistUpdated"));
+    return { updated, added };
+};
+
+export const setGuestWishlist = (ids) => {
+    try {
+        const clean = Array.isArray(ids)
+            ? ids.filter(id => id && id !== "null" && id !== "undefined" && String(id).trim() !== "")
+            : [];
+        localStorage.setItem("guestWishlist", JSON.stringify(clean));
+        window.dispatchEvent(new Event("guestWishlistUpdated"));
+        return clean;
+    } catch {
+        return [];
+    }
+};
+
+export const clearGuestWishlist = () => {
+    localStorage.removeItem("guestWishlist");
+    window.dispatchEvent(new Event("guestWishlistUpdated"));
+};
+

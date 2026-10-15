@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="description"
+    content="Order your favorite dairy and daily essentials from Natural Milk Dairy & Daily Needs. Fast delivery and great prices!" />
+
+  <title>Natural Milk Dairy</title>
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dyahibuzy/image/upload/v1752661676/sacred-cow_wrqj3p.png" />
+
+  <!-- DNS prefetch + preconnect for fast CDN resource loading -->
+  <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Optimized Google Fonts: Poppins for Admin Dashboard, Plus Jakarta Sans, Outfit & Nunito -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Poppins:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+
+<body>
+  <div id="google_translate_modal"
+    style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+           background: white; padding: 10px; z-index: 9999; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+    <h3 style="margin-bottom: 10px;">Select Language</h3>
+    <div id="google_translate_element"></div>
+  </div>
+  <div id="root"></div>
+
+  <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Razorpay: deferred so it does NOT block HTML parsing -->
+  <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <script>
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        {
+          pageLanguage: "en",
+          includedLanguages: "en,hi,mr",
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        },
+        "google_translate_element"
+      );
+      window.googleTranslateReady = true;
+    }
+  </script>
+
+  <!-- Google Translate: async so it does NOT block rendering -->
+  <script async src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>

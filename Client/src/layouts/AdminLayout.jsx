@@ -1,0 +1,56 @@
+import { useContext, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import Sidebar from "../components/AdminComponents/Sidebar";
+import { useLocation, Link, Navigate } from "react-router-dom";
+import { SidebarProvider } from "../context/SidebarProvider";
+import AdminNavbar from "../components/AdminComponents/AdminNavbar";
+import { AdminAuthContext } from "../context/AuthProvider";
+import AdminOrderProvider from "../context/AdminOrderProvider";
+import BuffaloLoader from "../components/BuffaloLoader";
+
+import PageTransition from "../components/PageTransition";
+
+export default function AdminLayout({ children }) {
+
+    const scrollRef = useRef(null);
+    const location = useLocation();
+
+    const { authAdmin, authAdminLoading } = useContext(AdminAuthContext);
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ top: 0 });
+        }
+    }, [location.pathname]);
+
+    const adminToken = sessionStorage.getItem("adminToken");
+    const adminRole = sessionStorage.getItem("adminRole");
+
+    if (authAdminLoading) {
+        return <BuffaloLoader variant="full" text="Loading admin details..." />;
+    }
+
+    if (!authAdmin || !adminToken || adminRole !== "admin") {
+        return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
+    }
+
+    return (
+        <AdminOrderProvider>
+            <SidebarProvider>
+                <div ref={scrollRef} className="admin-theme min-h-dvh h-screen w-full max-w-full scroll-smooth flex overflow-hidden bg-[#F4F7FB] dark:bg-[#0B132B] text-slate-800 dark:text-slate-100 font-['Poppins',sans-serif] transition-colors duration-300 relative">
+                    <Sidebar />
+                    <main className="flex-1 h-full w-full max-w-full overflow-y-auto overflow-x-hidden flex flex-col bg-[#F4F7FB] dark:bg-[#0B132B]">
+                        <AdminNavbar />
+                        <PageTransition key={location.pathname}>
+                            {children}
+                        </PageTransition>
+                    </main>
+                </div>
+            </SidebarProvider>
+        </AdminOrderProvider>
+    )
+}
+
+AdminLayout.propTypes = {
+    children: PropTypes.node
+};

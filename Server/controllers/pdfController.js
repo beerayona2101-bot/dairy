@@ -1,0 +1,821 @@
+import PDFDocument from "pdfkit";
+import Order from "../models/OrderSchema.js";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const companyProfile = {
+  name: "Natural Milk Dairy",
+  tagline: "Bringing Nature's Best, Straight to Your Home",
+  shortName: "Natural Milk Dairy",
+  phone: "+91 94906 44434",
+  email: "beerayona143@gmail.com",
+  address: "Shed no. A-31, Natural Milk Dairy, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
+  support: "Support Team",
+};
+
+export const generateOrderBillPDF = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    if (req.query.download !== "true") {
+      return printOrderBillHTML(req, res);
+    }
+
+    const order = await Order.findById(orderId)
+      .populate({
+        path: "productsData.productId",
+        select: "name quantityUnit price",
+      })
+      .populate({
+        path: "address",
+        model: "Address",
+      });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 36,
+      info: {
+        Title: `Tax Invoice - INV-NMD-${order._id.toString().slice(-6).toUpperCase()}`,
+        Author: companyProfile.name,
+        Subject: "Official Tax Invoice",
+      },
+    });
+
+    const formattedDate = new Date(order.createdAt || Date.now())
+      .toISOString()
+      .split("T")[0];
+
+    const isDownloadParam = req.query.download === "true";
+    const disposition = isDownloadParam ? "attachment" : "inline";
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `${disposition}; filename=Invoice_${order._id.toString().slice(-6).toUpperCase()}_${formattedDate}.pdf`
+    );
+
+    doc.pipe(res);
+
+    // Exact Design Color Palette
+    const primaryBlue = "#1084F6";
+    const darkTextColor = "#0F172A";
+    const lightTextColor = "#475569";
+    const bgHeaderBlue = "#EFF6FF";
+    const borderColor = "#BFDBFE";
+    const lineDividerColor = "#E2E8F0";
+
+    // 1. HEADER (LOGO + ADDRESS + TAX INVOICE BADGE)
+    const logoPath = path.resolve(__dirname, "../../Client/src/assets/logoDarkMode.png");
+    const alternateLogoPath = path.resolve(__dirname, "../../Client/src/assets/logoLightMode.png");
+
+    let hasLogo = false;
+    try {
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, 36, 20, { height: 54 });
+        hasLogo = true;
+      } else if (fs.existsSync(alternateLogoPath)) {
+        doc.image(alternateLogoPath, 36, 20, { height: 54 });
+        hasLogo = true;
+      }
+    } catch (imgErr) {
+      console.warn("PDF Logo render fallback:", imgErr.message);
+    }
+
+    const textStartX = hasLogo ? 138 : 36;
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(15)
+      .fillColor(darkTextColor)
+      .text(companyProfile.name, textStartX, 28);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(8.5)
+      .fillColor(primaryBlue)
+      .text(companyProfile.tagline, textStartX, 48);
+
+    // TAX INVOICE BADGE (RIGHT ALIGNED)
+    doc
+      .roundedRect(385, 28, 175, 28, 4)
+      .fill(primaryBlue);
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(11)
+      .fillColor("#FFFFFF")
+      .text("OFFICIAL TAX INVOICE", 385, 37, { width: 175, align: "center" });
+
+    // Company Address Details Under Header (Start at y = 80)
+    doc
+      .font("Helvetica")
+      .fontSize(8.5)
+      .fillColor(lightTextColor)
+      .text(companyProfile.address, 36, 80)
+      .text(`Phone: ${companyProfile.phone} | Email: ${companyProfile.email}`, 36, 92)
+      .text("FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB", 36, 104);
+
+    // Top Divider Line
+    doc
+      .moveTo(36, 120)
+      .lineTo(560, 120)
+      .strokeColor(lineDividerColor)
+      .lineWidth(1)
+      .stroke();
+
+    // 2. TWO METADATA CARDS (BILLED TO & INVOICE DETAILS)
+    const metaY = 130;
+    const addr = order.address || {};
+    const customerName = addr.name || order.user?.firstName || "sd";
+    const fullAddressStr =
+      [
+        addr.hno ? `House No. ${addr.hno}` : null,
+        addr.streetAddress || addr.address || "HITEC City",
+        addr.village ? `Village: ${addr.village}` : null,
+        addr.landmark ? `Landmark: ${addr.landmark}` : null,
+        addr.city || "Hyderabad",
+        addr.district ? `Dist: ${addr.district}` : "Dist: Ranga Reddy",
+        addr.state
+          ? `${addr.state}${addr.pincode ? ` - ${addr.pincode}` : ""}`
+          : addr.pincode || "Telangana.",
+      ]
+        .filter(Boolean)
+        .join(", ") || "HITEC City, Village: HITEC City, Hyderabad, Dist: Ranga Reddy, Telangana.";
+
+    // LEFT CARD: BILLED / DELIVERED TO
+    doc
+      .roundedRect(36, metaY, 252, 105, 4)
+      .strokeColor(borderColor)
+      .lineWidth(1)
+      .stroke();
+    // Header Bar
+    doc
+      .roundedRect(36, metaY, 252, 24, 4)
+      .fill(bgHeaderBlue);
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9.5)
+      .fillColor(primaryBlue)
+      .text("BILLED / DELIVERED TO:", 46, metaY + 7);
+
+    // Content inside left card
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(10.5)
+      .fillColor(darkTextColor)
+      .text(customerName, 46, metaY + 31);
+
+    doc
+      .font("Helvetica")
+      .fontSize(8.5)
+      .fillColor(lightTextColor)
+      .text(`Phone: ${addr.phone || "9898989898"}`, 46, metaY + 45)
+      .text(`Address Type: ${addr.addressType || "Home"}`, 46, metaY + 58)
+      .text(
+        `Address: ${
+          fullAddressStr.length > 75
+            ? fullAddressStr.slice(0, 75) + "..."
+            : fullAddressStr
+        }`,
+        46,
+        metaY + 71,
+        { width: 232 }
+      );
+
+    // RIGHT CARD: INVOICE & ORDER DETAILS
+    const orderIdDisplay = order._id.toString().slice(-6).toUpperCase();
+    const orderDateStr = new Date(
+      order.createdAt || Date.now()
+    ).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    doc
+      .roundedRect(308, metaY, 252, 105, 4)
+      .strokeColor(borderColor)
+      .lineWidth(1)
+      .stroke();
+    // Header Bar
+    doc
+      .roundedRect(308, metaY, 252, 24, 4)
+      .fill(bgHeaderBlue);
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9.5)
+      .fillColor(primaryBlue)
+      .text("INVOICE & ORDER DETAILS:", 318, metaY + 7);
+
+    // Key Value Table inside right card
+    doc
+      .font("Helvetica")
+      .fontSize(8.5)
+      .fillColor(lightTextColor)
+      .text("Invoice No. :", 318, metaY + 31)
+      .font("Helvetica-Bold")
+      .fillColor(darkTextColor)
+      .text(`INV-NMD-${orderIdDisplay}`, 405, metaY + 31);
+
+    doc
+      .font("Helvetica")
+      .fillColor(lightTextColor)
+      .text("Order ID :", 318, metaY + 45)
+      .font("Helvetica-Bold")
+      .fillColor(darkTextColor)
+      .text(`${order.orderId || `MD-ORD-260907-${orderIdDisplay}`}`, 405, metaY + 45);
+
+    doc
+      .font("Helvetica")
+      .fillColor(lightTextColor)
+      .text("Order Date :", 318, metaY + 58)
+      .font("Helvetica")
+      .fillColor(darkTextColor)
+      .text(`${orderDateStr}`, 405, metaY + 58);
+
+    doc
+      .font("Helvetica")
+      .fillColor(lightTextColor)
+      .text("Payment Mode :", 318, metaY + 71)
+      .font("Helvetica-Bold")
+      .fillColor(darkTextColor)
+      .text(
+        `${order.paymentMode || "Cash on Delivery"} (${
+          order.paymentMode === "Online" ? "PAID" : "COD"
+        })`,
+        405,
+        metaY + 71
+      );
+
+    doc
+      .font("Helvetica")
+      .fillColor(lightTextColor)
+      .text("Order Status :", 318, metaY + 84)
+      .font("Helvetica-Bold")
+      .fillColor(order.status === "Delivered" ? "#16A34A" : primaryBlue)
+      .text(`${order.status === "Out for Delivery" ? "Ready to Deliver" : order.status || "Delivered"}`, 405, metaY + 84);
+
+    // 3. PRODUCTS TABLE
+    let tableTop = 250;
+    const colX = {
+      no: 36,
+      name: 65,
+      qty: 320,
+      price: 380,
+      total: 470,
+    };
+
+    // Table Header
+    const tableHeaderH = 24;
+    doc
+      .rect(36, tableTop, 524, tableHeaderH)
+      .fill(primaryBlue);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .fillColor("#FFFFFF")
+      .text("#", colX.no + 5, tableTop + 7)
+      .text("ITEM DESCRIPTION", colX.name, tableTop + 7)
+      .text("QTY", colX.qty, tableTop + 7, { width: 50, align: "center" })
+      .text("PRICE (INR)", colX.price, tableTop + 7, { width: 80, align: "right" })
+      .text("TOTAL (INR)", colX.total, tableTop + 7, { width: 80, align: "right" });
+
+    let currentY = tableTop + tableHeaderH;
+    let grandTotal = 0;
+
+    (order.productsData || []).forEach((item, index) => {
+      const p = item.productId;
+      const quantity = item.productQuantity || 1;
+      const price = item.productPrice || p?.price || 0;
+      const itemSubtotal = price * quantity;
+      grandTotal += itemSubtotal;
+
+      const productName = p?.name || item?.productName || `${companyProfile.name} Product`;
+      const unit = p?.quantityUnit || "Pack";
+
+      // Cell border
+      doc
+        .rect(36, currentY, 524, 24)
+        .strokeColor(borderColor)
+        .lineWidth(0.5)
+        .stroke();
+
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor(lightTextColor)
+        .text((index + 1).toString(), colX.no + 5, currentY + 7)
+        .font("Helvetica-Bold")
+        .fillColor(darkTextColor)
+        .text(`${productName} (${unit})`, colX.name, currentY + 7, { width: 240 })
+        .font("Helvetica")
+        .text(quantity.toString(), colX.qty, currentY + 7, { width: 50, align: "center" })
+        .text(`INR ${price.toFixed(2)}`, colX.price, currentY + 7, { width: 80, align: "right" })
+        .font("Helvetica-Bold")
+        .text(`INR ${itemSubtotal.toFixed(2)}`, colX.total, currentY + 7, { width: 80, align: "right" });
+
+      currentY += 24;
+    });
+
+    if (!order.productsData || order.productsData.length === 0) {
+      grandTotal = order.totalAmount || 0;
+    } else if (order.totalAmount && Math.abs(order.totalAmount - grandTotal) > 1) {
+      grandTotal = order.totalAmount;
+    }
+
+    // 4. TOTALS SUMMARY (RIGHT ALIGNED)
+    const summaryY = currentY + 16;
+    const totalBoxX = 350;
+
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .fillColor(lightTextColor)
+      .text("Subtotal:", totalBoxX, summaryY, { width: 100, align: "left" })
+      .font("Helvetica-Bold")
+      .fillColor(darkTextColor)
+      .text(`INR ${grandTotal.toFixed(2)}`, totalBoxX + 90, summaryY, { width: 120, align: "right" });
+
+    doc
+      .font("Helvetica")
+      .fillColor(lightTextColor)
+      .text("Cold-Chain Delivery:", totalBoxX, summaryY + 16, { width: 100, align: "left" })
+      .font("Helvetica-Bold")
+      .fillColor(lightTextColor)
+      .text("FREE", totalBoxX + 90, summaryY + 16, { width: 120, align: "right" });
+
+    doc
+      .font("Helvetica")
+      .fillColor(lightTextColor)
+      .text("GST / Taxes:", totalBoxX, summaryY + 32, { width: 100, align: "left" })
+      .font("Helvetica-Bold")
+      .fillColor(lightTextColor)
+      .text("Included", totalBoxX + 90, summaryY + 32, { width: 120, align: "right" });
+
+    // GRAND TOTAL BLUE BOX
+    doc
+      .roundedRect(totalBoxX - 6, summaryY + 50, 216, 26, 3)
+      .fill(primaryBlue);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(11)
+      .fillColor("#FFFFFF")
+      .text("TOTAL AMOUNT:", totalBoxX, summaryY + 57, { width: 105, align: "left" })
+      .text(`INR ${grandTotal.toFixed(2)}`, totalBoxX + 85, summaryY + 57, { width: 120, align: "right" });
+
+    // 5. SIGNATURE & STAMP BLOCK (LEFT ALIGNED)
+    const signY = summaryY + 80;
+
+    // Cursive Signature & Label
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(7.5)
+      .fillColor(lightTextColor)
+      .text(`FOR ${companyProfile.name.toUpperCase()}`, 36, signY);
+
+    doc
+      .font("Helvetica-BoldOblique")
+      .fontSize(18)
+      .fillColor("#0F2742")
+      .text(companyProfile.shortName, 36, signY + 12, { align: "left", width: 170 });
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(7.5)
+      .fillColor(primaryBlue)
+      .text("Authorized Signatory", 36, signY + 34);
+
+    // Circular Stamp Vector Graphics
+    const stampCx = 90;
+    const stampCy = signY + 75;
+    const stampR = 32;
+
+    // Outer & inner circles
+    doc
+      .circle(stampCx, stampCy, stampR)
+      .lineWidth(2)
+      .strokeColor(primaryBlue)
+      .stroke();
+
+    doc
+      .circle(stampCx, stampCy, stampR - 4)
+      .lineWidth(1)
+      .strokeColor(primaryBlue)
+      .stroke();
+
+    // Top Arc Text
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(5.5)
+      .fillColor(primaryBlue)
+      .text(`★ ${companyProfile.name.toUpperCase()} ★`, stampCx - 32, stampCy - 22, { width: 64, align: "center" });
+
+    // Center solid badge box with white text
+    doc
+      .roundedRect(stampCx - 26, stampCy - 6, 52, 12, 2)
+      .fill(primaryBlue);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(6.5)
+      .fillColor("#FFFFFF")
+      .text("AUTHENTICATED", stampCx - 26, stampCy - 3, { width: 52, align: "center" });
+
+    // Stars & Bottom Text
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(5.5)
+      .fillColor(primaryBlue)
+      .text("★ ★ ★ ★ ★", stampCx - 30, stampCy + 8, { width: 60, align: "center" })
+      .text("OFFICIAL TAX SEAL", stampCx - 30, stampCy + 17, { width: 60, align: "center" });
+
+    // 6. TERMS & CONDITIONS SINGLE LINE
+    const termsY = signY + 122;
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(7.5)
+      .fillColor(primaryBlue)
+      .text("Terms & Conditions: ", 36, termsY, { continued: true })
+      .font("Helvetica-Oblique")
+      .fillColor(lightTextColor)
+      .text("All products are packed under 4°C cold-chain standards. Please check seals upon delivery. For queries or returns, contact support within 2 hours of delivery.", { width: 524 });
+
+    // 7. DECORATIVE HEART/SPARKLE DIVIDER
+    const decY = termsY + 28;
+    doc
+      .moveTo(36, decY)
+      .lineTo(265, decY)
+      .strokeColor(borderColor)
+      .lineWidth(1)
+      .stroke();
+
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .fillColor(primaryBlue)
+      .text("♡", 290, decY - 5, { width: 20, align: "center" });
+
+    doc
+      .moveTo(335, decY)
+      .lineTo(560, decY)
+      .strokeColor(borderColor)
+      .lineWidth(1)
+      .stroke();
+
+    // 8. FOOTER TEXT
+    doc
+      .font("Helvetica-BoldOblique")
+      .fontSize(9)
+      .fillColor(lightTextColor)
+      .text(
+        `Thank you for choosing ${companyProfile.name} for your family's health and daily nutrition!`,
+        36,
+        decY + 16,
+        { align: "center" }
+      )
+      .font("Helvetica-Oblique")
+      .fontSize(8)
+      .text(
+        "This is a computer-generated tax invoice. No physical signature is required.",
+        36,
+        decY + 30,
+        { align: "center" }
+      );
+
+    doc.end();
+  } catch (error) {
+    console.error("generateOrderBillPDF error:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Failed to generate order PDF bill." });
+    }
+  }
+};
+
+export const printOrderBillHTML = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId)
+      .populate({
+        path: "productsData.productId",
+        select: "name quantityUnit price",
+      })
+      .populate({
+        path: "address",
+        model: "Address",
+      });
+
+    if (!order) {
+      return res.status(404).send("<h2>Order not found</h2>");
+    }
+
+    const orderIdDisplay = order._id.toString().slice(-6).toUpperCase();
+    const formattedDate = new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const addr = order.address || {};
+    const customerName = addr.name || order.user?.firstName || "sd";
+    const fullAddressStr =
+      [
+        addr.hno ? `House No. ${addr.hno}` : null,
+        addr.streetAddress || addr.address || "HITEC City",
+        addr.village ? `Village: ${addr.village}` : null,
+        addr.landmark ? `Landmark: ${addr.landmark}` : null,
+        addr.city || "Hyderabad",
+        addr.district ? `Dist: ${addr.district}` : "Dist: Ranga Reddy",
+        addr.state
+          ? `${addr.state}${addr.pincode ? ` - ${addr.pincode}` : ""}`
+          : addr.pincode || "Telangana.",
+      ]
+        .filter(Boolean)
+        .join(", ") || "HITEC City, Village: HITEC City, Hyderabad, Dist: Ranga Reddy, Telangana.";
+
+    let grandTotal = 0;
+    const productRows = (order.productsData || []).map((item, index) => {
+      const p = item.productId;
+      const quantity = item.productQuantity || 1;
+      const price = item.productPrice || p?.price || 0;
+      const itemSubtotal = price * quantity;
+      grandTotal += itemSubtotal;
+      const productName = p?.name || item?.productName || `${companyProfile.name} Product`;
+      const unit = p?.quantityUnit || "Pack";
+
+      return `
+        <tr>
+          <td style="border: 1px solid #bfdbfe; padding: 10px 12px; font-weight: bold; color: #475569; text-align: center;">${index + 1}</td>
+          <td style="border: 1px solid #bfdbfe; padding: 10px 12px; color: #0f172a; font-weight: 700;">${productName} (${unit})</td>
+          <td style="border: 1px solid #bfdbfe; padding: 10px 12px; text-align: center; color: #0f172a; font-weight: bold;">${quantity}</td>
+          <td style="border: 1px solid #bfdbfe; padding: 10px 12px; text-align: right; color: #0f172a;">INR ${price.toFixed(2)}</td>
+          <td style="border: 1px solid #bfdbfe; padding: 10px 12px; text-align: right; font-weight: bold; color: #0f172a;">INR ${itemSubtotal.toFixed(2)}</td>
+        </tr>
+      `;
+    }).join("");
+
+    const logoPath = path.resolve(__dirname, "../../Client/src/assets/logoDarkMode.png");
+    const alternateLogoPath = path.resolve(__dirname, "../../Client/src/assets/logoLightMode.png");
+    let logoBase64 = "";
+    try {
+      if (fs.existsSync(logoPath)) {
+        const logoBuf = fs.readFileSync(logoPath);
+        logoBase64 = `data:image/png;base64,${logoBuf.toString("base64")}`;
+      } else if (fs.existsSync(alternateLogoPath)) {
+        const logoBuf = fs.readFileSync(alternateLogoPath);
+        logoBase64 = `data:image/png;base64,${logoBuf.toString("base64")}`;
+      }
+    } catch (err) {
+      console.warn("Logo base64 error:", err.message);
+    }
+
+    if (!order.productsData || order.productsData.length === 0) {
+      grandTotal = order.totalAmount || 0;
+    } else if (order.totalAmount && Math.abs(order.totalAmount - grandTotal) > 1) {
+      grandTotal = order.totalAmount;
+    }
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Invoice - INV-NMD-${orderIdDisplay}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    html, body { width: 100%; min-height: 100%; background-color: #f0f7ff; color: #0f172a; }
+    body { padding: 10px 6px; display: flex; justify-content: center; align-items: flex-start; }
+
+    .no-print-bar { display: none !important; }
+
+    .invoice-card {
+      width: 100%;
+      max-width: 840px;
+      background: #ffffff;
+      padding: 16px 14px;
+      border-radius: 12px;
+      border: 2px solid #bfdbfe;
+      box-shadow: 0 8px 25px rgba(16, 132, 246, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .header-row { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+    .badge-tax { background: #1084F6; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 10.5px; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
+    
+    .company-info { font-size: 9.5px; color: #475569; line-height: 1.45; margin-bottom: 14px; border-bottom: 1.5px solid #bfdbfe; padding-bottom: 10px; }
+    
+    .grid-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; width: 100%; min-width: 0; }
+    .meta-card { border: 1.5px solid #bfdbfe; border-radius: 8px; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; min-width: 0; }
+    .meta-card-header { background: #eff6ff; padding: 5px 8px; font-weight: 800; color: #1084F6; font-size: 9.5px; letter-spacing: 0.3px; border-bottom: 1px solid #bfdbfe; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .meta-card-body { padding: 8px 8px; font-size: 9.5px; line-height: 1.5; color: #334155; word-break: break-word; flex: 1; min-width: 0; }
+    .meta-bold { font-weight: 800; color: #0f172a; word-break: break-word; }
+
+    .key-value-row { display: flex; justify-content: space-between; margin-bottom: 3px; gap: 4px; font-size: 9px; min-width: 0; flex-wrap: wrap; }
+    .key-label { color: #475569; font-weight: 600; flex-shrink: 0; }
+    
+    .table-container { width: 100%; overflow-x: auto; margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; }
+    th { background: #1084F6; color: #ffffff; text-align: left; padding: 8px 6px; font-size: 9px; font-weight: 800; letter-spacing: 0.4px; }
+    td { padding: 8px 6px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-weight: 600; word-break: break-word; }
+
+    .footer-section { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+    .totals-box { width: 230px; max-width: 100%; font-size: 10px; color: #334155; }
+    .totals-row { display: flex; justify-content: space-between; padding: 3px 0; font-weight: 600; }
+    .total-grand-box { background: #1084F6; color: #ffffff; font-weight: 800; font-size: 11.5px; padding: 8px 10px; border-radius: 6px; margin-top: 6px; display: flex; justify-content: space-between; }
+    
+    .signature-area { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 12px; }
+    .signature-text { font-family: 'Dancing Script', cursive; font-size: 24px; font-weight: 700; color: #0F2742; margin-bottom: 2px; font-style: italic; }
+    
+    .terms-text { font-size: 8.5px; color: #475569; margin-bottom: 12px; line-height: 1.4; }
+    .terms-bold { font-weight: 800; color: #1084F6; }
+
+    .divider-heart { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
+    .divider-line { flex: 1; height: 1px; background-color: #bfdbfe; }
+    .heart-icon { color: #1084F6; font-size: 12px; }
+
+    .notice-text { text-align: center; font-size: 9px; font-weight: 700; color: #475569; line-height: 1.4; }
+
+    @media (min-width: 640px) {
+      body { padding: 16px; }
+      .invoice-card { padding: 28px 32px; border-radius: 14px; }
+      .badge-tax { font-size: 12px; padding: 7px 18px; }
+      .company-info { font-size: 11px; }
+      .grid-meta { gap: 14px; margin-bottom: 20px; }
+      .meta-card-header { font-size: 11px; padding: 8px 12px; }
+      .meta-card-body { font-size: 11.5px; padding: 12px; }
+      .key-value-row { font-size: 11px; margin-bottom: 4px; }
+      table { font-size: 12px; }
+      th { font-size: 11px; padding: 10px 12px; }
+      td { font-size: 11.5px; padding: 10px 12px; }
+      .totals-box { width: 280px; font-size: 12px; }
+      .total-grand-box { font-size: 14px; padding: 10px 14px; }
+      .signature-text { font-size: 28px; }
+      .terms-text { font-size: 10px; }
+      .notice-text { font-size: 10.5px; }
+    }
+
+    @media print {
+      body { background-color: #ffffff; padding: 0; min-height: auto; }
+      .no-print-bar { display: none !important; }
+      .invoice-card { box-shadow: none; border: none; padding: 0; max-width: 100%; border-radius: 0; }
+      @page { size: A4; margin: 10mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="invoice-card">
+    <div class="header-row">
+      <div style="display: flex; align-items: center; gap: 14px; min-width: 0;">
+        ${
+          logoBase64
+            ? `<img src="${logoBase64}" alt="Natural Milk Dairy Logo" style="height: 52px; width: auto; object-fit: contain; display: block; flex-shrink: 0;" />`
+            : `<div style="font-size: 22px; font-weight: 900; color: #1084F6; flex-shrink: 0;">Natural Milk Dairy</div>`
+        }
+        <div style="border-left: 2px solid #bfdbfe; padding-left: 12px; display: flex; flex-direction: column; justify-content: center;">
+          <div style="font-size: 18px; font-weight: 900; color: #0f172a; line-height: 1.2; letter-spacing: -0.2px;">Natural Milk Dairy</div>
+          <div style="font-size: 10.5px; font-weight: 700; color: #1084F6; margin-top: 2px;">Bringing Nature's Best, Straight to Your Home</div>
+        </div>
+      </div>
+      <div class="badge-tax">OFFICIAL TAX INVOICE</div>
+    </div>
+
+    <div class="company-info" style="margin-top: 10px;">
+      Shed no. A-31, Natural Milk Dairy, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010<br>
+      Phone: +91 94906 44434 | Email: beerayona143@gmail.com | FSSAI Lic. No: 11521028000452 | GSTIN: 27AABCM1234F1ZB
+    </div>
+
+    <div class="grid-meta">
+      <div class="meta-card">
+        <div class="meta-card-header">BILLED / DELIVERED TO:</div>
+        <div class="meta-card-body">
+          <div class="meta-bold" style="font-size: 11.5px; margin-bottom: 3px;">${customerName}</div>
+          <div>Phone: ${addr.phone || "9898989898"}</div>
+          <div>Address Type: ${addr.addressType || "Home"}</div>
+          <div>Address: ${fullAddressStr}</div>
+        </div>
+      </div>
+
+      <div class="meta-card">
+        <div class="meta-card-header">INVOICE & ORDER DETAILS:</div>
+        <div class="meta-card-body">
+          <div class="key-value-row"><span class="key-label">Invoice No. :</span> <span class="meta-bold">INV-NMD-${orderIdDisplay}</span></div>
+          <div class="key-value-row"><span class="key-label">Order ID :</span> <span class="meta-bold">${order.orderId || `MD-ORD-260509-${orderIdDisplay}`}</span></div>
+          <div class="key-value-row"><span class="key-label">Order Date :</span> <span>${formattedDate}</span></div>
+          <div class="key-value-row"><span class="key-label">Payment Mode :</span> <span class="meta-bold">${order.paymentMode || "Online"} (Test Mode)</span></div>
+          <div class="key-value-row"><span class="key-label">Order Status :</span> <span style="color: #15803d; font-weight: 800;">${order.status || "Pending"}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 28px; text-align: center;">#</th>
+            <th style="width: auto;">ITEM DESCRIPTION</th>
+            <th style="width: 40px; text-align: center;">QTY</th>
+            <th style="width: 75px; text-align: right;">PRICE (INR)</th>
+            <th style="width: 80px; text-align: right;">TOTAL (INR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${productRows}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer-section">
+      <div class="totals-box">
+        <div class="totals-row"><span>Subtotal:</span><span>INR ${grandTotal.toFixed(2)}</span></div>
+        <div class="totals-row"><span>Cold-Chain Delivery:</span><span style="font-weight: 700; color: #475569;">FREE</span></div>
+        <div class="totals-row"><span>GST / Taxes:</span><span style="font-weight: 700; color: #475569;">Included</span></div>
+        <div class="total-grand-box">
+          <span>TOTAL AMOUNT:</span>
+          <span>INR ${grandTotal.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="signature-area">
+      <div style="display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap;">
+        <div style="text-align: left;">
+          <div style="font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">For Natural Milk Dairy</div>
+          <div class="signature-text">Natural Milk</div>
+          <div style="font-size: 9px; font-weight: 700; color: #1084F6; margin-top: 2px;">Authorized Signatory</div>
+        </div>
+
+        <!-- Authentic Official Stamp Seal -->
+        <div style="transform: rotate(-4deg); margin-top: 4px;">
+          <svg width="90" height="90" viewBox="0 0 100 100" style="display: block;">
+            <defs>
+              <path id="stampTopPath" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" />
+              <path id="stampBotPath" d="M 85 50 A 35 35 0 0 1 15 50" fill="none" />
+            </defs>
+
+            <!-- Circular Stamp Background & Double Ring -->
+            <circle cx="50" cy="50" r="47" fill="#F0F7FF" stroke="#1084F6" stroke-width="2.5"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#1084F6" stroke-width="1.2" stroke-dasharray="3.5,1.5"/>
+
+            <!-- Curved Top Text -->
+            <text font-size="6.8" font-weight="900" fill="#1084F6">
+              <textPath href="#stampTopPath" startOffset="50%" text-anchor="middle">★ NATURAL MILK DAIRY ★</textPath>
+            </text>
+
+            <!-- 5-Star Rating Graphic -->
+            <text x="50" y="36" font-size="7.5" font-weight="900" fill="#1084F6" text-anchor="middle">★ ★ ★ ★ ★</text>
+
+            <!-- Center Solid Banner -->
+            <rect x="15" y="41" width="70" height="18" rx="3" fill="#1084F6"/>
+            <text x="50" y="53.5" font-size="8.5" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">AUTHENTICATED</text>
+
+            <!-- Curved Bottom Text -->
+            <text font-size="6.2" font-weight="800" fill="#1084F6">
+              <textPath href="#stampBotPath" startOffset="50%" text-anchor="middle">OFFICIAL TAX INVOICE SEAL</textPath>
+            </text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="terms-text">
+      <span class="terms-bold">Terms & Conditions:</span> <em>All products are packed under 4°C cold-chain standards. Please check seals upon delivery. For queries or returns, contact support within 2 hours of delivery.</em>
+    </div>
+
+    <div class="divider-heart">
+      <div class="divider-line"></div>
+      <div class="heart-icon">♡</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="notice-text">
+      Thank you for choosing Natural Milk Dairy for your family's health and daily nutrition!<br>
+      <span style="font-size: 8.5px; font-weight: 500;">This is a computer-generated tax invoice. No physical signature is required.</span>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    res.setHeader("Content-Type", "text/html");
+    return res.send(html);
+  } catch (err) {
+    console.error("printOrderBillHTML error:", err);
+    return res.status(500).send("Failed to load invoice print page.");
+  }
+};

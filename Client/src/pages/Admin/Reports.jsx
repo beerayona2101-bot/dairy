@@ -1,0 +1,343 @@
+import React, { useContext, useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
+import DownloadIcon from "@mui/icons-material/Download";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import SpeedIcon from "@mui/icons-material/Speed";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { useSnackbar } from "notistack";
+
+import { ProductContext } from "../../context/ProductProvider";
+import { AdminOrderContext } from "../../context/AdminOrderProvider";
+import { getReportAnalyticsData } from "../../utils/DashboardHelpers/reportsAnalyticsHelper";
+import { formatNumberWithCommas } from "../../utils/format";
+
+import ReportRevenueChart from "../../components/AdminComponents/ReportComponents/ReportRevenueChart";
+import ReportCategoryPie from "../../components/AdminComponents/ReportComponents/ReportCategoryPie";
+import ReportProductGrowthBar from "../../components/AdminComponents/ReportComponents/ReportProductGrowthBar";
+import ReportOrderStatusRings from "../../components/AdminComponents/ReportComponents/ReportOrderStatusRings";
+import ReportProductTable from "../../components/AdminComponents/ReportComponents/ReportProductTable";
+import BackButton from "../../components/Common/BackButton";
+
+export default function Reports() {
+  const { enqueueSnackbar } = useSnackbar();
+  const { allOrders } = useContext(AdminOrderContext);
+  const { products } = useContext(ProductContext);
+
+  const [timeRange, setTimeRange] = useState("month");
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d.toISOString().slice(0, 10);
+  });
+  const [endDate, setEndDate] = useState(() => new Date().toISOString().slice(0, 10));
+
+  const analyticsData = useMemo(() => {
+    return getReportAnalyticsData(allOrders || [], products || [], timeRange, startDate, endDate);
+  }, [allOrders, products, timeRange, startDate, endDate]);
+
+  const { summaryMetrics, timelineData, categoryData, productGrowthData, orderStatusData, timeFilteredOrders = [] } = analyticsData;
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, duration: 0.4 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
+
+  const handleExportCSV = () => {
+    const sanitize = (val) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    let csvContent = "";
+
+    // Section 1: Header & Metadata
+    csvContent += `NATURAL MILK DAIRY & DAILY NEEDS - COMPREHENSIVE SALES & ORDERS REPORT\n`;
+    csvContent += `Report Generated On,${sanitize(new Date().toLocaleString("en-IN"))}\n`;
+    csvContent += `Selected Period Filter,${sanitize(timeRange.toUpperCase())}\n`;
+    if (timeRange === "custom") {
+      csvContent += `Custom Date Range,${sanitize(`${startDate} to ${endDate}`)}\n`;
+    }
+    csvContent += `\n`;
+
+    // Section 2: Executive Summary Metrics
+    csvContent += `--- EXECUTIVE SUMMARY METRICS ---\n`;
+    csvContent += `Metric Name,Value\n`;
+    csvContent += `Total Sales Revenue,INR ${summaryMetrics.revenue}\n`;
+    csvContent += `Total Orders / Units Sold,${summaryMetrics.salesCount}\n`;
+    csvContent += `Estimated Net Profit,INR ${summaryMetrics.profit}\n`;
+    csvContent += `Average Order Value,INR ${summaryMetrics.avgOrderValue}\n`;
+    csvContent += `Fulfillment Rate,${summaryMetrics.fulfillmentRate}%\n`;
+    csvContent += `\n`;
+
+    // Section 3: Detailed Orders List for Selected Date Range
+    csvContent += `--- DETAILED ORDERS REPORT (${timeFilteredOrders.length} Orders) ---\n`;
+    csvContent += `Order ID,Customer Name,Email,Mobile,Order Date & Time,Status,Payment Mode,Total Amount (INR),Items Purchased,Delivery Address\n`;
+
+    if (timeFilteredOrders.length > 0) {
+      timeFilteredOrders.forEach((o) => {
+        const orderId = o.orderId || o._id || "N/A";
+        const userObj = o.user;
+        const custName =
+          (userObj?.firstName ? `${userObj.firstName} ${userObj.lastName || ""}`.trim() : null) ||
+          o.address?.name ||
+          o.address?.fullName ||
+          (o.address?.owner?.firstName ? `${o.address.owner.firstName} ${o.address.owner.lastName || ""}`.trim() : null) ||
+          "Customer";
+        const email = userObj?.email || o.address?.email || "N/A";
+        const mobile = userObj?.mobileNo || o.address?.phone || "N/A";
+        const orderDate = o.createdAt ? new Date(o.createdAt).toLocaleString("en-IN") : "N/A";
+        const status = o.status || "Pending";
+        const paymentMode = o.paymentMode || "Cash on Delivery";
+        const totalAmount = o.totalAmount || 0;
+
+        const itemsStr = (o.productsData || [])
+          .map((item) => {
+            const pName = item?.productId?.name || "Product";
+            const qty = item?.productQuantity || 1;
+            const price = item?.productPrice || 0;
+            return `${pName} (x${qty} @ INR ${price})`;
+          })
+          .join(" | ");
+
+        const fullAddr = o.address
+          ? typeof o.address === "string"
+            ? o.address
+            : [o.address.streetAddress, o.address.city, o.address.state, o.address.pincode].filter(Boolean).join(", ")
+          : "N/A";
+
+        csvContent += `${sanitize(orderId)},${sanitize(custName)},${sanitize(email)},${sanitize(mobile)},${sanitize(orderDate)},${sanitize(status)},${sanitize(paymentMode)},INR ${totalAmount},${sanitize(itemsStr)},${sanitize(fullAddr)}\n`;
+      });
+    } else {
+      csvContent += `No orders found for the selected timeframe.\n`;
+    }
+
+    csvContent += `\n`;
+
+    // Section 4: Product Performance Breakdown
+    csvContent += `--- PRODUCT PERFORMANCE BREAKDOWN ---\n`;
+    csvContent += `Product Name,Category,Units Sold,Revenue (INR),Growth Rate (%)\n`;
+    (productGrowthData || []).forEach((p) => {
+      csvContent += `${sanitize(p.name)},${sanitize(p.category)},${p.sold},INR ${p.revenue},${p.growth}%\n`;
+    });
+
+    const fileName =
+      timeRange === "custom"
+        ? `Natural_Milk_Dairy_Report_${startDate}_to_${endDate}.csv`
+        : `Natural_Milk_Dairy_Report_${timeRange.toUpperCase()}_${new Date().toISOString().slice(0, 10)}.csv`;
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    enqueueSnackbar(`Complete CSV report downloaded for period: ${timeRange === "custom" ? `${startDate} to ${endDate}` : timeRange}!`, {
+      variant: "success",
+    });
+  };
+
+  return (
+    <motion.div
+      className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      {/* Page Header with Right-Side Top Corner Export Button & Time Range Dropdown */}
+      <motion.div
+        variants={itemVariants}
+        className="bg-white dark:bg-gray-800/80 p-5 sm:p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-4"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3">
+            <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-gray-800 dark:text-white flex items-center gap-2">
+                <AssessmentOutlinedIcon className="text-[#075C2A] dark:text-emerald-400 !text-2xl sm:!text-3xl" />
+                Analytics & Reports Dashboard
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mt-1 hidden sm:block">
+                Real-time interactive graphical presentations, sales growth metrics, circular share breakdowns, and static data reports.
+              </p>
+            </div>
+          </div>
+
+          {/* Export CSV Report Button at Top Right Corner */}
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center justify-center gap-2 bg-[#075C2A] hover:bg-[#064e23] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition cursor-pointer self-start sm:self-center shrink-0"
+          >
+            <DownloadIcon className="!text-base" /> Export CSV Report
+          </button>
+        </div>
+
+        {/* Time Range Dropdown & Custom Date Range Inputs Row */}
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 dark:border-gray-700/50">
+          {/* Time Range Dropdown Select */}
+          <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700/60 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600">
+            <CalendarTodayIcon className="!text-sm text-[#075C2A] dark:text-emerald-400" />
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Period:</span>
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="bg-transparent text-xs font-bold text-gray-900 dark:text-white focus:outline-none cursor-pointer pr-1"
+            >
+              <option value="today" className="dark:bg-gray-800 text-gray-900 dark:text-white font-semibold">Day</option>
+              <option value="week" className="dark:bg-gray-800 text-gray-900 dark:text-white font-semibold">Week</option>
+              <option value="month" className="dark:bg-gray-800 text-gray-900 dark:text-white font-semibold">Month</option>
+              <option value="year" className="dark:bg-gray-800 text-gray-900 dark:text-white font-semibold">Year</option>
+              <option value="all" className="dark:bg-gray-800 text-gray-900 dark:text-white font-semibold">All Time</option>
+              <option value="custom" className="dark:bg-gray-800 text-gray-900 dark:text-white font-semibold">Custom Range</option>
+            </select>
+          </div>
+
+          {/* Calendar Date Range Pickers (From Date - To Date) */}
+          {timeRange === "custom" && (
+            <div className="flex flex-wrap items-center gap-2 bg-emerald-50/80 dark:bg-gray-900/60 p-1.5 rounded-xl border border-emerald-200 dark:border-gray-700">
+              <div className="flex items-center gap-1.5 px-1">
+                <span className="text-[11px] font-bold text-gray-600 dark:text-gray-400 uppercase">From:</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="px-2 py-1 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#075C2A] focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 px-1">
+                <span className="text-[11px] font-bold text-gray-600 dark:text-gray-400 uppercase">To:</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="px-2 py-1 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#075C2A] focus:outline-none"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Metric Summary Cards Grid */}
+      <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
+        {/* Card 1: Revenue */}
+        <div className="bg-emerald-50/90 dark:bg-emerald-950/40 p-5 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/40 shadow-xs flex flex-col justify-between space-y-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-200">Total Revenue</p>
+              <h3 className="text-2xl font-extrabold text-[#075C2A] dark:text-emerald-400 mt-1">
+                ₹{formatNumberWithCommas(summaryMetrics.revenue)}
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-800 text-[#075C2A] dark:text-emerald-400 shadow-xs">
+              <AttachMoneyIcon />
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#075C2A] dark:text-emerald-400 pt-2 border-t border-emerald-200/60 dark:border-gray-700/50">
+            <TrendingUpIcon sx={{ fontSize: "1rem" }} />
+            <span>+{summaryMetrics.revenueGrowth}% vs last period</span>
+          </div>
+        </div>
+
+        {/* Card 2: Total Sales */}
+        <div className="bg-blue-50/90 dark:bg-blue-950/40 p-5 rounded-2xl border border-blue-200/80 dark:border-blue-800/40 shadow-xs flex flex-col justify-between space-y-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-200">Units & Orders Sold</p>
+              <h3 className="text-2xl font-extrabold text-[#0756B5] dark:text-blue-400 mt-1">
+                {formatNumberWithCommas(summaryMetrics.salesCount)}
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-800 text-[#0756B5] dark:text-blue-400 shadow-xs">
+              <ShoppingBagIcon />
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0756B5] dark:text-blue-400 pt-2 border-t border-blue-200/60 dark:border-gray-700/50">
+            <TrendingUpIcon sx={{ fontSize: "1rem" }} />
+            <span>+{summaryMetrics.salesGrowth}% sales volume increase</span>
+          </div>
+        </div>
+
+        {/* Card 3: Net Profit */}
+        <div className="bg-emerald-50/90 dark:bg-emerald-950/40 p-5 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/40 shadow-xs flex flex-col justify-between space-y-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-200">Net Profit</p>
+              <h3 className="text-2xl font-extrabold text-[#075C2A] dark:text-emerald-400 mt-1">
+                ₹{formatNumberWithCommas(summaryMetrics.profit)}
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-800 text-[#075C2A] dark:text-emerald-400 shadow-xs">
+              <MonetizationOnIcon />
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#075C2A] dark:text-emerald-400 pt-2 border-t border-emerald-200/60 dark:border-gray-700/50">
+            <span>Profit Margin: {summaryMetrics.fulfillmentRate}%</span>
+          </div>
+        </div>
+
+        {/* Card 4: Avg Order Value */}
+        <div className="bg-blue-50/90 dark:bg-blue-950/40 p-5 rounded-2xl border border-blue-200/80 dark:border-blue-800/40 shadow-xs flex flex-col justify-between space-y-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-200">Average Order Value</p>
+              <h3 className="text-2xl font-extrabold text-[#0756B5] dark:text-blue-400 mt-1">
+                ₹{formatNumberWithCommas(summaryMetrics.avgOrderValue)}
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-800 text-[#0756B5] dark:text-blue-400 shadow-xs">
+              <SpeedIcon />
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0756B5] dark:text-blue-400 pt-2 border-t border-blue-200/60 dark:border-gray-700/50">
+            <span>Fulfillment Rate: {summaryMetrics.fulfillmentRate}%</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Revenue & Sales Trend Graph */}
+      <motion.div variants={itemVariants}>
+        <ReportRevenueChart timelineData={timelineData} timeRange={timeRange} />
+      </motion.div>
+
+      {/* Circular Presentation & Product Growth Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div variants={itemVariants}>
+          <ReportCategoryPie categoryData={categoryData} />
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <ReportProductGrowthBar productGrowthData={productGrowthData} />
+        </motion.div>
+      </div>
+
+      {/* Circular Order Status Rings & Detailed Static Data Table */}
+      <div className="grid grid-cols-1 space-y-6">
+        <motion.div variants={itemVariants}>
+          <ReportOrderStatusRings orderStatusData={orderStatusData} />
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <ReportProductTable productGrowthData={productGrowthData} />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}

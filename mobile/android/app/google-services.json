@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "969162800042",
+    "project_id": "dairyapp-7712b",
+    "storage_bucket": "dairyapp-7712b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:969162800042:android:b9c06499eee9a57bf909d3",
+        "android_client_info": {
+          "package_name": "site.speshway.dairy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTDj_q1pTZ4Pnm-jiCKgd7eQtsM6CSqjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
