@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../config/api_config.dart';
 import '../providers/auth_provider.dart';
 import 'mobile_web_view_screen.dart';
 import 'onboarding_screen.dart';
@@ -92,18 +93,27 @@ class _SplashScreenState extends State<SplashScreen>
           ]).catchError((_) => [])
         : Future.value([]);
 
-    // 2. Initialize auth provider and restore session tokens
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final authFuture = authProvider.isInitializing
-        ? authProvider.initAuth()
-        : Future.value(null);
+    // 2. Dynamically resolve active server URL (Remote Config -> Saved -> Tunnel -> Local LAN)
+    final serverFuture = ApiConfig.resolveWorkingServer().catchError((e) {
+      debugPrint('[Splash] Server resolution note: $e');
+      return ApiConfig.productionServerUrl;
+    });
 
-    // 3. Minimum display duration to ensure user experiences the full zoom-in animation smoothly
+    // 3. Initialize auth provider and restore session tokens once server is resolved
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authFuture = serverFuture.then((_) {
+      return authProvider.isInitializing
+          ? authProvider.initAuth()
+          : Future.value(null);
+    });
+
+    // 4. Minimum display duration to ensure user experiences the full zoom-in animation smoothly
     final minDisplayFuture = Future.delayed(const Duration(milliseconds: 1800));
 
     // Wait for all concurrent initialization tasks
     await Future.wait([
       precacheFuture,
+      serverFuture,
       authFuture,
       minDisplayFuture,
     ]);

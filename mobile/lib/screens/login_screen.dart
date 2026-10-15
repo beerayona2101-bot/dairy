@@ -117,8 +117,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Action Bar: Back to Onboarding
+                // Top Action Bar: Back Button (Left) & Guest Option (Right)
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (Navigator.of(context).canPop())
                       IconButton(
@@ -130,6 +131,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                     else
                       const SizedBox.shrink(),
+
+                    TextButton.icon(
+                      onPressed: _continueAsGuest,
+                      icon: Text(
+                        'Guest',
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF075C2A),
+                        ),
+                      ),
+                      label: const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Color(0xFF075C2A)),
+                      style: TextButton.styleFrom(
+                        backgroundColor: const Color(0xFFE8F7EE),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),

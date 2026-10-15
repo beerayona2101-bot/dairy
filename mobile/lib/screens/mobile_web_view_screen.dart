@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,8 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   bool _isFirstLoad = true;
   bool _hasError = false;
   Timer? _timeoutTimer;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  String _networkStatusText = 'Checking network...';
 
   static bool _isLoopbackUrl(String url) {
     if (kIsWeb) return false;
@@ -35,27 +38,23 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     return lower.contains('localhost') || lower.contains('127.0.0.1') || lower.contains('10.0.2.2');
   }
 
-  static List<String> get _defaultCandidateUrls {
-    final list = <String>[
-      ApiConfig.productionServerUrl,
-      'http://${ApiConfig.lanIp}:9000',
-    ];
-    // On physical mobile devices, eliminate any loopback/emulator URLs
-    return list.where((u) => !_isLoopbackUrl(u)).toList();
-  }
-
-  late final List<String> _candidateUrls;
+  late List<String> _candidateUrls;
   int _candidateIndex = 0;
   late String _currentUrl;
 
   @override
   void initState() {
     super.initState();
-    _candidateUrls = List<String>.from(_defaultCandidateUrls);
-    _currentUrl = widget.initialUrl ?? _candidateUrls[0];
+    _candidateUrls = List<String>.from(ApiConfig.candidateServers.where((u) => !_isLoopbackUrl(u)));
+    if (_candidateUrls.isEmpty) {
+      _candidateUrls = [ApiConfig.productionServerUrl];
+    }
+    _currentUrl = widget.initialUrl ?? ApiConfig.baseUrl;
+
     _initWebView();
     _startTimeoutTimer();
     _initPreferencesAndLoad();
+    _listenToNetworkTransitions();
 
     FcmService.onNotificationClick = (data) {
       if (!mounted || _controller == null) return;
@@ -70,28 +69,64 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     };
   }
 
+  /// Actively monitors cellular mobile data <-> Wi-Fi transitions and heals drops
+  void _listenToNetworkTransitions() {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      final isConnected = results.any((r) => r != ConnectivityResult.none);
+      final isMobile = results.contains(ConnectivityResult.mobile);
+      final isWifi = results.contains(ConnectivityResult.wifi);
+
+      if (mounted) {
+        setState(() {
+          if (isWifi) {
+            _networkStatusText = 'Connected: Wi-Fi';
+          } else if (isMobile) {
+            _networkStatusText = 'Connected: Mobile Cellular (4G/5G)';
+          } else if (isConnected) {
+            _networkStatusText = 'Connected: Active Network';
+          } else {
+            _networkStatusText = 'No Internet Connection (Offline)';
+          }
+        });
+      }
+
+      // If returning online from an error state, auto-recover without user intervention
+      if (isConnected && _hasError) {
+        debugPrint('[Network] Active connection restored ($results). Auto-recovering storefront...');
+        _autoRecoverConnection();
+      }
+    });
+  }
+
+  Future<void> _autoRecoverConnection() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
+    final working = await ApiConfig.resolveWorkingServer();
+    if (mounted) {
+      _loadSpecificUrl(working);
+    }
+  }
+
   Future<void> _initPreferencesAndLoad() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
       if (savedUrl != null && savedUrl.isNotEmpty) {
-        // Automatically purge any stale loopback URLs or expired trycloudflare tunnels
-        final isOldTunnel = savedUrl.contains('trycloudflare.com') &&
-            !savedUrl.contains(Uri.parse(ApiConfig.productionServerUrl).host);
-        if (_isLoopbackUrl(savedUrl) || isOldTunnel) {
-          await prefs.remove('working_web_url');
-          await prefs.remove('custom_web_url');
-          return;
-        }
-        if (widget.initialUrl == null && savedUrl != _currentUrl) {
+        if (!_isLoopbackUrl(savedUrl)) {
           if (!_candidateUrls.contains(savedUrl)) {
             _candidateUrls.insert(0, savedUrl);
           } else {
             _candidateUrls.remove(savedUrl);
             _candidateUrls.insert(0, savedUrl);
           }
-          if (mounted) {
-            _loadSpecificUrl(savedUrl);
+          if (widget.initialUrl == null && savedUrl != _currentUrl) {
+            if (mounted) {
+              _loadSpecificUrl(savedUrl);
+            }
           }
         }
       }
@@ -101,13 +136,14 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   @override
   void dispose() {
     _timeoutTimer?.cancel();
+    _connectivitySubscription?.cancel();
     super.dispose();
   }
 
   void _startTimeoutTimer() {
     _timeoutTimer?.cancel();
-    // 8 seconds gives tunnel and remote assets sufficient time to load
-    _timeoutTimer = Timer(const Duration(milliseconds: 8000), () {
+    // 9 seconds provides sufficient buffer for carrier CGNAT handshakes
+    _timeoutTimer = Timer(const Duration(milliseconds: 9000), () {
       if (mounted && _isLoading && !_hasError) {
         _tryNextCandidateOrShowError();
       }
@@ -115,7 +151,6 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   }
 
   void _tryNextCandidateOrShowError() {
-    SharedPreferences.getInstance().then((prefs) => prefs.remove('working_web_url')).catchError((_) => false);
     if (_candidateIndex + 1 < _candidateUrls.length) {
       _candidateIndex++;
       _loadSpecificUrl(_candidateUrls[_candidateIndex]);
@@ -188,14 +223,12 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
             }
           },
           onPageStarted: (String url) {
-            if (mounted) {
-              if (_isFirstLoad) {
-                setState(() {
-                  _isLoading = true;
-                  _hasError = false;
-                });
-                _startTimeoutTimer();
-              }
+            if (mounted && _isFirstLoad) {
+              setState(() {
+                _isLoading = true;
+                _hasError = false;
+              });
+              _startTimeoutTimer();
             }
           },
           onPageFinished: (String url) {
@@ -206,7 +239,6 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                 _hasError = false;
                 _isFirstLoad = false;
               });
-              // Persist confirmed responsive URL for next launch
               SharedPreferences.getInstance().then((prefs) {
                 prefs.setString('working_web_url', _currentUrl);
               });
@@ -249,7 +281,14 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       _isFirstLoad = true;
       _candidateIndex = 0;
     });
-    _loadSpecificUrl(_candidateUrls[0]);
+
+    // Proactively resolve the newest live server (e.g. from dynamic remote config)
+    final resolvedUrl = await ApiConfig.resolveWorkingServer();
+    _candidateUrls = List<String>.from(ApiConfig.candidateServers.where((u) => !_isLoopbackUrl(u)));
+    if (!_candidateUrls.contains(resolvedUrl)) {
+      _candidateUrls.insert(0, resolvedUrl);
+    }
+    _loadSpecificUrl(resolvedUrl);
   }
 
   void _showConfigureHostDialog() {
@@ -258,19 +297,46 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Configure Store Server',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18),
+        title: Row(
+          children: [
+            const Icon(Icons.hub_rounded, color: Color(0xFF0756B5), size: 24),
+            const SizedBox(width: 8),
+            Text(
+              'Server & Network Diagnostics',
+              style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 17),
+            ),
+          ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFBFDBFE)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.wifi_find_rounded, size: 16, color: Color(0xFF1D4ED8)),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _networkStatusText,
+                      style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF1E40AF)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
             Text(
-              'Enter your public tunnel URL or server endpoint:',
+              'Active Server URL / Tunnel Endpoint:',
               style: GoogleFonts.outfit(fontSize: 13, color: const Color(0xFF64748B)),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             TextField(
               controller: hostController,
               decoration: InputDecoration(
@@ -283,11 +349,11 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               ),
-              style: GoogleFonts.outfit(fontSize: 13),
+              style: GoogleFonts.jetBrainsMono(fontSize: 12.5),
             ),
             const SizedBox(height: 14),
             Text(
-              'Quick Presets:',
+              'Quick Connect Presets:',
               style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF475569)),
             ),
             const SizedBox(height: 8),
@@ -295,8 +361,8 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               spacing: 6,
               runSpacing: 6,
               children: [
-                _buildQuickChip('Cloudflare (Any Network)', ApiConfig.productionServerUrl, hostController),
-                _buildQuickChip('Wi-Fi (Port 9000)', 'http://${ApiConfig.lanIp}:9000', hostController),
+                _buildQuickChip('Cloud Tunnel (Global 4G/5G)', ApiConfig.productionServerUrl, hostController),
+                _buildQuickChip('Local Wi-Fi (Port 9000)', 'http://${ApiConfig.lanIp}:9000', hostController),
               ],
             ),
           ],
@@ -335,7 +401,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
 
   Widget _buildQuickChip(String label, String url, TextEditingController controller) {
     return ActionChip(
-      label: Text(label, style: GoogleFonts.outfit(fontSize: 11.5, fontWeight: FontWeight.w600)),
+      label: Text(label, style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600)),
       backgroundColor: const Color(0xFFF1F5F9),
       onPressed: () {
         controller.text = url;
@@ -386,64 +452,72 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                     ),
                   ),
 
-                // Clean Brand Loading Screen
+                // Clean Brand Loading Screen with 3-Tap Diagnostic Trigger
                 if (_isLoading && !_hasError)
                   Positioned.fill(
                     child: Container(
                       color: Colors.white,
                       child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 130,
-                              height: 130,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color(0xFF0756B5).withValues(alpha: 0.06),
-                              ),
-                              child: Image.asset(
-                                'assets/images/logoLightMode.png',
-                                fit: BoxFit.contain,
-                                filterQuality: FilterQuality.high,
-                                errorBuilder: (_, _, _) => const Icon(
-                                  Icons.eco_rounded,
-                                  size: 60,
-                                  color: Color(0xFF075C2A),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Secret double/triple tap opens server diagnostic
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onLongPress: _showConfigureHostDialog,
+                                child: Container(
+                                  width: 130,
+                                  height: 130,
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(0xFF0756B5).withValues(alpha: 0.06),
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/logoLightMode.png',
+                                    fit: BoxFit.contain,
+                                    filterQuality: FilterQuality.high,
+                                    errorBuilder: (_, _, _) => const Icon(
+                                      Icons.eco_rounded,
+                                      size: 60,
+                                      color: Color(0xFF075C2A),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 22),
-                            SizedBox(
-                              width: 36,
-                              height: 36,
-                              child: CircularProgressIndicator(
-                                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0756B5)),
-                                backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.3),
-                                strokeWidth: 3.5,
+                              const SizedBox(height: 22),
+                              SizedBox(
+                                width: 36,
+                                height: 36,
+                                child: CircularProgressIndicator(
+                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0756B5)),
+                                  backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.3),
+                                  strokeWidth: 3.5,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 18),
-                            Text(
-                              'Natural Milk Dairy',
-                              style: GoogleFonts.outfit(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFF0F2742),
-                                letterSpacing: 0.5,
+                              const SizedBox(height: 18),
+                              Text(
+                                'Natural Milk Dairy',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF0F2742),
+                                  letterSpacing: 0.5,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Opening Fresh Storefront...',
-                              style: GoogleFonts.outfit(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w500,
-                                color: const Color(0xFF64748B),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Opening Fresh Storefront...',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF64748B),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -474,7 +548,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                             ),
                             const SizedBox(height: 20),
                             Text(
-                              'Unable to Connect to Storefront',
+                              'Connecting to Storefront',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.outfit(
                                 fontSize: 21,
@@ -484,7 +558,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Could not establish connection to the store server.\nMake sure your mobile data or Wi-Fi is active.',
+                              'Verifying server connection over your active network.\nTap "Retry Now" or check connection settings below.',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.outfit(
                                 fontSize: 13.5,
@@ -492,7 +566,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                                 height: 1.4,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 12),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                               decoration: BoxDecoration(
@@ -541,7 +615,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                                     onPressed: _showConfigureHostDialog,
                                     icon: const Icon(Icons.settings_rounded, size: 18),
                                     label: Text(
-                                      'Change Server URL',
+                                      'Settings',
                                       style: GoogleFonts.outfit(
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.w700,

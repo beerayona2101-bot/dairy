@@ -1,0 +1,10 @@
+{
+  "activeServerUrl": "https://latex-coverage-happen-bench.trycloudflare.com",
+  "fallbackUrls": [
+    "https://latex-coverage-happen-bench.trycloudflare.com",
+    "http://192.168.1.84:9000"
+  ],
+  "minAppVersion": "1.0.0",
+  "maintenance": false,
+  "announcement": "Welcome to Natural Milk Dairy!"
+}

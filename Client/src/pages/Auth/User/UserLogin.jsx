@@ -142,9 +142,15 @@ export default function UserLogin() {
     navigate("/home", { replace: true });
   };
 
+  const handleGuestContinue = () => {
+    sessionStorage.setItem("isGuest", "true");
+    enqueueSnackbar("👋 Welcome! Continuing as Guest.", { variant: "info" });
+    navigate("/", { replace: true });
+  };
+
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-[#F5F8F6] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center px-2.5 py-1.5 sm:px-3 sm:py-2">
-      <header className="w-full max-w-[440px] lg:max-w-[1220px] h-9 shrink-0 flex items-center justify-start">
+      <header className="w-full max-w-[440px] lg:max-w-[1220px] h-9 shrink-0 flex items-center justify-between">
         <button
           type="button"
           onClick={handleGoBack}
@@ -153,6 +159,17 @@ export default function UserLogin() {
         >
           <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#075C2A] dark:text-[#3F9E18]" />
           <span className="hidden sm:inline text-xs font-bold">Back</span>
+        </button>
+
+        {/* Top-Right Corner Guest Option for Mobile Response */}
+        <button
+          type="button"
+          onClick={handleGuestContinue}
+          className="lg:hidden px-3.5 py-1.5 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] bg-white/95 dark:bg-slate-800/95 rounded-full border border-slate-200/90 dark:border-slate-700/80 shadow-xs hover:bg-[#E8F7EE] dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+          aria-label="Continue as Guest"
+        >
+          <span>Guest</span>
+          <ChevronRight className="w-3.5 h-3.5 text-[#075C2A] dark:text-[#3F9E18]" />
         </button>
       </header>
 
@@ -324,6 +341,21 @@ export default function UserLogin() {
                 "Sign In"
               )}
             </button>
+
+            {/* Create Account Option for Mobile Response */}
+            <div className="pt-2 text-center lg:hidden">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Don't have an account?{" "}
+                <Link
+                  to="/signup"
+                  state={{ previous: "/login", fromAuthFlow: true }}
+                  className="font-black text-[#075C2A] dark:text-[#3F9E18] hover:underline cursor-pointer ml-1 inline-flex items-center gap-0.5"
+                >
+                  <span>Create Account</span>
+                  <ChevronRight className="w-3.5 h-3.5 inline" />
+                </Link>
+              </p>
+            </div>
               </form>
             </div>
           </div>

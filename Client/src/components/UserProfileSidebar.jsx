@@ -160,13 +160,26 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
                     </span>
                 </button>
 
-                <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 transition cursor-pointer"
-                >
-                    <span>Log out</span>
-                    <MdArrowForward className="text-sm" />
-                </button>
+                {(authUser || authAdmin) ? (
+                  <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 transition cursor-pointer"
+                  >
+                      <span>Log out</span>
+                      <MdArrowForward className="text-sm" />
+                  </button>
+                ) : (
+                  <button
+                      onClick={() => {
+                        if (setUserProfileDrawer) setUserProfileDrawer(false);
+                        navigate("/login");
+                      }}
+                      className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#075C2A] to-[#054593] shadow-md hover:opacity-95 transition cursor-pointer"
+                  >
+                      <span>Sign In / Create Account</span>
+                      <MdArrowForward className="text-sm" />
+                  </button>
+                )}
             </div>
         </aside>
     );

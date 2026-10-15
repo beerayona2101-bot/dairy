@@ -119,17 +119,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.only(right: 16.0),
             child: TextButton.icon(
               onPressed: _continueAsGuest,
-              icon: const Icon(Icons.arrow_forward_rounded, size: 16),
-              label: Text(
-                'Skip as Guest',
+              icon: Text(
+                'Guest',
                 style: GoogleFonts.outfit(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF075C2A),
                 ),
               ),
+              label: const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Color(0xFF075C2A)),
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF10B981),
-                backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
+                backgroundColor: const Color(0xFFE8F7EE),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
