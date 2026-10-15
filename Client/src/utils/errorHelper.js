@@ -73,7 +73,7 @@ export function getFriendlyErrorMessage(error, defaultFallback = "Something went
     case 403:
       return "403 Error: Access denied. You do not have permission.";
     case 404:
-      return "404 Error: User account not found. Please register an account first.";
+      return "404 Error: Requested resource not found. Please check your connection.";
     case 409:
       return "409 Error: An account already exists with this email address.";
     case 422:

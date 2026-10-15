@@ -4,7 +4,8 @@ import { getProducts, likeProduct } from "../controllers/productController.js";
 
 const router = express.Router();
 
-router.get("/get-products", wrapAsync(getProducts))
+router.get("/get-products", wrapAsync(getProducts));
+router.get("/get-all-products", wrapAsync(getProducts));
 
 router.put("/like/:productId", wrapAsync(likeProduct));
 

@@ -13,7 +13,13 @@ export const getBaseUrl = () => {
 
   // In browser environments:
   if (typeof window !== "undefined" && window.location) {
-    const { hostname, protocol, origin } = window.location;
+    const { hostname, port, protocol, origin } = window.location;
+
+    // Whenever accessing through Vite dev server (e.g. port 5173 or 3000), always route to backend port 9000
+    if (port === "5173" || port === "3000") {
+      const scheme = protocol === "https:" ? "https:" : "http:";
+      return `${scheme}//${hostname}:9000`;
+    }
 
     // 1. In Production Mode: Open / connect to application on ANY server or domain
     if (isProd) {
@@ -39,6 +45,11 @@ export const getBaseUrl = () => {
     if (isLanIp) {
       const scheme = protocol === "https:" ? "https:" : "http:";
       return `${scheme}//${hostname}:9000`;
+    }
+
+    // Tunnel domains, cloud domains, and external hosts
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      return origin.replace(/\/+$/, "");
     }
 
     return "http://localhost:9000";

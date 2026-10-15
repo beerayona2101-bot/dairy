@@ -39,6 +39,7 @@ export default function UserLogin() {
   }
 
   const brandLogo = theme === "dark" ? logoDarkMode : logoLightMode;
+  const AnimatedMain = motion.main;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -145,7 +146,7 @@ export default function UserLogin() {
   return (
     <div className="relative min-h-[100dvh] w-full bg-[#FAFBFD] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col justify-between items-center px-4 py-3 sm:py-5 overflow-y-auto">
       {/* Top Header Navigation: Back & Guest */}
-      <header className="w-full max-w-[440px] flex items-center justify-between shrink-0 pt-1 pb-1">
+      <header className="w-full max-w-[440px] lg:max-w-6xl flex items-center justify-between shrink-0 pt-1 pb-1">
         <button
           type="button"
           onClick={handleGoBack}
@@ -169,37 +170,66 @@ export default function UserLogin() {
       </header>
 
       {/* Main Unified Login Card Container (Centered and proportioned to fit 100% viewport) */}
-      <motion.main
+      <AnimatedMain
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="w-full max-w-[440px] flex-1 flex flex-col justify-center my-auto py-2 sm:py-3"
+        className="w-full max-w-[440px] flex-1 flex flex-col justify-center my-auto py-2 sm:py-3 lg:max-w-6xl lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:flex-none lg:my-6 lg:overflow-hidden lg:rounded-[32px] lg:border lg:border-slate-200/90 lg:bg-white lg:shadow-2xl lg:shadow-slate-300/40 dark:lg:border-slate-800 dark:lg:bg-[#1E293B] dark:lg:shadow-black/40"
       >
-        {/* Brand Cow Logo Header - Increased size for high impact & readability */}
-        <div className="flex flex-col items-center text-center mb-3 sm:mb-4">
+        <aside className="hidden lg:flex flex-col justify-center bg-gradient-to-br from-[#075C2A] via-[#08713A] to-[#054593] px-10 py-12 xl:px-14 text-white">
           <img
             src={brandLogo}
             alt={company?.name || "Natural Milk Dairy"}
-            className="h-24 sm:h-28 md:h-32 w-auto object-contain mb-2 drop-shadow-md transition-transform duration-300 hover:scale-105"
+            className="w-52 xl:w-60 h-auto object-contain self-start mb-10 drop-shadow-lg"
           />
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xs">
-            Farm-fresh milk &amp; daily needs delivered to your door
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-white/75">
+            Natural Milk Dairy
           </p>
-        </div>
-
-        {/* Welcome Header */}
-        <div className="mb-2.5 sm:mb-3.5 text-left">
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            Welcome Back! 👋
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-            Sign in to access your dairy subscriptions &amp; orders
+          <h2 className="mt-3 text-4xl xl:text-5xl font-black leading-tight tracking-tight">
+            Welcome back!
+          </h2>
+          <p className="mt-4 max-w-sm text-base xl:text-lg leading-relaxed text-white/85">
+            Sign in to enjoy farm-fresh dairy and keep your subscriptions and orders close at hand.
           </p>
-        </div>
+          <div className="mt-10 border-t border-white/25 pt-7">
+            <p className="text-sm text-white/80">New to Natural Milk Dairy?</p>
+            <Link
+              to="/signup"
+              className="mt-3 inline-flex items-center gap-2 rounded-xl border border-white/50 px-5 py-3 text-sm font-extrabold transition-colors hover:bg-white hover:text-[#075C2A]"
+            >
+              Create your account
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </aside>
 
-        {/* Inputs Card Container */}
-        <div className="bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/40">
-          <form onSubmit={handleFormSubmit} className="space-y-3.5">
+        <section className="flex w-full flex-col justify-center px-0 py-2 sm:py-3 lg:px-10 lg:py-12 xl:px-14">
+          <div className="w-full max-w-[440px] mx-auto">
+            {/* Brand Cow Logo Header */}
+            <div className="flex flex-col items-center text-center mb-3 sm:mb-4 lg:hidden">
+              <img
+                src={brandLogo}
+                alt={company?.name || "Natural Milk Dairy"}
+                className="h-28 sm:h-32 w-auto object-contain mb-2 drop-shadow-md transition-transform duration-300 hover:scale-105"
+              />
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xs">
+                Farm-fresh milk &amp; daily needs delivered to your door
+              </p>
+            </div>
+
+            {/* Welcome Header */}
+            <div className="mb-2.5 sm:mb-3.5 text-left">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                Welcome Back! 👋
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+                Sign in to access your dairy subscriptions &amp; orders
+              </p>
+            </div>
+
+            {/* Inputs Card Container */}
+            <div className="bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/40 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:dark:bg-transparent">
+              <form onSubmit={handleFormSubmit} className="space-y-3.5">
             {/* Email Address */}
             <div>
               <label className="block text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-1">
@@ -306,12 +336,14 @@ export default function UserLogin() {
                 "Sign In"
               )}
             </button>
-          </form>
-        </div>
-      </motion.main>
+              </form>
+            </div>
+          </div>
+        </section>
+      </AnimatedMain>
 
       {/* Footer: Register Now Row */}
-      <footer className="w-full max-w-[440px] pt-2 pb-1 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium shrink-0">
+      <footer className="w-full max-w-[440px] pt-2 pb-1 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium shrink-0 lg:hidden">
         Don't have an account?{" "}
         <Link to="/signup" className="font-extrabold text-[#075C2A] dark:text-[#3F9E18] hover:text-[#054593] hover:underline ml-1">
           Register Now
@@ -328,8 +360,6 @@ export default function UserLogin() {
     </div>
   );
 }
-
-
 
 
 

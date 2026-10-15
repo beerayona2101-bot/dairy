@@ -9,7 +9,8 @@
     "start:prod": "npm --prefix Server run start:prod",
     "start:local": "npm --prefix Server run start:local",
     "dev:server": "npm --prefix Server run dev",
-    "dev:client": "npm --prefix Client run dev"
+    "dev:client": "npm --prefix Client run dev",
+    "tunnel": ".\\cloudflared.exe tunnel --url http://127.0.0.1:9000"
   },
   "dependencies": {
     "node": "^26.7.0",

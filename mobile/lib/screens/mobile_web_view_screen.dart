@@ -27,17 +27,19 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   bool _hasError = false;
   Timer? _timeoutTimer;
 
+  static bool _isLoopbackUrl(String url) {
+    if (kIsWeb) return false;
+    final lower = url.toLowerCase();
+    return lower.contains('localhost') || lower.contains('127.0.0.1') || lower.contains('10.0.2.2');
+  }
+
   static List<String> get _defaultCandidateUrls {
-    if (ApiConfig.isProduction) {
-      return [
-        ApiConfig.webUrl,
-      ];
-    }
-    return [
-      'http://${ApiConfig.lanIp}:5173',
+    final list = <String>[
+      ApiConfig.productionServerUrl,
       'http://${ApiConfig.lanIp}:9000',
-      'http://10.0.2.2:5173',
     ];
+    // On physical mobile devices, eliminate any loopback/emulator URLs
+    return list.where((u) => !_isLoopbackUrl(u)).toList();
   }
 
   late final List<String> _candidateUrls;
@@ -58,15 +60,23 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
-      if (savedUrl != null && savedUrl.isNotEmpty && widget.initialUrl == null && savedUrl != _currentUrl) {
-        if (!_candidateUrls.contains(savedUrl)) {
-          _candidateUrls.insert(0, savedUrl);
-        } else {
-          _candidateUrls.remove(savedUrl);
-          _candidateUrls.insert(0, savedUrl);
+      if (savedUrl != null && savedUrl.isNotEmpty) {
+        // Automatically purge any stale localhost/127.0.0.1 entries from previous test runs
+        if (_isLoopbackUrl(savedUrl)) {
+          await prefs.remove('working_web_url');
+          await prefs.remove('custom_web_url');
+          return;
         }
-        if (mounted) {
-          _loadSpecificUrl(savedUrl);
+        if (widget.initialUrl == null && savedUrl != _currentUrl) {
+          if (!_candidateUrls.contains(savedUrl)) {
+            _candidateUrls.insert(0, savedUrl);
+          } else {
+            _candidateUrls.remove(savedUrl);
+            _candidateUrls.insert(0, savedUrl);
+          }
+          if (mounted) {
+            _loadSpecificUrl(savedUrl);
+          }
         }
       }
     } catch (_) {}
@@ -80,8 +90,8 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
 
   void _startTimeoutTimer() {
     _timeoutTimer?.cancel();
-    // 7 seconds gives Vite dev server ample time to transform and send modules
-    _timeoutTimer = Timer(const Duration(milliseconds: 7000), () {
+    // 8 seconds gives tunnel and remote assets sufficient time to load
+    _timeoutTimer = Timer(const Duration(milliseconds: 8000), () {
       if (mounted && _isLoading && !_hasError) {
         _tryNextCandidateOrShowError();
       }
@@ -206,7 +216,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Configure Server URL',
+          'Configure Store Server',
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18),
         ),
         content: Column(
@@ -214,14 +224,14 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Enter your local machine IP or dev server URL:',
+              'Enter your public tunnel URL or server endpoint:',
               style: GoogleFonts.outfit(fontSize: 13, color: const Color(0xFF64748B)),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: hostController,
               decoration: InputDecoration(
-                hintText: 'e.g. http://192.168.1.39:5173',
+                hintText: 'e.g. https://xxxx.trycloudflare.com',
                 filled: true,
                 fillColor: const Color(0xFFF8FAFC),
                 border: OutlineInputBorder(
@@ -230,21 +240,20 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               ),
-              style: GoogleFonts.outfit(fontSize: 14),
+              style: GoogleFonts.outfit(fontSize: 13),
             ),
             const SizedBox(height: 14),
             Text(
-              'Quick Select:',
+              'Quick Presets:',
               style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF475569)),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 6,
               runSpacing: 6,
               children: [
-                _buildQuickChip('Wi-Fi (5173)', 'http://${ApiConfig.lanIp}:5173', hostController),
-                _buildQuickChip('Wi-Fi (9000)', 'http://${ApiConfig.lanIp}:9000', hostController),
-                _buildQuickChip('Production', ApiConfig.productionServerUrl, hostController),
+                _buildQuickChip('Cloudflare (Any Network)', ApiConfig.productionServerUrl, hostController),
+                _buildQuickChip('Wi-Fi (Port 9000)', 'http://${ApiConfig.lanIp}:9000', hostController),
               ],
             ),
           ],
@@ -256,7 +265,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6C5CE7),
+              backgroundColor: const Color(0xFF0756B5),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
@@ -266,6 +275,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setString('custom_web_url', newUrl);
                 await prefs.setString('working_web_url', newUrl);
+                ApiConfig.setActiveBaseUrl(newUrl);
                 if (ctx.mounted) Navigator.pop(ctx);
                 _candidateUrls.remove(newUrl);
                 _candidateUrls.insert(0, newUrl);
@@ -410,18 +420,19 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF6C5CE7).withValues(alpha: 0.12),
+                                color: const Color(0xFF0756B5).withValues(alpha: 0.10),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
                                 Icons.wifi_off_rounded,
                                 size: 40,
-                                color: Color(0xFF6C5CE7),
+                                color: Color(0xFF0756B5),
                               ),
                             ),
                             const SizedBox(height: 20),
                             Text(
-                              'Unable to Open Page',
+                              'Unable to Connect to Storefront',
+                              textAlign: TextAlign.center,
                               style: GoogleFonts.outfit(
                                 fontSize: 21,
                                 fontWeight: FontWeight.w800,
@@ -430,7 +441,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Could not connect to the local store server.\nMake sure the dev server is active on your Wi-Fi network.',
+                              'Could not establish connection to the store server.\nMake sure your mobile data or Wi-Fi is active.',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.outfit(
                                 fontSize: 13.5,
@@ -438,15 +449,16 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                                 height: 1.4,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 _currentUrl,
+                                textAlign: TextAlign.center,
                                 style: GoogleFonts.jetBrainsMono(
                                   fontSize: 11,
                                   color: const Color(0xFF475569),
@@ -470,7 +482,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                                       ),
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF6C5CE7),
+                                      backgroundColor: const Color(0xFF0756B5),
                                       foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -486,15 +498,15 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                                     onPressed: _showConfigureHostDialog,
                                     icon: const Icon(Icons.settings_rounded, size: 18),
                                     label: Text(
-                                      'Edit IP',
+                                      'Change Server URL',
                                       style: GoogleFonts.outfit(
-                                        fontSize: 14,
+                                        fontSize: 13.5,
                                         fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF6C5CE7),
+                                        color: const Color(0xFF0756B5),
                                       ),
                                     ),
                                     style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(color: Color(0xFF6C5CE7)),
+                                      side: const BorderSide(color: Color(0xFF0756B5)),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),

@@ -5,8 +5,8 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Production Server / Storefront URL
-  // Replace this with your public domain, cloud URL (Render/AWS), or tunnel URL (e.g. Localtunnel/Ngrok)
-  static const String productionServerUrl = 'http://192.168.1.39:9000';
+  // Live Cloudflare Tunnel URL allowing instant access across ANY mobile cellular network or Wi-Fi
+  static const String productionServerUrl = 'https://bones-lights-scales-thou.trycloudflare.com';
 
   // Host machine local Wi-Fi IP
   static const String lanIp = '192.168.1.39';
@@ -14,13 +14,12 @@ class ApiConfig {
   // In-app Web Storefront URL
   static String get webUrl => isProduction
       ? productionServerUrl
-      : 'http://$lanIp:5173';
+      : 'http://$lanIp:9000';
 
   // Supported candidate servers
   static List<String> get candidateServers => [
-        if (isProduction) productionServerUrl,
+        productionServerUrl,
         'http://$lanIp:9000',
-        'http://10.0.2.2:9000',
       ];
 
   static String _activeBaseUrl = isProduction ? productionServerUrl : 'http://$lanIp:9000';
