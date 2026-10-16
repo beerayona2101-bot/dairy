@@ -164,23 +164,22 @@ export default function UserSignUp() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] lg:h-[100dvh] w-full overflow-y-auto lg:overflow-hidden bg-[#F5F8F6] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center px-2.5 py-1.5 sm:px-3 sm:py-2">
+    <div className="relative min-h-[100dvh] lg:h-[100dvh] w-full overflow-y-auto lg:overflow-hidden bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
       <header className="w-full max-w-[440px] lg:max-w-[1220px] h-9 shrink-0 flex items-center justify-between">
         <button
           type="button"
           onClick={handleGoBack}
-          className="p-2 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-[#3F9E18] transition-colors rounded-full sm:rounded-xl hover:bg-white dark:hover:bg-gray-800 shadow-2xs border border-gray-200/60 dark:border-gray-700/60 flex items-center gap-1.5 cursor-pointer"
+          className="w-8.5 h-8.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[#075C2A] dark:text-[#3F9E18] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-xs"
           aria-label="Back"
         >
-          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#075C2A] dark:text-[#3F9E18]" />
-          <span className="hidden sm:inline text-xs font-bold">Back</span>
+          <ArrowLeft className="w-4.5 h-4.5 text-[#075C2A] dark:text-[#3F9E18]" />
         </button>
 
-        {/* Top-Right Corner Guest Option for Mobile Response */}
+        {/* Top-Right Corner Guest Option */}
         <button
           type="button"
           onClick={handleGuestContinue}
-          className="lg:hidden px-3.5 py-1.5 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] bg-white/95 dark:bg-slate-800/95 rounded-full border border-slate-200/90 dark:border-slate-700/80 shadow-xs hover:bg-[#E8F7EE] dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+          className="lg:hidden px-3 py-1 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] bg-white dark:bg-slate-800 rounded-full border border-green-300 dark:border-green-700 shadow-xs hover:bg-green-50 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
           aria-label="Continue as Guest"
         >
           <span>Guest</span>
@@ -223,86 +222,83 @@ export default function UserSignUp() {
           </div>
         </aside>
 
-        <section className="flex w-full flex-col justify-center px-0 py-1.5 sm:py-2 lg:px-8 lg:py-8 xl:px-12">
+        <section className="flex w-full flex-col justify-center px-0 py-1 sm:py-2 lg:px-8 lg:py-8 xl:px-12">
           <div className="w-full max-w-[440px] mx-auto">
             {/* Brand Cow Logo Header */}
-            <div className="flex flex-col items-center text-center mb-2 sm:mb-2.5 lg:hidden">
+            <div className="flex flex-col items-center text-center mb-2 lg:hidden">
               <img
                 src={brandLogo}
                 alt={company?.name || "Natural Milk Dairy"}
-                className="h-24 sm:h-28 w-auto object-contain mb-1 drop-shadow-md transition-transform duration-300 hover:scale-105"
+                className="h-14 sm:h-16 w-auto object-contain mb-0.5 drop-shadow-md transition-transform duration-300 hover:scale-105"
               />
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xs">
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
                 Farm-fresh milk &amp; daily needs delivered to your door
               </p>
             </div>
 
             {/* Welcome Header */}
             <div className="mb-2 text-left">
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                 Create an Account 🚀
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
                 Join Natural Milk Dairy for farm-fresh dairy delivered daily
               </p>
             </div>
 
             {/* Inputs Card Container */}
-            <div className="bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/40 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:dark:bg-transparent">
-              <form onSubmit={handleFormSubmit} className="space-y-2 sm:space-y-2.5">
-                {/* User Name & Mobile Number in 2 columns on sm / tablet / desktop */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                  {/* User Name */}
-                  <div>
-                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
-                      User Name
-                    </label>
-                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                      <UserIcon className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
-                      <input
-                        type="text"
-                        name="username"
-                        placeholder="e.g. John Doe"
-                        value={formData?.username}
-                        onChange={handleInputChange}
-                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Mobile Number */}
-                  <div>
-                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
-                      Mobile Number
-                    </label>
-                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                      <Phone className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
-                      <input
-                        type="tel"
-                        name="mobileNo"
-                        maxLength={10}
-                        placeholder="10-digit mobile"
-                        value={formData?.mobileNo}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "");
-                          if (val.length <= 10) {
-                            setFormData((prev) => ({ ...prev, mobileNo: val }));
-                          }
-                        }}
-                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                        required
-                      />
-                    </div>
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-3 sm:p-3.5 border border-slate-200/90 dark:border-slate-800 shadow-lg shadow-slate-200/40 dark:shadow-black/40 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:dark:bg-transparent">
+              <form onSubmit={handleFormSubmit} className="space-y-1.5 sm:space-y-2">
+                {/* 1. User Name */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-0.5">
+                    User Name
+                  </label>
+                  <div className="group flex items-center px-3 py-1.5 sm:py-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                    <UserIcon className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
+                    <input
+                      type="text"
+                      name="username"
+                      placeholder="e.g. John Doe"
+                      value={formData?.username}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                      required
+                    />
                   </div>
                 </div>
 
-                {/* Email Address */}
+                {/* 2. Mobile Number */}
                 <div>
-                  <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
+                  <label className="block text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-0.5">
+                    Mobile Number
+                  </label>
+                  <div className="group flex items-center px-3 py-1.5 sm:py-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                    <Phone className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
+                    <input
+                      type="tel"
+                      name="mobileNo"
+                      maxLength={10}
+                      placeholder="10-digit mobile"
+                      value={formData?.mobileNo}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        if (val.length <= 10) {
+                          setFormData((prev) => ({ ...prev, mobileNo: val }));
+                        }
+                      }}
+                      className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Email Address */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-0.5">
                     Email Address
                   </label>
-                  <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                  <div className="group flex items-center px-3 py-1.5 sm:py-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
                     <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
                     <input
                       type="email"
@@ -316,58 +312,55 @@ export default function UserSignUp() {
                   </div>
                 </div>
 
-                {/* Password & Confirm Password in 2 columns on sm / tablet / desktop */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                  {/* Password */}
-                  <div>
-                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
-                      Password
-                    </label>
-                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                      <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-1.5 shrink-0 transition-colors" />
-                      <input
-                        name="password"
-                        placeholder="At least 8 chars"
-                        type={showPassword ? "text" : "password"}
-                        value={formData?.password}
-                        onChange={handleInputChange}
-                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1 transition-colors cursor-pointer"
-                      >
-                        {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </button>
-                    </div>
+                {/* 4. Password */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-0.5">
+                    Password
+                  </label>
+                  <div className="group flex items-center px-3 py-1.5 sm:py-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                    <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-1.5 shrink-0 transition-colors" />
+                    <input
+                      name="password"
+                      placeholder="At least 8 chars"
+                      type={showPassword ? "text" : "password"}
+                      value={formData?.password}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1 transition-colors cursor-pointer"
+                    >
+                      {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                    </button>
                   </div>
+                </div>
 
-                  {/* Confirm Password */}
-                  <div>
-                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
-                      Confirm Password
-                    </label>
-                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                      <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-1.5 shrink-0 transition-colors" />
-                      <input
-                        name="confirmPassword"
-                        placeholder="Re-enter password"
-                        type={showConfirmPassword ? "text" : "password"}
-                        value={formData?.confirmPassword}
-                        onChange={handleInputChange}
-                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1 transition-colors cursor-pointer"
-                      >
-                        {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </button>
-                    </div>
+                {/* 5. Confirm Password */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-0.5">
+                    Confirm Password
+                  </label>
+                  <div className="group flex items-center px-3 py-1.5 sm:py-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                    <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-1.5 shrink-0 transition-colors" />
+                    <input
+                      name="confirmPassword"
+                      placeholder="Re-enter password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={formData?.confirmPassword}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1 transition-colors cursor-pointer"
+                    >
+                      {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 

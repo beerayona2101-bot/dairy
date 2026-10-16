@@ -99,8 +99,14 @@ export default function UserLogin() {
 
           enqueueSnackbar("Login Successful!", { variant: "success" });
 
+          const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+          const destination = !isAuthPath(targetPath)
+            ? targetPath
+            : !isAuthPath(storedRedirect)
+            ? storedRedirect
+            : "/";
           sessionStorage.removeItem("redirectAfterLogin");
-          navigate("/", { replace: true });
+          navigate(destination, { replace: true });
         }
       } else {
         const errorMsg = getFriendlyErrorMessage(res?.message || "401 Error: Login failed, please check your credentials.");

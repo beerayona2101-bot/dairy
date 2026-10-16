@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(cartProvider),
+      bottomNavigationBar: _buildBottomNavBar(cartProvider, authProvider),
     );
   }
 
@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             if (authProvider.isAuthenticated) {
               _showProfileModal(context, authProvider);
             } else {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
             }
           },
         ),
@@ -307,12 +307,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildBottomNavBar(CartProvider cartProvider) {
+  Widget _buildBottomNavBar(CartProvider cartProvider, AuthProvider authProvider) {
     return SizedBox(
       height: 68,
       child: BottomNavigationBar(
         currentIndex: _selectedNavIndex,
-        onTap: (index) => setState(() => _selectedNavIndex = index),
+        onTap: (index) {
+          if (index == 4 && !authProvider.isAuthenticated) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
+            return;
+          }
+          setState(() => _selectedNavIndex = index);
+        },
         selectedItemColor: AppTheme.primary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
@@ -1242,7 +1248,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
                     ),
                     borderRadius: BorderRadius.circular(16),
                     child: Center(
@@ -1250,13 +1256,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(
-                            Icons.person_add_rounded,
+                            Icons.login_rounded,
                             color: Colors.white,
                             size: 20,
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            'Create Account',
+                            'Sign In',
                             style: GoogleFonts.outfit(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
@@ -1284,16 +1290,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   backgroundColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
                 ),
-                icon: const Icon(Icons.login_rounded, color: Color(0xFF0284C7), size: 20),
+                icon: const Icon(Icons.person_add_rounded, color: Color(0xFF0284C7), size: 20),
                 label: Text(
-                  'Sign In',
+                  'Create Account',
                   style: GoogleFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0284C7),
                   ),
                 ),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen())),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen())),
               ),
             ),
             const SizedBox(height: 24),

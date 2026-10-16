@@ -431,7 +431,59 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
+
+                // Clean divider with OR
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: isDark ? Colors.white12 : Colors.grey.shade200)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        'OR',
+                        style: GoogleFonts.outfit(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: isDark ? Colors.white12 : Colors.grey.shade200)),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                // Continue as Guest Option Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: isDark ? Colors.white24 : Colors.grey.shade300,
+                        width: 1.2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: _continueAsGuest,
+                    icon: Icon(
+                      Icons.person_outline_rounded,
+                      size: 18,
+                      color: isDark ? Colors.grey.shade300 : const Color(0xFF475569),
+                    ),
+                    label: Text(
+                      'Continue as Guest',
+                      style: GoogleFonts.outfit(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.grey.shade200 : const Color(0xFF334155),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
               ],
             ),
           ),

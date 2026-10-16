@@ -319,9 +319,9 @@ export default function Navbar() {
             navigate("/user-profile");
         } else {
             if (location.pathname !== "/login" && location.pathname !== "/signup") {
-                sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
+                sessionStorage.setItem("redirectAfterLogin", "/user-profile");
             }
-            navigate("/signup", { state: { from: location.pathname + location.search } });
+            navigate("/login", { state: { from: "/user-profile" } });
         }
     };
 

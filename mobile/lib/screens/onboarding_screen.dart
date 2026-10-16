@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
-import 'register_screen.dart';
 import 'mobile_web_view_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -110,12 +109,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  void _goToRegister() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RegisterScreen()),
-    );
-  }
-
   Future<void> _continueAsGuest() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('is_guest_user', true);
@@ -192,28 +185,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
 
-                    // Skip Button on Right
-                    if (_currentPage < _slides.length - 1)
-                      TextButton(
-                        onPressed: () {
-                          _pageController.animateToPage(
-                            _slides.length - 1,
-                            duration: const Duration(milliseconds: 320),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: isDark
-                              ? Colors.white.withValues(alpha: 0.08)
-                              : Colors.white,
-                          elevation: isDark ? 0 : 1,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(
-                              color: isDark ? Colors.white12 : Colors.grey.shade200,
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    GestureDetector(
+                      onTap: _continueAsGuest,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                         ),
                         child: Text(
                           'Skip',
@@ -223,9 +201,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: isDark ? Colors.grey.shade300 : const Color(0xFF64748B),
                           ),
                         ),
-                      )
-                    else
-                      const SizedBox(width: 48),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -424,7 +401,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   const SizedBox(height: 12),
 
                   if (_currentPage == _slides.length - 1) ...[
-                    // FINAL SLIDE: Create Account (Primary) & Sign In (Secondary) & Guest
+                    // FINAL SLIDE: "Get Started" Primary Button -> Opens Login Page
                     SizedBox(
                       width: double.infinity,
                       height: 52,
@@ -447,26 +424,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: _goToRegister,
+                            onTap: _goToLogin,
                             borderRadius: BorderRadius.circular(16),
                             child: Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.person_add_rounded,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 10),
                                   Text(
-                                    'Create Account',
+                                    'Get Started',
                                     style: GoogleFonts.outfit(
-                                      fontSize: 16,
+                                      fontSize: 16.5,
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 0.5,
                                       color: Colors.white,
                                     ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: Colors.white,
+                                    size: 20,
                                   ),
                                 ],
                               ),
@@ -475,48 +452,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    // Secondary Button: Sign In
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                        onPressed: _goToLogin,
-                        icon: const Icon(Icons.login_rounded, size: 18, color: Color(0xFF0284C7)),
-                        label: Text(
-                          'Sign In',
-                          style: GoogleFonts.outfit(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF0284C7),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    // Guest Option: Continue as Guest
-                    TextButton.icon(
-                      onPressed: _continueAsGuest,
-                      icon: const Icon(Icons.arrow_forward_rounded, size: 15, color: Colors.grey),
-                      label: Text(
-                        'Continue as Guest (Skip) →',
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                        ),
-                      ),
-                    ),
                   ] else ...[
-                    // SLIDES 1 & 2 — Full-width Continue button & Guest option
+                    // SLIDES 1 & 2 — Full-width Next / Continue button
                     SizedBox(
                       width: double.infinity,
+                      height: 52,
                       child: Container(
-                        height: 52,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [currentAccent, currentAccent.withValues(alpha: 0.85)],
@@ -565,20 +506,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    // Skip to guest
-                    TextButton.icon(
-                      onPressed: _continueAsGuest,
-                      icon: const Icon(Icons.arrow_forward_rounded, size: 15, color: Colors.grey),
-                      label: Text(
-                        'Continue as Guest (Skip) →',
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                         ),
                       ),
                     ),

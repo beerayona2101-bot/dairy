@@ -318,14 +318,6 @@ export default function MobileOnboardingCards({ forceShow = false, onClose }) {
             >
               {currentPage + 1} of {ONBOARDING_SLIDES.length}
             </span>
-
-            <button
-              onClick={() => handleComplete()}
-              className="px-3 py-1 rounded-full text-xs font-bold text-slate-300 bg-white/10 hover:bg-white/20 active:scale-95 transition-all flex items-center gap-1 border border-white/10 shadow-sm"
-            >
-              <span>Skip</span>
-              <X className="w-3.5 h-3.5 text-slate-400" />
-            </button>
           </div>
         </div>
 
@@ -443,84 +435,50 @@ export default function MobileOnboardingCards({ forceShow = false, onClose }) {
 
           {/* Action Buttons Row */}
           {isLast ? (
-            <div className="flex flex-col gap-2 w-full">
-              {/* Primary: Create Account Button */}
+            <div className="flex items-center gap-2 w-full">
+              {currentPage > 0 && (
+                <button
+                  onClick={handlePrev}
+                  className="w-11 h-11 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 text-white flex items-center justify-center shrink-0 shadow-md transition-all cursor-pointer"
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+                </button>
+              )}
+              {/* Primary: Get Started Button -> Opens Login */}
               <button
-                onClick={() => handleComplete("/signup")}
-                className="w-full h-11 px-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all cursor-pointer bg-gradient-to-r from-[#0284C7] to-[#0369A1] shadow-sky-500/30 hover:brightness-105"
+                onClick={() => handleComplete("/login")}
+                className="flex-1 h-11 px-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all cursor-pointer bg-gradient-to-r from-[#0284C7] to-[#0369A1] shadow-sky-500/30 hover:brightness-105"
               >
-                <UserCheck className="w-4 h-4 stroke-[2.5]" />
-                <span>Create Account</span>
+                <span>Get Started</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
-
-              {/* Secondary Row: Back (if slide > 0) + Sign In Button */}
-              <div className="flex items-center gap-2">
-                {currentPage > 0 && (
-                  <button
-                    onClick={handlePrev}
-                    className="w-11 h-11 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 text-white flex items-center justify-center shrink-0 shadow-md transition-all cursor-pointer"
-                    aria-label="Previous slide"
-                  >
-                    <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
-                  </button>
-                )}
-                <button
-                  onClick={() => handleComplete("/login")}
-                  className="flex-1 h-11 px-4 rounded-2xl font-black text-sm text-[#0284C7] bg-white hover:bg-sky-50 flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all cursor-pointer border border-sky-200"
-                >
-                  <span>Sign In</span>
-                </button>
-              </div>
-
-              {/* Continue as Guest Button */}
-              <div className="text-center pt-0.5">
-                <button
-                  onClick={() => handleComplete("/")}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white py-1 transition-colors cursor-pointer"
-                >
-                  <span>Continue as Guest (Skip) →</span>
-                </button>
-              </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-2 w-full">
-              <div className="flex items-center gap-2">
-                {/* Back Button (slide 2 onwards) */}
-                {currentPage > 0 && (
-                  <button
-                    onClick={handlePrev}
-                    className="w-11 h-11 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 text-white flex items-center justify-center shrink-0 shadow-md transition-all cursor-pointer"
-                    aria-label="Previous slide"
-                  >
-                    <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
-                  </button>
-                )}
-
-                {/* Primary Action Button (Continue) */}
+            <div className="flex items-center gap-2 w-full">
+              {/* Back Button (slide 2 onwards) */}
+              {currentPage > 0 && (
                 <button
-                  onClick={handleNext}
-                  className="flex-1 h-11 px-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all cursor-pointer"
-                  style={{
-                    background: `linear-gradient(135deg, ${currentSlide.badgeColor} 0%, #1E293B 140%)`,
-                    boxShadow: `0 6px 20px -4px ${currentSlide.badgeColor}88`
-                  }}
+                  onClick={handlePrev}
+                  className="w-11 h-11 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 text-white flex items-center justify-center shrink-0 shadow-md transition-all cursor-pointer"
+                  aria-label="Previous slide"
                 >
-                  <span>Continue</span>
-                  <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                  <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
                 </button>
-              </div>
+              )}
 
-              {/* Continue as Guest Button */}
-              <div className="text-center">
-                <button
-                  onClick={() => handleComplete("/")}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white py-1 transition-colors cursor-pointer"
-                >
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Continue as Guest (Skip) →</span>
-                </button>
-              </div>
+              {/* Primary Action Button (Continue) */}
+              <button
+                onClick={handleNext}
+                className="flex-1 h-11 px-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all cursor-pointer"
+                style={{
+                  background: `linear-gradient(135deg, ${currentSlide.badgeColor} 0%, #1E293B 140%)`,
+                  boxShadow: `0 6px 20px -4px ${currentSlide.badgeColor}88`
+                }}
+              >
+                <span>Continue</span>
+                <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
             </div>
           )}
         </div>
