@@ -9,7 +9,7 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel)
-  static const String productionServerUrl = 'https://latex-coverage-happen-bench.trycloudflare.com';
+  static const String productionServerUrl = 'https://duncan-monkey-behaviour-third.trycloudflare.com';
 
   // Host machine local Wi-Fi IP
   static const String lanIp = '192.168.1.84';

@@ -1,12 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useContext } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import AnimatedHeading from "../Common/AnimatedHeading";
 import ProductVarietyCard from "../ProductComponents/ProductVarietyCard";
 import { fallbackProducts } from "../../data/fallbackProducts";
+import { PageContentContext } from "../../context/PageContentProvider";
 
 export default function FeaturedProductsSection({ products = [] }) {
+    const { pageContent } = useContext(PageContentContext);
+    const sectionData = pageContent?.featuredProductsSection || {};
+
     // Curate a balanced, diverse selection of 12 top farm dairy products
     const featuredList = useMemo(() => {
         const source = Array.isArray(products) && products.length > 0 ? products : fallbackProducts;
@@ -52,23 +56,23 @@ export default function FeaturedProductsSection({ products = [] }) {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 sm:gap-4">
                 <div className="space-y-0.5 sm:space-y-1.5 text-left">
                     <AnimatedHeading
-                        blackText="Featured"
-                        violetText="Products"
+                        blackText={sectionData.titleBlack || "Featured"}
+                        violetText={sectionData.titleHighlight || "Products"}
                         align="left"
                         className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight justify-start"
                         violetClassName="text-[#0756B5] dark:text-blue-400 font-black"
                     />
 
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        Pure, organic &amp; nutrient-dense dairy delivered within hours of milking.
+                        {sectionData.subtitle || "Pure, organic & nutrient-dense dairy delivered within hours of milking."}
                     </p>
                 </div>
 
                 <Link
-                    to="/products"
+                    to={sectionData.viewAllLink || "/products"}
                     className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-[#0756B5] dark:text-blue-400 hover:text-[#054593] hover:underline self-start sm:self-auto shrink-0 group"
                 >
-                    <span>View All Products</span>
+                    <span>{sectionData.viewAllText || "View All Products"}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
@@ -92,10 +96,10 @@ export default function FeaturedProductsSection({ products = [] }) {
             {/* Bottom Catalog CTA */}
             <div className="pt-2 text-center">
                 <Link
-                    to="/products"
+                    to={sectionData.bottomCtaLink || "/products"}
                     className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-[#0756B5] dark:text-blue-400 border border-[#0756B5]/30 dark:border-blue-500/30 font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
                 >
-                    <span>Explore Complete Dairy Catalog</span>
+                    <span>{sectionData.bottomCtaText || "Explore Complete Dairy Catalog"}</span>
                     <ArrowRight className="w-4 h-4" />
                 </Link>
             </div>

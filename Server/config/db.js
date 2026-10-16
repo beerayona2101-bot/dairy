@@ -76,7 +76,12 @@ const seedDefaultData = async () => {
   try {
     // 1. Seed Admin
     const adminEmail = "admin@naturalmilkdairy.com";
-    const existingAdmin = await Admin.findOne({ email: { $in: [adminEmail, "admin@MADHUdairy.com"] } });
+    const existingAdmin = await Admin.findOne({
+      $or: [
+        { email: { $in: [adminEmail, "admin@MADHUdairy.com"] } },
+        { username: "admin_natural" },
+      ],
+    });
     if (!existingAdmin) {
       const hashedAdminPassword = await bcryptjs.hash("Admin@12345", 10);
       await Admin.create({

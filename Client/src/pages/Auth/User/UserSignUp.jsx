@@ -209,8 +209,8 @@ export default function UserSignUp() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Email Address
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
-                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-2.5 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2.5 shrink-0 transition-colors" />
                 <input
                   type="email"
                   name="email"
@@ -228,8 +228,8 @@ export default function UserSignUp() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Password
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-2.5 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2.5 shrink-0 transition-colors" />
                 <input
                   name="password"
                   placeholder="At least 8 chars with a number"
@@ -254,8 +254,8 @@ export default function UserSignUp() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Confirm Password
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-2.5 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2.5 shrink-0 transition-colors" />
                 <input
                   name="confirmPassword"
                   placeholder="Re-enter your password"
@@ -277,7 +277,7 @@ export default function UserSignUp() {
 
             {/* Subtle Password Rule Guidance */}
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 pt-0.5">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#075C2A]" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#0284C7]" />
               Must be at least 8 characters and contain at least 1 number
             </p>
 
@@ -290,7 +290,7 @@ export default function UserSignUp() {
                   name="agreeTerms"
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="w-3.5 h-3.5 mt-0.5 rounded text-[#075C2A] focus:ring-[#075C2A] focus:ring-offset-0 border-slate-300 dark:border-slate-600 dark:bg-slate-800 accent-[#075C2A] cursor-pointer shrink-0 transition-all"
+                  className="w-3.5 h-3.5 mt-0.5 rounded text-[#0284C7] focus:ring-[#0284C7] focus:ring-offset-0 border-slate-300 dark:border-slate-600 dark:bg-slate-800 accent-[#0284C7] cursor-pointer shrink-0 transition-all"
                   required
                 />
                 <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-snug">
@@ -301,7 +301,7 @@ export default function UserSignUp() {
                       e.preventDefault();
                       setTermsModalTab("terms");
                     }}
-                    className="font-bold text-[#075C2A] dark:text-[#3F9E18] hover:underline cursor-pointer"
+                    className="font-bold text-[#0284C7] dark:text-[#38BDF8] hover:underline cursor-pointer"
                   >
                     Terms &amp; Conditions
                   </button>{" "}
@@ -312,7 +312,7 @@ export default function UserSignUp() {
                       e.preventDefault();
                       setTermsModalTab("privacy");
                     }}
-                    className="font-bold text-[#075C2A] dark:text-[#3F9E18] hover:underline cursor-pointer"
+                    className="font-bold text-[#0284C7] dark:text-[#38BDF8] hover:underline cursor-pointer"
                   >
                     Privacy Policy
                   </button>
@@ -324,7 +324,7 @@ export default function UserSignUp() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full min-h-[44px] py-2.5 px-4 rounded-full bg-gradient-to-r from-[#E8F7EE] via-[#F0FFF6] to-[#E3F1FF] hover:from-[#DDF6E8] hover:via-[#F5FFF9] hover:to-[#E0F0FF] text-[#0F5A3C] font-black text-xs sm:text-sm tracking-wide shadow-[0_8px_16px_rgba(16,94,60,0.12)] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1 border border-[#CFEAD9]"
+              className="w-full min-h-[44px] py-2.5 px-4 rounded-full bg-gradient-to-r from-[#E0F2FE] via-[#F0F9FF] to-[#EBF4FF] hover:from-[#BAE6FD] hover:via-[#E0F2FE] hover:to-[#E0F2FE] text-[#0284C7] dark:text-[#38BDF8] font-black text-xs sm:text-sm tracking-wide shadow-[0_8px_16px_rgba(2,132,199,0.14)] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer mt-1 border border-[#BAE6FD] dark:border-sky-800/60"
             >
               {isLoading ? (
                 <BuffaloLoader variant="button" text="Creating account..." />
@@ -340,10 +340,10 @@ export default function UserSignUp() {
                 <Link
                   to="/login"
                   state={{ previous: "/signup", fromAuthFlow: true }}
-                  className="font-black text-[#075C2A] dark:text-[#3F9E18] hover:underline cursor-pointer ml-1 inline-flex items-center gap-0.5"
+                  className="font-black text-[#0284C7] dark:text-[#38BDF8] hover:text-[#0369A1] hover:underline cursor-pointer ml-1 inline-flex items-center gap-0.5"
                 >
                   <span>Sign In</span>
-                  <ChevronRight className="w-3.5 h-3.5 inline" />
+                  <ChevronRight className="w-3.5 h-3.5 inline text-[#0284C7] dark:text-[#38BDF8]" />
                 </Link>
               </p>
             </div>

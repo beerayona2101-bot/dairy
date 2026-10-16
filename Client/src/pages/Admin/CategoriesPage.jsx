@@ -30,10 +30,11 @@ export default function CategoriesPage() {
 
   const safeProducts = Array.isArray(products) ? products : [];
   const grouped = groupProductsByCategory(safeProducts);
-  const showcaseTitles = (pageContent?.landingShowcaseCards || []).map((c) => c.title).filter(Boolean);
-  const homeTitles = (pageContent?.homeCategoryCards || []).map((c) => c.title).filter(Boolean);
-  const totalCategoriesCount = Array.from(new Set([...Object.keys(grouped), ...showcaseTitles, ...homeTitles])).length;
-  const showcaseCardsCount = (pageContent?.landingShowcaseCards || []).length || totalCategoriesCount;
+  const showcaseTitles = (pageContent?.homeCategoryCards || pageContent?.landingShowcaseCards || [])
+    .map((c) => c.title || c.name)
+    .filter(Boolean);
+  const totalCategoriesCount = Array.from(new Set([...Object.keys(grouped), ...showcaseTitles])).length;
+  const showcaseCardsCount = (pageContent?.homeCategoryCards || pageContent?.landingShowcaseCards || []).length;
 
   useEffect(() => {
     if (!socket) return;

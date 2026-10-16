@@ -19,7 +19,6 @@ import FaqPage from "../pages/FaqPage";
 // Lazy loaded secondary layout components
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
 const UserProfileLayout = lazy(() => import("../layouts/UserProfileLayout"));
-const LoginDialog = lazy(() => import("../pages/Auth/User/LoginDialog"));
 
 // Secondary & Admin Pages lazy loaded for code splitting
 const UserLogin = lazy(() => import("../pages/Auth/User/UserLogin"));
@@ -269,7 +268,6 @@ export default function Routers() {
 
                     <Route path="*" element={<Navigate to={authAdmin ? "/admin/dashboard" : "/home"} replace />} />
                 </Routes>
-                <LoginDialog />
             </Suspense>
         </RouteErrorBoundary>
     );

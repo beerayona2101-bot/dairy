@@ -22,7 +22,7 @@ import { formatNumberWithCommas } from "../utils/format";
 import { fallbackProducts } from "../data/fallbackProducts";
 import AnimatedHeading from "../components/Common/AnimatedHeading";
 import BackButton from "../components/Common/BackButton";
-import DiscountBadge from "../components/Common/DiscountBadge";
+import ProductVarietyCard from "../components/ProductComponents/ProductVarietyCard";
 
 export default function ProductDetailsPage() {
 
@@ -154,62 +154,13 @@ export default function ProductDetailsPage() {
 
                 {relatedProducts?.length > 0 ? (
                     <>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4 w-full">
-                            {currentItems.map((product, idx) => {
-                                const prodPrice = Number(product?.price) || 0;
-                                const prodDiscount = Number(product?.discount) || 0;
-                                const discounted = prodDiscount > 0 ? prodPrice - (prodPrice * prodDiscount) / 100 : prodPrice;
-
-                                return (
-                                    <motion.div
-                                        key={product?._id || idx}
-                                        initial={{ opacity: 0, scale: 0.96 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: idx * 0.02, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                                        className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-all duration-200 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-1 flex flex-col justify-between overflow-hidden group"
-                                    >
-                                        <Link to={`/product-details/${slugify(product?.name)}`} className="w-full block h-36 sm:h-44 overflow-hidden bg-white dark:bg-slate-800/80 relative">
-                                            <img
-                                                src={getProductImage(product)}
-                                                alt={product?.name}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
-                                            />
-                                            <DiscountBadge discount={prodDiscount} isFloating={true} />
-                                        </Link>
-
-                                        <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1">
-                                            <div>
-                                                <Link
-                                                    to={`/product-details/${slugify(product?.name)}`}
-                                                    className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white truncate group-hover:text-slate-700 dark:group-hover:text-slate-200 line-clamp-1 transition-colors block"
-                                                >
-                                                    {product?.name}
-                                                </Link>
-
-                                                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1 leading-relaxed">
-                                                    {product?.description || ""}
-                                                </p>
-                                            </div>
-
-                                            <div className="mt-2.5 flex items-baseline justify-between pt-2 border-t border-gray-100 dark:border-slate-700/60">
-                                                <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                                                        &#8377;{formatNumberWithCommas(discounted)}
-                                                    </span>
-                                                    {prodDiscount > 0 && (
-                                                        <span className="text-[11px] text-gray-400 dark:text-gray-500 line-through">
-                                                            &#8377;{formatNumberWithCommas(prodPrice)}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">
-                                                    {product?.quantityUnit || "1 Litre"}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-4 lg:gap-5 w-full items-stretch">
+                            {currentItems.map((product, idx) => (
+                                <ProductVarietyCard
+                                    key={product?._id ? String(product._id) : `related-${idx}`}
+                                    product={product}
+                                />
+                            ))}
                         </div>
 
                         {totalPages > 1 && (

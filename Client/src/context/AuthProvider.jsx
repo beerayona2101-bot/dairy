@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, createContext, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUserById, verifyUserSessionApi } from "../services/userService";
 import { getAdminById, verifyAdminSessionApi } from "../services/adminService";
 import wsManager from "../socket/WebSocketManager";
@@ -9,6 +10,8 @@ export const UserAuthContext = createContext();
 export const AdminAuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    const navigate = useNavigate();
+
     // Purge legacy persistent localStorage authentication keys to ensure tab-close reset behavior
     useEffect(() => {
         try {
@@ -21,7 +24,13 @@ export const AuthProvider = ({ children }) => {
     const [authAdmin, setAuthAdmin] = useState(null);
     const [authUserLoading, setAuthUserLoading] = useState(true);
     const [authAdminLoading, setAuthAdminLoading] = useState(true);
-    const [openLoginDialog, setOpenLoginDialog] = useState(false);
+
+    const setOpenLoginDialog = useCallback((val, options = {}) => {
+        if (val && window.location.pathname !== "/login") {
+            navigate("/login", { state: options?.state || { from: window.location.pathname } });
+        }
+    }, [navigate]);
+    const openLoginDialog = false;
 
     const [deliveryAddress, setDeliveryAddressState] = useState(null);
 

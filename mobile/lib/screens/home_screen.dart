@@ -308,40 +308,43 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildBottomNavBar(CartProvider cartProvider) {
-    return BottomNavigationBar(
-      currentIndex: _selectedNavIndex,
-      onTap: (index) => setState(() => _selectedNavIndex = index),
-      selectedItemColor: AppTheme.primary,
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-      items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-        const BottomNavigationBarItem(icon: Icon(Icons.storefront_rounded), label: 'Products'),
-        BottomNavigationBarItem(
-          icon: Stack(
-            children: [
-              const Icon(Icons.shopping_cart_rounded),
-              if (cartProvider.itemCount > 0)
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: CircleAvatar(
-                    radius: 7,
-                    backgroundColor: Colors.red,
-                    child: Text(
-                      '${cartProvider.itemCount > 9 ? '9+' : cartProvider.itemCount}',
-                      style: const TextStyle(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold),
+    return SizedBox(
+      height: 68,
+      child: BottomNavigationBar(
+        currentIndex: _selectedNavIndex,
+        onTap: (index) => setState(() => _selectedNavIndex = index),
+        selectedItemColor: AppTheme.primary,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+        items: [
+          const BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
+          const BottomNavigationBarItem(icon: Icon(Icons.storefront_rounded), label: 'Products'),
+          BottomNavigationBarItem(
+            icon: Stack(
+              children: [
+                const Icon(Icons.shopping_cart_rounded),
+                if (cartProvider.itemCount > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: CircleAvatar(
+                      radius: 7,
+                      backgroundColor: Colors.red,
+                      child: Text(
+                        '${cartProvider.itemCount > 9 ? '9+' : cartProvider.itemCount}',
+                        style: const TextStyle(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
+            label: 'Cart',
           ),
-          label: 'Cart',
-        ),
-        const BottomNavigationBarItem(icon: Icon(Icons.favorite_rounded), label: 'Wishlist'),
-        const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
-      ],
+          const BottomNavigationBarItem(icon: Icon(Icons.favorite_rounded), label: 'Wishlist'),
+          const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+        ],
+      ),
     );
   }
 

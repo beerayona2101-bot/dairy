@@ -1,11 +1,13 @@
+import { useContext } from "react";
 import { motion } from "framer-motion";
 import AnimatedHeading from "../Common/AnimatedHeading";
+import { PageContentContext } from "../../context/PageContentProvider";
 import step1Img from "../../assets/freshMilk.jpg";
 import step2Img from "../../assets/hygienicProcessing.jpg";
 import step3Img from "../../assets/productImage.jpg";
 import step4Img from "../../assets/deliveryTruck.jpg";
 
-const JOURNEY_STEPS = [
+const DEFAULT_STEPS = [
     {
         step: "01",
         title: "Ethical Milking at Sunrise",
@@ -37,25 +39,42 @@ const JOURNEY_STEPS = [
 ];
 
 export default function FarmToTableSection() {
+    const { pageContent } = useContext(PageContentContext);
+    const ftt = pageContent?.farmToTable || {};
+
+    const titleBlack = ftt.titleBlack || "Farm to Table,";
+    const titleHighlight = ftt.titleHighlight || "Within Hours";
+    const subtitle = ftt.subtitle || "Follow how pure milk travels from green village pastures to your morning table.";
+
+    const steps = (ftt.steps && ftt.steps.length > 0)
+        ? ftt.steps.map((s, idx) => ({
+            step: s.step || `0${idx + 1}`,
+            title: s.title || DEFAULT_STEPS[idx]?.title || "Fresh Dairy Journey",
+            description: s.description || DEFAULT_STEPS[idx]?.description || "",
+            badge: s.badge || DEFAULT_STEPS[idx]?.badge || "FARM FRESH",
+            image: s.image || DEFAULT_STEPS[idx]?.image || step1Img,
+        }))
+        : DEFAULT_STEPS;
+
     return (
         <section aria-label="Farm to Table Freshness Journey" className="w-full space-y-6">
             {/* Header */}
             <div className="text-center max-w-2xl mx-auto space-y-2">
                 <AnimatedHeading
-                    blackText="Farm to Table,"
-                    violetText="Within Hours"
+                    blackText={titleBlack}
+                    violetText={titleHighlight}
                     className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight justify-center"
                     violetClassName="text-[#0756B5] dark:text-blue-400 font-black"
                 />
 
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
-                    Follow how pure milk travels from green village pastures to your morning table.
+                    {subtitle}
                 </p>
             </div>
 
             {/* 4 Connected Step Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 relative">
-                {JOURNEY_STEPS.map((s, idx) => (
+                {steps.map((s, idx) => (
                     <motion.div
                         key={s.step}
                         initial={{ opacity: 0, y: 15 }}

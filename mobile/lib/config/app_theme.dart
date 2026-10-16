@@ -18,8 +18,8 @@ class AppTheme {
   static const Color darkBg = Color(0xFF0F172A);
   static const Color darkCard = Color(0xFF1E293B);
   static const Color lightBg = milkWhite;
-  static const Color textDark = darkGreenText;
-  static const Color textMuted = Color(0xFF526B5C);
+  static const Color textDark = dairyBlue;
+  static const Color textMuted = Color(0xFF3B82F6);
 
   // Brand Gradients
   static const LinearGradient primaryGradient = LinearGradient(

@@ -1,8 +1,19 @@
+import { useContext } from "react";
 import { motion } from "framer-motion";
 import { Droplets, Heart, ShieldCheck, Layers, BadgePercent, Truck } from "lucide-react";
 import AnimatedHeading from "../Common/AnimatedHeading";
+import { PageContentContext } from "../../context/PageContentProvider";
 
-const BENEFITS = [
+const ICON_MAP = {
+    Droplets,
+    Heart,
+    ShieldCheck,
+    Layers,
+    BadgePercent,
+    Truck,
+};
+
+const DEFAULT_BENEFITS = [
     {
         icon: Droplets,
         title: "Fresh & Natural Dairy",
@@ -48,29 +59,40 @@ const BENEFITS = [
 ];
 
 export default function WhyChooseUsSection() {
+    const { pageContent } = useContext(PageContentContext);
+    const whyChooseData = pageContent?.whyChooseUs || {};
+
+    const rawBenefits = Array.isArray(whyChooseData.benefits) && whyChooseData.benefits.length > 0
+        ? whyChooseData.benefits
+        : DEFAULT_BENEFITS;
+
     return (
         <section id="why-choose-us" aria-label="Why Choose Natural Milk Dairy" className="w-full space-y-6">
             {/* Header */}
             <div className="text-center max-w-2xl mx-auto space-y-2">
                 <AnimatedHeading
-                    blackText="Why Choose"
-                    violetText="Natural Milk Dairy"
+                    blackText={whyChooseData.titleBlack || "Why Choose"}
+                    violetText={whyChooseData.titleHighlight || "Natural Milk Dairy"}
                     className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight justify-center"
                     violetClassName="text-[#0756B5] dark:text-blue-400 font-black"
                 />
 
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
-                    We uphold strict quality, ethical animal care, and uncompromising hygiene at every single step.
+                    {whyChooseData.subtitle ||
+                        "We uphold strict quality, ethical animal care, and uncompromising hygiene at every single step."}
                 </p>
             </div>
 
             {/* 6 Benefits Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                {BENEFITS.map((b, idx) => {
-                    const Icon = b.icon;
+                {rawBenefits.map((b, idx) => {
+                    const fallbackDefault = DEFAULT_BENEFITS[idx % DEFAULT_BENEFITS.length];
+                    const Icon = (b.iconName && ICON_MAP[b.iconName]) || b.icon || fallbackDefault.icon;
+                    const bgClass = b.bgClass || fallbackDefault.bgClass;
+
                     return (
                         <motion.div
-                            key={b.title}
+                            key={b.title || idx}
                             initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -80,9 +102,13 @@ export default function WhyChooseUsSection() {
                         >
                             <div className="space-y-3">
                                 <div
-                                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl border flex items-center justify-center shrink-0 ${b.bgClass} group-hover:scale-110 transition-transform duration-300`}
+                                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl border flex items-center justify-center shrink-0 overflow-hidden ${bgClass} group-hover:scale-110 transition-transform duration-300`}
                                 >
-                                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    {b.image ? (
+                                        <img src={b.image} alt={b.title} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    )}
                                 </div>
 
                                 <div className="space-y-1.5">

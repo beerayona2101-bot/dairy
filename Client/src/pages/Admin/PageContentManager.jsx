@@ -1,69 +1,249 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { PageContentContext } from "../../context/PageContentProvider";
 import { updatePageContentService } from "../../services/pageContentService";
 import { socket } from "../../socket/socket";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Image as ImageIcon,
   Save,
   Plus,
   Trash2,
   HelpCircle,
-  Sparkles,
   Layers,
   Layout as LayoutIcon,
   Upload,
   FileText,
-  Info,
-  PhoneCall,
-  MapPin,
-  Mail,
   Phone,
-  MessageSquare,
-  CreditCard,
-  Eye,
-  EyeOff,
-  GripVertical,
-  Tag,
-  DollarSign,
-  Percent,
-  ToggleLeft,
-  ToggleRight,
-  ChevronUp,
-  ChevronDown,
+  MapPin,
+  Star,
+  Truck,
+  Heart,
+  ShieldCheck,
+  Sun,
+  Clock,
+  MessageCircle,
+  CheckCircle2,
+  X,
+  ExternalLink,
+  Leaf,
 } from "lucide-react";
 import { convertToBase64 } from "../../utils/InventoryHelpers/imageBase64Converter";
-import homeHeroBgDefault from "../../assets/hero_carousel_slide_1.png";
-import bannerSlide2Default from "../../assets/hero_carousel_slide_2.png";
-import bannerSlide3Default from "../../assets/hero_carousel_slide_3.png";
-import { products, faqs as defaultFaqs, offerings as defaultOfferings } from "../../data/products";
+import bannerWelcomeImg from "../../assets/banner_welcome_sunrise.jpg";
+import bannerMilkImg from "../../assets/banner_farm_fresh_milk.jpg";
+import bannerProductsImg from "../../assets/banner_pure_healthy_products.jpg";
+import bannerDeliveryImg from "../../assets/banner_farm_to_home_delivery.jpg";
+import dairyImgDefault from "../../assets/dairyImage.png";
+import step1ImgDefault from "../../assets/freshMilk.jpg";
+import step2ImgDefault from "../../assets/hygienicProcessing.jpg";
+import step3ImgDefault from "../../assets/productImage.jpg";
+import step4ImgDefault from "../../assets/deliveryTruck.jpg";
 import AdminAccordion from "../../components/AdminComponents/Common/AdminAccordion";
 import BackButton from "../../components/Common/BackButton";
 
-const defaultHeroCarouselSlides = [
+// --- REUSABLE PER-ITEM SINGLE IMAGE UPLOAD COMPONENT ---
+function ItemImageUploader({ label, value, fallbackDefault, onChange }) {
+  const displaySrc = value || fallbackDefault;
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const base64 = await convertToBase64(file);
+        onChange(base64);
+      } catch (err) {
+        console.error("Failed to read image file:", err);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-[11px] font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+          <ImageIcon className="w-3.5 h-3.5 text-[#0756B5] dark:text-blue-400" />
+          <span>{label || "Upload Item Image"}</span>
+        </label>
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-[10px] text-red-500 hover:text-red-700 dark:hover:text-red-400 font-semibold flex items-center gap-0.5 cursor-pointer"
+          >
+            <X className="w-3 h-3" /> Remove custom image
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        {/* Thumbnail Preview */}
+        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-900 border border-gray-200 dark:border-gray-700 shrink-0 flex items-center justify-center group shadow-xs">
+          {displaySrc ? (
+            <img
+              src={displaySrc}
+              alt="Thumbnail preview"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            />
+          ) : (
+            <ImageIcon className="w-6 h-6 text-gray-400" />
+          )}
+          {value && (
+            <div className="absolute bottom-0 inset-x-0 bg-emerald-600/90 text-[8px] font-bold text-white text-center py-0.5 uppercase tracking-wider">
+              Custom
+            </div>
+          )}
+        </div>
+
+        {/* Upload Controls */}
+        <div className="flex-1 space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0756B5] hover:bg-[#054593] text-white text-xs font-bold shadow-xs cursor-pointer transition hover:scale-[1.02] active:scale-95">
+              <Upload className="w-3.5 h-3.5" />
+              <span>Upload Image</span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+            <span className="text-[10px] text-gray-500 dark:text-gray-400">
+              (PNG, JPG, WebP supported)
+            </span>
+          </div>
+
+          <input
+            type="text"
+            placeholder="Or paste direct image URL (https://...)"
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full px-2.5 py-1 text-[11px] rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:border-[#0756B5]"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Default 4 slides matching HomeWelcomeHero
+const defaultHeroSlides = [
   {
-    image: homeHeroBgDefault,
-    title: "Welcome to Natural Milk Dairy",
-    subtitle: "Experience 100% unadulterated farm-fresh milk, ghee, paneer, and sweets sourced directly from ethical farms.",
-    buttonText: "Explore Products",
-    buttonLink: "/products",
+    image: "",
+    badgeText: "Good Morning",
+    badgeIcon: "Sun",
+    eyebrow: "Welcome to",
+    mainHeading: "Natural Milk Dairy",
+    subHeading: "",
+    title: "Natural Milk Dairy",
+    subtitle: "Welcome to Natural Milk Dairy",
+    description: "Direct from our ethical farms to your home. Pure, hygienic & fresh dairy for you and your family.",
+    mobileSubtitle: "Fresh & Natural • Hygienic & Safe • Daily Delivery",
+    ctaText: "Explore Fresh Dairy",
+    ctaLink: "/products",
   },
   {
-    image: bannerSlide2Default,
-    title: "100% Pure, Organic & Farm-Fresh A2 Milk",
-    subtitle: "Delivered fresh to your doorstep every morning with zero preservatives and pristine hygiene.",
-    buttonText: "Order Fresh Milk",
-    buttonLink: "/products",
+    image: "",
+    badgeText: "100% PURE & UNTOUCHED",
+    badgeIcon: "Sparkles",
+    eyebrow: "",
+    mainHeading: "Farm Fresh Milk",
+    subHeading: "Every Day at 7 AM",
+    title: "Farm Fresh Milk",
+    subtitle: "Every Day at 7 AM",
+    description: "Direct from our farms to your home. Untouched by hand, chilled within hours, and laboratory tested.",
+    mobileSubtitle: "Direct from our farms to your home.",
+    ctaText: "Order Fresh Milk",
+    ctaLink: "/products/milk",
   },
   {
-    image: bannerSlide3Default,
-    title: "Traditional Ghee, Artisanal Paneer & Sweets",
-    subtitle: "Crafted with pure whole milk and traditional recipes for authentic nutrition, rich aroma and taste.",
-    buttonText: "Shop Dairy Products",
-    buttonLink: "/products",
+    image: "",
+    badgeText: "ARTISANAL & NUTRITIOUS",
+    badgeIcon: "ShieldCheck",
+    eyebrow: "",
+    mainHeading: "Pure & Healthy",
+    subHeading: "Dairy Products",
+    title: "Pure & Healthy",
+    subtitle: "Dairy Products",
+    description: "Goodness for a Healthier Tomorrow. Thick curd, soft malai paneer, and aromatic bilona cow ghee.",
+    mobileSubtitle: "Goodness for a Healthier Tomorrow.",
+    ctaText: "Explore Dairy Range",
+    ctaLink: "/products",
+  },
+  {
+    image: "",
+    badgeText: "DAILY MORNING DISPATCH",
+    badgeIcon: "Clock",
+    eyebrow: "",
+    mainHeading: "From Our Farm",
+    subHeading: "To Your Home",
+    title: "From Our Farm",
+    subtitle: "To Your Home",
+    description: "Trusted by thousands of happy customers. Guaranteed morning arrival at your doorstep before 7:00 AM.",
+    mobileSubtitle: "Trusted by thousands of happy customers.",
+    ctaText: "Start Subscription",
+    ctaLink: "/products",
+  },
+];
+
+const defaultCategoryCards = [
+  { title: "Milk", description: "Pure cow & buffalo milk, rich in natural calcium and vitamins.", image: "", link: "/products/milk" },
+  { title: "Paneer", description: "Soft malai paneer crafted daily with fresh whole milk.", image: "", link: "/products/paneer" },
+  { title: "Ghee", description: "Golden clarified butter prepared by slow bilona simmering.", image: "", link: "/products/ghee" },
+  { title: "Curd", description: "Thick, silky probiotic set curd for daily gut wellness.", image: "", link: "/products/curd" },
+  { title: "Butter", description: "Farm-churned yellow & white butter, rich and savory.", image: "", link: "/products/butter" },
+  { title: "Lassi", description: "Cooling refreshing churned yogurt beverage in classic flavors.", image: "", link: "/products/lassi" },
+  { title: "Chaas", description: "Spiced masala buttermilk infused with roasted cumin and mint.", image: "", link: "/products/chaas" },
+  { title: "Dairy Sweets", description: "Festive gulab jamun, rasgulla & peda made from pure khoya.", image: "", link: "/products/dairy-sweets" },
+];
+
+const defaultWhyChooseBenefits = [
+  { title: "Fresh & Natural Dairy", description: "Delivered straight from local partner farms to your doorstep — untouched, pure, and 100% preservative-free.", color: "#0756B5", image: "", iconName: "Droplets" },
+  { title: "Ethically Sourced Milk", description: "Our dairy farmers practice humane animal care, nourishing cows with clean water and pesticide-free green fodder.", color: "#E11D48", image: "", iconName: "Heart" },
+  { title: "4°C Hygienic Processing", description: "Strict cold-chain pasteurization and food-grade packaging preserve natural vitamins without chemical additives.", color: "#075C2A", image: "", iconName: "ShieldCheck" },
+  { title: "Comprehensive Dairy Range", description: "From morning cow & buffalo milk to thick probiotic curd, malai paneer, aromatic bilona ghee, and traditional sweets.", color: "#7C3AED", image: "", iconName: "Layers" },
+  { title: "Fair & Honest Pricing", description: "Direct farm-to-family model removes middleman margins, guaranteeing fair rates for farmers and great value for you.", color: "#D97706", image: "", iconName: "BadgePercent" },
+  { title: "Punctual 7 AM Delivery", description: "Chilled morning delivery right at your door 365 days a year, ensuring breakfast is always fresh and never delayed.", color: "#0284C7", image: "", iconName: "Truck" },
+];
+
+const defaultFarmSteps = [
+  { step: "01", title: "Ethical Milking at Sunrise", description: "Fresh milk sourced at dawn from healthy, grass-fed cows on certified partner farms.", badge: "PASTURE TO PAIL", image: "" },
+  { step: "02", title: "100+ Daily Lab Tests", description: "Strict testing for density, SNF, fat percentage, and zero chemical adulteration.", badge: "SCIENTIFIC RIGOR", image: "" },
+  { step: "03", title: "4°C Cold Processing", description: "Low-temperature pasteurization and airtight eco-packaging preserving natural goodness.", badge: "HYGIENIC FRESHNESS", image: "" },
+  { step: "04", title: "7 AM Doorstep Delivery", description: "Dispatched in refrigerated cold-chain vehicles directly to your kitchen before breakfast.", badge: "AT YOUR DOOR", image: "" },
+];
+
+const defaultReviews = [
+  {
+    name: "Sunita Deshmukh",
+    location: "Ambad, Nashik",
+    verified: true,
+    rating: 5,
+    title: "Pure taste with a thick malai layer",
+    comment: "The natural sweetness and thick malai layer on this milk reminds me of our family farm. The paneer is so fresh that it stays soft without boiling. Truly dependable quality.",
+    product: "Natural Cow Milk & Malai Paneer",
+    avatar: "",
+  },
+  {
+    name: "Rajesh Kulkarni",
+    location: "Nashik City",
+    verified: true,
+    rating: 5,
+    title: "Punctual delivery before 6:30 AM",
+    comment: "Subscribed for 9 months now. The delivery person quietly places the chilled bottles at our doorstep before 6:30 AM without fail. The aroma of their desi ghee is exceptional.",
+    product: "Pure Desi Ghee & Fresh Milk",
+    avatar: "",
+  },
+  {
+    name: "Dr. Ananya Patil",
+    location: "Gangapur Road, Nashik",
+    verified: true,
+    rating: 5,
+    title: "Complete peace of mind for my children",
+    comment: "As a doctor and mother, finding unadulterated milk free of synthetic hormones was essential. The transparency and strict 4°C processing make Natural Milk Dairy our #1 choice.",
+    product: "A2 Buffalo Milk & Thick Curd",
+    avatar: "",
   },
 ];
 
@@ -72,313 +252,191 @@ export default function PageContentManager() {
   const { pageContent, refreshPageContent } = useContext(PageContentContext);
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState("branding");
+  // Active section tab matching user's requested 8-item sequence
+  const [activeTab, setActiveTab] = useState("hero");
   const [saving, setSaving] = useState(false);
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
 
   const [formData, setFormData] = useState({
-    companyName: "",
-    companyTagline: "",
-    companyDescription: "",
-    heroBannerImage: "",
-    heroCarouselSlides: defaultHeroCarouselSlides,
-    landingHeroImage: "",
-    homeCategoryCards: [],
-    landingShowcaseCards: [],
-    goodnessOfferings: [],
-    faqs: [],
-    showcase3DCards: [],
-    aboutUs: {
-      badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
-      title: "About Natural Milk Dairy",
-      subtitle: "Delivering unadulterated farm-fresh milk, pure ghee, paneer, and daily kitchen essentials straight to thousands of happy families every morning by 7 AM.",
-      journeyTitle: "WHO WE ARE",
-      journeySubtitle: "Our Journey & Mission",
-      stats: [
-        { value: "100%", label: "Pure & Fresh Milk", icon: "🥛", color: "#477A50" },
-        { value: "7 AM", label: "Doorstep Delivery", icon: "🚚", color: "#00ACC1" },
-        { value: "100+", label: "Quality Tests", icon: "🔬", color: "#075C2A" },
-        { value: "50,000+", label: "Happy Families", icon: "❤️", color: "#FF7675" },
+    // 1. Hero Carousels
+    heroCarouselSlides: defaultHeroSlides,
+    // 2. Featured Products
+    featuredProductsSection: {
+      titleBlack: "Featured",
+      titleHighlight: "Products",
+      subtitle: "Pure, organic & nutrient-dense dairy delivered within hours of milking.",
+      viewAllText: "View All Products",
+      viewAllLink: "/products",
+      bottomCtaText: "Explore Complete Dairy Catalog",
+      bottomCtaLink: "/products",
+    },
+    // 3. Explore Categories
+    exploreCategoriesSection: {
+      titleBlack: "Explore Our",
+      titleHighlight: "Categories",
+      subtitle: "Browse our farm-fresh lineup crafted for taste, health, and purity.",
+      viewAllText: "View All Categories",
+      viewAllLink: "/products",
+    },
+    homeCategoryCards: defaultCategoryCards,
+    // 4. About Brand Preview ("Next Card")
+    aboutBrandPreview: {
+      titleBlack: "Rooted in Purity,",
+      titleHighlight: "Crafted with Care",
+      description:
+        "At Natural Milk Dairy, we partner directly with trusted local farmers to deliver untouched, unadulterated milk and handcrafted dairy straight to thousands of happy homes every morning by 7 AM.",
+      bullets: [
+        "Ethically sourced from grass-fed cows with humane care",
+        "Over 100+ lab tests daily to guarantee zero adulterants",
+        "Strict 4°C hygienic cold-chain without chemical preservatives",
+      ],
+      buttonText: "Learn More About Our Story",
+      buttonLink: "/about",
+      image: "",
+      bottomBadgeLeft: "Sourced Fresh Daily",
+      bottomBadgeRight: "✓ 100% Certified Pure",
+    },
+    // 5. Why Choose Us
+    whyChooseUs: {
+      titleBlack: "Why Choose",
+      titleHighlight: "Natural Milk Dairy",
+      subtitle: "We uphold strict quality, ethical animal care, and uncompromising hygiene at every single step.",
+      benefits: defaultWhyChooseBenefits,
+    },
+    // 6. Farm to Table
+    farmToTable: {
+      titleBlack: "Farm to Table,",
+      titleHighlight: "Within Hours",
+      subtitle: "Follow how pure milk travels from green village pastures to your morning table.",
+      steps: defaultFarmSteps,
+    },
+    // 7. Loved by "num" Families
+    customerTrust: {
+      titlePrefix: "Loved by Over",
+      familiesCount: "50,000+ Families",
+      subtitle: "Pure freshness and dependable service that thousands of homes wake up to every single day.",
+      metrics: [
+        { value: "4.9 / 5.0", label: "Average Customer Rating", color: "text-amber-400" },
+        { value: "50,000+", label: "Happy Families Served", color: "text-[#0756B5]" },
+        { value: "100+", label: "Daily Quality Checks", color: "text-emerald-500" },
+        { value: "99.8%", label: "On-Time Morning Deliveries", color: "text-[#00ACC1]" },
+      ],
+      reviews: defaultReviews,
+      certifications: [
+        "FSSAI Certified Processing Facility",
+        "Zero Chemical Adulteration Guarantee",
+        "Grass-Fed & Hormone-Free Herd",
+        "Food-Grade Tamper-Evident Packaging",
       ],
     },
-    contactUs: {
-      badgeText: "GET IN TOUCH",
-      title: "Contact Information",
-      supportText: "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
-      address: "Shed no. A-31, Natural Milk Dairy, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
-      phone: "+91 94906 44434",
-      email: "beerayona143@gmail.com",
-      whatsappNumber: "919490644434",
-      googleMaps: "https://maps.google.com/?q=Natural+Milk+Dairy+Ambad+Nashik",
+    // 8. Last Card (Shop Products, Contact Us, WhatsApp CTA)
+    homeContactCta: {
+      headline: "Freshness Delivered to Your Door Every Morning",
+      description:
+        "Taste the unadulterated difference of 100% pure A2 milk, slow-simmered desi ghee, and handcrafted paneer. Order today for guaranteed doorstep delivery before 7 AM.",
+      shopButtonText: "Shop Products Now",
+      shopButtonLink: "/products",
+      contactButtonText: "Contact Us",
+      contactButtonLink: "/contact-us",
+      whatsappText: "WhatsApp Us",
+      whatsappPhone: "919490644434",
+      whatsappMessage: "Hello! I would like to inquire about daily milk and dairy delivery.",
+      supportPhone: "+91 94906 44434",
+      workingHours: "Everyday, 5:00 AM - 12:00 PM",
+      locationText: "Nashik, Maharashtra",
+      bgImage: "",
     },
+    // Branding & Contact info
+    companyName: "Natural Milk Dairy",
+    companyTagline: "Farm-Fresh, Pure & Nutritious Dairy Delivered Daily to Your Doorstep",
+    companyDescription: "Natural Milk Dairy brings you 100% unadulterated milk, ghee, paneer, and sweets directly from our trusted farms.",
+    faqs: [],
   });
 
-  const defaultHomeCards = products.slice(0, 6).map((p) => ({
-    title: p.title,
-    image: p.image,
-  }));
-
-  const defaultShowcaseCards = products.slice(0, 6).map((p) => ({
-    title: p.title,
-    description: p.description,
-    image: p.image,
-    features: p.features || [],
-  }));
-
-
+  // Populate from DB when context updates
   useEffect(() => {
     if (pageContent) {
-      setFormData({
-        companyName: pageContent.companyName || "Natural Milk Dairy And Daily Needs",
-        companyTagline: pageContent.companyTagline || "",
-        companyDescription: pageContent.companyDescription || "",
-        heroBannerImage: pageContent.heroBannerImage || "",
+      setFormData((prev) => ({
+        ...prev,
+        ...pageContent,
         heroCarouselSlides:
           Array.isArray(pageContent.heroCarouselSlides) && pageContent.heroCarouselSlides.length > 0
-            ? [0, 1, 2].map((i) => ({
-                image: pageContent.heroCarouselSlides[i]?.image || defaultHeroCarouselSlides[i].image,
-                title: pageContent.heroCarouselSlides[i]?.title !== undefined ? pageContent.heroCarouselSlides[i].title : defaultHeroCarouselSlides[i].title,
-                subtitle: pageContent.heroCarouselSlides[i]?.subtitle !== undefined ? pageContent.heroCarouselSlides[i].subtitle : defaultHeroCarouselSlides[i].subtitle,
-                buttonText: pageContent.heroCarouselSlides[i]?.buttonText || defaultHeroCarouselSlides[i].buttonText,
-                buttonLink: pageContent.heroCarouselSlides[i]?.buttonLink || defaultHeroCarouselSlides[i].buttonLink,
-              }))
-            : defaultHeroCarouselSlides,
-        landingHeroImage: pageContent.landingHeroImage || "",
-        homeCategoryCards: (pageContent.homeCategoryCards && pageContent.homeCategoryCards.length > 0)
-          ? pageContent.homeCategoryCards
-          : defaultHomeCards,
-        landingShowcaseCards: (pageContent.landingShowcaseCards && pageContent.landingShowcaseCards.length > 0)
-          ? pageContent.landingShowcaseCards
-          : defaultShowcaseCards,
-        goodnessOfferings: (pageContent.goodnessOfferings && pageContent.goodnessOfferings.length > 0)
-          ? pageContent.goodnessOfferings
-          : defaultOfferings,
-        faqs: (pageContent.faqs && pageContent.faqs.length > 0)
-          ? pageContent.faqs
-          : defaultFaqs,
-        showcase3DCards: pageContent.showcase3DCards || [],
-        aboutUs: pageContent.aboutUs || {
-          badgeText: "✨ 100% PURE & FARM-FRESH DAIRY",
-          title: "About Natural Milk Dairy",
-          subtitle: "Delivering unadulterated farm-fresh milk, pure ghee, paneer, and daily kitchen essentials straight to thousands of happy families every morning by 7 AM.",
-          journeyTitle: "WHO WE ARE",
-          journeySubtitle: "Our Journey & Mission",
-          stats: [
-            { value: "100%", label: "Pure & Fresh Milk", icon: "🥛", color: "#477A50" },
-            { value: "7 AM", label: "Doorstep Delivery", icon: "🚚", color: "#00ACC1" },
-            { value: "100+", label: "Quality Tests", icon: "🔬", color: "#075C2A" },
-            { value: "50,000+", label: "Happy Families", icon: "❤️", color: "#FF7675" },
-          ],
+            ? pageContent.heroCarouselSlides
+            : prev.heroCarouselSlides,
+        featuredProductsSection: {
+          ...prev.featuredProductsSection,
+          ...(pageContent.featuredProductsSection || {}),
         },
-        contactUs: pageContent.contactUs || {
-          badgeText: "GET IN TOUCH",
-          title: "Contact Information",
-          supportText: "We are here to assist you. Please fill out the form to get in touch or ask your query directly.",
-          address: "Shed no. A-31, Natural Milk Dairy, NAVNATH NAGAR, MIDC Ambad, Nashik, Maharashtra - 422010",
-          phone: "+91 94906 44434",
-          email: "beerayona143@gmail.com",
-          whatsappNumber: "919490644434",
-          googleMaps: "https://maps.google.com/?q=Natural+Milk+Dairy+Ambad+Nashik",
+        exploreCategoriesSection: {
+          ...prev.exploreCategoriesSection,
+          ...(pageContent.exploreCategoriesSection || {}),
         },
-      });
+        homeCategoryCards:
+          Array.isArray(pageContent.homeCategoryCards) && pageContent.homeCategoryCards.length > 0
+            ? pageContent.homeCategoryCards
+            : prev.homeCategoryCards,
+        aboutBrandPreview: {
+          ...prev.aboutBrandPreview,
+          ...(pageContent.aboutBrandPreview || {}),
+          bullets: Array.isArray(pageContent.aboutBrandPreview?.bullets) && pageContent.aboutBrandPreview.bullets.length > 0
+            ? pageContent.aboutBrandPreview.bullets
+            : prev.aboutBrandPreview.bullets,
+        },
+        whyChooseUs: {
+          ...prev.whyChooseUs,
+          ...(pageContent.whyChooseUs || {}),
+          benefits:
+            Array.isArray(pageContent.whyChooseUs?.benefits) && pageContent.whyChooseUs.benefits.length > 0
+              ? pageContent.whyChooseUs.benefits
+              : prev.whyChooseUs.benefits,
+        },
+        farmToTable: {
+          ...prev.farmToTable,
+          ...(pageContent.farmToTable || {}),
+          steps:
+            Array.isArray(pageContent.farmToTable?.steps) && pageContent.farmToTable.steps.length > 0
+              ? pageContent.farmToTable.steps
+              : prev.farmToTable.steps,
+        },
+        customerTrust: {
+          ...prev.customerTrust,
+          ...(pageContent.customerTrust || {}),
+          metrics:
+            Array.isArray(pageContent.customerTrust?.metrics) && pageContent.customerTrust.metrics.length > 0
+              ? pageContent.customerTrust.metrics
+              : prev.customerTrust.metrics,
+          reviews:
+            Array.isArray(pageContent.customerTrust?.reviews) && pageContent.customerTrust.reviews.length > 0
+              ? pageContent.customerTrust.reviews
+              : prev.customerTrust.reviews,
+        },
+        homeContactCta: {
+          ...prev.homeContactCta,
+          ...(pageContent.homeContactCta || {}),
+        },
+      }));
     }
   }, [pageContent]);
 
-  const handleTextChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAboutUsChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      aboutUs: { ...prev.aboutUs, [field]: value },
-    }));
-  };
-
-  const handleAboutStatChange = (index, field, value) => {
-    setFormData((prev) => {
-      const stats = [...(prev.aboutUs?.stats || [])];
-      stats[index] = { ...stats[index], [field]: value };
-      return {
-        ...prev,
-        aboutUs: { ...prev.aboutUs, stats },
-      };
-    });
-  };
-
-  const addAboutStat = () => {
-    setFormData((prev) => ({
-      ...prev,
-      aboutUs: {
-        ...prev.aboutUs,
-        stats: [
-          ...(prev.aboutUs?.stats || []),
-          { value: "100%", label: "New Stat Badge", icon: "⭐", color: "#1E88E5" },
-        ],
-      },
-    }));
-  };
-
-  const removeAboutStat = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      aboutUs: {
-        ...prev.aboutUs,
-        stats: (prev.aboutUs?.stats || []).filter((_, i) => i !== index),
-      },
-    }));
-  };
-
-  const handleContactUsChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      contactUs: { ...prev.contactUs, [field]: value },
-    }));
-  };
-
-  const handleHeroBannerUpload = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const base64 = await convertToBase64(file);
-      setFormData((prev) => ({ ...prev, heroBannerImage: base64 }));
-    }
-  };
-
-  // --- HERO CAROUSEL (3 SLIDES) HANDLERS ---
-  const handleHeroSlideChange = (index, field, value) => {
-    setFormData((prev) => {
-      const existing =
-        Array.isArray(prev.heroCarouselSlides) && prev.heroCarouselSlides.length >= 3
-          ? [...prev.heroCarouselSlides]
-          : [...defaultHeroCarouselSlides];
-      existing[index] = { ...existing[index], [field]: value };
-      return {
-        ...prev,
-        heroCarouselSlides: existing,
-        ...(index === 0 && field === "image" ? { heroBannerImage: value } : {}),
-      };
-    });
-  };
-
-  const handleHeroSlideImageUpload = async (index, file) => {
-    if (file) {
-      const base64 = await convertToBase64(file);
-      handleHeroSlideChange(index, "image", base64);
-    }
-  };
-
-  const handleResetSlide = (index) => {
-    const defaultSlide = defaultHeroCarouselSlides[index];
-    setFormData((prev) => {
-      const existing =
-        Array.isArray(prev.heroCarouselSlides) && prev.heroCarouselSlides.length >= 3
-          ? [...prev.heroCarouselSlides]
-          : [...defaultHeroCarouselSlides];
-      existing[index] = { ...defaultSlide };
-      return {
-        ...prev,
-        heroCarouselSlides: existing,
-        ...(index === 0 ? { heroBannerImage: defaultSlide.image } : {}),
-      };
-    });
-  };
-
-  // --- GOODNESS OFFERINGS HANDLERS ---
-  const handleGoodnessChange = (index, field, value) => {
-    setFormData((prev) => {
-      const updated = [...prev.goodnessOfferings];
-      updated[index] = { ...updated[index], [field]: value };
-      return { ...prev, goodnessOfferings: updated };
-    });
-  };
-
-  const handleGoodnessImageUpload = async (index, file) => {
-    if (file) {
-      const base64 = await convertToBase64(file);
-      handleGoodnessChange(index, "image", base64);
-    }
-  };
-
-  const addGoodnessOffering = () => {
-    setFormData((prev) => ({
-      ...prev,
-      goodnessOfferings: [
-        ...prev.goodnessOfferings,
-        {
-          title: "Pure Quality Assured",
-          description: "Sourced with strict quality standards.",
-          image: "https://res.cloudinary.com/dyahibuzy/image/upload/v1750157383/freshness_gmygrg.jpg",
-        },
-      ],
-    }));
-  };
-
-  const removeGoodnessOffering = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      goodnessOfferings: prev.goodnessOfferings.filter((_, i) => i !== index),
-    }));
-  };
-
-  // --- FAQ HANDLERS ---
-  const handleFaqChange = (index, field, value) => {
-    setFormData((prev) => {
-      const updated = [...prev.faqs];
-      updated[index] = { ...updated[index], [field]: value };
-      return { ...prev, faqs: updated };
-    });
-  };
-
-  const addFaq = () => {
-    setFormData((prev) => ({
-      ...prev,
-      faqs: [
-        ...prev.faqs,
-        {
-          question: "New FAQ Question?",
-          answer: "Answer to the new question.",
-        },
-      ],
-    }));
-  };
-
-  const removeFaq = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      faqs: prev.faqs.filter((_, i) => i !== index),
-    }));
-  };
-
-
-  // --- SAVE CONTENT ---
+  // --- SAVE ALL CHANGES ---
   const handleSave = async () => {
     setSaving(true);
     try {
       const { _id, __v, createdAt, updatedAt, ...cleanPayload } = formData;
       const res = await updatePageContentService(cleanPayload);
       if (res?.success) {
-        enqueueSnackbar("Page content saved & updated live across the app!", { variant: "success" });
-
-        // Update formData with server-resolved content (base64 → Cloudinary URLs)
+        enqueueSnackbar("Homepage content and images saved successfully!", { variant: "success" });
         if (res.pageContent) {
           setFormData((prev) => ({
             ...prev,
             ...res.pageContent,
-            // Strip Mongoose internal fields
             _id: undefined,
             __v: undefined,
           }));
         }
-
-        // Immediately push to all live clients via WebSocket
         socket.emit("page-content:update", { pageContent: res.pageContent });
-
-        // Force-invalidate React Query cache so any refetch gets fresh data
         queryClient.invalidateQueries({ queryKey: ["pageContent"] });
         queryClient.setQueryData(["pageContent"], res.pageContent);
-
-        // Trigger context refresh
         refreshPageContent();
       } else {
         enqueueSnackbar(res?.message || "Failed to update content.", { variant: "error" });
@@ -390,68 +448,71 @@ export default function PageContentManager() {
     }
   };
 
+  // --- NAVIGATION TABS (Strictly matching the 8 Homepage Sections in exact sequence) ---
+  const TABS = [
+    { id: "hero", label: "1. Hero Carousels", icon: <Sun className="w-4 h-4 text-amber-500" /> },
+    { id: "featured", label: "2. Featured Products", icon: <Star className="w-4 h-4 text-[#0756B5]" /> },
+    { id: "categories", label: "3. Explore Categories", icon: <Layers className="w-4 h-4 text-purple-500" /> },
+    { id: "about-card", label: "4. About Brand Preview", icon: <Leaf className="w-4 h-4 text-emerald-500" /> },
+    { id: "why-choose", label: "5. Why Choose Us", icon: <ShieldCheck className="w-4 h-4 text-[#075C2A]" /> },
+    { id: "farm-table", label: "6. Farm to Table", icon: <Truck className="w-4 h-4 text-sky-500" /> },
+    { id: "trust", label: "7. Families & Reviews", icon: <Heart className="w-4 h-4 text-rose-500" /> },
+    { id: "last-cta", label: "8. Shop & WhatsApp CTA", icon: <MessageCircle className="w-4 h-4 text-[#25D366]" /> },
+    { id: "branding", label: "Store Info & Branding", icon: <FileText className="w-4 h-4 text-slate-500" /> },
+    { id: "faqs", label: "FAQs", icon: <HelpCircle className="w-4 h-4 text-amber-600" /> },
+  ];
+
   return (
-    <div className="p-4 md:p-6 space-y-6 bg-gray-50 dark:bg-gray-900/50 min-h-screen text-gray-900 dark:text-gray-100">
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="p-3 sm:p-6 space-y-6 bg-slate-50 dark:bg-slate-900/60 min-h-screen text-slate-900 dark:text-slate-100">
+      {/* Top Header Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs border border-slate-200 dark:border-slate-700">
         <div className="flex items-start sm:items-center gap-3">
           <BackButton fallbackPath="/admin/dashboard" className="shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <h1 className="text-xl md:text-2xl font-extrabold flex items-center gap-2 text-[#075C2A] dark:text-emerald-400">
-              <LayoutIcon className="w-6 h-6" /> Page Content & Store Info Manager
+            <h1 className="text-xl sm:text-2xl font-black flex items-center gap-2.5 text-[#0756B5] dark:text-blue-400">
+              <LayoutIcon className="w-6 h-6" /> Homepage CRM Content Manager
             </h1>
-            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
-              Customize Home Page banners, About Us content, Contact Us details, Why Choose Us cards, and FAQs.
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Live edit all 8 homepage sections and upload images for each card/item.
             </p>
           </div>
         </div>
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#075C2A] hover:bg-[#064e23] text-white font-bold text-sm shadow-md transition hover:scale-105 cursor-pointer disabled:opacity-50"
-        >
-          {saving ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Save className="w-4 h-4" />
-          )}
-          <span>{saving ? "Saving Changes..." : "Save All Changes"}</span>
-        </button>
-      </div>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <Link
+            to="/"
+            target="_blank"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold transition text-slate-700 dark:text-slate-200"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>View Live Home</span>
+          </Link>
 
-      {/* Category Management Info Banner */}
-      <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 p-4 rounded-2xl flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Layers className="w-5 h-5 text-[#075C2A] dark:text-emerald-400 shrink-0" />
-          <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300 font-medium">
-            <strong className="text-[#075C2A] dark:text-emerald-300">Category Showcase Cards:</strong> Are managed under <strong className="underline">Admin → Inventory → Total Categories</strong>.
-          </p>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#0756B5] hover:bg-[#054593] text-white font-extrabold text-xs sm:text-sm shadow-md shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+          >
+            {saving ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            <span>{saving ? "Saving Changes..." : "Save All Changes"}</span>
+          </button>
         </div>
-        <Link
-          to="/admin/inventory"
-          className="px-3.5 py-1.5 rounded-xl bg-[#075C2A] hover:bg-[#064e23] text-white text-xs font-bold shadow-xs whitespace-nowrap"
-        >
-          Go to Inventory →
-        </Link>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto pb-2 scrollbar-hide">
-        {[
-          { id: "branding", label: "Banners & Branding", icon: <ImageIcon className="w-4 h-4" /> },
-          { id: "about", label: "About Us Page", icon: <Info className="w-4 h-4" /> },
-          { id: "contact", label: "Contact Us Page", icon: <PhoneCall className="w-4 h-4" /> },
-          { id: "goodness", label: "Why Choose Us Cards", icon: <Sparkles className="w-4 h-4" /> },
-          { id: "faqs", label: "FAQs Management", icon: <HelpCircle className="w-4 h-4" /> },
-        ].map((tab) => (
+      {/* Tabs Navigation Bar */}
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 overflow-x-auto pb-2 scrollbar-hide">
+        {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition cursor-pointer whitespace-nowrap ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer whitespace-nowrap ${
               activeTab === tab.id
-                ? "bg-[#075C2A] text-white shadow-sm"
-                : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+                ? "bg-[#0756B5] text-white shadow-md shadow-blue-500/20"
+                : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
             }`}
           >
             {tab.icon}
@@ -460,264 +521,190 @@ export default function PageContentManager() {
         ))}
       </div>
 
-      {/* TAB 1: BANNERS & BRANDING */}
-      {activeTab === "branding" && (
+      {/* =========================================================================
+          SECTION 1: HERO CAROUSELS (4 SLIDES)
+      ========================================================================= */}
+      {activeTab === "hero" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <AdminAccordion
-            title="Company Info & Tagline"
-            subtitle="Store name, brand slogan, and description"
-            icon={<FileText className="w-5 h-5 text-[#075C2A]" />}
+            title="Homepage Hero Carousel (4 Canonical Slides)"
+            subtitle="Configure images, badges, headings, descriptions, and CTA links for each slide"
+            icon={<Sun className="w-5 h-5 text-amber-500" />}
             defaultExpanded={true}
           >
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Company Name
-                  </label>
-                  <input
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleTextChange}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Tagline
-                  </label>
-                  <input
-                    type="text"
-                    name="companyTagline"
-                    value={formData.companyTagline}
-                    onChange={handleTextChange}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                  Company Description
-                </label>
-                <textarea
-                  rows={3}
-                  name="companyDescription"
-                  value={formData.companyDescription}
-                  onChange={handleTextChange}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
-                />
-              </div>
-            </div>
-          </AdminAccordion>
-
-          <AdminAccordion
-            title="Home Page Hero Carousel (3 Slides)"
-            subtitle="Manage images, titles, descriptions, and button links for the 3 home hero carousel slides"
-            icon={<ImageIcon className="w-5 h-5 text-[#075C2A]" />}
-            defaultExpanded={true}
-          >
-            <div className="max-w-4xl space-y-6">
+            <div className="space-y-6">
               {/* Slide Selector Tabs */}
-              <div className="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 pb-3 overflow-x-auto">
-                {[0, 1, 2].map((idx) => {
-                  const slideData =
-                    (formData.heroCarouselSlides && formData.heroCarouselSlides[idx]) ||
-                    defaultHeroCarouselSlides[idx];
-                  const isActive = activeHeroSlide === idx;
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setActiveHeroSlide(idx)}
-                      className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
-                        isActive
-                          ? "bg-[#075C2A] text-white shadow-md shadow-[#075C2A]/20"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
-                      }`}
-                    >
-                      <span
-                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black ${
-                          isActive
-                            ? "bg-white text-[#075C2A]"
-                            : "bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                        }`}
-                      >
-                        {idx + 1}
-                      </span>
-                      <span>Slide {idx + 1}</span>
-                      <span
-                        className={`text-[10px] truncate max-w-[120px] ${
-                          isActive ? "text-emerald-100" : "text-gray-400"
-                        }`}
-                      >
-                        {slideData?.title ? `• ${slideData.title.slice(0, 18)}...` : ""}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3 overflow-x-auto">
+                {formData.heroCarouselSlides.map((slide, idx) => (
+                  <button
+                    key={`slide-tab-${idx}`}
+                    type="button"
+                    onClick={() => setActiveHeroSlide(idx)}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+                      activeHeroSlide === idx
+                        ? "bg-[#0756B5] text-white shadow-sm"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                    }`}
+                  >
+                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-black">
+                      {idx + 1}
+                    </span>
+                    <span>Slide {idx + 1}: {slide.mainHeading || slide.title || "Hero Slide"}</span>
+                  </button>
+                ))}
               </div>
 
-              {/* Active Slide Editor Form */}
+              {/* Active Hero Slide Editor */}
               {(() => {
-                const currentSlide =
-                  (formData.heroCarouselSlides && formData.heroCarouselSlides[activeHeroSlide]) ||
-                  defaultHeroCarouselSlides[activeHeroSlide];
+                const current = formData.heroCarouselSlides[activeHeroSlide] || {};
+                const fallbackImg =
+                  activeHeroSlide === 0
+                    ? bannerWelcomeImg
+                    : activeHeroSlide === 1
+                    ? bannerMilkImg
+                    : activeHeroSlide === 2
+                    ? bannerProductsImg
+                    : bannerDeliveryImg;
+
+                const updateCurrent = (field, val) => {
+                  setFormData((prev) => {
+                    const copy = [...prev.heroCarouselSlides];
+                    copy[activeHeroSlide] = { ...copy[activeHeroSlide], [field]: val };
+                    return { ...prev, heroCarouselSlides: copy };
+                  });
+                };
 
                 return (
-                  <div className="bg-gray-50/70 dark:bg-gray-900/40 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-5">
-                    {/* Header with Title and Reset */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-lg bg-[#075C2A]/10 text-[#075C2A] dark:text-emerald-300 font-extrabold text-xs">
-                          Slide {activeHeroSlide + 1} of 3
-                        </span>
-                        <h4 className="text-sm font-bold text-gray-900 dark:text-white">
-                          Configure Slide {activeHeroSlide + 1} Content
-                        </h4>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleResetSlide(activeHeroSlide)}
-                        className="text-xs text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 underline font-medium transition cursor-pointer"
-                      >
-                        Reset this slide to default
-                      </button>
+                  <div className="space-y-5 bg-slate-50/70 dark:bg-slate-900/40 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-black px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-950/60 text-[#0756B5] dark:text-blue-300">
+                        Editing Slide {activeHeroSlide + 1} of {formData.heroCarouselSlides.length}
+                      </span>
                     </div>
 
-                    {/* Live Slide Preview Banner */}
-                    <div className="relative h-48 sm:h-56 w-full rounded-2xl overflow-hidden bg-slate-900 border border-gray-300 dark:border-gray-700 shadow-inner group">
-                      <img
-                        src={currentSlide?.image || defaultHeroCarouselSlides[activeHeroSlide].image}
-                        alt={`Slide ${activeHeroSlide + 1} Preview`}
-                        className="w-full h-full object-cover brightness-105"
-                      />
-                      {/* Preview Text Overlay */}
-                      <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-center max-w-lg pointer-events-none space-y-2">
-                        <span className="text-[10px] uppercase tracking-wider font-bold bg-[#075C2A] text-white px-2 py-0.5 rounded w-max">
-                          Live Hero Preview
-                        </span>
-                        <h3 className="text-sm sm:text-base font-extrabold text-white drop-shadow-md line-clamp-2">
-                          {currentSlide?.title || "Slide Title"}
-                        </h3>
-                        <p className="text-xs text-gray-200 line-clamp-2 drop-shadow">
-                          {currentSlide?.subtitle || "Slide subtitle description goes here..."}
-                        </p>
-                        <span className="mt-1 px-3 py-1 rounded-lg bg-[#86c024] text-black font-extrabold text-xs w-max shadow">
-                          {currentSlide?.buttonText || "Explore Products"} →
-                        </span>
-                      </div>
-                    </div>
+                    {/* Single Image Upload for this slide */}
+                    <ItemImageUploader
+                      label={`Slide ${activeHeroSlide + 1} Background Image`}
+                      value={current.image}
+                      fallbackDefault={fallbackImg}
+                      onChange={(img) => updateCurrent("image", img)}
+                    />
 
-                    {/* Image Controls */}
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block">
-                        Background Image (URL or Upload File)
-                      </label>
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                        <input
-                          type="text"
-                          placeholder="Paste image URL (Cloudinary, /assets/..., or web link)"
-                          value={currentSlide?.image || ""}
-                          onChange={(e) => handleHeroSlideChange(activeHeroSlide, "image", e.target.value)}
-                          className="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:border-[#075C2A]"
-                        />
-                        <label className="px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] dark:text-emerald-300 font-bold text-xs cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/50 flex items-center justify-center gap-1.5 transition shrink-0 border border-emerald-200 dark:border-emerald-800">
-                          <Upload className="w-3.5 h-3.5" /> Upload Image
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files[0];
-                              if (file) handleHeroSlideImageUpload(activeHeroSlide, file);
-                            }}
-                          />
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Title & Subtitle */}
-                    <div className="grid grid-cols-1 gap-4">
-                      <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                          Slide Headline / Title
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Welcome to Natural Milk Dairy"
-                          value={currentSlide?.title || ""}
-                          onChange={(e) => handleHeroSlideChange(activeHeroSlide, "title", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-semibold focus:outline-none focus:border-[#075C2A]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                          Slide Subtitle / Description
-                        </label>
-                        <textarea
-                          rows={2}
-                          placeholder="Enter a descriptive subtitle for this slide..."
-                          value={currentSlide?.subtitle || ""}
-                          onChange={(e) => handleHeroSlideChange(activeHeroSlide, "subtitle", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#075C2A]"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Button Text & Button Link */}
+                    {/* Badge & Eyebrow */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                          Action Button Text
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          Badge Greeting Tag (e.g. Good Morning / 100% PURE & UNTOUCHED)
                         </label>
                         <input
                           type="text"
-                          placeholder="e.g. Explore Products"
-                          value={currentSlide?.buttonText || ""}
-                          onChange={(e) => handleHeroSlideChange(activeHeroSlide, "buttonText", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#075C2A]"
+                          value={current.badgeText || ""}
+                          onChange={(e) => updateCurrent("badgeText", e.target.value)}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
                         />
                       </div>
-
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                          Action Button Link (Route or URL)
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          Eyebrow Text (e.g. "Welcome to")
                         </label>
                         <input
                           type="text"
-                          placeholder="e.g. /products or /about"
-                          value={currentSlide?.buttonLink || ""}
-                          onChange={(e) => handleHeroSlideChange(activeHeroSlide, "buttonLink", e.target.value)}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 font-medium focus:outline-none focus:border-[#075C2A]"
+                          value={current.eyebrow || ""}
+                          onChange={(e) => updateCurrent("eyebrow", e.target.value)}
+                          placeholder="Welcome to"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
                         />
                       </div>
                     </div>
 
-                    {/* Navigation between slides */}
-                    <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
-                      <button
-                        type="button"
-                        disabled={activeHeroSlide === 0}
-                        onClick={() => setActiveHeroSlide((prev) => Math.max(0, prev - 1))}
-                        className="px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-600 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                      >
-                        ← Previous Slide
-                      </button>
-                      <span className="text-xs text-gray-400 font-medium">
-                        Slide {activeHeroSlide + 1} of 3
-                      </span>
-                      <button
-                        type="button"
-                        disabled={activeHeroSlide === 2}
-                        onClick={() => setActiveHeroSlide((prev) => Math.min(2, prev + 1))}
-                        className="px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-600 text-xs font-bold text-[#075C2A] hover:bg-emerald-50 dark:hover:bg-emerald-900/30 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                      >
-                        Next Slide →
-                      </button>
+                    {/* Main Heading & Sub Heading */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          Main Headline (Green Serif Title)
+                        </label>
+                        <input
+                          type="text"
+                          value={current.mainHeading || current.title || ""}
+                          onChange={(e) => {
+                            updateCurrent("mainHeading", e.target.value);
+                            updateCurrent("title", e.target.value);
+                          }}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-[#0756B5]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          Secondary Headline (e.g. "Every Day at 7 AM" / "Dairy Products")
+                        </label>
+                        <input
+                          type="text"
+                          value={current.subHeading || current.subtitle || ""}
+                          onChange={(e) => {
+                            updateCurrent("subHeading", e.target.value);
+                            updateCurrent("subtitle", e.target.value);
+                          }}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-[#0756B5]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Description Paragraph */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                        Slide Description / Value Proposition
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={current.description || ""}
+                        onChange={(e) => updateCurrent("description", e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
+                      />
+                    </div>
+
+                    {/* Mobile Subtitle */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                        Mobile Subtitle (Compact one-liner for phone viewports)
+                      </label>
+                      <input
+                        type="text"
+                        value={current.mobileSubtitle || ""}
+                        onChange={(e) => updateCurrent("mobileSubtitle", e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
+                      />
+                    </div>
+
+                    {/* CTA Button Text & Link */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          CTA Button Text
+                        </label>
+                        <input
+                          type="text"
+                          value={current.ctaText || current.buttonText || ""}
+                          onChange={(e) => {
+                            updateCurrent("ctaText", e.target.value);
+                            updateCurrent("buttonText", e.target.value);
+                          }}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          CTA Button Link
+                        </label>
+                        <input
+                          type="text"
+                          value={current.ctaLink || current.buttonLink || ""}
+                          onChange={(e) => {
+                            updateCurrent("ctaLink", e.target.value);
+                            updateCurrent("buttonLink", e.target.value);
+                          }}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
+                        />
+                      </div>
                     </div>
                   </div>
                 );
@@ -727,145 +714,297 @@ export default function PageContentManager() {
         </motion.div>
       )}
 
-      {/* TAB 2: ABOUT US PAGE */}
-      {activeTab === "about" && (
+      {/* =========================================================================
+          SECTION 2: FEATURED PRODUCTS
+      ========================================================================= */}
+      {activeTab === "featured" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <AdminAccordion
-            title="About Us Headers & Mission"
-            subtitle="Customize the titles, badge text, and mission statement on the About Us page"
-            icon={<Info className="w-5 h-5 text-[#075C2A]" />}
+            title="Featured Products Section Settings"
+            subtitle="Customize the titles, descriptions, and links for handpicked products"
+            icon={<Star className="w-5 h-5 text-[#0756B5]" />}
             defaultExpanded={true}
           >
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Badge Text / Slogan
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Black Title Text
                   </label>
                   <input
                     type="text"
-                    value={formData.aboutUs?.badgeText || ""}
-                    onChange={(e) => handleAboutUsChange("badgeText", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.featuredProductsSection?.titleBlack || "Featured"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        featuredProductsSection: { ...prev.featuredProductsSection, titleBlack: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
                   />
                 </div>
-
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Main Headline Title
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Highlight Title Text (Blue)
                   </label>
                   <input
                     type="text"
-                    value={formData.aboutUs?.title || ""}
-                    onChange={(e) => handleAboutUsChange("title", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.featuredProductsSection?.titleHighlight || "Products"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        featuredProductsSection: { ...prev.featuredProductsSection, titleHighlight: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                  Main Subtitle / Intro Paragraph
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  Subtitle Description
                 </label>
-                <textarea
-                  rows={3}
-                  value={formData.aboutUs?.subtitle || ""}
-                  onChange={(e) => handleAboutUsChange("subtitle", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                <input
+                  type="text"
+                  value={formData.featuredProductsSection?.subtitle || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      featuredProductsSection: { ...prev.featuredProductsSection, subtitle: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Journey Section Title
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Top Right Link Text
                   </label>
                   <input
                     type="text"
-                    value={formData.aboutUs?.journeyTitle || ""}
-                    onChange={(e) => handleAboutUsChange("journeyTitle", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.featuredProductsSection?.viewAllText || "View All Products"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        featuredProductsSection: { ...prev.featuredProductsSection, viewAllText: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
                   />
                 </div>
-
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Journey Section Subtitle
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Top Right Destination Route
                   </label>
                   <input
                     type="text"
-                    value={formData.aboutUs?.journeySubtitle || ""}
-                    onChange={(e) => handleAboutUsChange("journeySubtitle", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.featuredProductsSection?.viewAllLink || "/products"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        featuredProductsSection: { ...prev.featuredProductsSection, viewAllLink: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Bottom Catalog Button Text
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.featuredProductsSection?.bottomCtaText || "Explore Complete Dairy Catalog"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        featuredProductsSection: { ...prev.featuredProductsSection, bottomCtaText: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Bottom Catalog Button Link
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.featuredProductsSection?.bottomCtaLink || "/products"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        featuredProductsSection: { ...prev.featuredProductsSection, bottomCtaLink: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
                   />
                 </div>
               </div>
             </div>
           </AdminAccordion>
+        </motion.div>
+      )}
 
+      {/* =========================================================================
+          SECTION 3: EXPLORE OUR CATEGORIES (CARDS WITH IMAGE & TEXT)
+      ========================================================================= */}
+      {activeTab === "categories" && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <AdminAccordion
-            title="About Us Stat Badges & Achievements"
-            subtitle="Manage key trust metrics (e.g. 100% Pure, 7 AM Delivery, 50,000+ Happy Families)"
-            icon={<Sparkles className="w-5 h-5 text-[#075C2A]" />}
+            title="Explore Our Categories Section & Category Cards"
+            subtitle="Section headers plus individual image upload and description for each category card"
+            icon={<Layers className="w-5 h-5 text-purple-500" />}
             defaultExpanded={true}
           >
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Header texts */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Black Heading Prefix (e.g. "Explore Our")
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.exploreCategoriesSection?.titleBlack || "Explore Our"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        exploreCategoriesSection: { ...prev.exploreCategoriesSection, titleBlack: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Highlight Heading Text (e.g. "Categories")
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.exploreCategoriesSection?.titleHighlight || "Categories"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        exploreCategoriesSection: { ...prev.exploreCategoriesSection, titleHighlight: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Subtitle Description
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.exploreCategoriesSection?.subtitle || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        exploreCategoriesSection: { ...prev.exploreCategoriesSection, subtitle: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
+                  />
+                </div>
+              </div>
+
+              {/* Category Cards List Header */}
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-gray-600 dark:text-gray-400">
-                  Total Stat Badges: {formData.aboutUs?.stats?.length || 0}
+                <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
+                  Total Category Cards ({formData.homeCategoryCards.length})
                 </span>
                 <button
                   type="button"
-                  onClick={addAboutStat}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-[#075C2A] dark:text-emerald-300 font-bold text-xs border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 cursor-pointer"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      homeCategoryCards: [
+                        ...prev.homeCategoryCards,
+                        { title: "New Category", description: "Farm fresh delight.", image: "", link: "/products" },
+                      ],
+                    }))
+                  }
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 hover:bg-purple-100 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" /> Add Stat Badge
+                  <Plus className="w-3.5 h-3.5" /> Add Category Card
                 </button>
               </div>
 
+              {/* Grid of Category Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {(formData.aboutUs?.stats || []).map((stat, idx) => (
+                {formData.homeCategoryCards.map((cat, idx) => (
                   <div
-                    key={idx}
-                    className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-3 relative group"
+                    key={`cat-editor-${idx}`}
+                    className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-3 relative group shadow-xs"
                   >
                     <button
                       type="button"
-                      onClick={() => removeAboutStat(idx)}
-                      className="absolute top-3 right-3 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
-                      title="Delete Stat"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeCategoryCards: prev.homeCategoryCards.filter((_, i) => i !== idx),
+                        }))
+                      }
+                      className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition cursor-pointer p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40"
+                      title="Delete Category Card"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-500 block mb-0.5">Value (Number/Text)</label>
-                        <input
-                          type="text"
-                          value={stat.value}
-                          onChange={(e) => handleAboutStatChange(idx, "value", e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-bold"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-500 block mb-0.5">Icon / Emoji</label>
-                        <input
-                          type="text"
-                          value={stat.icon}
-                          onChange={(e) => handleAboutStatChange(idx, "icon", e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
-                        />
-                      </div>
+                    {/* Single Image Upload for this category card */}
+                    <ItemImageUploader
+                      label={`Card #${idx + 1} Image`}
+                      value={cat.image}
+                      onChange={(img) =>
+                        setFormData((prev) => {
+                          const list = [...prev.homeCategoryCards];
+                          list[idx] = { ...list[idx], image: img };
+                          return { ...prev, homeCategoryCards: list };
+                        })
+                      }
+                    />
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-500 block mb-0.5">
+                        Category Title (e.g. Milk, Paneer, Ghee, Curd)
+                      </label>
+                      <input
+                        type="text"
+                        value={cat.title || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => {
+                            const list = [...prev.homeCategoryCards];
+                            list[idx] = { ...list[idx], title: e.target.value };
+                            return { ...prev, homeCategoryCards: list };
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-bold"
+                      />
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-bold text-gray-500 block mb-0.5">Label / Description</label>
-                      <input
-                        type="text"
-                        value={stat.label}
-                        onChange={(e) => handleAboutStatChange(idx, "label", e.target.value)}
-                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-medium"
+                      <label className="text-[11px] font-bold text-slate-500 block mb-0.5">
+                        Card Description
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={cat.description || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => {
+                            const list = [...prev.homeCategoryCards];
+                            list[idx] = { ...list[idx], description: e.target.value };
+                            return { ...prev, homeCategoryCards: list };
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-medium"
                       />
                     </div>
                   </div>
@@ -876,114 +1015,210 @@ export default function PageContentManager() {
         </motion.div>
       )}
 
-      {/* TAB 3: CONTACT US PAGE */}
-      {activeTab === "contact" && (
+      {/* =========================================================================
+          SECTION 4: ABOUT BRAND PREVIEW CARD ("NEXT CARD")
+      ========================================================================= */}
+      {activeTab === "about-card" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <AdminAccordion
-            title="Contact Us Information & Support Options"
-            subtitle="Manage office address, support phone, email, and WhatsApp contact details"
-            icon={<PhoneCall className="w-5 h-5 text-[#075C2A]" />}
+            title="Next Card: About Brand Preview (Rooted in Purity, Crafted with Care)"
+            subtitle="Card image upload, story description, checkmark bullet highlights, and action buttons"
+            icon={<Leaf className="w-5 h-5 text-emerald-500" />}
             defaultExpanded={true}
           >
             <div className="space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Image Upload for this About Card */}
+              <ItemImageUploader
+                label="About Brand Card Showcase Image"
+                value={formData.aboutBrandPreview?.image}
+                fallbackDefault={dairyImgDefault}
+                onChange={(img) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    aboutBrandPreview: { ...prev.aboutBrandPreview, image: img },
+                  }))
+                }
+              />
+
+              {/* Headings */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Badge Text
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Black Heading Text (e.g. "Rooted in Purity,")
                   </label>
                   <input
                     type="text"
-                    value={formData.contactUs?.badgeText || ""}
-                    onChange={(e) => handleContactUsChange("badgeText", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.aboutBrandPreview?.titleBlack || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        aboutBrandPreview: { ...prev.aboutBrandPreview, titleBlack: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-[#0756B5]"
                   />
                 </div>
-
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Page Headline Title
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Highlight Heading Text (e.g. "Crafted with Care")
                   </label>
                   <input
                     type="text"
-                    value={formData.contactUs?.title || ""}
-                    onChange={(e) => handleContactUsChange("title", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.aboutBrandPreview?.titleHighlight || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        aboutBrandPreview: { ...prev.aboutBrandPreview, titleHighlight: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-[#0756B5]"
                   />
                 </div>
               </div>
 
+              {/* Brand Story Description */}
               <div>
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                  Support Note / Help Paragraph
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  Brand Story Description Paragraph
                 </label>
                 <textarea
-                  rows={2}
-                  value={formData.contactUs?.supportText || ""}
-                  onChange={(e) => handleContactUsChange("supportText", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                  rows={3}
+                  value={formData.aboutBrandPreview?.description || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      aboutBrandPreview: { ...prev.aboutBrandPreview, description: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
                 />
               </div>
 
-              <div className="space-y-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+              {/* 3 Checkmark Bullet Highlights */}
+              <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <span>Checkmark Bullet Highlights</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        aboutBrandPreview: {
+                          ...prev.aboutBrandPreview,
+                          bullets: [...(prev.aboutBrandPreview?.bullets || []), "New brand trust highlight"],
+                        },
+                      }))
+                    }
+                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer"
+                  >
+                    + Add Bullet
+                  </button>
+                </div>
+
+                {(formData.aboutBrandPreview?.bullets || []).map((bullet, idx) => (
+                  <div key={`bullet-${idx}`} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <input
+                      type="text"
+                      value={bullet}
+                      onChange={(e) =>
+                        setFormData((prev) => {
+                          const bullets = [...(prev.aboutBrandPreview?.bullets || [])];
+                          bullets[idx] = e.target.value;
+                          return {
+                            ...prev,
+                            aboutBrandPreview: { ...prev.aboutBrandPreview, bullets },
+                          };
+                        })
+                      }
+                      className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          aboutBrandPreview: {
+                            ...prev.aboutBrandPreview,
+                            bullets: prev.aboutBrandPreview.bullets.filter((_, i) => i !== idx),
+                          },
+                        }))
+                      }
+                      className="text-slate-400 hover:text-red-500 p-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Button & Badges */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-700">
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-[#075C2A]" /> Full Office & Factory Address
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Action Button Text
                   </label>
                   <input
                     type="text"
-                    value={formData.contactUs?.address || ""}
-                    onChange={(e) => handleContactUsChange("address", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.aboutBrandPreview?.buttonText || "Learn More About Our Story"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        aboutBrandPreview: { ...prev.aboutBrandPreview, buttonText: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold"
                   />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-[#075C2A]" /> Support Phone
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.contactUs?.phone || ""}
-                      onChange={(e) => handleContactUsChange("phone", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5 text-[#0756B5]" /> Support Email
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.contactUs?.email || ""}
-                      onChange={(e) => handleContactUsChange("email", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1 flex items-center gap-1">
-                      <MessageSquare className="w-3.5 h-3.5 text-[#075C2A]" /> WhatsApp Number
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.contactUs?.whatsappNumber || ""}
-                      onChange={(e) => handleContactUsChange("whatsappNumber", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
-                    />
-                  </div>
-                </div>
-
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
-                    Google Maps Link / Directions URL
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Action Button Link
                   </label>
                   <input
                     type="text"
-                    value={formData.contactUs?.googleMaps || ""}
-                    onChange={(e) => handleContactUsChange("googleMaps", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium focus:outline-none focus:border-[#075C2A]"
+                    value={formData.aboutBrandPreview?.buttonLink || "/about"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        aboutBrandPreview: { ...prev.aboutBrandPreview, buttonLink: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Card Floating Bottom Left Badge
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.aboutBrandPreview?.bottomBadgeLeft || "Sourced Fresh Daily"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        aboutBrandPreview: { ...prev.aboutBrandPreview, bottomBadgeLeft: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Card Floating Bottom Right Badge
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.aboutBrandPreview?.bottomBadgeRight || "✓ 100% Certified Pure"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        aboutBrandPreview: { ...prev.aboutBrandPreview, bottomBadgeRight: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
                   />
                 </div>
               </div>
@@ -992,138 +1227,943 @@ export default function PageContentManager() {
         </motion.div>
       )}
 
-      {/* TAB 4: WHY CHOOSE US CARDS */}
-      {activeTab === "goodness" && (
+      {/* =========================================================================
+          SECTION 5: WHY CHOOSE NATURAL MILK DAIRY (6 BENEFIT CARDS)
+      ========================================================================= */}
+      {activeTab === "why-choose" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">
-              Why Choose Us Feature Cards ({formData.goodnessOfferings.length})
-            </h2>
-            <button
-              onClick={addGoodnessOffering}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-emerald-100"
-            >
-              <Plus className="w-3.5 h-3.5" /> Add Card
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {formData.goodnessOfferings.map((item, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-3 relative group"
-              >
-                <button
-                  type="button"
-                  onClick={() => removeGoodnessOffering(idx)}
-                  className="absolute top-3 right-3 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
-                  title="Remove Card"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-
-                <div className="flex items-start gap-4 mb-3">
-                  {/* Image Preview */}
-                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shrink-0 flex items-center justify-center">
-                    {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <ImageIcon className="w-6 h-6 text-gray-300" />
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-1.5">
-                    <label className="text-[11px] font-bold text-gray-500 block">Card Image</label>
-                    <input
-                      type="text"
-                      value={item.image || ""}
-                      onChange={(e) => handleGoodnessChange(idx, "image", e.target.value)}
-                      placeholder="Paste image URL..."
-                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-medium focus:outline-none focus:border-[#075C2A]"
-                    />
-                    <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] dark:text-emerald-300 font-bold text-[11px] cursor-pointer hover:bg-emerald-100 transition">
-                      <Upload className="w-3 h-3" /> Upload Image
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleGoodnessImageUpload(idx, e.target.files?.[0])}
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-gray-500 block mb-0.5">Title</label>
+          <AdminAccordion
+            title="Why Choose Natural Milk Dairy (6 Benefit Cards)"
+            subtitle="Section title, subtitle, and 6 benefit cards with icon/image upload"
+            icon={<ShieldCheck className="w-5 h-5 text-[#075C2A]" />}
+            defaultExpanded={true}
+          >
+            <div className="space-y-6">
+              {/* Header texts */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Black Heading Prefix (e.g. "Why Choose")
+                  </label>
                   <input
                     type="text"
-                    value={item.title}
-                    onChange={(e) => handleGoodnessChange(idx, "title", e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-bold"
+                    value={formData.whyChooseUs?.titleBlack || "Why Choose"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        whyChooseUs: { ...prev.whyChooseUs, titleBlack: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold"
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-gray-500 block mb-0.5">Description</label>
-                  <textarea
-                    rows={2}
-                    value={item.description}
-                    onChange={(e) => handleGoodnessChange(idx, "description", e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-medium"
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Highlight Heading Text (e.g. "Natural Milk Dairy")
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.whyChooseUs?.titleHighlight || "Natural Milk Dairy"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        whyChooseUs: { ...prev.whyChooseUs, titleHighlight: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Subtitle Description
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.whyChooseUs?.subtitle || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        whyChooseUs: { ...prev.whyChooseUs, subtitle: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
                   />
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* 6 Benefit Cards */}
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
+                  Benefit Cards ({formData.whyChooseUs?.benefits?.length || 0})
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      whyChooseUs: {
+                        ...prev.whyChooseUs,
+                        benefits: [
+                          ...(prev.whyChooseUs?.benefits || []),
+                          { title: "New Benefit", description: "High quality standards.", color: "#0756B5", image: "", iconName: "Droplets" },
+                        ],
+                      },
+                    }))
+                  }
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-[#075C2A] dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Benefit Card
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(formData.whyChooseUs?.benefits || []).map((b, idx) => (
+                  <div
+                    key={`benefit-${idx}`}
+                    className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-3 relative shadow-xs"
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          whyChooseUs: {
+                            ...prev.whyChooseUs,
+                            benefits: prev.whyChooseUs.benefits.filter((_, i) => i !== idx),
+                          },
+                        }))
+                      }
+                      className="absolute top-3 right-3 text-slate-400 hover:text-red-500 p-1"
+                      title="Remove Benefit"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+
+                    {/* Single image/icon upload for this card */}
+                    <ItemImageUploader
+                      label={`Card #${idx + 1} Custom Icon / Image`}
+                      value={b.image}
+                      onChange={(img) =>
+                        setFormData((prev) => {
+                          const benefits = [...(prev.whyChooseUs?.benefits || [])];
+                          benefits[idx] = { ...benefits[idx], image: img };
+                          return { ...prev, whyChooseUs: { ...prev.whyChooseUs, benefits } };
+                        })
+                      }
+                    />
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-500 block mb-0.5">Benefit Title</label>
+                      <input
+                        type="text"
+                        value={b.title || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => {
+                            const benefits = [...(prev.whyChooseUs?.benefits || [])];
+                            benefits[idx] = { ...benefits[idx], title: e.target.value };
+                            return { ...prev, whyChooseUs: { ...prev.whyChooseUs, benefits } };
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-bold"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-500 block mb-0.5">Description</label>
+                      <textarea
+                        rows={2}
+                        value={b.description || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => {
+                            const benefits = [...(prev.whyChooseUs?.benefits || [])];
+                            benefits[idx] = { ...benefits[idx], description: e.target.value };
+                            return { ...prev, whyChooseUs: { ...prev.whyChooseUs, benefits } };
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-medium"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </AdminAccordion>
         </motion.div>
       )}
 
-      {/* TAB 5: FAQS MANAGEMENT */}
+      {/* =========================================================================
+          SECTION 6: FARM TO TABLE WITHIN HOURS (4 STEP CARDS)
+      ========================================================================= */}
+      {activeTab === "farm-table" && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <AdminAccordion
+            title="Farm to Table Within Hours (4 Journey Step Cards)"
+            subtitle="Section headings plus individual step photos, titles, badges, and descriptions"
+            icon={<Truck className="w-5 h-5 text-sky-500" />}
+            defaultExpanded={true}
+          >
+            <div className="space-y-6">
+              {/* Headings */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Black Heading Prefix (e.g. "Farm to Table,")
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.farmToTable?.titleBlack || "Farm to Table,"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        farmToTable: { ...prev.farmToTable, titleBlack: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Highlight Heading Text (e.g. "Within Hours")
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.farmToTable?.titleHighlight || "Within Hours"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        farmToTable: { ...prev.farmToTable, titleHighlight: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Subtitle Description
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.farmToTable?.subtitle || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        farmToTable: { ...prev.farmToTable, subtitle: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                  />
+                </div>
+              </div>
+
+              {/* 4 Steps */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {(formData.farmToTable?.steps || []).map((s, idx) => {
+                  const fallbackStepImg =
+                    idx === 0
+                      ? step1ImgDefault
+                      : idx === 1
+                      ? step2ImgDefault
+                      : idx === 2
+                      ? step3ImgDefault
+                      : step4ImgDefault;
+
+                  return (
+                    <div
+                      key={`step-${idx}`}
+                      className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-3 relative shadow-xs"
+                    >
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300">
+                        Step {s.step || `0${idx + 1}`}
+                      </span>
+
+                      {/* Single photo upload for this step */}
+                      <ItemImageUploader
+                        label={`Step ${s.step || idx + 1} Photo`}
+                        value={s.image}
+                        fallbackDefault={fallbackStepImg}
+                        onChange={(img) =>
+                          setFormData((prev) => {
+                            const steps = [...(prev.farmToTable?.steps || [])];
+                            steps[idx] = { ...steps[idx], image: img };
+                            return { ...prev, farmToTable: { ...prev.farmToTable, steps } };
+                          })
+                        }
+                      />
+
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-500 block mb-0.5">Step Title</label>
+                        <input
+                          type="text"
+                          value={s.title || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => {
+                              const steps = [...(prev.farmToTable?.steps || [])];
+                              steps[idx] = { ...steps[idx], title: e.target.value };
+                              return { ...prev, farmToTable: { ...prev.farmToTable, steps } };
+                            })
+                          }
+                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-bold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-500 block mb-0.5">Badge Tag</label>
+                        <input
+                          type="text"
+                          value={s.badge || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => {
+                              const steps = [...(prev.farmToTable?.steps || [])];
+                              steps[idx] = { ...steps[idx], badge: e.target.value };
+                              return { ...prev, farmToTable: { ...prev.farmToTable, steps } };
+                            })
+                          }
+                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-semibold uppercase"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-500 block mb-0.5">Description</label>
+                        <textarea
+                          rows={2}
+                          value={s.description || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => {
+                              const steps = [...(prev.farmToTable?.steps || [])];
+                              steps[idx] = { ...steps[idx], description: e.target.value };
+                              return { ...prev, farmToTable: { ...prev.farmToTable, steps } };
+                            })
+                          }
+                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-medium"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </AdminAccordion>
+        </motion.div>
+      )}
+
+      {/* =========================================================================
+          SECTION 7: LOVED BY "NUM" FAMILIES & REVIEWS
+      ========================================================================= */}
+      {activeTab === "trust" && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <AdminAccordion
+            title="Loved by 'num' Families & Customer Reviews"
+            subtitle="Dynamic families count, trust metrics, customer review cards with avatar upload, and certifications"
+            icon={<Heart className="w-5 h-5 text-rose-500" />}
+            defaultExpanded={true}
+          >
+            <div className="space-y-6">
+              {/* Dynamic Loved By "num" Families Headline Settings */}
+              <div className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/50 space-y-4">
+                <h4 className="text-xs font-black uppercase text-rose-700 dark:text-rose-300 tracking-wider">
+                  Headline & Dynamic Family Count
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                      Black Prefix (e.g. "Loved by Over")
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customerTrust?.titlePrefix || "Loved by Over"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          customerTrust: { ...prev.customerTrust, titlePrefix: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                      Highlight "num" Families Text (e.g. "50,000+ Families")
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customerTrust?.familiesCount || "50,000+ Families"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          customerTrust: { ...prev.customerTrust, familiesCount: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-black text-[#0756B5] dark:text-blue-400"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                      Subtitle Description
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customerTrust?.subtitle || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          customerTrust: { ...prev.customerTrust, subtitle: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 4 Trust Metrics */}
+              <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <label className="text-xs font-extrabold text-slate-800 dark:text-slate-200 block">
+                  Trust Metric Numbers (4 Badges)
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                  {(formData.customerTrust?.metrics || []).map((m, idx) => (
+                    <div
+                      key={`metric-edit-${idx}`}
+                      className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-2"
+                    >
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-400 block">Value</label>
+                        <input
+                          type="text"
+                          value={m.value || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => {
+                              const metrics = [...(prev.customerTrust?.metrics || [])];
+                              metrics[idx] = { ...metrics[idx], value: e.target.value };
+                              return { ...prev, customerTrust: { ...prev.customerTrust, metrics } };
+                            })
+                          }
+                          className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-black"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-400 block">Label</label>
+                        <input
+                          type="text"
+                          value={m.label || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => {
+                              const metrics = [...(prev.customerTrust?.metrics || [])];
+                              metrics[idx] = { ...metrics[idx], label: e.target.value };
+                              return { ...prev, customerTrust: { ...prev.customerTrust, metrics } };
+                            })
+                          }
+                          className="w-full px-2 py-1 text-[11px] rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-medium"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Customer Testimonial Cards */}
+              <div className="space-y-4 pt-3 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
+                    Customer Testimonial Cards ({formData.customerTrust?.reviews?.length || 0})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        customerTrust: {
+                          ...prev.customerTrust,
+                          reviews: [
+                            ...(prev.customerTrust?.reviews || []),
+                            {
+                              name: "Happy Customer",
+                              location: "Nashik",
+                              verified: true,
+                              rating: 5,
+                              title: "Delicious and Pure!",
+                              comment: "Best daily milk we ever tried.",
+                              product: "Fresh Cow Milk",
+                              avatar: "",
+                            },
+                          ],
+                        },
+                      }))
+                    }
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-bold border border-rose-200 dark:border-rose-800 hover:bg-rose-100 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Customer Review
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {(formData.customerTrust?.reviews || []).map((rev, idx) => (
+                    <div
+                      key={`rev-${idx}`}
+                      className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-3 relative shadow-xs"
+                    >
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            customerTrust: {
+                              ...prev.customerTrust,
+                              reviews: prev.customerTrust.reviews.filter((_, i) => i !== idx),
+                            },
+                          }))
+                        }
+                        className="absolute top-3 right-3 text-slate-400 hover:text-red-500 p-1"
+                        title="Delete Review"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+
+                      {/* Reviewer Avatar Image Upload */}
+                      <ItemImageUploader
+                        label={`Reviewer #${idx + 1} Avatar`}
+                        value={rev.avatar}
+                        onChange={(img) =>
+                          setFormData((prev) => {
+                            const reviews = [...(prev.customerTrust?.reviews || [])];
+                            reviews[idx] = { ...reviews[idx], avatar: img };
+                            return { ...prev, customerTrust: { ...prev.customerTrust, reviews } };
+                          })
+                        }
+                      />
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Name</label>
+                          <input
+                            type="text"
+                            value={rev.name || ""}
+                            onChange={(e) =>
+                              setFormData((prev) => {
+                                const reviews = [...(prev.customerTrust?.reviews || [])];
+                                reviews[idx] = { ...reviews[idx], name: e.target.value };
+                                return { ...prev, customerTrust: { ...prev.customerTrust, reviews } };
+                              })
+                            }
+                            className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Location</label>
+                          <input
+                            type="text"
+                            value={rev.location || ""}
+                            onChange={(e) =>
+                              setFormData((prev) => {
+                                const reviews = [...(prev.customerTrust?.reviews || [])];
+                                reviews[idx] = { ...reviews[idx], location: e.target.value };
+                                return { ...prev, customerTrust: { ...prev.customerTrust, reviews } };
+                              })
+                            }
+                            className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Review Headline</label>
+                        <input
+                          type="text"
+                          value={rev.title || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => {
+                              const reviews = [...(prev.customerTrust?.reviews || [])];
+                              reviews[idx] = { ...reviews[idx], title: e.target.value };
+                              return { ...prev, customerTrust: { ...prev.customerTrust, reviews } };
+                            })
+                          }
+                          className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-semibold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Customer Comment</label>
+                        <textarea
+                          rows={2}
+                          value={rev.comment || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => {
+                              const reviews = [...(prev.customerTrust?.reviews || [])];
+                              reviews[idx] = { ...reviews[idx], comment: e.target.value };
+                              return { ...prev, customerTrust: { ...prev.customerTrust, reviews } };
+                            })
+                          }
+                          className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-medium"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </AdminAccordion>
+        </motion.div>
+      )}
+
+      {/* =========================================================================
+          SECTION 8: LAST CARD (SHOP PRODUCTS, CONTACT US, WHATSAPP CTA)
+      ========================================================================= */}
+      {activeTab === "last-cta" && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <AdminAccordion
+            title="Last Card: Shop Products, Contact Us & WhatsApp CTA"
+            subtitle="Configure CTA headline, shop button, contact button, WhatsApp chat setup, and quick info strip"
+            icon={<MessageCircle className="w-5 h-5 text-[#25D366]" />}
+            defaultExpanded={true}
+          >
+            <div className="space-y-5">
+              {/* Optional background banner */}
+              <ItemImageUploader
+                label="Custom Background Image / Pattern (Optional)"
+                value={formData.homeContactCta?.bgImage}
+                onChange={(img) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    homeContactCta: { ...prev.homeContactCta, bgImage: img },
+                  }))
+                }
+              />
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  CTA Card Main Headline
+                </label>
+                <input
+                  type="text"
+                  value={formData.homeContactCta?.headline || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      homeContactCta: { ...prev.homeContactCta, headline: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-extrabold text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  Supporting Description Paragraph
+                </label>
+                <textarea
+                  rows={2}
+                  value={formData.homeContactCta?.description || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      homeContactCta: { ...prev.homeContactCta, description: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                />
+              </div>
+
+              {/* 3 Buttons: Shop, Contact, WhatsApp */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-slate-200 dark:border-slate-700">
+                {/* Shop Button */}
+                <div className="p-3.5 rounded-xl border border-blue-200 dark:border-slate-700 bg-blue-50/50 dark:bg-slate-800 space-y-2">
+                  <span className="text-[11px] font-black text-[#0756B5] dark:text-blue-400 block uppercase">
+                    1. Shop Button
+                  </span>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block">Text</label>
+                    <input
+                      type="text"
+                      value={formData.homeContactCta?.shopButtonText || "Shop Products Now"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeContactCta: { ...prev.homeContactCta, shopButtonText: e.target.value },
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block">Link</label>
+                    <input
+                      type="text"
+                      value={formData.homeContactCta?.shopButtonLink || "/products"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeContactCta: { ...prev.homeContactCta, shopButtonLink: e.target.value },
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Contact Us Button */}
+                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 space-y-2">
+                  <span className="text-[11px] font-black text-slate-700 dark:text-slate-300 block uppercase">
+                    2. Contact Button
+                  </span>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block">Text</label>
+                    <input
+                      type="text"
+                      value={formData.homeContactCta?.contactButtonText || "Contact Us"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeContactCta: { ...prev.homeContactCta, contactButtonText: e.target.value },
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block">Link</label>
+                    <input
+                      type="text"
+                      value={formData.homeContactCta?.contactButtonLink || "/contact-us"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeContactCta: { ...prev.homeContactCta, contactButtonLink: e.target.value },
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* WhatsApp Button */}
+                <div className="p-3.5 rounded-xl border border-emerald-200 dark:border-slate-700 bg-emerald-50/50 dark:bg-slate-800 space-y-2">
+                  <span className="text-[11px] font-black text-[#25D366] block uppercase">
+                    3. WhatsApp Button
+                  </span>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block">Button Text</label>
+                    <input
+                      type="text"
+                      value={formData.homeContactCta?.whatsappText || "WhatsApp Us"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeContactCta: { ...prev.homeContactCta, whatsappText: e.target.value },
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block">WhatsApp Phone Number</label>
+                    <input
+                      type="text"
+                      value={formData.homeContactCta?.whatsappPhone || "919490644434"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeContactCta: { ...prev.homeContactCta, whatsappPhone: e.target.value },
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block">Pre-filled Chat Message</label>
+                    <input
+                      type="text"
+                      value={formData.homeContactCta?.whatsappMessage || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          homeContactCta: { ...prev.homeContactCta, whatsappMessage: e.target.value },
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Info Strip */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-slate-200 dark:border-slate-700">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1 flex items-center gap-1">
+                    <Phone className="w-3.5 h-3.5 text-[#0756B5]" /> Support Phone
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.homeContactCta?.supportPhone || "+91 94906 44434"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        homeContactCta: { ...prev.homeContactCta, supportPhone: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-amber-500" /> Working Hours
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.homeContactCta?.workingHours || "Everyday, 5:00 AM - 12:00 PM"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        homeContactCta: { ...prev.homeContactCta, workingHours: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Location / City
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.homeContactCta?.locationText || "Nashik, Maharashtra"}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        homeContactCta: { ...prev.homeContactCta, locationText: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+          </AdminAccordion>
+        </motion.div>
+      )}
+
+      {/* =========================================================================
+          SECTION 9: GENERAL STORE BRANDING
+      ========================================================================= */}
+      {activeTab === "branding" && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <AdminAccordion
+            title="Store Branding & Metadata"
+            subtitle="Company name, tagline, and store description"
+            icon={<FileText className="w-5 h-5 text-slate-500" />}
+            defaultExpanded={true}
+          >
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Company / Dairy Brand Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.companyName || ""}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                    Brand Tagline
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.companyTagline || ""}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, companyTagline: e.target.value }))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  Company Description
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.companyDescription || ""}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, companyDescription: e.target.value }))}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium"
+                />
+              </div>
+            </div>
+          </AdminAccordion>
+        </motion.div>
+      )}
+
+      {/* =========================================================================
+          SECTION 10: FAQS MANAGEMENT
+      ========================================================================= */}
       {activeTab === "faqs" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">
-              Frequently Asked Questions ({formData.faqs.length})
+            <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+              Frequently Asked Questions ({(formData.faqs || []).length})
             </h2>
             <button
-              onClick={addFaq}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] font-bold text-xs cursor-pointer hover:bg-emerald-100"
+              onClick={() =>
+                setFormData((prev) => ({
+                  ...prev,
+                  faqs: [...(prev.faqs || []), { question: "New FAQ Question?", answer: "FAQ answer goes here." }],
+                }))
+              }
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-[#075C2A] dark:text-emerald-300 font-bold text-xs cursor-pointer hover:bg-emerald-100"
             >
               <Plus className="w-3.5 h-3.5" /> Add Question
             </button>
           </div>
 
           <div className="space-y-4">
-            {formData.faqs.map((faq, idx) => (
+            {(formData.faqs || []).map((faq, idx) => (
               <div
-                key={idx}
-                className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-3 relative group"
+                key={`faq-${idx}`}
+                className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-3 relative shadow-xs"
               >
                 <button
                   type="button"
-                  onClick={() => removeFaq(idx)}
-                  className="absolute top-3 right-3 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      faqs: prev.faqs.filter((_, i) => i !== idx),
+                    }))
+                  }
+                  className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition"
                   title="Remove FAQ"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
 
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-gray-500 block mb-0.5">Question</label>
+                <div>
+                  <label className="text-[11px] font-bold text-slate-500 block mb-0.5">Question</label>
                   <input
                     type="text"
-                    value={faq.question}
-                    onChange={(e) => handleFaqChange(idx, "question", e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-bold"
+                    value={faq.question || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => {
+                        const faqs = [...prev.faqs];
+                        faqs[idx] = { ...faqs[idx], question: e.target.value };
+                        return { ...prev, faqs };
+                      })
+                    }
+                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-bold"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-gray-500 block mb-0.5">Answer</label>
+                <div>
+                  <label className="text-[11px] font-bold text-slate-500 block mb-0.5">Answer</label>
                   <textarea
                     rows={2}
-                    value={faq.answer}
-                    onChange={(e) => handleFaqChange(idx, "answer", e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-medium"
+                    value={faq.answer || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => {
+                        const faqs = [...prev.faqs];
+                        faqs[idx] = { ...faqs[idx], answer: e.target.value };
+                        return { ...prev, faqs };
+                      })
+                    }
+                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-medium"
                   />
                 </div>
               </div>
@@ -1134,3 +2174,4 @@ export default function PageContentManager() {
     </div>
   );
 }
+

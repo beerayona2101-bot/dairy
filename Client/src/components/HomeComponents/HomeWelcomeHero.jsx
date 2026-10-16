@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { PageContentContext } from "../../context/PageContentProvider";
 import bannerWelcomeImg from "../../assets/banner_welcome_sunrise.jpg";
 import bannerMilkImg from "../../assets/banner_farm_fresh_milk.jpg";
 import bannerProductsImg from "../../assets/banner_pure_healthy_products.jpg";
@@ -21,6 +22,8 @@ import {
 } from "lucide-react";
 
 export default function HomeWelcomeHero() {
+    const { pageContent } = useContext(PageContentContext);
+
     // Detect mobile viewport (under 768px)
     const [isMobile, setIsMobile] = useState(() => {
         if (typeof window !== "undefined") {
@@ -37,8 +40,8 @@ export default function HomeWelcomeHero() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Full catalog of slides matching the user's reference design
-    const allSlides = useMemo(() => [
+    // Canonical default slides fallback
+    const defaultSlides = useMemo(() => [
         {
             id: "welcome-slide",
             isWelcomeSlide: true, // Shown in web/desktop; excluded in mobile response
@@ -129,6 +132,33 @@ export default function HomeWelcomeHero() {
             overlayGradient: "from-white/70 via-white/30 via-40% to-transparent/0 dark:from-slate-950/75 dark:via-slate-950/35 dark:via-40% dark:to-transparent/0",
         },
     ], []);
+
+    // Dynamic catalog of slides merged with CRM custom inputs
+    const allSlides = useMemo(() => {
+        const rawSlides = Array.isArray(pageContent?.heroCarouselSlides) && pageContent.heroCarouselSlides.length > 0
+            ? pageContent.heroCarouselSlides
+            : [];
+
+        return defaultSlides.map((def, idx) => {
+            const custom = rawSlides[idx] || {};
+            return {
+                ...def,
+                ...custom,
+                badgeText: custom.badgeText || def.badgeText,
+                badgeIcon: def.badgeIcon,
+                badgeIconColor: def.badgeIconColor,
+                eyebrow: custom.eyebrow !== undefined && custom.eyebrow !== "" ? custom.eyebrow : def.eyebrow,
+                mainHeading: custom.mainHeading || custom.title || def.mainHeading,
+                subHeading: custom.subHeading !== undefined && custom.subHeading !== "" ? custom.subHeading : (custom.subtitle || def.subHeading),
+                description: custom.description || def.description,
+                mobileSubtitle: custom.mobileSubtitle || def.mobileSubtitle,
+                ctaText: custom.ctaText || custom.buttonText || def.ctaText,
+                ctaLink: custom.ctaLink || custom.buttonLink || def.ctaLink,
+                image: custom.image || def.image,
+                pills: Array.isArray(custom.pills) && custom.pills.length > 0 ? custom.pills : def.pills,
+            };
+        });
+    }, [pageContent?.heroCarouselSlides, defaultSlides]);
 
     // Responsive configuration:
     // Web response: 4 carousels (including Welcome Note)

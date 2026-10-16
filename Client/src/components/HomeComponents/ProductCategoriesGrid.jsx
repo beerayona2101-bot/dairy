@@ -24,44 +24,38 @@ const DEFAULT_CATEGORY_DESCRIPTIONS = {
 };
 
 export default function ProductCategoriesGrid({ pageContent, liveProducts }) {
-    // Generate unified list of unique categories
+    const exploreData = pageContent?.exploreCategoriesSection || {};
+
+    // Generate list of showcase categories configured by Admin
     const categories = useMemo(() => {
-        const catMap = new Map();
+        // Source active showcase categories: prefer homeCategoryCards, fallback to landingShowcaseCards
+        const showcaseSource = Array.isArray(pageContent?.homeCategoryCards)
+            ? pageContent.homeCategoryCards
+            : (Array.isArray(pageContent?.landingShowcaseCards) ? pageContent.landingShowcaseCards : null);
 
-        // 1. Base catalog categories
-        baseCategories.forEach((p) => {
-            const title = p.title || p.name;
-            if (title) {
+        // When showcaseSource is defined (even if empty):
+        // Only categories with Showcase option ON will appear here.
+        // If a category was toggled OFF, it is removed from this array and will NOT appear.
+        if (Array.isArray(showcaseSource)) {
+            return showcaseSource.map((c) => {
+                const title = c?.title || c?.name || "Category";
                 const key = title.toLowerCase().trim();
-                const desc = p.description || DEFAULT_CATEGORY_DESCRIPTIONS[key] || "100% farm-fresh dairy excellence.";
-                catMap.set(key, {
+                return {
                     title,
-                    image: getCardBackgroundImage(p, title),
-                    description: desc,
-                });
-            }
-        });
-
-        // 2. Custom admin cards if configured
-        if (Array.isArray(pageContent?.homeCategoryCards)) {
-            pageContent.homeCategoryCards.forEach((c) => {
-                const title = c?.title || c?.name;
-                if (title) {
-                    const key = title.toLowerCase().trim();
-                    const existing = catMap.get(key) || {};
-                    catMap.set(key, {
-                        ...existing,
-                        title,
-                        image: getCardBackgroundImage(c, title),
-                        description: c.description || existing.description || DEFAULT_CATEGORY_DESCRIPTIONS[key] || "100% farm-fresh dairy excellence.",
-                    });
-                }
+                    image: c.image || getCardBackgroundImage(c, title),
+                    description: c.description || DEFAULT_CATEGORY_DESCRIPTIONS[key] || "100% farm-fresh dairy excellence.",
+                    link: c.link || `/products/${slugify(title)}`,
+                };
             });
         }
 
-        // Return top 8 prominent categories for a balanced, spacious grid
-        return Array.from(catMap.values()).slice(0, 8);
+        // Safe initial state while pageContent loads
+        return [];
     }, [pageContent]);
+
+    if (!categories || categories.length === 0) {
+        return null;
+    }
 
     return (
         <section id="categories" aria-label="Product Categories" className="w-full space-y-6">
@@ -69,23 +63,23 @@ export default function ProductCategoriesGrid({ pageContent, liveProducts }) {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div className="space-y-1.5 text-left">
                     <AnimatedHeading
-                        blackText="Explore Our"
-                        violetText="Categories"
+                        blackText={exploreData.titleBlack || "Explore Our"}
+                        violetText={exploreData.titleHighlight || "Categories"}
                         align="left"
                         className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight justify-start"
                         violetClassName="text-[#0756B5] dark:text-blue-400 font-black"
                     />
 
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        Browse our farm-fresh lineup crafted for taste, health, and purity.
+                        {exploreData.subtitle || "Browse our farm-fresh lineup crafted for taste, health, and purity."}
                     </p>
                 </div>
 
                 <Link
-                    to="/products"
+                    to={exploreData.viewAllLink || "/products"}
                     className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-[#0756B5] dark:text-blue-400 hover:text-[#054593] hover:underline self-start sm:self-auto shrink-0 group"
                 >
-                    <span>View All Categories</span>
+                    <span>{exploreData.viewAllText || "View All Categories"}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>

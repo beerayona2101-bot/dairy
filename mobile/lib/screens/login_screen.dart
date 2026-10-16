@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../config/app_theme.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/custom_button.dart';
 import '../widgets/custom_input.dart';
 import 'forget_screen.dart';
 import 'mobile_web_view_screen.dart';
@@ -139,12 +138,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF075C2A),
+                          color: const Color(0xFF0284C7),
                         ),
                       ),
-                      label: const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Color(0xFF075C2A)),
+                      label: const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Color(0xFF0284C7)),
                       style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFFE8F7EE),
+                        backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE0F2FE),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       ),
@@ -278,10 +277,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             SizedBox(
                               width: 22,
-                              height: 22,
-                              child: Checkbox(
+                                           child: Checkbox(
                                 value: _acceptTerms,
-                                activeColor: const Color(0xFF10B981),
+                                activeColor: const Color(0xFF0284C7),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4),
                                 ),
@@ -335,148 +333,74 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
 
-                      // Sign In Button
-                      CustomButton(
-                        text: 'Sign In',
-                        isLoading: authProvider.isLoading,
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF5B54F2), Color(0xFF1E88E5)],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
+                      // Sign In Button (Light Pill with Dairy Blue text matching Image 2)
+                      GestureDetector(
+                        onTap: authProvider.isLoading ? null : _handleLogin,
+                        child: Container(
+                          width: double.infinity,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            gradient: LinearGradient(
+                              colors: isDark
+                                  ? [
+                                      const Color(0xFF1E293B),
+                                      const Color(0xFF0F2742),
+                                    ]
+                                  : [
+                                      const Color(0xFFE0F2FE),
+                                      const Color(0xFFF0F9FF),
+                                      const Color(0xFFEBF4FF),
+                                    ],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF0284C7).withValues(alpha: 0.5) : const Color(0xFFBAE6FD),
+                              width: 1.2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF0284C7).withValues(alpha: isDark ? 0.2 : 0.12),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: authProvider.isLoading
+                                ? const SpinKitThreeBounce(
+                                    color: Color(0xFF0284C7),
+                                    size: 20,
+                                  )
+                                : Text(
+                                    'Sign In',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w900,
+                                      color: const Color(0xFF0284C7),
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                          ),
                         ),
-                        onPressed: _handleLogin,
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
 
-                // "OR" Divider
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: isDark ? Colors.white24 : Colors.grey.shade300)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                      child: Text(
-                        'OR',
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
-                        ),
-                      ),
-                    ),
-                    Expanded(child: Divider(color: isDark ? Colors.white24 : Colors.grey.shade300)),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Premium Guest User Button
-                GestureDetector(
-                  onTap: _continueAsGuest,
-                  child: Container(
-                    width: double.infinity,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      gradient: LinearGradient(
-                        colors: isDark
-                            ? [
-                                const Color(0xFF1E293B),
-                                const Color(0xFF0F172A),
-                              ]
-                            : [
-                                Colors.white,
-                                const Color(0xFFF0FDF9),
-                              ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      border: Border.all(
-                        color: const Color(0xFF0284C7).withValues(alpha: 0.55),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF0284C7).withValues(alpha: isDark ? 0.12 : 0.08),
-                          blurRadius: 14,
-                          offset: const Offset(0, 4),
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 34,
-                          height: 34,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color(0xFF0284C7).withValues(alpha: 0.12),
-                            border: Border.all(
-                              color: const Color(0xFF0284C7).withValues(alpha: 0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.person_outline_rounded,
-                            size: 18,
-                            color: Color(0xFF0284C7),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Continue as Guest',
-                              style: GoogleFonts.outfit(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: isDark ? Colors.white : const Color(0xFF0F2742),
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                            Text(
-                              'Browse without signing in',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                                color: isDark ? Colors.grey.shade400 : const Color(0xFF64748B),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 10),
-                        const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 13,
-                          color: Color(0xFF0284C7),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Register Link Row
+                // Create Account Row matching Image 2
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Don't have an account? ",
                       style: GoogleFonts.outfit(
-                        fontSize: 14,
-                        color: isDark ? Colors.grey.shade400 : AppTheme.textMuted,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.grey.shade400 : const Color(0xFF64748B),
                       ),
                     ),
                     GestureDetector(
@@ -485,13 +409,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialPageRoute(builder: (_) => const RegisterScreen()),
                         );
                       },
-                      child: Text(
-                        'Register Now',
-                        style: GoogleFonts.outfit(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0284C7),
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Create Account',
+                            style: GoogleFonts.outfit(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF0284C7),
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            size: 16,
+                            color: Color(0xFF0284C7),
+                          ),
+                        ],
                       ),
                     ),
                   ],

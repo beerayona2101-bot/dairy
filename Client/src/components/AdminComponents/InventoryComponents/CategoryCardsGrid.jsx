@@ -84,15 +84,18 @@ export default function CategoryCardsGrid({
     }
   };
 
-  const grouped = groupProductsByCategory(products);
-  const showcaseTitles = (pageContent?.landingShowcaseCards || []).map((c) => c.title).filter(Boolean);
-  const homeTitles = (pageContent?.homeCategoryCards || []).map((c) => c.title).filter(Boolean);
-  let categoriesList = Array.from(new Set([...Object.keys(grouped), ...showcaseTitles, ...homeTitles]));
+  const showcaseTitles = (pageContent?.homeCategoryCards || pageContent?.landingShowcaseCards || [])
+    .map((c) => c.title || c.name)
+    .filter(Boolean);
+  let categoriesList = Array.from(new Set([...Object.keys(grouped), ...showcaseTitles]));
 
   if (filterMode === "showcase") {
     categoriesList = categoriesList.filter((cat) =>
+      (pageContent?.homeCategoryCards || []).some(
+        (c) => (c.title || c.name)?.toLowerCase() === cat?.toLowerCase()
+      ) ||
       (pageContent?.landingShowcaseCards || []).some(
-        (c) => c.title?.toLowerCase() === cat?.toLowerCase()
+        (c) => (c.title || c.name)?.toLowerCase() === cat?.toLowerCase()
       )
     );
   }
@@ -102,25 +105,36 @@ export default function CategoryCardsGrid({
     e.stopPropagation(); // prevent opening category product view
 
     const isCurrentlyInShowcase = (pageContent?.landingShowcaseCards || []).some(
-      (c) => c.title?.toLowerCase() === categoryName?.toLowerCase()
+      (c) => (c.title || c.name)?.toLowerCase() === categoryName?.toLowerCase()
+    ) || (pageContent?.homeCategoryCards || []).some(
+      (c) => (c.title || c.name)?.toLowerCase() === categoryName?.toLowerCase()
     );
 
     let updatedLanding = [...(pageContent?.landingShowcaseCards || [])];
     let updatedHome = [...(pageContent?.homeCategoryCards || [])];
 
     if (isCurrentlyInShowcase) {
-      // Turn OFF -> remove category from showcase
-      updatedLanding = updatedLanding.filter((c) => c.title?.toLowerCase() !== categoryName?.toLowerCase());
+      // Turn OFF -> remove category from showcase & homepage category cards
+      updatedLanding = updatedLanding.filter((c) => (c.title || c.name)?.toLowerCase() !== categoryName?.toLowerCase());
       updatedHome = updatedHome.filter((c) => (c.title || c.name)?.toLowerCase() !== categoryName?.toLowerCase());
     } else {
-      // Turn ON -> add category to showcase
+      // Turn ON -> add category to showcase & homepage category cards
+      const existingHomeCard = (pageContent?.homeCategoryCards || []).find(
+        (c) => (c.title || c.name)?.toLowerCase() === categoryName?.toLowerCase()
+      );
+      const existingLandingCard = (pageContent?.landingShowcaseCards || []).find(
+        (c) => (c.title || c.name)?.toLowerCase() === categoryName?.toLowerCase()
+      );
       const items = grouped[categoryName] || [];
-      const repImage = getProductImage(items[0]);
+      const repImage = existingHomeCard?.image || existingLandingCard?.image || getProductImage(items[0]);
+      const repDesc = existingHomeCard?.description || existingLandingCard?.description || `Pure, fresh, high-quality ${categoryName} products delivered daily.`;
+
       const defaultCard = {
         title: categoryName,
         image: repImage || "/images/natural_cow_milk.png",
-        description: `Pure, fresh, high-quality ${categoryName} products delivered daily.`,
+        description: repDesc,
         features: ["100% Pure & Fresh", "Quality Guaranteed"],
+        link: `/products/${slugify(categoryName)}`,
       };
       updatedLanding.push(defaultCard);
       updatedHome.push(defaultCard);
@@ -510,10 +524,16 @@ export default function CategoryCardsGrid({
           {categoriesList.map((category) => {
             const items = grouped[category] || [];
             const repImage = getProductImage(items[0]);
-            const showcaseCard = (pageContent?.landingShowcaseCards || []).find(
-              (c) => c.title?.toLowerCase() === category?.toLowerCase()
+            const showcaseCard = (pageContent?.homeCategoryCards || []).find(
+              (c) => (c.title || c.name)?.toLowerCase() === category?.toLowerCase()
+            ) || (pageContent?.landingShowcaseCards || []).find(
+              (c) => (c.title || c.name)?.toLowerCase() === category?.toLowerCase()
             );
-            const isCurrentlyInShowcase = Boolean(showcaseCard);
+            const isCurrentlyInShowcase = (pageContent?.homeCategoryCards || []).some(
+              (c) => (c.title || c.name)?.toLowerCase() === category?.toLowerCase()
+            ) || (pageContent?.landingShowcaseCards || []).some(
+              (c) => (c.title || c.name)?.toLowerCase() === category?.toLowerCase()
+            );
 
             return (
               <motion.div
@@ -532,48 +552,52 @@ export default function CategoryCardsGrid({
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
-                  {/* Top Left: Showcase Cards ON / OFF Toggle Switch */}
-                  <button
-                    onClick={(e) => handleToggleShowcase(e, category)}
-                    className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-extrabold shadow-sm border backdrop-blur-md flex items-center gap-1.5 transition-all cursor-pointer z-10 ${
-                      isCurrentlyInShowcase
-                        ? "bg-emerald-50/95 hover:bg-emerald-100 text-[#075C2A] border-emerald-300"
-                        : "bg-white/90 hover:bg-gray-100 text-gray-700 border-gray-200"
-                    }`}
-                    title={`Toggle ${category} visibility in Showcase Cards`}
-                  >
-                    <span className={`w-2.5 h-2.5 rounded-full ${isCurrentlyInShowcase ? "bg-[#075C2A] animate-pulse" : "bg-gray-400"}`} />
-                    <span>Showcase Cards: {isCurrentlyInShowcase ? "ON" : "OFF"}</span>
-                  </button>
+                  {/* Top Bar: Showcase Cards Toggle Switch (Left) & Edit/Delete (Right) */}
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5 z-10">
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleShowcase(e, category)}
+                      className={`px-2.5 py-1.5 rounded-full text-xs font-extrabold shadow-sm border backdrop-blur-md flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                        isCurrentlyInShowcase
+                          ? "bg-emerald-50/95 hover:bg-emerald-100 text-[#075C2A] border-emerald-300"
+                          : "bg-white/90 hover:bg-gray-100 text-gray-700 border-gray-200"
+                      }`}
+                      title={`Toggle ${category} visibility in Explore Our Categories on Homepage`}
+                    >
+                      <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isCurrentlyInShowcase ? "bg-[#075C2A] animate-pulse" : "bg-gray-400"}`} />
+                      <span>Showcase Cards: {isCurrentlyInShowcase ? "ON" : "OFF"}</span>
+                    </button>
 
-                  {/* Top Right: Edit & Delete Category Badges */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingCategoryData({
-                          category: category,
-                          title: showcaseCard?.title || category,
-                          image: showcaseCard?.image || repImage || "",
-                          description: showcaseCard?.description || "",
-                          features: showcaseCard?.features || [],
-                        });
-                        setModalOpen(true);
-                      }}
-                      className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/95 hover:bg-emerald-50 text-gray-800 hover:text-[#075C2A] shadow-sm border border-gray-200 hover:border-emerald-200 transition flex items-center gap-1 cursor-pointer"
-                      title={`Edit ${category} category details`}
-                    >
-                      <EditIcon sx={{ fontSize: "0.85rem" }} />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={(e) => handleDeleteCategory(e, category)}
-                      className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/95 hover:bg-rose-50 text-gray-700 hover:text-rose-600 shadow-sm border border-gray-200 hover:border-rose-200 transition flex items-center gap-1 cursor-pointer"
-                      title={`Delete ${category} category`}
-                    >
-                      <DeleteOutlineIcon sx={{ fontSize: "0.85rem" }} />
-                      <span>Delete</span>
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingCategoryData({
+                            category: category,
+                            title: showcaseCard?.title || category,
+                            image: showcaseCard?.image || repImage || "",
+                            description: showcaseCard?.description || "",
+                            features: showcaseCard?.features || [],
+                          });
+                          setModalOpen(true);
+                        }}
+                        className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/95 hover:bg-emerald-50 text-gray-800 hover:text-[#075C2A] shadow-sm border border-gray-200 hover:border-emerald-200 transition flex items-center gap-1 cursor-pointer"
+                        title={`Edit ${category} category details`}
+                      >
+                        <EditIcon sx={{ fontSize: "0.85rem" }} />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteCategory(e, category)}
+                        className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-white/95 hover:bg-rose-50 text-gray-700 hover:text-rose-600 shadow-sm border border-gray-200 hover:border-rose-200 transition flex items-center gap-1 cursor-pointer"
+                        title={`Delete ${category} category`}
+                      >
+                        <DeleteOutlineIcon sx={{ fontSize: "0.85rem" }} />
+                        <span>Delete</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Bottom Left: Category Name Overlay & Arrow Hint */}
