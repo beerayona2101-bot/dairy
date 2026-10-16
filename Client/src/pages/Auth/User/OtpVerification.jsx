@@ -112,6 +112,7 @@ export default function OtpVerification() {
           sessionStorage.setItem("userRole", "user");
         }
         enqueueSnackbar("Account verified and created successfully! 🎉", { variant: "success" });
+        sessionStorage.removeItem("redirectAfterLogin");
         navigate("/", { replace: true });
       } else {
         enqueueSnackbar(data?.message || "OTP verification failed.", { variant: "error" });

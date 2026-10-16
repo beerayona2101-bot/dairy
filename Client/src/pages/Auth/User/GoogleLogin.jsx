@@ -30,23 +30,8 @@ export default function GoogleLoginComponent( {setOpenLoginDialog, setGoogleLogi
             handleAdminLogout();
             enqueueSnackbar("Login Successful!", { variant: "success" });
               
-              const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
               sessionStorage.removeItem("redirectAfterLogin");
-
-              const isAuthPath = (path) => {
-                if (!path || typeof path !== "string") return true;
-                const clean = path.toLowerCase();
-                return (
-                  clean === "/login" ||
-                  clean === "/signup" ||
-                  clean === "/admin/login" ||
-                  clean.startsWith("/login/") ||
-                  clean.startsWith("/signup/")
-                );
-              };
-
-              const userDest = (!isAuthPath(storedRedirect) && storedRedirect) || "/home";
-              navigate(userDest, { replace: true });
+              navigate("/", { replace: true });
             }
             
           } else {

@@ -124,26 +124,8 @@ export default function UserSignUp() {
           }
         }
 
-        const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
         sessionStorage.removeItem("redirectAfterLogin");
-
-        const isAuthPath = (path) => {
-          if (!path || typeof path !== "string") return true;
-          const clean = path.toLowerCase();
-          return (
-            clean === "/login" ||
-            clean === "/signup" ||
-            clean.startsWith("/signup/") ||
-            clean.startsWith("/admin")
-          );
-        };
-
-        const targetPath =
-          (!isAuthPath(storedRedirect) && storedRedirect) ||
-          (!isAuthPath(location.state?.previous) && location.state?.previous) ||
-          "/";
-
-        navigate(targetPath, { replace: true });
+        navigate("/", { replace: true });
         setFormData({
           username: "",
           mobileNo: "",

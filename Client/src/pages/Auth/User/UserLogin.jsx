@@ -99,15 +99,8 @@ export default function UserLogin() {
 
           enqueueSnackbar("Login Successful!", { variant: "success" });
 
-          const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
           sessionStorage.removeItem("redirectAfterLogin");
-
-          const validUserTarget =
-            (!isAuthPath(storedRedirect) && storedRedirect) ||
-            (!isAuthPath(targetPath) && !targetPath.startsWith("/admin") && targetPath) ||
-            "/home";
-
-          navigate(validUserTarget, { replace: true });
+          navigate("/", { replace: true });
         }
       } else {
         const errorMsg = getFriendlyErrorMessage(res?.message || "401 Error: Login failed, please check your credentials.");
