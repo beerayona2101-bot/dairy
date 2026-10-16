@@ -3,10 +3,10 @@ import { Link, useNavigate, Navigate, useLocation } from "react-router-dom";
 import { verifyUserOTP } from "../../../services/userService";
 import { useSnackbar } from "notistack";
 import { motion } from "framer-motion";
-import { AdminAuthContext } from "../../../context/AuthProvider";
+import { AdminAuthContext, UserAuthContext } from "../../../context/AuthProvider";
 import company from "../../../data/company.json";
 import BuffaloLoader from "../../../components/BuffaloLoader";
-import { Eye, EyeOff, ArrowLeft, Mail, Lock, ChevronRight } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Mail, Lock, ChevronRight, User as UserIcon, Phone } from "lucide-react";
 import { ThemeContext } from "../../../context/ThemeProvider";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
 import logoLightMode from "../../../assets/logoLightMode.png";
@@ -19,6 +19,7 @@ export default function UserSignUp() {
   const { enqueueSnackbar } = useSnackbar();
   const { theme } = useContext(ThemeContext) || {};
   const { authAdmin, authAdminLoading } = useContext(AdminAuthContext);
+  const { fetchUserData } = useContext(UserAuthContext) || {};
 
   const adminToken = sessionStorage.getItem("adminToken");
   const adminRole = sessionStorage.getItem("adminRole");
@@ -31,6 +32,8 @@ export default function UserSignUp() {
   const [termsModalTab, setTermsModalTab] = useState(null);
 
   const [formData, setFormData] = useState({
+    username: "",
+    mobileNo: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -61,6 +64,25 @@ export default function UserSignUp() {
       });
     }
 
+    if (!formData?.username?.trim()) {
+      return enqueueSnackbar("Please enter your name / username.", {
+        variant: "error",
+      });
+    }
+
+    const cleanMobile = formData?.mobileNo?.replace(/\D/g, "");
+    if (!cleanMobile || cleanMobile.length !== 10) {
+      return enqueueSnackbar("Please enter a valid 10-digit mobile number.", {
+        variant: "error",
+      });
+    }
+
+    if (!formData?.email?.trim()) {
+      return enqueueSnackbar("Please enter your email address.", {
+        variant: "error",
+      });
+    }
+
     if (!isValidPassword(formData?.password)) {
       enqueueSnackbar(
         "Password must be at least 8 characters and contain a number.",
@@ -75,25 +97,67 @@ export default function UserSignUp() {
 
     try {
       setIsLoading(true);
-      const res = await verifyUserOTP(formData);
+      const res = await verifyUserOTP({
+        username: formData.username.trim(),
+        mobileNo: cleanMobile,
+        email: formData.email.trim(),
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
+
       if (res?.success) {
         enqueueSnackbar(
-          "Account created successfully!",
+          "Account created successfully! Welcome to Natural Milk Dairy 🎉",
           { variant: "success" }
         );
+
         if (res?.userToken) {
           sessionStorage.setItem("userToken", res.userToken);
           sessionStorage.setItem("userRole", "user");
         }
-        navigate("/signup/info-input", { state: { formData: res.user }, replace: true });
-        setFormData({ email: "", password: "", confirmPassword: "" });
+
+        if (fetchUserData) {
+          try {
+            await fetchUserData(res.user);
+          } catch (syncErr) {
+            console.warn("User data sync warning:", syncErr?.message);
+          }
+        }
+
+        const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+        sessionStorage.removeItem("redirectAfterLogin");
+
+        const isAuthPath = (path) => {
+          if (!path || typeof path !== "string") return true;
+          const clean = path.toLowerCase();
+          return (
+            clean === "/login" ||
+            clean === "/signup" ||
+            clean.startsWith("/signup/") ||
+            clean.startsWith("/admin")
+          );
+        };
+
+        const targetPath =
+          (!isAuthPath(storedRedirect) && storedRedirect) ||
+          (!isAuthPath(location.state?.previous) && location.state?.previous) ||
+          "/";
+
+        navigate(targetPath, { replace: true });
+        setFormData({
+          username: "",
+          mobileNo: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
       } else {
         enqueueSnackbar(res?.message || "Signup failed.", { variant: "error" });
       }
     } catch (error) {
       const errorMsg =
         error?.response?.data?.message ||
-        getFriendlyErrorMessage(error, "An account with this email address already exists. Please sign in instead.");
+        getFriendlyErrorMessage(error, "An account with this email address or mobile number already exists.");
       enqueueSnackbar(errorMsg, { variant: "error" });
     } finally {
       setIsLoading(false);
@@ -118,7 +182,7 @@ export default function UserSignUp() {
   };
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-[#F5F8F6] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center px-2.5 py-1.5 sm:px-3 sm:py-2">
+    <div className="relative min-h-[100dvh] lg:h-[100dvh] w-full overflow-y-auto lg:overflow-hidden bg-[#F5F8F6] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center px-2.5 py-1.5 sm:px-3 sm:py-2">
       <header className="w-full max-w-[440px] lg:max-w-[1220px] h-9 shrink-0 flex items-center justify-between">
         <button
           type="button"
@@ -178,13 +242,13 @@ export default function UserSignUp() {
         </aside>
 
         <section className="flex w-full flex-col justify-center px-0 py-1.5 sm:py-2 lg:px-8 lg:py-8 xl:px-12">
-          <div className="w-full max-w-[420px] mx-auto">
+          <div className="w-full max-w-[440px] mx-auto">
             {/* Brand Cow Logo Header */}
             <div className="flex flex-col items-center text-center mb-2 sm:mb-2.5 lg:hidden">
               <img
                 src={brandLogo}
                 alt={company?.name || "Natural Milk Dairy"}
-                className="h-28 sm:h-32 w-auto object-contain mb-1.5 drop-shadow-md transition-transform duration-300 hover:scale-105"
+                className="h-24 sm:h-28 w-auto object-contain mb-1 drop-shadow-md transition-transform duration-300 hover:scale-105"
               />
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xs">
                 Farm-fresh milk &amp; daily needs delivered to your door
@@ -203,77 +267,127 @@ export default function UserSignUp() {
 
             {/* Inputs Card Container */}
             <div className="bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/40 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:dark:bg-transparent">
-              <form onSubmit={handleFormSubmit} className="space-y-2.5 sm:space-y-2.5">
-            {/* Email Address */}
-            <div>
-              <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
-                Email Address
-              </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2.5 shrink-0 transition-colors" />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="name@example.com"
-                  value={formData?.email}
-                  onChange={handleInputChange}
-                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                  required
-                />
-              </div>
-            </div>
+              <form onSubmit={handleFormSubmit} className="space-y-2 sm:space-y-2.5">
+                {/* User Name & Mobile Number in 2 columns on sm / tablet / desktop */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                  {/* User Name */}
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
+                      User Name
+                    </label>
+                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                      <UserIcon className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
+                      <input
+                        type="text"
+                        name="username"
+                        placeholder="e.g. John Doe"
+                        value={formData?.username}
+                        onChange={handleInputChange}
+                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                        required
+                      />
+                    </div>
+                  </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
-                Password
-              </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2.5 shrink-0 transition-colors" />
-                <input
-                  name="password"
-                  placeholder="At least 8 chars with a number"
-                  type={showPassword ? "text" : "password"}
-                  value={formData?.password}
-                  onChange={handleInputChange}
-                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1.5 transition-colors cursor-pointer"
-                >
-                  {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
+                  {/* Mobile Number */}
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
+                      Mobile Number
+                    </label>
+                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                      <Phone className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
+                      <input
+                        type="tel"
+                        name="mobileNo"
+                        maxLength={10}
+                        placeholder="10-digit mobile"
+                        value={formData?.mobileNo}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          if (val.length <= 10) {
+                            setFormData((prev) => ({ ...prev, mobileNo: val }));
+                          }
+                        }}
+                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
-                Confirm Password
-              </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2.5 shrink-0 transition-colors" />
-                <input
-                  name="confirmPassword"
-                  placeholder="Re-enter your password"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={formData?.confirmPassword}
-                  onChange={handleInputChange}
-                  className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1.5 transition-colors cursor-pointer"
-                >
-                  {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
+                {/* Email Address */}
+                <div>
+                  <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
+                    Email Address
+                  </label>
+                  <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                    <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-2 shrink-0 transition-colors" />
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="name@example.com"
+                      value={formData?.email}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Password & Confirm Password in 2 columns on sm / tablet / desktop */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                  {/* Password */}
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
+                      Password
+                    </label>
+                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                      <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-1.5 shrink-0 transition-colors" />
+                      <input
+                        name="password"
+                        placeholder="At least 8 chars"
+                        type={showPassword ? "text" : "password"}
+                        value={formData?.password}
+                        onChange={handleInputChange}
+                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1 transition-colors cursor-pointer"
+                      >
+                        {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div>
+                    <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
+                      Confirm Password
+                    </label>
+                    <div className="group flex items-center px-3 py-2 sm:py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
+                      <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-1.5 shrink-0 transition-colors" />
+                      <input
+                        name="confirmPassword"
+                        placeholder="Re-enter password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={formData?.confirmPassword}
+                        onChange={handleInputChange}
+                        className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 p-0 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 ml-1 transition-colors cursor-pointer"
+                      >
+                        {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
             {/* Subtle Password Rule Guidance */}
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 pt-0.5">

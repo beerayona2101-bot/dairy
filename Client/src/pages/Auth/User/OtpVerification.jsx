@@ -26,8 +26,7 @@ export default function OtpVerification() {
   useEffect(() => {
     const otpStatus = JSON.parse(localStorage.getItem("otp-status"));
     if (otpStatus?.email === formData?.email && otpStatus?.isOtpEntered) {
-      enqueueSnackbar("You already entered OTP! Proceeding to basic details...", { variant: "info" });
-      navigate("/signup/info-input", { state: { formData }, replace: true });
+      navigate("/", { replace: true });
     }
   }, [formData, navigate, enqueueSnackbar]);
 
@@ -108,8 +107,12 @@ export default function OtpVerification() {
             isOtpEntered: true,
           })
         );
-        enqueueSnackbar("Email verified! Please complete your basic profile.", { variant: "success" });
-        navigate("/signup/info-input", { state: { formData: data?.user }, replace: true });
+        if (data?.userToken) {
+          sessionStorage.setItem("userToken", data.userToken);
+          sessionStorage.setItem("userRole", "user");
+        }
+        enqueueSnackbar("Account verified and created successfully! 🎉", { variant: "success" });
+        navigate("/", { replace: true });
       } else {
         enqueueSnackbar(data?.message || "OTP verification failed.", { variant: "error" });
       }

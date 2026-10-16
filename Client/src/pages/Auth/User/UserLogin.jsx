@@ -95,26 +95,19 @@ export default function UserLogin() {
             sessionStorage.setItem("userToken", res.userToken);
             sessionStorage.setItem("userRole", "user");
           }
-          if (!res?.filledBasicInfo) {
-            navigate("/signup/info-input", {
-              state: { user: res?.user, viaLogin: !res?.filledBasicInfo },
-              replace: true,
-            });
-          } else {
-            await fetchUserData(res?.user);
+          await fetchUserData(res?.user);
 
-            enqueueSnackbar("Login Successful!", { variant: "success" });
+          enqueueSnackbar("Login Successful!", { variant: "success" });
 
-            const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
-            sessionStorage.removeItem("redirectAfterLogin");
+          const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+          sessionStorage.removeItem("redirectAfterLogin");
 
-            const validUserTarget =
-              (!isAuthPath(storedRedirect) && storedRedirect) ||
-              (!isAuthPath(targetPath) && !targetPath.startsWith("/admin") && targetPath) ||
-              "/home";
+          const validUserTarget =
+            (!isAuthPath(storedRedirect) && storedRedirect) ||
+            (!isAuthPath(targetPath) && !targetPath.startsWith("/admin") && targetPath) ||
+            "/home";
 
-            navigate(validUserTarget, { replace: true });
-          }
+          navigate(validUserTarget, { replace: true });
         }
       } else {
         const errorMsg = getFriendlyErrorMessage(res?.message || "401 Error: Login failed, please check your credentials.");

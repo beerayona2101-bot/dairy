@@ -26,15 +26,9 @@ export default function GoogleLoginComponent( {setOpenLoginDialog, setGoogleLogi
               sessionStorage.setItem("userToken", res.userToken);
               sessionStorage.setItem("userRole", "user");
             }
-            if (!res?.filledBasicInfo) {
-              navigate("/signup/info-input", {
-                state: { user: res?.user, viaLogin: true },
-              });
-              
-            } else {
-              await fetchUserData(res?.user);
-              handleAdminLogout();
-              enqueueSnackbar("Login Successful!", { variant: "success" });
+            await fetchUserData(res?.user);
+            handleAdminLogout();
+            enqueueSnackbar("Login Successful!", { variant: "success" });
               
               const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
               sessionStorage.removeItem("redirectAfterLogin");

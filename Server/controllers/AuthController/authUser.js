@@ -18,7 +18,7 @@ const client = new OAuth2Client(googleClientId);
 
 export const signUpUser = async (req, res) => {
   try {
-    const { email, password, confirmPassword, mobileNo, fcmToken } = req.body;
+    const { email, password, confirmPassword, mobileNo, username, fcmToken } = req.body;
 
     if (!email || !password || !confirmPassword) {
       return res
@@ -71,11 +71,15 @@ export const signUpUser = async (req, res) => {
     }
 
     const hashedPass = await bcryptjs.hash(password, 10);
+    const cleanUsername = username ? String(username).trim() : undefined;
+    const defaultAvatar = "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
 
     const newUser = new User({
       email: cleanEmail,
       password: hashedPass,
+      ...(cleanUsername ? { username: cleanUsername, firstName: cleanUsername } : {}),
       ...(cleanMobile ? { mobileNo: cleanMobile } : {}),
+      photo: defaultAvatar,
       ...(fcmToken && typeof fcmToken === "string" ? { fcmTokens: [fcmToken] } : {}),
     });
 
@@ -88,13 +92,23 @@ export const signUpUser = async (req, res) => {
       console.warn("New user registration notification notice:", notifErr?.message);
     }
 
+    const userToken = jwt.sign(
+      { id: newUser._id, role: "user", email: newUser.email },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
     res.status(201).json({
       success: true,
       message: "Account Created Successfully!",
+      userToken,
       user: {
         _id: newUser._id,
         email: newUser.email,
+        username: newUser.username,
+        firstName: newUser.firstName,
         mobileNo: newUser.mobileNo,
+        photo: newUser.photo,
         notifications: newUser.notifications || [],
       },
     });
@@ -421,7 +435,7 @@ export const loginWithGoogle = async (req, res) => {
     message: "Google login successful",
     userToken,
     user,
-    filledBasicInfo: isfilledBasicInfo,
+    filledBasicInfo: true,
   });
 };
 
@@ -448,7 +462,7 @@ export const verifyUser = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   try {
-    const { email, password, mobileNo } = req.body;
+    const { email, password, mobileNo, username } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ success: false, message: "Email and password are required." });
@@ -481,12 +495,17 @@ export const verifyOtp = async (req, res) => {
       }
     }
 
+    const cleanUsername = username ? String(username).trim() : undefined;
+    const defaultAvatar = "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
+
     const hashedPass = await bcryptjs.hash(password, 10);
 
     const newUser = new User({
       email: cleanEmail,
       password: hashedPass,
+      ...(cleanUsername ? { username: cleanUsername, firstName: cleanUsername } : {}),
       ...(cleanMobile ? { mobileNo: cleanMobile } : {}),
+      photo: defaultAvatar,
     });
 
     await newUser.save();
@@ -511,7 +530,10 @@ export const verifyOtp = async (req, res) => {
       user: {
         _id: newUser._id,
         email: newUser.email,
+        username: newUser.username,
+        firstName: newUser.firstName,
         mobileNo: newUser.mobileNo,
+        photo: newUser.photo,
         notifications: newUser.notifications || [],
       },
     });
