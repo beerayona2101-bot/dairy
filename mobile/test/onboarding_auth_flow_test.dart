@@ -173,8 +173,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Final screen entry actions must be visible
-      expect(find.text('LOGIN'), findsOneWidget);
-      expect(find.text('CONTINUE AS GUEST'), findsOneWidget);
+      expect(find.text('Create Account'), findsOneWidget);
+      expect(find.text('Sign In'), findsOneWidget);
+      expect(find.textContaining('Continue as Guest'), findsOneWidget);
     });
   });
 }

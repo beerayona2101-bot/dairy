@@ -321,7 +321,7 @@ export default function Navbar() {
             if (location.pathname !== "/login" && location.pathname !== "/signup") {
                 sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
             }
-            navigate("/login", { state: { from: location.pathname + location.search } });
+            navigate("/signup", { state: { from: location.pathname + location.search } });
         }
     };
 
@@ -363,18 +363,28 @@ export default function Navbar() {
         );
     } else {
         renderUserSection = (
-            <button
-                onClick={() => {
-                    if (location.pathname !== "/login" && location.pathname !== "/signup") {
-                        sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
-                    }
-                    navigate("/login", { state: { from: location.pathname + location.search } });
-                }}
-                className="btn-reflection flex items-center gap-1.5 text-[#075C2A] bg-white dark:bg-gray-800 hover:bg-purple-50 font-extrabold px-4 py-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-[0_0_18px_rgba(108,92,231,0.4)] hover:scale-105 cursor-pointer border border-white dark:border-gray-700 text-xs relative overflow-hidden periodic-glass-shine"
-            >
-                <LoginIcon sx={{ fontSize: "1.1rem" }} />
-                <span>Login</span>
-            </button>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+                <Link
+                    to="/signup"
+                    state={{ from: location.pathname + location.search }}
+                    className="flex items-center gap-1 text-white bg-gradient-to-r from-[#0284C7] to-[#0369A1] hover:brightness-105 font-black px-3 py-1.5 rounded-full transition-all duration-300 shadow-sm active:scale-95 cursor-pointer text-xs"
+                >
+                    <User className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span className="whitespace-nowrap">Create Account</span>
+                </Link>
+                <button
+                    onClick={() => {
+                        if (location.pathname !== "/login" && location.pathname !== "/signup") {
+                            sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
+                        }
+                        navigate("/login", { state: { from: location.pathname + location.search } });
+                    }}
+                    className="btn-reflection flex items-center gap-1 text-[#075C2A] bg-white dark:bg-gray-800 hover:bg-emerald-50 font-extrabold px-3 py-1.5 rounded-full transition-all duration-300 shadow-sm hover:scale-105 cursor-pointer border border-gray-200 dark:border-gray-700 text-xs"
+                >
+                    <LoginIcon sx={{ fontSize: "1rem" }} />
+                    <span>Login</span>
+                </button>
+            </div>
         );
     }
 

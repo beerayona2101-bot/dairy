@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
+import 'register_screen.dart';
+import 'mobile_web_view_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -104,6 +107,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _goToLogin() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
+
+  void _goToRegister() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+    );
+  }
+
+  Future<void> _continueAsGuest() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_guest_user', true);
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const MobileWebViewScreen()),
     );
   }
 
@@ -406,10 +424,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   const SizedBox(height: 12),
 
                   if (_currentPage == _slides.length - 1) ...[
-                    // FINAL SLIDE: Single premium "Get Started" CTA
+                    // FINAL SLIDE: Create Account (Primary) & Sign In (Secondary) & Guest
                     SizedBox(
                       width: double.infinity,
-                      height: 54,
+                      height: 52,
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -429,20 +447,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: _goToLogin,
+                            onTap: _goToRegister,
                             borderRadius: BorderRadius.circular(16),
                             child: Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   const Icon(
-                                    Icons.rocket_launch_rounded,
+                                    Icons.person_add_rounded,
                                     color: Colors.white,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    'Get Started',
+                                    'Create Account',
                                     style: GoogleFonts.outfit(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w900,
@@ -457,9 +475,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
                     ),
-
+                    const SizedBox(height: 10),
+                    // Secondary Button: Sign In
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        onPressed: _goToLogin,
+                        icon: const Icon(Icons.login_rounded, size: 18, color: Color(0xFF0284C7)),
+                        label: Text(
+                          'Sign In',
+                          style: GoogleFonts.outfit(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0284C7),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // Guest Option: Continue as Guest
+                    TextButton.icon(
+                      onPressed: _continueAsGuest,
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 15, color: Colors.grey),
+                      label: Text(
+                        'Continue as Guest (Skip) →',
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
                   ] else ...[
-                    // SLIDES 1 & 2 — Full-width Continue button (no back arrow)
+                    // SLIDES 1 & 2 — Full-width Continue button & Guest option
                     SizedBox(
                       width: double.infinity,
                       child: Container(
@@ -512,6 +565,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                           ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // Skip to guest
+                    TextButton.icon(
+                      onPressed: _continueAsGuest,
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 15, color: Colors.grey),
+                      label: Text(
+                        'Continue as Guest (Skip) →',
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                         ),
                       ),
                     ),

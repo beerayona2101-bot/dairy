@@ -31,15 +31,38 @@ class AuthService {
     return response;
   }
 
-  static Future<Map<String, dynamic>> signup(String email, String password, String confirmPassword) async {
+  static Future<Map<String, dynamic>> signup({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    String? username,
+    String? mobileNo,
+  }) async {
     final response = await ApiService.post(
       ApiConfig.signupUrl,
       {
         'email': email,
         'password': password,
         'confirmPassword': confirmPassword,
+        if (username != null && username.isNotEmpty) 'username': username,
+        if (mobileNo != null && mobileNo.isNotEmpty) 'mobileNo': mobileNo,
       },
     );
+
+    if (response['success'] == true && response['userToken'] != null) {
+      final token = response['userToken'].toString();
+      final userData = response['user'] as Map<String, dynamic>? ?? {};
+      final userId = userData['_id']?.toString() ?? userData['id']?.toString() ?? '';
+      await saveSession(token: token, userId: userId, email: email);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_guest_user', false);
+      return {
+        'success': true,
+        'user': UserModel.fromJson(userData, token: token),
+        'token': token,
+      };
+    }
+
     return response;
   }
 
@@ -99,20 +122,25 @@ class AuthService {
         ApiConfig.getUserDataUrl(userId),
         token: token,
       );
-      // If server explicitly replies with an auth error, token is invalid/expired
+      // If server explicitly replies with an auth error (401/403), token is invalid/expired
       if (response['success'] == false) {
+        final statusCode = response['statusCode'];
+        if (statusCode == 401 || statusCode == 403) {
+          return false;
+        }
         final msg = response['message']?.toString().toLowerCase() ?? '';
         if (msg.contains('unauthorized') ||
             msg.contains('invalid token') ||
-            msg.contains('expired') ||
-            msg.contains('jwt') ||
-            msg.contains('not found') ||
+            msg.contains('jwt expired') ||
+            msg.contains('token expired') ||
             msg.contains('forbidden')) {
           return false;
         }
+        // Network unreachable or other non-auth error -> keep session valid locally
+        return true;
       }
       // Server responded successfully — session is valid
-      return response['success'] == true || response.containsKey('user') || response.containsKey('data');
+      return true;
     } catch (_) {
       // Offline / network glitch — don't invalidate a previously-valid session.
       // The user will be routed to onboarding only if there is NO saved token at all.

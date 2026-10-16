@@ -18,6 +18,8 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -25,6 +27,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    _usernameController.dispose();
+    _mobileController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -45,9 +49,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.signup(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
-      _confirmPasswordController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+      confirmPassword: _confirmPasswordController.text.trim(),
+      username: _usernameController.text.trim(),
+      mobileNo: _mobileController.text.trim(),
     );
 
     if (!mounted) return;
@@ -55,13 +61,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('🎉 Account Created! Please sign in with your credentials.'),
+          content: Text('🎉 Welcome! Account created successfully.'),
           backgroundColor: Color(0xFF10B981),
           duration: Duration(seconds: 3),
         ),
       );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MobileWebViewScreen()),
+        (route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -200,6 +207,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: Column(
                     children: [
+                      // User Name
+                      CustomInput(
+                        label: 'User Name',
+                        hint: 'e.g. John Doe',
+                        prefixIcon: Icons.person_outline_rounded,
+                        controller: _usernameController,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) return 'Please enter your name / username';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Mobile Number
+                      CustomInput(
+                        label: 'Mobile Number',
+                        hint: '10-digit mobile number',
+                        prefixIcon: Icons.phone_outlined,
+                        controller: _mobileController,
+                        keyboardType: TextInputType.phone,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) return 'Please enter mobile number';
+                          final clean = val.replaceAll(RegExp(r'\D'), '');
+                          if (clean.length != 10) return 'Please enter a valid 10-digit mobile number';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+
                       // Email Address
                       CustomInput(
                         label: 'Email Address',
@@ -218,13 +254,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       // Password
                       CustomInput(
                         label: 'Password',
-                        hint: 'Min 6 characters',
+                        hint: 'Min 8 characters with a number',
                         prefixIcon: Icons.lock_outline_rounded,
                         controller: _passwordController,
                         isPassword: true,
                         validator: (val) {
                           if (val == null || val.isEmpty) return 'Please enter password';
-                          if (val.length < 6) return 'Password must be at least 6 characters';
+                          if (val.length < 8) return 'Password must be at least 8 characters';
                           return null;
                         },
                       ),
@@ -250,7 +286,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Checkbox(
                             value: _acceptTerms,
-                            activeColor: const Color(0xFF10B981),
+                            activeColor: const Color(0xFF0284C7),
                             onChanged: (val) {
                               setState(() {
                                 _acceptTerms = val ?? true;
@@ -270,9 +306,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Register Button
+                      // Create Account Button
                       CustomButton(
-                        text: 'Register Account',
+                        text: 'Create Account',
                         isLoading: authProvider.isLoading,
                         onPressed: _handleRegister,
                       ),

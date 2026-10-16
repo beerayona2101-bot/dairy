@@ -91,14 +91,31 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> signup(String email, String password, String confirmPassword) async {
+  Future<bool> signup({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    String? username,
+    String? mobileNo,
+  }) async {
     _setLoading(true);
     _errorMessage = null;
 
-    final result = await AuthService.signup(email, password, confirmPassword);
+    final result = await AuthService.signup(
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      username: username,
+      mobileNo: mobileNo,
+    );
     _setLoading(false);
 
     if (result['success'] == true) {
+      if (result['user'] is UserModel) {
+        _currentUser = result['user'] as UserModel;
+        _status = AuthStatus.authenticated;
+        FcmService.syncTokenWithBackend(_currentUser!.id);
+      }
       notifyListeners();
       return true;
     } else {
