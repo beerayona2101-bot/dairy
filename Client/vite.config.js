@@ -7,7 +7,24 @@ export default defineConfig(({ mode }) => {
   const isProd = env.VITE_IS_PRODUCTION === 'true' || mode === 'production';
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      {
+        name: 'chrome-devtools-well-known',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && req.url.includes('/.well-known/appspecific/com.chrome.devtools.json')) {
+              res.setHeader('Content-Type', 'application/json');
+              res.setHeader('Access-Control-Allow-Origin', '*');
+              res.statusCode = 200;
+              res.end(JSON.stringify({}));
+              return;
+            }
+            next();
+          });
+        },
+      },
+    ],
 
     server: {
       host: true,

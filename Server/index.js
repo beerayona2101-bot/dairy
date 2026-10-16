@@ -73,6 +73,12 @@ app.get("/health", (req, res) => {
   });
 });
 
+app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.status(200).json({});
+});
+
 const server = http.createServer(app);
 const io = connectToSocket(server, corsOptions);
 app.set("io", io);
