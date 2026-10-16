@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://duncan-monkey-behaviour-third.trycloudflare.com",
+  "activeServerUrl": "https://presented-marks-gsm-heights.trycloudflare.com",
   "fallbackUrls": [
-    "https://duncan-monkey-behaviour-third.trycloudflare.com",
+    "https://presented-marks-gsm-heights.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
