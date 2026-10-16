@@ -90,8 +90,11 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
         });
       }
 
-      // If returning online from an error state, auto-recover without user intervention
-      if (isConnected && _hasError) {
+      // If switched to mobile cellular and current URL is private LAN, auto-switch to public URL!
+      if (isMobile && ApiConfig.isPrivateLan(_currentUrl)) {
+        debugPrint('[Network] Switched to mobile cellular while on private LAN. Auto-resolving public server...');
+        _autoRecoverConnection();
+      } else if (isConnected && _hasError) {
         debugPrint('[Network] Active connection restored ($results). Auto-recovering storefront...');
         _autoRecoverConnection();
       }
@@ -116,6 +119,15 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       final prefs = await SharedPreferences.getInstance();
       final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
       if (savedUrl != null && savedUrl.isNotEmpty) {
+        final connectivity = await Connectivity().checkConnectivity();
+        final isCellular = connectivity.contains(ConnectivityResult.mobile);
+
+        // If on cellular, do not prioritize private LAN URLs!
+        if (isCellular && ApiConfig.isPrivateLan(savedUrl)) {
+          debugPrint('[WebView] On cellular data. Skipping saved private LAN: $savedUrl');
+          return;
+        }
+
         if (!_isLoopbackUrl(savedUrl)) {
           if (!_candidateUrls.contains(savedUrl)) {
             _candidateUrls.insert(0, savedUrl);
@@ -153,7 +165,16 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   void _tryNextCandidateOrShowError() {
     if (_candidateIndex + 1 < _candidateUrls.length) {
       _candidateIndex++;
-      _loadSpecificUrl(_candidateUrls[_candidateIndex]);
+      final nextCandidate = _candidateUrls[_candidateIndex];
+      Connectivity().checkConnectivity().then((results) {
+        if (results.contains(ConnectivityResult.mobile) && ApiConfig.isPrivateLan(nextCandidate)) {
+          _tryNextCandidateOrShowError();
+          return;
+        }
+        _loadSpecificUrl(nextCandidate);
+      }).catchError((_) {
+        _loadSpecificUrl(nextCandidate);
+      });
     } else {
       if (mounted) {
         setState(() {

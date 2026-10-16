@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +9,7 @@ class ApiConfig {
   // Environment mode toggle
   static const bool isProduction = true;
 
-  // Active production server URL (Fresh live Cloudflare tunnel)
+  // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
   static const String productionServerUrl = 'https://duncan-monkey-behaviour-third.trycloudflare.com';
 
   // Host machine local Wi-Fi IP
@@ -38,18 +39,51 @@ class ApiConfig {
     _activeBaseUrl = url.trim().replaceFirst(RegExp(r'/+$'), '');
   }
 
+  /// Helper to check if a URL is a private local LAN or loopback address
+  static bool isPrivateLan(String url) {
+    final lower = url.toLowerCase();
+    return lower.contains('192.168.') ||
+        lower.contains('10.') ||
+        lower.contains('172.16.') ||
+        lower.contains('172.17.') ||
+        lower.contains('172.18.') ||
+        lower.contains('172.19.') ||
+        lower.contains('172.20.') ||
+        lower.contains('172.21.') ||
+        lower.contains('172.22.') ||
+        lower.contains('172.23.') ||
+        lower.contains('172.24.') ||
+        lower.contains('172.25.') ||
+        lower.contains('172.26.') ||
+        lower.contains('172.27.') ||
+        lower.contains('172.28.') ||
+        lower.contains('172.29.') ||
+        lower.contains('172.30.') ||
+        lower.contains('172.31.') ||
+        lower.contains('localhost') ||
+        lower.contains('127.0.0.1') ||
+        lower.contains('10.0.2.2');
+  }
+
   /// Automatically discovers, tests, and sets the best reachable backend server.
   /// Works across Cellular 4G/5G, Remote Wi-Fi, and Local LAN.
   static Future<String> resolveWorkingServer() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
 
+    // Check connectivity status to identify cellular vs Wi-Fi
+    List<ConnectivityResult> connectivityResults = [];
+    try {
+      connectivityResults = await Connectivity().checkConnectivity();
+    } catch (_) {}
+    final isCellular = connectivityResults.contains(ConnectivityResult.mobile);
+
     final candidates = <String>[];
 
-    // 1. Try fetching remote dynamic config (timeout after 2.5 seconds)
+    // 1. Try fetching remote dynamic config (timeout after 2 seconds)
     try {
       final remoteUri = Uri.parse(remoteConfigUrl);
-      final res = await http.get(remoteUri).timeout(const Duration(milliseconds: 2500));
+      final res = await http.get(remoteUri).timeout(const Duration(milliseconds: 2000));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         if (data is Map<String, dynamic> && data['activeServerUrl'] != null) {
@@ -59,46 +93,94 @@ class ApiConfig {
             debugPrint('[ApiConfig] Discovered dynamic remote server: $remoteServer');
           }
         }
+        if (data is Map<String, dynamic> && data['fallbackUrls'] is List) {
+          for (final f in data['fallbackUrls']) {
+            final fStr = f.toString().trim().replaceFirst(RegExp(r'/+$'), '');
+            if (fStr.isNotEmpty && !candidates.contains(fStr)) {
+              if (!(isCellular && isPrivateLan(fStr))) {
+                candidates.add(fStr);
+              }
+            }
+          }
+        }
       }
     } catch (e) {
       debugPrint('[ApiConfig] Dynamic config lookup notice: $e');
     }
 
-    // 2. Add saved URL if available and clean
+    // 2. Add saved URL if available and appropriate for current network
     if (savedUrl != null && savedUrl.isNotEmpty && !_isLoopback(savedUrl)) {
       final cleanSaved = savedUrl.trim().replaceFirst(RegExp(r'/+$'), '');
-      if (!candidates.contains(cleanSaved)) {
-        candidates.add(cleanSaved);
+      if (!(isCellular && isPrivateLan(cleanSaved))) {
+        if (!candidates.contains(cleanSaved)) {
+          candidates.add(cleanSaved);
+        }
       }
     }
 
-    // 3. Add default production and local LAN candidates
+    // 3. Add default production server
     if (!candidates.contains(productionServerUrl)) {
       candidates.add(productionServerUrl);
     }
-    final lanUrl = 'http://$lanIp:9000';
-    if (!candidates.contains(lanUrl)) {
-      candidates.add(lanUrl);
+
+    // 4. Add local LAN IP only if on Wi-Fi or local network
+    if (!isCellular) {
+      final lanUrl = 'http://$lanIp:9000';
+      if (!candidates.contains(lanUrl)) {
+        candidates.add(lanUrl);
+      }
     }
 
     _candidateList.clear();
     _candidateList.addAll(candidates);
 
-    // 4. Test candidates concurrently for fastest live response
-    for (final candidate in candidates) {
-      final isHealthy = await _testHealth(candidate, timeoutMs: 2500);
-      if (isHealthy) {
-        setActiveBaseUrl(candidate);
-        await prefs.setString('working_web_url', candidate);
-        debugPrint('[ApiConfig] Connected to responsive server: $candidate');
-        return candidate;
-      }
+    if (candidates.isEmpty) {
+      return productionServerUrl;
     }
 
-    // Fallback to first candidate or default
-    final fallback = candidates.isNotEmpty ? candidates[0] : productionServerUrl;
-    setActiveBaseUrl(fallback);
-    return fallback;
+    // 5. Test candidates concurrently for fastest live response
+    final completer = Completer<String>();
+    int pending = candidates.length;
+
+    for (final candidate in candidates) {
+      _testHealth(candidate, timeoutMs: 2500).then((isHealthy) {
+        if (isHealthy && !completer.isCompleted) {
+          setActiveBaseUrl(candidate);
+          prefs.setString('working_web_url', candidate);
+          debugPrint('[ApiConfig] Connected to responsive server: $candidate');
+          completer.complete(candidate);
+        } else {
+          pending--;
+          if (pending <= 0 && !completer.isCompleted) {
+            final fallback = candidates[0];
+            setActiveBaseUrl(fallback);
+            completer.complete(fallback);
+          }
+        }
+      }).catchError((_) {
+        pending--;
+        if (pending <= 0 && !completer.isCompleted) {
+          final fallback = candidates[0];
+          setActiveBaseUrl(fallback);
+          completer.complete(fallback);
+        }
+      });
+    }
+
+    try {
+      return await completer.future.timeout(
+        const Duration(milliseconds: 2800),
+        onTimeout: () {
+          final fallback = candidates[0];
+          setActiveBaseUrl(fallback);
+          return fallback;
+        },
+      );
+    } catch (_) {
+      final fallback = candidates[0];
+      setActiveBaseUrl(fallback);
+      return fallback;
+    }
   }
 
   /// Fast health check against /health endpoint
