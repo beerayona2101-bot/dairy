@@ -117,28 +117,40 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   Future<void> _initPreferencesAndLoad() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
-      if (savedUrl != null && savedUrl.isNotEmpty) {
-        final connectivity = await Connectivity().checkConnectivity();
-        final isCellular = connectivity.contains(ConnectivityResult.mobile);
+      final customUrl = prefs.getString('custom_web_url');
+      final savedUrl = prefs.getString('working_web_url');
 
-        // If on cellular, do not prioritize private LAN URLs!
-        if (isCellular && ApiConfig.isPrivateLan(savedUrl)) {
-          debugPrint('[WebView] On cellular data. Skipping saved private LAN: $savedUrl');
+      final connectivity = await Connectivity().checkConnectivity();
+      final isCellular = connectivity.contains(ConnectivityResult.mobile);
+
+      // If user manually configured a custom host in settings, honor it
+      if (customUrl != null && customUrl.isNotEmpty && !_isLoopbackUrl(customUrl)) {
+        if (!(isCellular && ApiConfig.isPrivateLan(customUrl))) {
+          if (!_candidateUrls.contains(customUrl)) {
+            _candidateUrls.insert(0, customUrl);
+          }
+          if (widget.initialUrl == null && customUrl != _currentUrl) {
+            if (mounted) {
+              _loadSpecificUrl(customUrl);
+            }
+          }
           return;
         }
+      }
 
-        if (!_isLoopbackUrl(savedUrl)) {
+      // Ensure active baseUrl is prioritized
+      final active = ApiConfig.baseUrl;
+      if (!_isLoopbackUrl(active)) {
+        if (_candidateUrls.contains(active)) {
+          _candidateUrls.remove(active);
+        }
+        _candidateUrls.insert(0, active);
+      }
+
+      if (savedUrl != null && savedUrl.isNotEmpty && !_isLoopbackUrl(savedUrl)) {
+        if (!(isCellular && ApiConfig.isPrivateLan(savedUrl))) {
           if (!_candidateUrls.contains(savedUrl)) {
-            _candidateUrls.insert(0, savedUrl);
-          } else {
-            _candidateUrls.remove(savedUrl);
-            _candidateUrls.insert(0, savedUrl);
-          }
-          if (widget.initialUrl == null && savedUrl != _currentUrl) {
-            if (mounted) {
-              _loadSpecificUrl(savedUrl);
-            }
+            _candidateUrls.add(savedUrl);
           }
         }
       }

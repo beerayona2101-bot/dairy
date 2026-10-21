@@ -10,10 +10,13 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://presented-marks-gsm-heights.trycloudflare.com';
+  static const String productionServerUrl = 'https://precisely-reaches-vessel-background.trycloudflare.com';
+
+  // Permanent Cloud Backup (e.g. Render.com 24/7 free cloud deployment)
+  static const String permanentCloudUrl = 'https://natural-milk-dairy.onrender.com';
 
   // Host machine local Wi-Fi IP
-  static const String lanIp = '192.168.1.84';
+  static const String lanIp = '10.39.242.110';
 
   // Remote Dynamic Configuration URL
   // Enables updating the active server on any phone worldwide WITHOUT recompiling the APK!
@@ -28,6 +31,7 @@ class ApiConfig {
 
   static final List<String> _candidateList = [
     productionServerUrl,
+    permanentCloudUrl,
     'http://$lanIp:9000',
   ];
 
@@ -69,7 +73,8 @@ class ApiConfig {
   /// Works across Cellular 4G/5G, Remote Wi-Fi, and Local LAN.
   static Future<String> resolveWorkingServer() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedUrl = prefs.getString('working_web_url') ?? prefs.getString('custom_web_url');
+    final customUrl = prefs.getString('custom_web_url');
+    final savedWorkingUrl = prefs.getString('working_web_url');
 
     // Check connectivity status to identify cellular vs Wi-Fi
     List<ConnectivityResult> connectivityResults = [];
@@ -80,17 +85,25 @@ class ApiConfig {
 
     final candidates = <String>[];
 
-    // 1. Try fetching remote dynamic config (timeout after 2 seconds)
+    // If user explicitly configured a custom URL via in-app Settings, test it first
+    if (customUrl != null && customUrl.isNotEmpty && !_isLoopback(customUrl)) {
+      candidates.add(customUrl.trim().replaceFirst(RegExp(r'/+$'), ''));
+    }
+
+    // 1. Try fetching remote dynamic config (with cache buster and 4.5s buffer for cellular carrier networks)
     try {
-      final remoteUri = Uri.parse(remoteConfigUrl);
-      final res = await http.get(remoteUri).timeout(const Duration(milliseconds: 2000));
+      final cacheBuster = DateTime.now().millisecondsSinceEpoch;
+      final remoteUri = Uri.parse('$remoteConfigUrl?_t=$cacheBuster');
+      final res = await http.get(remoteUri).timeout(const Duration(milliseconds: 4500));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         if (data is Map<String, dynamic> && data['activeServerUrl'] != null) {
           final remoteServer = data['activeServerUrl'].toString().trim().replaceFirst(RegExp(r'/+$'), '');
           if (remoteServer.isNotEmpty && !candidates.contains(remoteServer)) {
-            candidates.add(remoteServer);
-            debugPrint('[ApiConfig] Discovered dynamic remote server: $remoteServer');
+            if (!(isCellular && isPrivateLan(remoteServer))) {
+              candidates.add(remoteServer);
+              debugPrint('[ApiConfig] Discovered dynamic remote server: $remoteServer');
+            }
           }
         }
         if (data is Map<String, dynamic> && data['fallbackUrls'] is List) {
@@ -108,9 +121,9 @@ class ApiConfig {
       debugPrint('[ApiConfig] Dynamic config lookup notice: $e');
     }
 
-    // 2. Add saved URL if available and appropriate for current network
-    if (savedUrl != null && savedUrl.isNotEmpty && !_isLoopback(savedUrl)) {
-      final cleanSaved = savedUrl.trim().replaceFirst(RegExp(r'/+$'), '');
+    // 2. Add saved working URL if available and appropriate for current network
+    if (savedWorkingUrl != null && savedWorkingUrl.isNotEmpty && !_isLoopback(savedWorkingUrl)) {
+      final cleanSaved = savedWorkingUrl.trim().replaceFirst(RegExp(r'/+$'), '');
       if (!(isCellular && isPrivateLan(cleanSaved))) {
         if (!candidates.contains(cleanSaved)) {
           candidates.add(cleanSaved);
@@ -123,7 +136,12 @@ class ApiConfig {
       candidates.add(productionServerUrl);
     }
 
-    // 4. Add local LAN IP only if on Wi-Fi or local network
+    // 4. Add permanent cloud backup
+    if (!candidates.contains(permanentCloudUrl)) {
+      candidates.add(permanentCloudUrl);
+    }
+
+    // 5. Add local LAN IP only if on Wi-Fi (never waste cellular connection time on unreachable LAN IPs)
     if (!isCellular) {
       final lanUrl = 'http://$lanIp:9000';
       if (!candidates.contains(lanUrl)) {
@@ -138,12 +156,12 @@ class ApiConfig {
       return productionServerUrl;
     }
 
-    // 5. Test candidates concurrently for fastest live response
+    // 6. Test candidates concurrently for fastest live response
     final completer = Completer<String>();
     int pending = candidates.length;
 
     for (final candidate in candidates) {
-      _testHealth(candidate, timeoutMs: 2500).then((isHealthy) {
+      _testHealth(candidate, timeoutMs: 3800).then((isHealthy) {
         if (isHealthy && !completer.isCompleted) {
           setActiveBaseUrl(candidate);
           prefs.setString('working_web_url', candidate);
@@ -169,7 +187,7 @@ class ApiConfig {
 
     try {
       return await completer.future.timeout(
-        const Duration(milliseconds: 2800),
+        const Duration(milliseconds: 4200),
         onTimeout: () {
           final fallback = candidates[0];
           setActiveBaseUrl(fallback);

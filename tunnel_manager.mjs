@@ -1,14 +1,21 @@
-import { spawn } from "child_process";
+import { spawn, execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const configPath = path.join(__dirname, "server_config.json");
+const apiConfigPath = path.join(__dirname, "mobile", "lib", "config", "api_config.dart");
 const cloudflaredPath = path.join(__dirname, "cloudflared.exe");
 
-function updateConfigFile(activeUrl) {
+let lastPushedUrl = null;
+
+function updateConfigFileAndSync(activeUrl) {
+  if (lastPushedUrl === activeUrl) return;
+  lastPushedUrl = activeUrl;
+
   try {
+    // 1. Update server_config.json
     let config = {};
     if (fs.existsSync(configPath)) {
       config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
@@ -16,12 +23,35 @@ function updateConfigFile(activeUrl) {
     config.activeServerUrl = activeUrl;
     config.fallbackUrls = [
       activeUrl,
-      "http://192.168.1.84:9000"
+      "https://natural-milk-dairy.onrender.com",
+      "http://10.39.242.110:9000"
     ];
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf-8");
-    console.log(`\n✅ Updated server_config.json with live URL: ${activeUrl}`);
+    console.log(`\n✅ [1/3] Updated server_config.json with live URL: ${activeUrl}`);
+
+    // 2. Update api_config.dart productionServerUrl
+    if (fs.existsSync(apiConfigPath)) {
+      let dartContent = fs.readFileSync(apiConfigPath, "utf-8");
+      dartContent = dartContent.replace(
+        /static const String productionServerUrl = 'https:\/\/[^']+';/,
+        `static const String productionServerUrl = '${activeUrl}';`
+      );
+      fs.writeFileSync(apiConfigPath, dartContent, "utf-8");
+      console.log(`✅ [2/3] Updated mobile/lib/config/api_config.dart`);
+    }
+
+    // 3. Git commit & push server_config.json so all installed APKs worldwide receive the new URL!
+    try {
+      console.log(`🚀 [3/3] Syncing updated server URL to GitHub...`);
+      execSync('git add server_config.json', { cwd: __dirname, stdio: 'ignore' });
+      execSync('git commit -m "chore: auto-sync live tunnel URL to server_config.json [skip ci]"', { cwd: __dirname, stdio: 'ignore' });
+      execSync('git push origin main', { cwd: __dirname, stdio: 'ignore' });
+      console.log(`✨ SUCCESS: GitHub raw config synced! All mobile APKs across any network are now connected!`);
+    } catch (gitErr) {
+      console.warn(`⚠️ Git auto-push warning (manual push may be needed): ${gitErr.message}`);
+    }
   } catch (err) {
-    console.error("Failed to update server_config.json:", err.message);
+    console.error("Failed to update config files:", err.message);
   }
 }
 
@@ -40,7 +70,7 @@ function startTunnel() {
       console.log(`🚀 LIVE GLOBAL APK URL: ${publicUrl}`);
       console.log(`📡 Storefront Health:   ${publicUrl}/health`);
       console.log(`======================================================\n`);
-      updateConfigFile(publicUrl);
+      updateConfigFileAndSync(publicUrl);
     }
   };
 
