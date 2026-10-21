@@ -13,7 +13,7 @@ class ApiService {
     try {
       final response = await http
           .post(Uri.parse(url), headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 5));
 
       final data = jsonDecode(response.body);
       if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -66,6 +66,33 @@ class ApiService {
       }
     }
 
+    // Proactive self-healing: query remote config on GitHub before failing
+    try {
+      final freshServer = await ApiConfig.resolveWorkingServer();
+      final freshTargetUrl = '$freshServer$relativePath';
+      final response = await http
+          .post(Uri.parse(freshTargetUrl), headers: headers, body: jsonEncode(body))
+          .timeout(const Duration(seconds: 5));
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        ApiConfig.setActiveBaseUrl(freshServer);
+        return data is Map<String, dynamic> ? data : {'success': true, 'data': data};
+      }
+
+      if (response.statusCode >= 400 && response.statusCode < 500) {
+        ApiConfig.setActiveBaseUrl(freshServer);
+        if (data is Map<String, dynamic>) {
+          return {
+            'success': false,
+            'statusCode': response.statusCode,
+            ...data,
+            'message': data['message'] ?? 'Request failed (${response.statusCode})',
+          };
+        }
+      }
+    } catch (_) {}
+
     return {'success': false, 'message': 'Unable to connect to Natural Milk Dairy backend servers.'};
   }
 
@@ -79,7 +106,7 @@ class ApiService {
     try {
       final response = await http
           .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 5));
 
       final data = jsonDecode(response.body);
       if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -130,6 +157,33 @@ class ApiService {
         continue;
       }
     }
+
+    // Proactive self-healing: query remote config on GitHub before failing
+    try {
+      final freshServer = await ApiConfig.resolveWorkingServer();
+      final freshTargetUrl = '$freshServer$relativePath';
+      final response = await http
+          .get(Uri.parse(freshTargetUrl), headers: headers)
+          .timeout(const Duration(seconds: 5));
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        ApiConfig.setActiveBaseUrl(freshServer);
+        return data is Map<String, dynamic> ? data : {'success': true, 'data': data};
+      }
+
+      if (response.statusCode >= 400 && response.statusCode < 500) {
+        ApiConfig.setActiveBaseUrl(freshServer);
+        if (data is Map<String, dynamic>) {
+          return {
+            'success': false,
+            'statusCode': response.statusCode,
+            ...data,
+            'message': data['message'] ?? 'Request failed (${response.statusCode})',
+          };
+        }
+      }
+    } catch (_) {}
 
     return {'success': false, 'message': 'Unable to connect to Natural Milk Dairy backend servers.'};
   }
