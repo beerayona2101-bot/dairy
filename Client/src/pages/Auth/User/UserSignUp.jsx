@@ -114,6 +114,8 @@ export default function UserSignUp() {
         if (res?.userToken) {
           sessionStorage.setItem("userToken", res.userToken);
           sessionStorage.setItem("userRole", "user");
+          localStorage.setItem("userToken", res.userToken);
+          localStorage.setItem("userRole", "user");
         }
 
         if (fetchUserData) {

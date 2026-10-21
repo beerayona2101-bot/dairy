@@ -84,6 +84,8 @@ export default function UserLogin() {
           if (res?.adminToken) {
             sessionStorage.setItem("adminToken", res.adminToken);
             sessionStorage.setItem("adminRole", "admin");
+            localStorage.setItem("adminToken", res.adminToken);
+            localStorage.setItem("adminRole", "admin");
           }
           if (fetchAdminData) await fetchAdminData(res?.admin);
 
@@ -94,6 +96,8 @@ export default function UserLogin() {
           if (res?.userToken) {
             sessionStorage.setItem("userToken", res.userToken);
             sessionStorage.setItem("userRole", "user");
+            localStorage.setItem("userToken", res.userToken);
+            localStorage.setItem("userRole", "user");
           }
           await fetchUserData(res?.user);
 

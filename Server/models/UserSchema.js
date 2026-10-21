@@ -4,8 +4,6 @@ const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      min: 5,
-      max: 15,
       trim: true,
     },
 
@@ -30,12 +28,14 @@ const UserSchema = new mongoose.Schema(
       },
       validate: {
         validator: function (value) {
-          // Allow null for Google users
           if (this.isGoogleUser && !value) return true;
-          return /^(?=.*[A-Za-z])(?=.*[\d\W]).{8,}$/.test(value);
+          if (typeof value === "string" && (value.startsWith("$2a$") || value.startsWith("$2b$") || value.length >= 60)) {
+            return true;
+          }
+          return typeof value === "string" && /^(?=.*\d).{8,}$/.test(value);
         },
         message:
-          "Password must be at least 8 characters long and include at least one letter and one number or symbol.",
+          "Password must be at least 8 characters long and contain at least 1 number.",
       },
     },
 

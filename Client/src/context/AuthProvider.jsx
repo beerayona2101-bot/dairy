@@ -43,8 +43,24 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    const getStoredUserToken = () => {
+        try {
+            return sessionStorage.getItem("userToken") || localStorage.getItem("userToken");
+        } catch {
+            return null;
+        }
+    };
+
+    const getStoredAdminToken = () => {
+        try {
+            return sessionStorage.getItem("adminToken") || localStorage.getItem("adminToken");
+        } catch {
+            return null;
+        }
+    };
+
     const fetchUserData = useCallback(async (initialUserData = null) => {
-        const token = sessionStorage.getItem("userToken");
+        const token = getStoredUserToken();
         if (!token) {
             setAuthUser(null);
             setAuthUserLoading(false);
@@ -62,6 +78,12 @@ export const AuthProvider = ({ children }) => {
             if (sessionData?.success && sessionData?.user) {
                 const user = sessionData.user;
                 setAuthUser(user);
+                try {
+                    sessionStorage.setItem("userToken", token);
+                    sessionStorage.setItem("userRole", "user");
+                    localStorage.setItem("userToken", token);
+                    localStorage.setItem("userRole", "user");
+                } catch {}
 
                 // Merge guest wishlist into user account if any guest items exist
                 const guestWishlist = getGuestWishlist();
@@ -92,6 +114,8 @@ export const AuthProvider = ({ children }) => {
             } else if (!initialUserData) {
                 sessionStorage.removeItem("userToken");
                 sessionStorage.removeItem("userRole");
+                localStorage.removeItem("userToken");
+                localStorage.removeItem("userRole");
                 setAuthUser(null);
             }
         } catch (err) {
@@ -99,6 +123,8 @@ export const AuthProvider = ({ children }) => {
             if (!initialUserData) {
                 sessionStorage.removeItem("userToken");
                 sessionStorage.removeItem("userRole");
+                localStorage.removeItem("userToken");
+                localStorage.removeItem("userRole");
                 setAuthUser(null);
             }
         } finally {
@@ -107,7 +133,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const fetchAdminData = useCallback(async (initialAdminData = null) => {
-        const token = sessionStorage.getItem("adminToken");
+        const token = getStoredAdminToken();
         if (!token) {
             setAuthAdmin(null);
             setAuthAdminLoading(false);
@@ -124,15 +150,25 @@ export const AuthProvider = ({ children }) => {
             const sessionData = await verifyAdminSessionApi();
             if (sessionData?.success && sessionData?.admin) {
                 setAuthAdmin(sessionData.admin);
+                try {
+                    sessionStorage.setItem("adminToken", token);
+                    sessionStorage.setItem("adminRole", "admin");
+                    localStorage.setItem("adminToken", token);
+                    localStorage.setItem("adminRole", "admin");
+                } catch {}
             } else if (!initialAdminData) {
                 sessionStorage.removeItem("adminToken");
                 sessionStorage.removeItem("adminRole");
+                localStorage.removeItem("adminToken");
+                localStorage.removeItem("adminRole");
                 setAuthAdmin(null);
             }
         } catch {
             if (!initialAdminData) {
                 sessionStorage.removeItem("adminToken");
                 sessionStorage.removeItem("adminRole");
+                localStorage.removeItem("adminToken");
+                localStorage.removeItem("adminRole");
                 setAuthAdmin(null);
             }
         } finally {
@@ -142,8 +178,8 @@ export const AuthProvider = ({ children }) => {
 
     // Session validation on mount
     useEffect(() => {
-        const userToken = sessionStorage.getItem("userToken");
-        const adminToken = sessionStorage.getItem("adminToken");
+        const userToken = getStoredUserToken();
+        const adminToken = getStoredAdminToken();
 
         if (userToken) {
             fetchUserData();
@@ -167,6 +203,8 @@ export const AuthProvider = ({ children }) => {
 
             sessionStorage.setItem("userToken", token);
             sessionStorage.setItem("userRole", "user");
+            localStorage.setItem("userToken", token);
+            localStorage.setItem("userRole", "user");
             fetchUserData();
         };
 
@@ -207,6 +245,8 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem("userToken");
         sessionStorage.removeItem("userRole");
         sessionStorage.removeItem("deliveryAddress");
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userRole");
         if (typeof window !== "undefined" && window.FlutterAuthBridge) {
             try {
                 window.FlutterAuthBridge.postMessage(JSON.stringify({
@@ -228,6 +268,8 @@ export const AuthProvider = ({ children }) => {
         setAuthAdmin(null);
         sessionStorage.removeItem("adminToken");
         sessionStorage.removeItem("adminRole");
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminRole");
         if (typeof window !== "undefined" && window.FlutterAuthBridge) {
             try {
                 window.FlutterAuthBridge.postMessage(JSON.stringify({

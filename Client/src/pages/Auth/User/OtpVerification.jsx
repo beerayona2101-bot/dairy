@@ -110,6 +110,8 @@ export default function OtpVerification() {
         if (data?.userToken) {
           sessionStorage.setItem("userToken", data.userToken);
           sessionStorage.setItem("userRole", "user");
+          localStorage.setItem("userToken", data.userToken);
+          localStorage.setItem("userRole", "user");
         }
         enqueueSnackbar("Account verified and created successfully! 🎉", { variant: "success" });
         sessionStorage.removeItem("redirectAfterLogin");

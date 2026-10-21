@@ -313,6 +313,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 validator: (val) {
                                   if (val == null || val.isEmpty) return 'Please enter password';
                                   if (val.length < 8) return 'Minimum 8 characters';
+                                  if (!val.contains(RegExp(r'\d'))) return 'Must contain at least 1 number';
                                   return null;
                                 },
                               ),

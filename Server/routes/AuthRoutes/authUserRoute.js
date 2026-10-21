@@ -21,7 +21,7 @@ router.post("/verify-email", wrapAsync(verifyUser));
 
 router.post("/reset-password", wrapAsync(resetPassword));
 
-router.post("/verify-otp", wrapAsync(resetPassword));
+router.post("/verify-otp", wrapAsync(verifyOtp));
 
 router.post("/signup/otp-verification", wrapAsync(verifyOtp));
 

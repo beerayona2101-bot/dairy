@@ -6,8 +6,8 @@ import BuffaloLoader from "./BuffaloLoader";
 export const AdminProtectedRoute = ({ children }) => {
   const location = useLocation();
   const { authAdmin, authAdminLoading } = useContext(AdminAuthContext);
-  const adminToken = sessionStorage.getItem("adminToken");
-  const adminRole = sessionStorage.getItem("adminRole");
+  const adminToken = sessionStorage.getItem("adminToken") || localStorage.getItem("adminToken");
+  const adminRole = sessionStorage.getItem("adminRole") || localStorage.getItem("adminRole");
 
   if (authAdminLoading) {
     return <BuffaloLoader variant="full" text="Verifying admin session..." />;
@@ -25,8 +25,8 @@ export const AdminProtectedRoute = ({ children }) => {
 export const UserProtectedRoute = ({ children }) => {
   const location = useLocation();
   const { authUser, authUserLoading } = useContext(UserAuthContext);
-  const userToken = sessionStorage.getItem("userToken");
-  const userRole = sessionStorage.getItem("userRole");
+  const userToken = sessionStorage.getItem("userToken") || localStorage.getItem("userToken");
+  const userRole = sessionStorage.getItem("userRole") || localStorage.getItem("userRole");
 
   if (authUserLoading) {
     return <BuffaloLoader variant="full" text="Verifying user session..." />;

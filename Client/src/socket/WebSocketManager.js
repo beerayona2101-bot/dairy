@@ -60,8 +60,8 @@ class WebSocketManager {
 
     this.setConnectionState(CONNECTION_STATE.CONNECTING);
 
-    const adminToken = sessionStorage.getItem("adminToken");
-    const userToken = sessionStorage.getItem("userToken");
+    const adminToken = sessionStorage.getItem("adminToken") || localStorage.getItem("adminToken");
+    const userToken = sessionStorage.getItem("userToken") || localStorage.getItem("userToken");
     const token = this.userAuth?.token || adminToken || userToken || "";
     const userId = (this.userAuth?.userId || this.userAuth?._id) ? String(this.userAuth?.userId || this.userAuth?._id) : undefined;
     const role = this.userAuth?.role || (adminToken ? "admin" : "user");

@@ -156,7 +156,16 @@ export const addNotification = async (target, notification) => {
 
   target.notifications.unshift(notification);
   target.notifications = target.notifications.slice(0, 50);
-  await target.save();
+  try {
+    if (target._id) {
+      const Model = target.constructor?.modelName === "Admin" ? Admin : User;
+      await Model.findByIdAndUpdate(target._id, { notifications: target.notifications });
+    } else if (typeof target.save === "function") {
+      await target.save();
+    }
+  } catch (saveErr) {
+    console.warn("addNotification save notice:", saveErr?.message);
+  }
 
   // Asynchronously dispatch FCM push notification to user's/admin's device(s)
   try {
@@ -200,6 +209,7 @@ export const notifyNewUserRegistration = async (user, io, options = {}) => {
 
     // 1. User Welcome Notification
     const userWelcomeNotif = {
+      _id: new mongoose.Types.ObjectId(),
       title: "Welcome to Natural Milk Dairy! 🥛",
       description: createdByAdmin
         ? `Welcome, ${userName}! Your customer account has been created. Enjoy fresh dairy products and fast home delivery.`
@@ -209,10 +219,21 @@ export const notifyNewUserRegistration = async (user, io, options = {}) => {
       type: "welcome",
     };
 
-    user.notifications = user.notifications || [];
-    user.notifications.unshift(userWelcomeNotif);
-    user.notifications = user.notifications.slice(0, 50);
-    await user.save();
+    if (user._id) {
+      try {
+        await User.findByIdAndUpdate(user._id, {
+          $push: {
+            notifications: {
+              $each: [userWelcomeNotif],
+              $position: 0,
+              $slice: 50,
+            },
+          },
+        });
+      } catch (uErr) {
+        console.warn("Welcome notification save notice:", uErr?.message);
+      }
+    }
 
     // Push welcome notification to user's device if token exists
     if (Array.isArray(user.fcmTokens) && user.fcmTokens.length > 0) {
@@ -226,6 +247,7 @@ export const notifyNewUserRegistration = async (user, io, options = {}) => {
 
     // 2. Admin Dashboard Notification
     const adminNotif = {
+      _id: new mongoose.Types.ObjectId(),
       title: createdByAdmin ? "New Customer Created 👤" : "New User Registered 👤",
       description: createdByAdmin
         ? `New customer ${userName} (${userEmail}) was created by admin.`
@@ -235,13 +257,22 @@ export const notifyNewUserRegistration = async (user, io, options = {}) => {
       type: "user_signup",
     };
 
-    // Save notification to all Admin accounts in database
-    const admins = await Admin.find({});
-    for (const adminDoc of admins) {
-      adminDoc.notifications = adminDoc.notifications || [];
-      adminDoc.notifications.unshift(adminNotif);
-      adminDoc.notifications = adminDoc.notifications.slice(0, 50);
-      await adminDoc.save();
+    // Save notification to all Admin accounts atomically
+    try {
+      await Admin.updateMany(
+        {},
+        {
+          $push: {
+            notifications: {
+              $each: [adminNotif],
+              $position: 0,
+              $slice: 50,
+            },
+          },
+        }
+      );
+    } catch (aErr) {
+      console.warn("Admin registration notification notice:", aErr?.message);
     }
 
     // Send push notification to all admin devices

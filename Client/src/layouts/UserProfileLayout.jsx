@@ -22,8 +22,8 @@ export default function UserProfileLayout({ children }) {
         }
     }, [location.pathname]);
 
-    const userToken = sessionStorage.getItem("userToken");
-    const userRole = sessionStorage.getItem("userRole");
+    const userToken = sessionStorage.getItem("userToken") || localStorage.getItem("userToken");
+    const userRole = sessionStorage.getItem("userRole") || localStorage.getItem("userRole");
 
     const isSubProfilePage = location.pathname !== "/user-profile" && location.pathname !== "/user-profile/dashboard" && location.pathname.startsWith("/user-profile/");
 

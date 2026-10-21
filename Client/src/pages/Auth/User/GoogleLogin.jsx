@@ -25,6 +25,8 @@ export default function GoogleLoginComponent( {setOpenLoginDialog, setGoogleLogi
             if (res?.userToken) {
               sessionStorage.setItem("userToken", res.userToken);
               sessionStorage.setItem("userRole", "user");
+              localStorage.setItem("userToken", res.userToken);
+              localStorage.setItem("userRole", "user");
             }
             await fetchUserData(res?.user);
             handleAdminLogout();

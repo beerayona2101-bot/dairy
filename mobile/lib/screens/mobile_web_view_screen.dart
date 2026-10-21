@@ -274,6 +274,20 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               });
               SharedPreferences.getInstance().then((prefs) {
                 prefs.setString('working_web_url', _currentUrl);
+                final token = prefs.getString('auth_token');
+                if (token != null && token.isNotEmpty) {
+                  _controller?.runJavaScript('''
+                    try {
+                      if (!sessionStorage.getItem("userToken") && !localStorage.getItem("userToken")) {
+                        sessionStorage.setItem("userToken", "$token");
+                        sessionStorage.setItem("userRole", "user");
+                        localStorage.setItem("userToken", "$token");
+                        localStorage.setItem("userRole", "user");
+                        window.dispatchEvent(new CustomEvent("flutterAuthChanged", { detail: { token: "$token" } }));
+                      }
+                    } catch (e) {}
+                  ''');
+                }
               });
             }
           },

@@ -20,10 +20,10 @@ export const signUpUser = async (req, res) => {
   try {
     const { email, password, confirmPassword, mobileNo, username, fcmToken } = req.body;
 
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password) {
       return res
         .status(400)
-        .json({ success: false, message: "All fields are required" });
+        .json({ success: false, message: "Email and password are required." });
     }
 
     const cleanEmail = normalizeEmail(email);
@@ -33,7 +33,7 @@ export const signUpUser = async (req, res) => {
         .json({ success: false, message: "Please enter a valid email address." });
     }
 
-    if (password !== confirmPassword) {
+    if (confirmPassword !== undefined && confirmPassword !== null && password !== confirmPassword) {
       return res
         .status(400)
         .json({ success: false, message: "Passwords do not match." });
@@ -71,13 +71,14 @@ export const signUpUser = async (req, res) => {
     }
 
     const hashedPass = await bcryptjs.hash(password, 10);
-    const cleanUsername = username ? String(username).trim() : undefined;
+    const cleanUsername = username ? String(username).trim() : (cleanEmail.split("@")[0] || "Customer");
     const defaultAvatar = "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
 
     const newUser = new User({
       email: cleanEmail,
       password: hashedPass,
-      ...(cleanUsername ? { username: cleanUsername, firstName: cleanUsername } : {}),
+      username: cleanUsername,
+      firstName: cleanUsername,
       ...(cleanMobile ? { mobileNo: cleanMobile } : {}),
       photo: defaultAvatar,
       ...(fcmToken && typeof fcmToken === "string" ? { fcmTokens: [fcmToken] } : {}),
@@ -85,7 +86,7 @@ export const signUpUser = async (req, res) => {
 
     await newUser.save();
 
-    // Trigger registration notifications for User & Admin
+    // Trigger registration notifications for User & Admin safely
     try {
       await notifyNewUserRegistration(newUser, req.app.get("io"));
     } catch (notifErr) {
@@ -98,7 +99,7 @@ export const signUpUser = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Account Created Successfully!",
       userToken,
@@ -107,7 +108,8 @@ export const signUpUser = async (req, res) => {
         email: newUser.email,
         username: newUser.username,
         firstName: newUser.firstName,
-        mobileNo: newUser.mobileNo,
+        lastName: newUser.lastName || "",
+        mobileNo: newUser.mobileNo || "",
         photo: newUser.photo,
         notifications: newUser.notifications || [],
       },
@@ -173,6 +175,7 @@ export const loginUser = async (req, res) => {
       const adminQueries = [];
       if (cleanEmail) adminQueries.push({ email: new RegExp(`^${cleanEmail}$`, "i") });
       if (isMobileInput) adminQueries.push({ mobileNo: cleanMobile });
+      if (rawInput) adminQueries.push({ username: new RegExp(`^${rawInput}$`, "i") });
       if (adminQueries.length > 0) {
         admin = await Admin.findOne({ $or: adminQueries });
       }
@@ -228,10 +231,11 @@ export const loginUser = async (req, res) => {
       }
     }
 
-    // 2. User lookup by email OR mobile number
+    // 2. User lookup by email OR mobile number OR username
     const userQueries = [];
     if (cleanEmail) userQueries.push({ email: new RegExp(`^${cleanEmail}$`, "i") });
     if (isMobileInput) userQueries.push({ mobileNo: cleanMobile });
+    if (rawInput) userQueries.push({ username: new RegExp(`^${rawInput}$`, "i") });
 
     let user = null;
     if (userQueries.length > 0) {
@@ -265,12 +269,9 @@ export const loginUser = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    // Save active FCM device token if supplied
+    // Save active FCM device token atomically if supplied
     if (fcmToken && typeof fcmToken === "string" && fcmToken.length > 10) {
-      user.fcmTokens = user.fcmTokens || [];
-      if (!user.fcmTokens.includes(fcmToken)) {
-        user.fcmTokens.push(fcmToken);
-      }
+      await User.findByIdAndUpdate(user._id, { $addToSet: { fcmTokens: fcmToken } }).catch(() => {});
     }
 
     // Trigger login notification (replaces any previous login notification)
@@ -299,9 +300,14 @@ export const loginUser = async (req, res) => {
       user: {
         _id: user?._id,
         email: user?.email || cleanEmail,
+        username: user?.username || "",
         firstName: user?.firstName || "Valued",
         lastName: user?.lastName || "Customer",
-        mobileNo: user?.mobileNo || "9876543210",
+        mobileNo: user?.mobileNo || "",
+        photo: user?.photo || "",
+        gender: user?.gender || "",
+        address: user?.address || null,
+        notifications: user?.notifications || [],
       },
       filledBasicInfo: true,
     });
@@ -330,9 +336,13 @@ export const loginUser = async (req, res) => {
 };
 
 export const verifyUserSession = async (req, res) => {
+  const userObj = req.user ? (req.user.toObject ? req.user.toObject() : { ...req.user }) : null;
+  if (userObj && userObj.password) {
+    delete userObj.password;
+  }
   return res.status(200).json({
     success: true,
-    user: req.user,
+    user: userObj,
     role: "user",
   });
 };
@@ -462,7 +472,7 @@ export const verifyUser = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   try {
-    const { email, password, mobileNo, username } = req.body;
+    const { email, password, confirmPassword, mobileNo, username, fcmToken } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ success: false, message: "Email and password are required." });
@@ -471,6 +481,18 @@ export const verifyOtp = async (req, res) => {
     const cleanEmail = normalizeEmail(email);
     if (!isValidEmail(cleanEmail)) {
       return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+    }
+
+    if (confirmPassword !== undefined && confirmPassword !== null && password !== confirmPassword) {
+      return res.status(400).json({ success: false, message: "Passwords do not match." });
+    }
+
+    const isPasswordValidated = /^(?=.*\d).{8,}$/.test(password);
+    if (!isPasswordValidated) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long and contain at least 1 number.",
+      });
     }
 
     const existingUser = await User.findOne({ email: new RegExp(`^${cleanEmail}$`, "i") });
@@ -495,7 +517,7 @@ export const verifyOtp = async (req, res) => {
       }
     }
 
-    const cleanUsername = username ? String(username).trim() : undefined;
+    const cleanUsername = username ? String(username).trim() : (cleanEmail.split("@")[0] || "Customer");
     const defaultAvatar = "https://img.freepik.com/premium-vector/person-with-blue-shirt-that-says-name-person_1029948-7040.jpg?semt=ais_hybrid&w=740";
 
     const hashedPass = await bcryptjs.hash(password, 10);
@@ -503,14 +525,16 @@ export const verifyOtp = async (req, res) => {
     const newUser = new User({
       email: cleanEmail,
       password: hashedPass,
-      ...(cleanUsername ? { username: cleanUsername, firstName: cleanUsername } : {}),
+      username: cleanUsername,
+      firstName: cleanUsername,
       ...(cleanMobile ? { mobileNo: cleanMobile } : {}),
       photo: defaultAvatar,
+      ...(fcmToken && typeof fcmToken === "string" ? { fcmTokens: [fcmToken] } : {}),
     });
 
     await newUser.save();
 
-    // Trigger registration notifications for User & Admin
+    // Trigger registration notifications for User & Admin safely
     try {
       await notifyNewUserRegistration(newUser, req.app.get("io"));
     } catch (notifErr) {
@@ -523,7 +547,7 @@ export const verifyOtp = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Account Created Successfully!",
       success: true,
       userToken,
@@ -532,7 +556,8 @@ export const verifyOtp = async (req, res) => {
         email: newUser.email,
         username: newUser.username,
         firstName: newUser.firstName,
-        mobileNo: newUser.mobileNo,
+        lastName: newUser.lastName || "",
+        mobileNo: newUser.mobileNo || "",
         photo: newUser.photo,
         notifications: newUser.notifications || [],
       },
