@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://convention-bathroom-extending-berry.trycloudflare.com",
+  "activeServerUrl": "https://api.trycloudflare.com",
   "fallbackUrls": [
-    "https://convention-bathroom-extending-berry.trycloudflare.com",
+    "https://api.trycloudflare.com",
     "https://natural-milk-dairy.onrender.com",
     "http://10.39.242.110:9000"
   ],
