@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://okay-gis-career-commands.trycloudflare.com",
+  "activeServerUrl": "https://api.trycloudflare.com",
   "fallbackUrls": [
-    "https://okay-gis-career-commands.trycloudflare.com",
+    "https://api.trycloudflare.com",
     "https://natural-milk-dairy.onrender.com",
     "http://10.39.242.110:9000"
   ],
