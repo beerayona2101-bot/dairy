@@ -1,8 +1,9 @@
 {
-  "activeServerUrl": "https://presented-marks-gsm-heights.trycloudflare.com",
+  "activeServerUrl": "https://precisely-reaches-vessel-background.trycloudflare.com",
   "fallbackUrls": [
-    "https://presented-marks-gsm-heights.trycloudflare.com",
-    "http://192.168.1.84:9000"
+    "https://precisely-reaches-vessel-background.trycloudflare.com",
+    "https://natural-milk-dairy.onrender.com",
+    "http://10.39.242.110:9000"
   ],
   "minAppVersion": "1.0.0",
   "maintenance": false,
