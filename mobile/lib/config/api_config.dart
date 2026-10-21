@@ -10,7 +10,7 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://okay-gis-career-commands.trycloudflare.com';
+  static const String productionServerUrl = 'https://berkeley-puerto-icq-logos.trycloudflare.com';
 
   // Permanent Cloud Backup (e.g. Render.com 24/7 free cloud deployment)
   static const String permanentCloudUrl = 'https://natural-milk-dairy.onrender.com';
@@ -18,8 +18,13 @@ class ApiConfig {
   // Host machine local Wi-Fi IP
   static const String lanIp = '10.39.242.110';
 
-  // Remote Dynamic Configuration URL
-  // Enables updating the active server on any phone worldwide WITHOUT recompiling the APK!
+  // Remote Dynamic Configuration URL mirrors (Ensures global reach even if raw GitHub is throttled)
+  static const List<String> remoteConfigUrls = [
+    'https://raw.githubusercontent.com/beerayona2101-bot/dairy/main/server_config.json',
+    'https://cdn.jsdelivr.net/gh/beerayona2101-bot/dairy@main/server_config.json',
+    'https://fastly.jsdelivr.net/gh/beerayona2101-bot/dairy@main/server_config.json',
+  ];
+
   static const String remoteConfigUrl =
       'https://raw.githubusercontent.com/beerayona2101-bot/dairy/main/server_config.json';
 
@@ -70,7 +75,7 @@ class ApiConfig {
   }
 
   /// Automatically discovers, tests, and sets the best reachable backend server.
-  /// Works across Cellular 4G/5G, Remote Wi-Fi, and Local LAN.
+  /// Works reliably across Cellular 4G/5G, Remote Wi-Fi, and Local LAN.
   static Future<String> resolveWorkingServer() async {
     final prefs = await SharedPreferences.getInstance();
     final customUrl = prefs.getString('custom_web_url');
@@ -85,40 +90,66 @@ class ApiConfig {
 
     final candidates = <String>[];
 
-    // If user explicitly configured a custom URL via in-app Settings, test it first
+    // If user explicitly configured a custom URL via in-app Settings, prioritize it
     if (customUrl != null && customUrl.isNotEmpty && !_isLoopback(customUrl)) {
-      candidates.add(customUrl.trim().replaceFirst(RegExp(r'/+$'), ''));
+      final cleanCustom = customUrl.trim().replaceFirst(RegExp(r'/+$'), '');
+      if (!(isCellular && isPrivateLan(cleanCustom))) {
+        candidates.add(cleanCustom);
+      }
     }
 
-    // 1. Try fetching remote dynamic config (with cache buster and 4.5s buffer for cellular carrier networks)
-    try {
-      final cacheBuster = DateTime.now().millisecondsSinceEpoch;
-      final remoteUri = Uri.parse('$remoteConfigUrl?_t=$cacheBuster');
-      final res = await http.get(remoteUri).timeout(const Duration(milliseconds: 4500));
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        if (data is Map<String, dynamic> && data['activeServerUrl'] != null) {
-          final remoteServer = data['activeServerUrl'].toString().trim().replaceFirst(RegExp(r'/+$'), '');
-          if (remoteServer.isNotEmpty && !candidates.contains(remoteServer)) {
-            if (!(isCellular && isPrivateLan(remoteServer))) {
-              candidates.add(remoteServer);
-              debugPrint('[ApiConfig] Discovered dynamic remote server: $remoteServer');
+    // 1. Fetch remote dynamic config across redundant CDN mirrors with cache-busting
+    final dynamicConfigCompleter = Completer<Map<String, dynamic>?>();
+    final cacheBuster = DateTime.now().millisecondsSinceEpoch;
+
+    for (final mirror in remoteConfigUrls) {
+      final mirrorUri = Uri.parse('$mirror?_t=$cacheBuster');
+      http.get(mirrorUri, headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }).timeout(const Duration(milliseconds: 5500)).then((res) {
+        if (res.statusCode == 200 && !dynamicConfigCompleter.isCompleted) {
+          try {
+            final data = jsonDecode(res.body);
+            if (data is Map<String, dynamic>) {
+              dynamicConfigCompleter.complete(data);
             }
+          } catch (_) {}
+        }
+      }).catchError((_) {
+        // Fallback to next mirror
+      });
+    }
+
+    Map<String, dynamic>? remoteData;
+    try {
+      remoteData = await dynamicConfigCompleter.future.timeout(
+        const Duration(milliseconds: 5500),
+        onTimeout: () => null,
+      );
+    } catch (_) {}
+
+    if (remoteData != null) {
+      if (remoteData['activeServerUrl'] != null) {
+        final remoteServer = remoteData['activeServerUrl'].toString().trim().replaceFirst(RegExp(r'/+$'), '');
+        if (remoteServer.isNotEmpty && !candidates.contains(remoteServer)) {
+          if (!(isCellular && isPrivateLan(remoteServer))) {
+            candidates.add(remoteServer);
+            debugPrint('[ApiConfig] Discovered dynamic remote server: $remoteServer');
           }
         }
-        if (data is Map<String, dynamic> && data['fallbackUrls'] is List) {
-          for (final f in data['fallbackUrls']) {
-            final fStr = f.toString().trim().replaceFirst(RegExp(r'/+$'), '');
-            if (fStr.isNotEmpty && !candidates.contains(fStr)) {
-              if (!(isCellular && isPrivateLan(fStr))) {
-                candidates.add(fStr);
-              }
+      }
+      if (remoteData['fallbackUrls'] is List) {
+        for (final f in remoteData['fallbackUrls']) {
+          final fStr = f.toString().trim().replaceFirst(RegExp(r'/+$'), '');
+          if (fStr.isNotEmpty && !candidates.contains(fStr)) {
+            if (!(isCellular && isPrivateLan(fStr))) {
+              candidates.add(fStr);
             }
           }
         }
       }
-    } catch (e) {
-      debugPrint('[ApiConfig] Dynamic config lookup notice: $e');
     }
 
     // 2. Add saved working URL if available and appropriate for current network
@@ -156,12 +187,12 @@ class ApiConfig {
       return productionServerUrl;
     }
 
-    // 6. Test candidates concurrently for fastest live response
+    // 6. Test candidates concurrently for fastest live response (5000ms buffer for cellular carriers)
     final completer = Completer<String>();
     int pending = candidates.length;
 
     for (final candidate in candidates) {
-      _testHealth(candidate, timeoutMs: 3800).then((isHealthy) {
+      _testHealth(candidate, timeoutMs: 4500).then((isHealthy) {
         if (isHealthy && !completer.isCompleted) {
           setActiveBaseUrl(candidate);
           prefs.setString('working_web_url', candidate);
@@ -187,7 +218,7 @@ class ApiConfig {
 
     try {
       return await completer.future.timeout(
-        const Duration(milliseconds: 4200),
+        const Duration(milliseconds: 5500),
         onTimeout: () {
           final fallback = candidates[0];
           setActiveBaseUrl(fallback);
@@ -201,8 +232,8 @@ class ApiConfig {
     }
   }
 
-  /// Fast health check against /health endpoint
-  static Future<bool> _testHealth(String host, {int timeoutMs = 2500}) async {
+  /// Reliable health check against /health endpoint
+  static Future<bool> _testHealth(String host, {int timeoutMs = 4500}) async {
     try {
       final clean = host.trim().replaceFirst(RegExp(r'/+$'), '');
       final uri = Uri.parse('$clean/health');

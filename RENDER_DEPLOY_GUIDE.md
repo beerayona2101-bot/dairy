@@ -1,38 +1,40 @@
-# 🚀 24/7 Free Cloud Hosting Guide (Render.com)
+# 🚀 24/7 Permanent Free Cloud Hosting Guide (Render.com)
 
-To keep your Natural Milk Dairy backend running **24/7/365 across all mobile networks worldwide** without needing your laptop turned on, follow these simple steps to deploy on Render (100% Free):
-
----
-
-### Step 1: Connect your GitHub Repository
-1. Go to **[https://render.com](https://render.com)** and sign in with your GitHub account (`beerayona2101-bot`).
-2. Click **"New +"** in the top navigation and select **"Web Service"**.
-3. Choose your repository: **`dairy`** (`beerayona2101-bot/dairy`).
+To keep your Natural Milk Dairy backend and mobile storefront running **24/7/365 across all mobile networks worldwide (Cellular 4G/5G, any Wi-Fi)** without needing your laptop turned on, follow these simple steps to deploy on Render (100% Free):
 
 ---
 
-### Step 2: Configure Web Service Settings
-Fill in the following fields:
-
-| Field | Value |
-| :--- | :--- |
-| **Name** | `natural-milk-dairy` (or any name you choose) |
-| **Region** | `Singapore` or `Frankfurt` (closest to India) |
-| **Branch** | `main` |
-| **Root Directory** | `server` |
-| **Runtime** | `Node` |
-| **Build Command** | `npm install` |
-| **Start Command** | `node index.js` |
-| **Instance Type** | `Free` |
+### Option A: 1-Click Blueprint Deployment (Recommended)
+1. Go to **[https://dashboard.render.com](https://dashboard.render.com)** and sign in with GitHub (`beerayona2101-bot`).
+2. Click **"New +"** in the top navigation and select **"Blueprint"**.
+3. Select your repository: **`dairy`** (`beerayona2101-bot/dairy`).
+4. Render will automatically detect `render.yaml` with all build commands, start commands, and environment variables pre-configured.
+5. Click **"Apply"**! Render will build your Client and Server and give you your permanent 24/7 HTTPS URL.
 
 ---
 
-### Step 3: Add Environment Variables
-Under the **Environment Variables** section in Render, click **"Add Environment Variable"** and copy these values:
+### Option B: Manual Web Service Setup
+If you prefer creating a Web Service manually:
+1. Click **"New +"** -> **"Web Service"**.
+2. Select your repository **`dairy`**.
+3. Configure the following settings:
 
+| Field | Value | Notes |
+| :--- | :--- | :--- |
+| **Name** | `natural-milk-dairy` | Or any unique name you choose |
+| **Region** | `Singapore` | Lowest latency for India |
+| **Branch** | `main` | Production branch |
+| **Root Directory** | *(Leave completely blank)* | Builds both Client & Server from repo root |
+| **Runtime** | `Node` | Node.js environment |
+| **Build Command** | `npm run build` | Builds Client/dist and installs dependencies |
+| **Start Command** | `npm start` | Starts production Node Express server |
+| **Instance Type** | `Free` | $0/month |
+
+#### Environment Variables (Add under Environment tab):
 ```env
 PORT=10000
 IS_PRODUCTION=true
+NODE_ENV=production
 DB_URL=mongodb://milk_app:12345@ac-rwdtohw-shard-00-00.d87lkt6.mongodb.net:27017,ac-rwdtohw-shard-00-01.d87lkt6.mongodb.net:27017,ac-rwdtohw-shard-00-02.d87lkt6.mongodb.net:27017/?ssl=true&replicaSet=atlas-6io3bx-shard-0&authSource=admin&appName=Cluster0
 JWT_SECRET=MADHU_dairy_jwt_secret_key_2026
 EMAIL_SERVICE=gmail
@@ -50,11 +52,21 @@ CLOUDINARY_FOLDER=dairy_app
 
 ---
 
-### Step 4: Deploy & Get Your Permanent URL
-1. Click **"Create Web Service"**.
-2. Within 2 minutes, Render will build your server and give you a permanent HTTPS URL, such as:
-   `https://natural-milk-dairy.onrender.com`
-3. Paste that URL into:
-   - `server_config.json` -> `"activeServerUrl": "https://natural-milk-dairy.onrender.com"`
-   - Commit and push to GitHub.
-4. **All APKs installed on any phone in the world will automatically switch to your 24/7 Render cloud server without any recompile!**
+### Step 3: Link Your URL to All APKs Instantly (Zero Recompile Required)
+1. Once deployed, Render gives you your live URL (e.g., `https://natural-milk-dairy.onrender.com` or your custom name).
+2. Open `server_config.json` in this repo and update:
+   ```json
+   {
+     "activeServerUrl": "https://your-service-name.onrender.com",
+     "fallbackUrls": [
+       "https://your-service-name.onrender.com"
+     ]
+   }
+   ```
+3. Commit and push:
+   ```bash
+   git add server_config.json
+   git commit -m "feat: switch active server to permanent 24/7 cloud URL"
+   git push origin main
+   ```
+4. **Done! Every APK on any phone across any network in the world will automatically switch to your 24/7 cloud server within seconds!**

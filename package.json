@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "npm --prefix Client run build",
+    "build": "npm --prefix Client install && npm --prefix Client run build && npm --prefix Server install",
     "build:client": "npm --prefix Client run build",
-    "start": "npm --prefix Server start",
-    "start:prod": "npm --prefix Server run start:prod",
+    "start": "node --no-deprecation Server/index.js",
+    "start:prod": "node --no-deprecation Server/index.js",
     "start:local": "npm --prefix Server run start:local",
     "dev:server": "npm --prefix Server run dev",
     "dev:client": "npm --prefix Client run dev",

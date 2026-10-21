@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: natural-milk-dairy
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: IS_PRODUCTION
+        value: "true"
+      - key: PORT
+        value: "10000"
+      - key: DB_URL
+        value: mongodb://milk_app:12345@ac-rwdtohw-shard-00-00.d87lkt6.mongodb.net:27017,ac-rwdtohw-shard-00-01.d87lkt6.mongodb.net:27017,ac-rwdtohw-shard-00-02.d87lkt6.mongodb.net:27017/?ssl=true&replicaSet=atlas-6io3bx-shard-0&authSource=admin&appName=Cluster0
+      - key: JWT_SECRET
+        value: MADHU_dairy_jwt_secret_key_2026
+      - key: EMAIL_SERVICE
+        value: gmail
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_USER
+        value: beerayona143@gmail.com
+      - key: EMAIL_PASS
+        value: lznh qvru cler bfel
+      - key: RAZORPAY_KEY_ID
+        value: rzp_test_TZpv3bxIAHtj7y
+      - key: RAZORPAY_KEY_SECRET
+        value: jinx3yiEbQqiPfCvWnWkNgBo
+      - key: CLOUDINARY_CLOUD_NAME
+        value: cf1z70hh
+      - key: CLOUDINARY_API_KEY
+        value: "891248573188316"
+      - key: CLOUDINARY_API_SECRET
+        value: hDW8MEQqo92To7TlBccD1AzoIhs
+      - key: CLOUDINARY_FOLDER
+        value: dairy_app

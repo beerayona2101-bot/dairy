@@ -106,7 +106,11 @@ function triggerRestart(reason) {
   if (healthCheckTimer) clearInterval(healthCheckTimer);
   if (activeProcess) {
     try {
-      activeProcess.kill("SIGKILL");
+      if (process.platform === "win32" && activeProcess.pid) {
+        execSync(`taskkill /pid ${activeProcess.pid} /f /t`, { stdio: "ignore" });
+      } else {
+        activeProcess.kill("SIGTERM");
+      }
     } catch (_) {}
     activeProcess = null;
   }

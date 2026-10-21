@@ -166,8 +166,8 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
 
   void _startTimeoutTimer() {
     _timeoutTimer?.cancel();
-    // 9 seconds provides sufficient buffer for carrier CGNAT handshakes
-    _timeoutTimer = Timer(const Duration(milliseconds: 9000), () {
+    // 18 seconds provides ample buffer for cellular carrier CGNAT handshakes and Vite asset downloads over 4G/5G
+    _timeoutTimer = Timer(const Duration(milliseconds: 18000), () {
       if (mounted && _isLoading && !_hasError) {
         _tryNextCandidateOrShowError();
       }
@@ -246,7 +246,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            if (mounted && progress >= 90) {
+            if (mounted && progress >= 75) {
               setState(() {
                 _isLoading = false;
                 _hasError = false;
@@ -292,7 +292,12 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
             }
           },
           onWebResourceError: (WebResourceError error) {
-            if (error.isForMainFrame ?? true) {
+            final isMain = error.isForMainFrame ?? true;
+            final isFatal = error.errorCode == -2 || // ERROR_HOST_LOOKUP
+                error.errorCode == -6 || // ERROR_CONNECT
+                error.errorCode == -8 || // ERROR_TIMEOUT
+                error.errorCode == -1; // ERROR_UNKNOWN
+            if (isMain && isFatal) {
               _timeoutTimer?.cancel();
               if (mounted) {
                 _tryNextCandidateOrShowError();
