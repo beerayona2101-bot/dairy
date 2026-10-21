@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://api.trycloudflare.com",
+  "activeServerUrl": "https://dairy-individual-mit-inter.trycloudflare.com",
   "fallbackUrls": [
-    "https://api.trycloudflare.com",
+    "https://dairy-individual-mit-inter.trycloudflare.com",
     "https://natural-milk-dairy.onrender.com",
     "http://10.39.242.110:9000"
   ],
