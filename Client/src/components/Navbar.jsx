@@ -207,10 +207,9 @@ export default function Navbar() {
     const handleLogout = () => {
         setOpen(false);
         handleUserLogout();
-        setOpenLoginDialog(true);
         enqueueSnackbar("User Logged Out Successfully", { variant: "success" });
-        navigate("/home", { replace: true });
-    }
+        navigate("/", { replace: true });
+    };
 
     const handleUserCart = () => {
         setOpen(false);

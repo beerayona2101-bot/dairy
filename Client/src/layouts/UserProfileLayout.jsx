@@ -37,7 +37,12 @@ export default function UserProfileLayout({ children }) {
         return <BuffaloLoader variant="full" text="Loading your profile... Please wait." />;
     }
 
-    if (!authUser || !userToken || userRole !== "user") {
+    const isLoggedOut = sessionStorage.getItem("userLoggedOut") === "true";
+
+    if (!authUser || !userToken || userRole !== "user" || isLoggedOut) {
+        if (isLoggedOut) {
+            return <Navigate to="/" replace />;
+        }
         return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
 

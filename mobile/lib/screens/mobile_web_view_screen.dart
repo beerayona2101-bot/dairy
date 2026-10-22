@@ -252,7 +252,12 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               await prefs.remove('auth_token');
               await prefs.remove('user_id');
               await prefs.remove('user_role');
+              await prefs.remove('user_email');
               await prefs.setBool('is_guest_user', true);
+              try {
+                await WebViewCookieManager().clearCookies();
+                await _controller?.clearLocalStorage();
+              } catch (_) {}
               if (mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (_) => const OnboardingScreen()),
@@ -295,7 +300,18 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                   await prefs.remove('auth_token');
                   await prefs.remove('user_id');
                   await prefs.remove('user_role');
+                  await prefs.remove('user_email');
                   await prefs.setBool('is_guest_user', true);
+                  try {
+                    await WebViewCookieManager().clearCookies();
+                    await _controller?.clearLocalStorage();
+                  } catch (_) {}
+                  if (mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                      (route) => false,
+                    );
+                  }
                 }
               }
             }

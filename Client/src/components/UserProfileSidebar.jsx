@@ -85,13 +85,13 @@ export default function UserProfileSidebar() {
         if (authAdmin) {
             handleAdminLogout();
             enqueueSnackbar("Admin Logged Out Successfully", { variant: "info" });
+            navigate("/", { replace: true });
         } else {
             handleUserLogout();
             enqueueSnackbar("User Logged Out Successfully", { variant: "success" });
+            navigate("/", { replace: true });
         }
-        navigate("/");
-        if (setOpenLoginDialog) setOpenLoginDialog(true);
-    }
+    };
 
     const navigationLinks = [
         { key: "/user-profile/dashboard", icon: <MdDashboard />, label: "Dashboard" },

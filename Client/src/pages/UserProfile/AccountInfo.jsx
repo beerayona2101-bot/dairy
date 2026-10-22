@@ -32,11 +32,10 @@ export default function AccountInfo() {
   const { authUser, setAuthUser, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
 
-  const handleLogoutAndLogin = () => {
+  const handleLogout = () => {
     handleUserLogout();
     enqueueSnackbar("Logged Out Successfully", { variant: "success" });
-    navigate("/");
-    if (setOpenLoginDialog) setOpenLoginDialog(true);
+    navigate("/", { replace: true });
   };
 
   const handleChange = (e) => {
@@ -595,7 +594,7 @@ export default function AccountInfo() {
 
                 {/* Login / Logout Menu Option */}
                 <div
-                  onClick={handleLogoutAndLogin}
+                  onClick={handleLogout}
                   className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-red-500 dark:hover:border-red-400 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
                 >
                   <div className="flex items-center gap-3.5">

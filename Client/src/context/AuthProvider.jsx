@@ -46,19 +46,25 @@ export const AuthProvider = ({ children }) => {
     const getStoredUserToken = () => {
         try {
             if (typeof window !== "undefined") {
+                const isLoggedOut = sessionStorage.getItem("userLoggedOut") === "true";
                 const searchParams = new URLSearchParams(window.location.search);
                 const queryToken = searchParams.get("authToken") || searchParams.get("userToken");
                 if (queryToken) {
-                    sessionStorage.setItem("userToken", queryToken);
-                    sessionStorage.setItem("userRole", "user");
-                    localStorage.setItem("userToken", queryToken);
-                    localStorage.setItem("userRole", "user");
                     searchParams.delete("authToken");
                     searchParams.delete("userToken");
                     const newSearch = searchParams.toString();
                     const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "") + window.location.hash;
                     window.history.replaceState({}, document.title, newUrl);
-                    return queryToken;
+                    if (!isLoggedOut) {
+                        sessionStorage.setItem("userToken", queryToken);
+                        sessionStorage.setItem("userRole", "user");
+                        localStorage.setItem("userToken", queryToken);
+                        localStorage.setItem("userRole", "user");
+                        return queryToken;
+                    }
+                }
+                if (isLoggedOut) {
+                    return null;
                 }
             }
             return sessionStorage.getItem("userToken") || localStorage.getItem("userToken");
@@ -69,6 +75,28 @@ export const AuthProvider = ({ children }) => {
 
     const getStoredAdminToken = () => {
         try {
+            if (typeof window !== "undefined") {
+                const isLoggedOut = sessionStorage.getItem("adminLoggedOut") === "true";
+                const searchParams = new URLSearchParams(window.location.search);
+                const queryToken = searchParams.get("authToken") || searchParams.get("adminToken");
+                if (queryToken) {
+                    searchParams.delete("authToken");
+                    searchParams.delete("adminToken");
+                    const newSearch = searchParams.toString();
+                    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "") + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
+                    if (!isLoggedOut) {
+                        sessionStorage.setItem("adminToken", queryToken);
+                        sessionStorage.setItem("adminRole", "admin");
+                        localStorage.setItem("adminToken", queryToken);
+                        localStorage.setItem("adminRole", "admin");
+                        return queryToken;
+                    }
+                }
+                if (isLoggedOut) {
+                    return null;
+                }
+            }
             return sessionStorage.getItem("adminToken") || localStorage.getItem("adminToken");
         } catch {
             return null;
@@ -76,6 +104,12 @@ export const AuthProvider = ({ children }) => {
     };
 
     const fetchUserData = useCallback(async (initialUserData = null) => {
+        if (sessionStorage.getItem("userLoggedOut") === "true" && !initialUserData) {
+            setAuthUser(null);
+            setAuthUserLoading(false);
+            return;
+        }
+
         const token = getStoredUserToken();
         if (!token) {
             setAuthUser(null);
@@ -84,6 +118,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (initialUserData) {
+            sessionStorage.removeItem("userLoggedOut");
             setAuthUser(initialUserData);
             setAuthUserLoading(false);
         }
@@ -93,6 +128,7 @@ export const AuthProvider = ({ children }) => {
             const sessionData = await verifyUserSessionApi();
             if (sessionData?.success && sessionData?.user) {
                 const user = sessionData.user;
+                sessionStorage.removeItem("userLoggedOut");
                 setAuthUser(user);
                 try {
                     sessionStorage.setItem("userToken", token);
@@ -149,6 +185,12 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const fetchAdminData = useCallback(async (initialAdminData = null) => {
+        if (sessionStorage.getItem("adminLoggedOut") === "true" && !initialAdminData) {
+            setAuthAdmin(null);
+            setAuthAdminLoading(false);
+            return;
+        }
+
         const token = getStoredAdminToken();
         if (!token) {
             setAuthAdmin(null);
@@ -157,6 +199,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (initialAdminData) {
+            sessionStorage.removeItem("adminLoggedOut");
             setAuthAdmin(initialAdminData);
             setAuthAdminLoading(false);
         }
@@ -165,6 +208,7 @@ export const AuthProvider = ({ children }) => {
             if (!initialAdminData) setAuthAdminLoading(true);
             const sessionData = await verifyAdminSessionApi();
             if (sessionData?.success && sessionData?.admin) {
+                sessionStorage.removeItem("adminLoggedOut");
                 setAuthAdmin(sessionData.admin);
                 try {
                     sessionStorage.setItem("adminToken", token);
@@ -217,6 +261,7 @@ export const AuthProvider = ({ children }) => {
             const token = event.detail?.token;
             if (typeof token !== "string" || !token) return;
 
+            sessionStorage.removeItem("userLoggedOut");
             sessionStorage.setItem("userToken", token);
             sessionStorage.setItem("userRole", "user");
             localStorage.setItem("userToken", token);
@@ -263,11 +308,30 @@ export const AuthProvider = ({ children }) => {
         const oldUserId = authUser?._id;
         setAuthUser(null);
         setDeliveryAddressState(null);
-        sessionStorage.removeItem("userToken");
-        sessionStorage.removeItem("userRole");
-        sessionStorage.removeItem("deliveryAddress");
-        localStorage.removeItem("userToken");
-        localStorage.removeItem("userRole");
+        try {
+            sessionStorage.setItem("userLoggedOut", "true");
+            sessionStorage.removeItem("userToken");
+            sessionStorage.removeItem("userRole");
+            sessionStorage.removeItem("deliveryAddress");
+            sessionStorage.removeItem("User");
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("userRole");
+            localStorage.removeItem("User");
+        } catch {}
+
+        if (typeof window !== "undefined") {
+            try {
+                const searchParams = new URLSearchParams(window.location.search);
+                if (searchParams.has("authToken") || searchParams.has("userToken")) {
+                    searchParams.delete("authToken");
+                    searchParams.delete("userToken");
+                    const newSearch = searchParams.toString();
+                    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "") + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            } catch {}
+        }
+
         if (typeof window !== "undefined" && window.FlutterAuthBridge) {
             try {
                 window.FlutterAuthBridge.postMessage(JSON.stringify({
@@ -275,9 +339,10 @@ export const AuthProvider = ({ children }) => {
                     userId: oldUserId,
                     role: "user",
                 }));
-            } catch (e) {
-                // ignore
-            }
+            } catch (e) {}
+            try {
+                window.FlutterAuthBridge.postMessage("logout");
+            } catch (e) {}
         }
     }, [authUser?._id]);
 
@@ -287,10 +352,29 @@ export const AuthProvider = ({ children }) => {
         }
         const oldAdminId = authAdmin?._id;
         setAuthAdmin(null);
-        sessionStorage.removeItem("adminToken");
-        sessionStorage.removeItem("adminRole");
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminRole");
+        try {
+            sessionStorage.setItem("adminLoggedOut", "true");
+            sessionStorage.removeItem("adminToken");
+            sessionStorage.removeItem("adminRole");
+            sessionStorage.removeItem("Admin");
+            localStorage.removeItem("adminToken");
+            localStorage.removeItem("adminRole");
+            localStorage.removeItem("Admin");
+        } catch {}
+
+        if (typeof window !== "undefined") {
+            try {
+                const searchParams = new URLSearchParams(window.location.search);
+                if (searchParams.has("authToken") || searchParams.has("adminToken")) {
+                    searchParams.delete("authToken");
+                    searchParams.delete("adminToken");
+                    const newSearch = searchParams.toString();
+                    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "") + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            } catch {}
+        }
+
         if (typeof window !== "undefined" && window.FlutterAuthBridge) {
             try {
                 window.FlutterAuthBridge.postMessage(JSON.stringify({
@@ -298,9 +382,10 @@ export const AuthProvider = ({ children }) => {
                     userId: oldAdminId,
                     role: "admin",
                 }));
-            } catch (e) {
-                // ignore
-            }
+            } catch (e) {}
+            try {
+                window.FlutterAuthBridge.postMessage("logout");
+            } catch (e) {}
         }
     }, [authAdmin?._id]);
 
