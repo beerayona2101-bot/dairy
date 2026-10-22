@@ -62,8 +62,8 @@ export default function Navbar() {
     const hideMobileTopNav = isProductsPage || isProductDetailsPage || isCartPage || isCheckoutPage;
 
     const { theme, toggleTheme } = useContext(ThemeContext);
-    const { authUser, setAuthUser, authUserLoading, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
-    const { authAdmin, setAuthAdmin, authAdminLoading, handleAdminLogout } = useContext(AdminAuthContext);
+    const { authUser, setAuthUser, authUserLoading, handleUserLogout, setOpenLoginDialog, requestLogout } = useContext(UserAuthContext);
+    const { authAdmin, setAuthAdmin, authAdminLoading, handleAdminLogout, requestLogout: requestAdminLogout } = useContext(AdminAuthContext);
     const { cartItems } = useContext(CartContext);
     const { notification, setNotification, unreadCount } = useContext(UserOrderContext);
     const { products } = useContext(ProductContext);
@@ -208,9 +208,13 @@ export default function Navbar() {
 
     const handleLogout = () => {
         setOpen(false);
-        handleUserLogout();
-        enqueueSnackbar("User Logged Out Successfully", { variant: "success" });
-        navigate("/", { replace: true });
+        if (requestLogout) {
+            requestLogout("user");
+        } else {
+            handleUserLogout();
+            enqueueSnackbar("User Logged Out Successfully", { variant: "success" });
+            navigate("/", { replace: true });
+        }
     };
 
     const handleUserCart = () => {
@@ -622,9 +626,13 @@ export default function Navbar() {
                         <MenuItem
                             onClick={() => {
                                 handleProfileMenuClose();
-                                handleAdminLogout();
-                                enqueueSnackbar("Admin Logged Out Successfully", { variant: "info" });
-                                navigate("/");
+                                if (requestAdminLogout || requestLogout) {
+                                    (requestAdminLogout || requestLogout)("admin");
+                                } else {
+                                    handleAdminLogout();
+                                    enqueueSnackbar("Admin Logged Out Successfully", { variant: "info" });
+                                    navigate("/");
+                                }
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-red-600 dark:text-red-400 hover:!bg-red-50 dark:hover:!bg-red-950/40 border-t border-gray-100 dark:border-gray-800"
                         >
@@ -682,9 +690,13 @@ export default function Navbar() {
                         <MenuItem
                             onClick={() => {
                                 handleProfileMenuClose();
-                                handleUserLogout();
-                                enqueueSnackbar("Logged Out Successfully", { variant: "success" });
-                                navigate("/");
+                                if (requestLogout) {
+                                    requestLogout("user");
+                                } else {
+                                    handleUserLogout();
+                                    enqueueSnackbar("Logged Out Successfully", { variant: "success" });
+                                    navigate("/");
+                                }
                             }}
                             className="flex items-center gap-2.5 !py-2.5 text-xs font-bold text-red-600 dark:text-red-400 hover:!bg-red-50 dark:hover:!bg-red-950/40 border-t border-gray-100 dark:border-gray-800"
                         >

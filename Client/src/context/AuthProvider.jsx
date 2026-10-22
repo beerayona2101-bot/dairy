@@ -1,16 +1,23 @@
 import React, { useEffect, useMemo, useState, createContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 import { getUserById, verifyUserSessionApi } from "../services/userService";
 import { getAdminById, verifyAdminSessionApi } from "../services/adminService";
 import wsManager from "../socket/WebSocketManager";
 import { getSavedAddresses, addToWishlist } from "../services/userProfileService";
 import { getGuestWishlist, clearGuestWishlist } from "../utils/guestWishlist";
+import LogoutConfirmModal from "../components/Common/LogoutConfirmModal";
 
 export const UserAuthContext = createContext();
 export const AdminAuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
+
+    // Confirmation Alert Modal State for clean app-like logout flow
+    const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+    const [logoutRole, setLogoutRole] = useState("user");
 
     // Purge legacy persistent localStorage authentication keys to ensure tab-close reset behavior
     useEffect(() => {
@@ -389,14 +396,37 @@ export const AuthProvider = ({ children }) => {
         }
     }, [authAdmin?._id]);
 
+    const requestLogout = useCallback((role = "user") => {
+        setLogoutRole(role);
+        setLogoutModalOpen(true);
+    }, []);
+
+    const cancelLogout = useCallback(() => {
+        setLogoutModalOpen(false);
+    }, []);
+
+    const confirmLogout = useCallback(() => {
+        setLogoutModalOpen(false);
+        if (logoutRole === "admin") {
+            handleAdminLogout();
+            enqueueSnackbar("Admin Logged Out Successfully", { variant: "info" });
+            navigate("/", { replace: true });
+        } else {
+            handleUserLogout();
+            enqueueSnackbar("Logged Out Successfully", { variant: "success" });
+            navigate("/", { replace: true });
+        }
+    }, [logoutRole, handleAdminLogout, handleUserLogout, enqueueSnackbar, navigate]);
+
     const value1 = useMemo(() => ({
         authAdmin,
         authAdminLoading,
         setAuthAdmin,
         setAuthAdminLoading,
         handleAdminLogout,
+        requestLogout,
         fetchAdminData
-    }), [authAdmin, authAdminLoading, handleAdminLogout, fetchAdminData]);
+    }), [authAdmin, authAdminLoading, handleAdminLogout, requestLogout, fetchAdminData]);
 
     const value2 = useMemo(() => ({
         authUser,
@@ -408,13 +438,25 @@ export const AuthProvider = ({ children }) => {
         setAuthUserLoading,
         setOpenLoginDialog,
         handleUserLogout,
+        requestLogout,
         fetchUserData
-    }), [authUser, deliveryAddress, authUserLoading, openLoginDialog, handleUserLogout, fetchUserData]);
+    }), [authUser, deliveryAddress, authUserLoading, openLoginDialog, handleUserLogout, requestLogout, fetchUserData]);
 
     return (
         <AdminAuthContext.Provider value={value1}>
             <UserAuthContext.Provider value={value2}>
                 {children}
+                <LogoutConfirmModal
+                    isOpen={logoutModalOpen}
+                    onClose={cancelLogout}
+                    onConfirm={confirmLogout}
+                    role={logoutRole}
+                    userEmail={
+                        logoutRole === "admin"
+                            ? (authAdmin?.email || "Admin Account")
+                            : (authUser?.email || (authUser?.firstName ? `${authUser.firstName} ${authUser.lastName || ""}`.trim() : ""))
+                    }
+                />
             </UserAuthContext.Provider>
         </AdminAuthContext.Provider>
     );

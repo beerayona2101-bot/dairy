@@ -24,7 +24,7 @@ export default function UserProfileSidebar() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { authUser, setAuthUser, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
+    const { authUser, setAuthUser, handleUserLogout, setOpenLoginDialog, requestLogout } = useContext(UserAuthContext);
     const { authAdmin, handleAdminLogout } = useContext(AdminAuthContext);
     const { theme, toggleTheme } = useContext(ThemeContext);
 
@@ -82,7 +82,9 @@ export default function UserProfileSidebar() {
     };
 
     const handleLogout = () => {
-        if (authAdmin) {
+        if (requestLogout) {
+            requestLogout(authAdmin ? "admin" : "user");
+        } else if (authAdmin) {
             handleAdminLogout();
             enqueueSnackbar("Admin Logged Out Successfully", { variant: "info" });
             navigate("/", { replace: true });

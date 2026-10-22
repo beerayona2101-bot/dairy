@@ -33,7 +33,7 @@ export default function Sidebar() {
 
     const { isSidebarOpen, setIsSidebarOpen } = useContext(SidebarContext);
     const { theme, toggleTheme } = useContext(ThemeContext);
-    const { handleAdminLogout } = useContext(AdminAuthContext);
+    const { handleAdminLogout, requestLogout } = useContext(AdminAuthContext);
     const { setOpenLoginDialog } = useContext(UserAuthContext);
     const { adminOrders } = useContext(AdminOrderContext);
 
@@ -108,10 +108,14 @@ export default function Sidebar() {
     };
 
     const handleLogout = () => {
-        handleAdminLogout();
         closeSidebar();
-        setOpenLoginDialog(true);
-        navigate("/login", { replace: true });
+        if (requestLogout) {
+            requestLogout("admin");
+        } else {
+            handleAdminLogout();
+            setOpenLoginDialog(true);
+            navigate("/login", { replace: true });
+        }
     };
 
     const renderSidebarContent = () => (

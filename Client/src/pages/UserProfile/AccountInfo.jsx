@@ -29,13 +29,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AccountInfo() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const { authUser, setAuthUser, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
+  const { authUser, setAuthUser, handleUserLogout, setOpenLoginDialog, requestLogout } = useContext(UserAuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const handleLogout = () => {
-    handleUserLogout();
-    enqueueSnackbar("Logged Out Successfully", { variant: "success" });
-    navigate("/", { replace: true });
+    if (requestLogout) {
+      requestLogout("user");
+    } else {
+      handleUserLogout();
+      enqueueSnackbar("Logged Out Successfully", { variant: "success" });
+      navigate("/", { replace: true });
+    }
   };
 
   const handleChange = (e) => {
