@@ -19,7 +19,18 @@ class AuthService {
       final userData = response['user'] as Map<String, dynamic>? ?? {};
       final userId = userData['_id']?.toString() ?? userData['id']?.toString() ?? '';
 
-      await saveSession(token: token, userId: userId, email: email);
+      final role = userData['role']?.toString() ?? 'user';
+      final name = userData['name']?.toString() ?? userData['username']?.toString();
+      final mobile = userData['mobileNo']?.toString();
+
+      await saveSession(
+        token: token,
+        userId: userId,
+        email: email,
+        role: role,
+        name: name,
+        mobile: mobile,
+      );
       
       return {
         'success': true,
@@ -53,7 +64,16 @@ class AuthService {
       final token = response['userToken'].toString();
       final userData = response['user'] as Map<String, dynamic>? ?? {};
       final userId = userData['_id']?.toString() ?? userData['id']?.toString() ?? '';
-      await saveSession(token: token, userId: userId, email: email);
+      final role = userData['role']?.toString() ?? 'user';
+
+      await saveSession(
+        token: token,
+        userId: userId,
+        email: email,
+        role: role,
+        name: username,
+        mobile: mobileNo,
+      );
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('is_guest_user', false);
       return {
@@ -82,8 +102,18 @@ class AuthService {
       final token = response['userToken'].toString();
       final userData = response['user'] as Map<String, dynamic>? ?? {};
       final userId = userData['_id']?.toString() ?? userData['id']?.toString() ?? '';
+      final role = userData['role']?.toString() ?? 'user';
+      final name = userData['name']?.toString() ?? userData['username']?.toString();
+      final mobile = userData['mobileNo']?.toString();
 
-      await saveSession(token: token, userId: userId, email: email);
+      await saveSession(
+        token: token,
+        userId: userId,
+        email: email,
+        role: role,
+        name: name,
+        mobile: mobile,
+      );
 
       return {
         'success': true,
@@ -94,16 +124,28 @@ class AuthService {
     return response;
   }
 
-  static Future<void> saveSession({required String token, required String userId, String? email}) async {
+  static Future<void> saveSession({
+    required String token,
+    required String userId,
+    String? email,
+    String? role,
+    String? name,
+    String? mobile,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(keyToken, token);
+    await prefs.setString('auth_token', token);
     await prefs.setString(keyUserId, userId);
-    if (email != null) await prefs.setString(keyUserEmail, email);
+    if (email != null && email.isNotEmpty) await prefs.setString(keyUserEmail, email);
+    if (role != null && role.isNotEmpty) await prefs.setString('user_role', role);
+    if (name != null && name.isNotEmpty) await prefs.setString('user_name', name);
+    if (mobile != null && mobile.isNotEmpty) await prefs.setString('user_mobile', mobile);
+    await prefs.setBool('has_completed_onboarding', true);
   }
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(keyToken);
+    return prefs.getString(keyToken) ?? prefs.getString('auth_token');
   }
 
   static Future<String?> getUserId() async {
@@ -119,7 +161,7 @@ class AuthService {
   static Future<bool> validateSession({required String token, required String userId}) async {
     try {
       final response = await ApiService.get(
-        ApiConfig.getUserDataUrl(userId),
+        ApiConfig.verifySessionUrl,
         token: token,
       );
       // If server explicitly replies with an auth error (401/403), token is invalid/expired
@@ -133,7 +175,8 @@ class AuthService {
             msg.contains('invalid token') ||
             msg.contains('jwt expired') ||
             msg.contains('token expired') ||
-            msg.contains('forbidden')) {
+            msg.contains('forbidden') ||
+            msg.contains('access denied')) {
           return false;
         }
         // Network unreachable or other non-auth error -> keep session valid locally
@@ -143,7 +186,6 @@ class AuthService {
       return true;
     } catch (_) {
       // Offline / network glitch — don't invalidate a previously-valid session.
-      // The user will be routed to onboarding only if there is NO saved token at all.
       return true;
     }
   }
@@ -151,7 +193,11 @@ class AuthService {
   static Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(keyToken);
+    await prefs.remove('auth_token');
     await prefs.remove(keyUserId);
     await prefs.remove(keyUserEmail);
+    await prefs.remove('user_role');
+    await prefs.remove('user_name');
+    await prefs.remove('user_mobile');
   }
 }

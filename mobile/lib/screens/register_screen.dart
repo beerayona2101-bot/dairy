@@ -58,6 +58,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!mounted) return;
 
     if (success) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_guest_user', false);
+      await prefs.setBool('has_completed_onboarding', true);
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('🎉 Welcome! Account created successfully.'),
@@ -66,7 +72,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       );
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MobileWebViewScreen()),
+        MaterialPageRoute(
+          builder: (_) => const MobileWebViewScreen(destinationPath: '/user-profile'),
+        ),
         (route) => false,
       );
     } else {

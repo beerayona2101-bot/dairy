@@ -16,8 +16,9 @@ import 'onboarding_screen.dart';
 
 class MobileWebViewScreen extends StatefulWidget {
   final String? initialUrl;
+  final String? destinationPath;
 
-  const MobileWebViewScreen({super.key, this.initialUrl});
+  const MobileWebViewScreen({super.key, this.initialUrl, this.destinationPath});
 
   @override
   State<MobileWebViewScreen> createState() => _MobileWebViewScreenState();
@@ -42,6 +43,49 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   int _candidateIndex = 0;
   late String _currentUrl;
 
+  String _buildResolvedUrl(String base, {String? token}) {
+    try {
+      var uri = Uri.parse(base);
+      if (widget.destinationPath != null && widget.destinationPath!.isNotEmpty) {
+        final dest = widget.destinationPath!;
+        final cleanDest = dest.startsWith('/') ? dest : '/$dest';
+        uri = uri.resolve(cleanDest);
+      }
+      if (token != null && token.isNotEmpty) {
+        final qp = Map<String, String>.from(uri.queryParameters);
+        qp['authToken'] = token;
+        uri = uri.replace(queryParameters: qp);
+      }
+      return uri.toString();
+    } catch (_) {
+      return base;
+    }
+  }
+
+  Future<void> _injectAuthTokens() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('user_token') ?? prefs.getString('auth_token');
+      final role = prefs.getString('user_role') ?? 'user';
+      if (token != null && token.isNotEmpty) {
+        final js = '''
+          try {
+            var t = "$token";
+            var r = "$role";
+            if (!sessionStorage.getItem("userToken") || !localStorage.getItem("userToken")) {
+              sessionStorage.setItem("userToken", t);
+              sessionStorage.setItem("userRole", r);
+              localStorage.setItem("userToken", t);
+              localStorage.setItem("userRole", r);
+              window.dispatchEvent(new CustomEvent("flutterAuthChanged", { detail: { token: t } }));
+            }
+          } catch (e) {}
+        ''';
+        await _controller?.runJavaScript(js);
+      }
+    } catch (_) {}
+  }
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +93,8 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     if (_candidateUrls.isEmpty) {
       _candidateUrls = [ApiConfig.productionServerUrl];
     }
-    _currentUrl = widget.initialUrl ?? ApiConfig.baseUrl;
+    final rawBase = widget.initialUrl ?? ApiConfig.baseUrl;
+    _currentUrl = _buildResolvedUrl(rawBase);
 
     _initWebView();
     _startTimeoutTimer();
@@ -119,6 +164,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       final prefs = await SharedPreferences.getInstance();
       final customUrl = prefs.getString('custom_web_url');
       final savedUrl = prefs.getString('working_web_url');
+      final token = prefs.getString('user_token') ?? prefs.getString('auth_token');
 
       final connectivity = await Connectivity().checkConnectivity();
       final isCellular = connectivity.contains(ConnectivityResult.mobile);
@@ -129,9 +175,10 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           if (!_candidateUrls.contains(customUrl)) {
             _candidateUrls.insert(0, customUrl);
           }
-          if (widget.initialUrl == null && customUrl != _currentUrl) {
+          final customResolved = _buildResolvedUrl(customUrl, token: token);
+          if (widget.initialUrl == null && customResolved != _currentUrl) {
             if (mounted) {
-              _loadSpecificUrl(customUrl);
+              _loadSpecificUrl(customResolved);
             }
           }
           return;
@@ -152,6 +199,13 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           if (!_candidateUrls.contains(savedUrl)) {
             _candidateUrls.add(savedUrl);
           }
+        }
+      }
+
+      final resolvedUrl = _buildResolvedUrl(_currentUrl, token: token);
+      if (resolvedUrl != _currentUrl) {
+        if (mounted) {
+          _loadSpecificUrl(resolvedUrl);
         }
       }
     } catch (_) {}
@@ -209,6 +263,12 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
             if (message.message == 'logout') {
               final auth = Provider.of<AuthProvider>(context, listen: false);
               await auth.logout();
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('user_token');
+              await prefs.remove('auth_token');
+              await prefs.remove('user_id');
+              await prefs.remove('user_role');
+              await prefs.setBool('is_guest_user', true);
               if (mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (_) => const OnboardingScreen()),
@@ -221,20 +281,37 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                 final event = decoded['event']?.toString();
                 final userId = decoded['userId']?.toString();
                 final role = decoded['role']?.toString() ?? 'user';
+                final token = decoded['token']?.toString();
+                final email = decoded['email']?.toString();
 
                 if ((event == 'login' || event == 'signup') && userId != null && userId.isNotEmpty) {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setString('user_id', userId);
                   await prefs.setString('user_role', role);
+                  if (token != null && token.isNotEmpty) {
+                    await prefs.setString('user_token', token);
+                    await prefs.setString('auth_token', token);
+                  }
+                  if (email != null && email.isNotEmpty) {
+                    await prefs.setString('user_email', email);
+                  }
+                  await prefs.setBool('is_guest_user', false);
+                  await prefs.setBool('has_completed_onboarding', true);
                   debugPrint('[Bridge] User authenticated ($event): $userId ($role). Syncing FCM token...');
                   await FcmService.syncTokenWithBackend(userId, role: role);
                 } else if (event == 'logout') {
                   if (userId != null && userId.isNotEmpty) {
                     await FcmService.removeTokenFromBackend(userId);
                   }
+                  if (!mounted) return;
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  await auth.logout();
                   final prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('user_token');
+                  await prefs.remove('auth_token');
                   await prefs.remove('user_id');
                   await prefs.remove('user_role');
+                  await prefs.setBool('is_guest_user', true);
                 }
               }
             }
@@ -256,6 +333,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
             }
           },
           onPageStarted: (String url) {
+            _injectAuthTokens();
             if (mounted && _isFirstLoad) {
               setState(() {
                 _isLoading = true;
@@ -306,20 +384,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               });
               SharedPreferences.getInstance().then((prefs) {
                 prefs.setString('working_web_url', _currentUrl);
-                final token = prefs.getString('auth_token');
-                if (token != null && token.isNotEmpty) {
-                  _controller?.runJavaScript('''
-                    try {
-                      if (!sessionStorage.getItem("userToken") && !localStorage.getItem("userToken")) {
-                        sessionStorage.setItem("userToken", "$token");
-                        sessionStorage.setItem("userRole", "user");
-                        localStorage.setItem("userToken", "$token");
-                        localStorage.setItem("userRole", "user");
-                        window.dispatchEvent(new CustomEvent("flutterAuthChanged", { detail: { token: "$token" } }));
-                      }
-                    } catch (e) {}
-                  ''');
-                }
+                _injectAuthTokens();
               });
             }
           },
@@ -344,18 +409,24 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
   void _loadSpecificUrl(String url) {
     _timeoutTimer?.cancel();
     if (mounted) {
-      setState(() {
-        _currentUrl = url;
-        _hasError = false;
-        if (_isFirstLoad) {
-          _isLoading = true;
+      SharedPreferences.getInstance().then((prefs) {
+        final token = prefs.getString('user_token') ?? prefs.getString('auth_token');
+        final resolved = _buildResolvedUrl(url, token: token);
+        if (mounted) {
+          setState(() {
+            _currentUrl = resolved;
+            _hasError = false;
+            if (_isFirstLoad) {
+              _isLoading = true;
+            }
+          });
         }
+        if (_isFirstLoad) {
+          _startTimeoutTimer();
+        }
+        _controller?.loadRequest(Uri.parse(resolved));
       });
     }
-    if (_isFirstLoad) {
-      _startTimeoutTimer();
-    }
-    _controller?.loadRequest(Uri.parse(url));
   }
 
   Future<void> _reload() async {

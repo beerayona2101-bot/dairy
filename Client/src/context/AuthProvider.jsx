@@ -45,6 +45,22 @@ export const AuthProvider = ({ children }) => {
 
     const getStoredUserToken = () => {
         try {
+            if (typeof window !== "undefined") {
+                const searchParams = new URLSearchParams(window.location.search);
+                const queryToken = searchParams.get("authToken") || searchParams.get("userToken");
+                if (queryToken) {
+                    sessionStorage.setItem("userToken", queryToken);
+                    sessionStorage.setItem("userRole", "user");
+                    localStorage.setItem("userToken", queryToken);
+                    localStorage.setItem("userRole", "user");
+                    searchParams.delete("authToken");
+                    searchParams.delete("userToken");
+                    const newSearch = searchParams.toString();
+                    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "") + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
+                    return queryToken;
+                }
+            }
             return sessionStorage.getItem("userToken") || localStorage.getItem("userToken");
         } catch {
             return null;
@@ -217,18 +233,23 @@ export const AuthProvider = ({ children }) => {
         if (typeof window !== "undefined" && window.FlutterAuthBridge) {
             if (authUser?._id) {
                 try {
+                    const token = getStoredUserToken();
                     window.FlutterAuthBridge.postMessage(JSON.stringify({
                         event: "login",
                         userId: authUser._id,
                         role: "user",
+                        token: token,
+                        email: authUser.email,
                     }));
                 } catch (e) {}
             } else if (authAdmin?._id) {
                 try {
+                    const token = getStoredAdminToken();
                     window.FlutterAuthBridge.postMessage(JSON.stringify({
                         event: "login",
                         userId: authAdmin._id,
                         role: "admin",
+                        token: token,
                     }));
                 } catch (e) {}
             }

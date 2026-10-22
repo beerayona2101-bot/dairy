@@ -252,6 +252,7 @@ class ApiConfig {
   // Endpoints
   static String get loginUrl => '$baseUrl/u/login';
   static String get signupUrl => '$baseUrl/u/signup';
+  static String get verifySessionUrl => '$baseUrl/u/verify-session';
   static String get sendOtpUrl => '$baseUrl/u/send-otp';
   static String get verifyOtpUrl => '$baseUrl/u/verify-otp';
   static String get googleLoginUrl => '$baseUrl/u/google-login';

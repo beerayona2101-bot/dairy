@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
-import 'mobile_web_view_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -103,20 +101,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     },
   ];
 
+  bool _isNavigating = false;
+
   void _goToLogin() {
+    if (_isNavigating) return;
+    _isNavigating = true;
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    ).then((_) {
+      if (mounted) {
+        _isNavigating = false;
+      }
+    });
   }
 
-  Future<void> _continueAsGuest() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_guest_user', true);
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MobileWebViewScreen()),
-    );
+  void _skipToLastSlide() {
+    if (_currentPage < _slides.length - 1) {
+      _pageController.animateToPage(
+        _slides.length - 1,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+      );
+    }
   }
+
 
   @override
   void dispose() {
@@ -185,20 +193,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
 
-                    GestureDetector(
-                      onTap: _continueAsGuest,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                        ),
-                        child: Text(
-                          'Skip',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.grey.shade300 : const Color(0xFF64748B),
+                    AnimatedOpacity(
+                      opacity: _currentPage < _slides.length - 1 ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: IgnorePointer(
+                        ignoring: _currentPage >= _slides.length - 1,
+                        child: GestureDetector(
+                          onTap: _skipToLastSlide,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                            ),
+                            child: Text(
+                              'Skip',
+                              style: GoogleFonts.outfit(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.grey.shade300 : const Color(0xFF64748B),
+                              ),
+                            ),
                           ),
                         ),
                       ),

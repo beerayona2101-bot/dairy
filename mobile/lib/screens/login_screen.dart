@@ -54,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (success) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('is_guest_user', false);
+      await prefs.setBool('has_completed_onboarding', true);
 
       if (!mounted) return;
 
@@ -64,7 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MobileWebViewScreen()),
+        MaterialPageRoute(
+          builder: (_) => const MobileWebViewScreen(destinationPath: '/user-profile'),
+        ),
         (route) => false,
       );
     } else {
