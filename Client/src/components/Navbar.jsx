@@ -386,15 +386,7 @@ export default function Navbar() {
         );
     } else {
         renderUserSection = (
-            <div className="flex items-center gap-1.5 sm:gap-2">
-                <Link
-                    to="/signup"
-                    state={{ from: location.pathname + location.search }}
-                    className="flex items-center gap-1 text-white bg-gradient-to-r from-[#0284C7] to-[#0369A1] hover:brightness-105 font-black px-3 py-1.5 rounded-full transition-all duration-300 shadow-sm active:scale-95 cursor-pointer text-xs"
-                >
-                    <User className="w-3.5 h-3.5 stroke-[2.5]" />
-                    <span className="whitespace-nowrap">Create Account</span>
-                </Link>
+            <div className="flex items-center">
                 <button
                     onClick={() => {
                         if (location.pathname !== "/login" && location.pathname !== "/signup") {
@@ -402,7 +394,7 @@ export default function Navbar() {
                         }
                         navigate("/login", { state: { from: location.pathname + location.search } });
                     }}
-                    className="btn-reflection flex items-center gap-1 text-[#075C2A] bg-white dark:bg-gray-800 hover:bg-emerald-50 font-extrabold px-3 py-1.5 rounded-full transition-all duration-300 shadow-sm hover:scale-105 cursor-pointer border border-gray-200 dark:border-gray-700 text-xs"
+                    className="flex items-center gap-1.5 text-white bg-gradient-to-r from-sky-400 via-sky-500 to-sky-400 hover:from-sky-500 hover:to-sky-600 font-extrabold px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm shadow-sky-400/25 hover:shadow-md hover:shadow-sky-400/35 hover:scale-105 active:scale-95 cursor-pointer border border-sky-300/40 text-xs"
                 >
                     <LoginIcon sx={{ fontSize: "1rem" }} />
                     <span>Login</span>
