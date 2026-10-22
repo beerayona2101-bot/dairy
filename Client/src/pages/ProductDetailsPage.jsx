@@ -96,7 +96,7 @@ export default function ProductDetailsPage() {
 
     return (
         <>
-            <section className="px-0 sm:px-6 pt-1 sm:pt-3 pb-4 max-w-7xl mx-auto">
+            <section className="px-0 sm:px-6 pt-0 sm:pt-3 pb-4 max-w-7xl mx-auto">
                 {/* Desktop Web Navigation Bar with Back Arrow Button */}
                 <div className="hidden md:flex items-center justify-between px-1 mb-3">
                     <div className="flex items-center gap-2.5">
@@ -118,15 +118,20 @@ export default function ProductDetailsPage() {
                     </div>
                 </div>
 
-                {/* Mobile Top Header: Back Button separately at top-left corner */}
-                <div className="flex md:hidden items-center justify-start px-3.5 pt-1 pb-2">
+                {/* Mobile Top Header: Back Button Sticky at Top on Mobile View */}
+                <div className="sticky top-0 z-40 md:hidden flex items-center justify-between px-3.5 py-2.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/70 dark:border-slate-800/70 shadow-2xs transition-colors">
                     <BackButton
                         fallbackPath="/products"
                         hideOnWeb={false}
                         variant="circle"
-                        className="shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                        className="shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:scale-105 active:scale-95 transition"
                         title="Back to Products"
                     />
+                    <div className="flex items-center gap-2 pr-1">
+                        <span className="text-xs font-black text-slate-800 dark:text-slate-100 max-w-[210px] truncate">
+                            {selectedProduct?.name}
+                        </span>
+                    </div>
                 </div>
 
                 <div className="w-full">

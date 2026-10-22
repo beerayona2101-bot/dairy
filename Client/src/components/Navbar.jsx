@@ -57,7 +57,9 @@ export default function Navbar() {
     const isCartPage = location.pathname.includes("cart");
     const isProductsCatalog = location.pathname === "/products";
     const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
+    const isProductDetailsPage = location.pathname.startsWith("/product-details") || location.pathname.includes("product-details");
     const hideNavItems = isCheckoutPage || isCartPage;
+    const hideMobileTopNav = isProductsPage || isProductDetailsPage || isCartPage || isCheckoutPage;
 
     const { theme, toggleTheme } = useContext(ThemeContext);
     const { authUser, setAuthUser, authUserLoading, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
@@ -409,7 +411,7 @@ export default function Navbar() {
     return (
         <>
             <nav className={`fixed top-0 left-0 w-full z-50 h-[48px] sm:h-[54px] md:h-[60px] flex items-center px-3 sm:px-8 lg:px-12 glass-navbar rounded-none border-b border-gray-100/70 dark:border-gray-800/70 shadow-xs translate-y-0 ${
-                (isProductsCatalog || isCartPage || isCheckoutPage) ? "hidden md:flex" : ""
+                hideMobileTopNav ? "hidden md:flex" : ""
             }`}>
                 <div className="w-full max-w-7xl mx-auto flex items-center justify-between relative">
                     {/* Desktop View Brand Logo: Emblem + NATURAL (Main) / Milk Dairy (Child) */}

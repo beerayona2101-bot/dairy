@@ -30,18 +30,19 @@ export default function Layout({ children }) {
 
     const isProductsCatalog = location.pathname === "/products";
     const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
+    const isProductDetailsPage = location.pathname.startsWith("/product-details") || location.pathname.includes("product-details");
     const isCartPage = location.pathname.includes("cart");
     const isCheckoutPage = location.pathname.includes("checkout");
     const isWishlistPage = location.pathname.includes("wishlist");
-    const hideFooter = isProductsPage || isWishlistPage || location.pathname.startsWith("/product-details") || location.pathname.includes("product-details") || location.pathname.includes("checkout") || location.pathname.includes("cart");
+    const hideFooter = isProductsPage || isWishlistPage || isProductDetailsPage || isCheckoutPage || isCartPage;
 
-    const isNoBottomNav = location.pathname.startsWith("/product-details") || isCheckoutPage;
+    const isNoBottomNav = isProductDetailsPage || isCheckoutPage;
 
     return (
         <div ref={scrollRef} className="min-h-screen w-full max-w-full flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">
             <Navbar />
-            <main className={`flex-1 min-h-[100dvh] flex flex-col w-full max-w-full overflow-x-clip ${
-                (isProductsCatalog || isCartPage || isCheckoutPage)
+            <main className={`flex-1 min-h-[100dvh] flex flex-col w-full max-w-full ${
+                (isProductsPage || isProductDetailsPage || isCartPage || isCheckoutPage)
                     ? 'pt-0 md:pt-[60px]'
                     : 'pt-[48px] sm:pt-[54px] md:pt-[60px]'
             } ${isNoBottomNav ? 'pb-6 lg:pb-0' : 'pb-[56px] sm:pb-[62px] lg:pb-0'}`}>

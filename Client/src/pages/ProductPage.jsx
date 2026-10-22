@@ -239,21 +239,21 @@ export default function ProductPage() {
         const emoji = getCategoryEmoji(categoryInfo?.title);
 
         return (
-            <div className="w-full min-h-screen max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 flex flex-col space-y-4 sm:space-y-6">
+            <div className="w-full min-h-screen max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-0 sm:pt-4 pb-6 flex flex-col space-y-4 sm:space-y-6">
 
-                {/* 1. TOP BREADCRUMBS & ACTION BAR */}
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                {/* 1. TOP BREADCRUMBS & ACTION BAR (Sticky on Mobile, normal on Desktop) */}
+                <div className="sticky top-0 z-40 -mx-3.5 sm:mx-0 px-3.5 sm:px-0 py-2.5 sm:py-0 bg-white/90 dark:bg-slate-900/90 sm:bg-transparent sm:dark:bg-transparent backdrop-blur-md sm:backdrop-blur-none border-b border-slate-200/70 dark:border-slate-800/70 sm:border-0 shadow-2xs sm:shadow-none flex items-center justify-between gap-3 transition-colors">
                     <div className="flex items-center gap-2 text-xs sm:text-sm">
                         <button
                             onClick={() => navigate("/products")}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700/80 transition-all font-bold text-xs cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700/80 active:scale-95 transition-all font-bold text-xs cursor-pointer"
                             title="Back to All Categories"
                         >
                             <ArrowBackIcon sx={{ fontSize: "1rem" }} />
                             <span>All Categories</span>
                         </button>
                         <span className="text-slate-300 dark:text-slate-600 font-bold">/</span>
-                        <span className="font-black text-[#0756B5] dark:text-emerald-400 capitalize">
+                        <span className="font-black text-[#0756B5] dark:text-emerald-400 capitalize truncate max-w-[170px] sm:max-w-none">
                             {categoryInfo?.title || unslugify(productId)}
                         </span>
                     </div>

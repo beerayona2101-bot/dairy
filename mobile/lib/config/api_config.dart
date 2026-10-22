@@ -10,7 +10,7 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://burning-sport-physics-hart.trycloudflare.com';
+  static const String productionServerUrl = 'https://fixes-specially-recreational-lexmark.trycloudflare.com';
 
   // Permanent Cloud Backup (Set once deployed on Render.com or leave empty)
   static const String permanentCloudUrl = '';
