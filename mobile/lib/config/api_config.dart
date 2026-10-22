@@ -10,13 +10,13 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://berkeley-puerto-icq-logos.trycloudflare.com';
+  static const String productionServerUrl = 'https://bulk-implementing-algorithm-attitudes.trycloudflare.com';
 
-  // Permanent Cloud Backup (e.g. Render.com 24/7 free cloud deployment)
-  static const String permanentCloudUrl = 'https://natural-milk-dairy.onrender.com';
+  // Permanent Cloud Backup (Set once deployed on Render.com or leave empty)
+  static const String permanentCloudUrl = '';
 
   // Host machine local Wi-Fi IP
-  static const String lanIp = '10.39.242.110';
+  static const String lanIp = '192.168.1.84';
 
   // Remote Dynamic Configuration URL mirrors (Ensures global reach even if raw GitHub is throttled)
   static const List<String> remoteConfigUrls = [
@@ -36,7 +36,7 @@ class ApiConfig {
 
   static final List<String> _candidateList = [
     productionServerUrl,
-    permanentCloudUrl,
+    if (permanentCloudUrl.isNotEmpty) permanentCloudUrl,
     'http://$lanIp:9000',
   ];
 
@@ -167,8 +167,8 @@ class ApiConfig {
       candidates.add(productionServerUrl);
     }
 
-    // 4. Add permanent cloud backup
-    if (!candidates.contains(permanentCloudUrl)) {
+    // 4. Add permanent cloud backup if configured
+    if (permanentCloudUrl.isNotEmpty && !candidates.contains(permanentCloudUrl)) {
       candidates.add(permanentCloudUrl);
     }
 

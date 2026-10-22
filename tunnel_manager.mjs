@@ -29,8 +29,7 @@ function updateConfigFileAndSync(activeUrl) {
     config.activeServerUrl = activeUrl;
     config.fallbackUrls = [
       activeUrl,
-      "https://natural-milk-dairy.onrender.com",
-      "http://10.39.242.110:9000"
+      "http://192.168.1.84:9000"
     ];
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf-8");
     console.log(`\n✅ [1/3] Updated server_config.json with live URL: ${activeUrl}`);
@@ -46,15 +45,15 @@ function updateConfigFileAndSync(activeUrl) {
       console.log(`✅ [2/3] Updated mobile/lib/config/api_config.dart`);
     }
 
-    // 3. Git commit & push server_config.json so all installed APKs worldwide receive the new URL!
+    // 3. Auto push to GitHub so all remote APKs sync instantly
     try {
-      console.log(`🚀 [3/3] Syncing updated server URL to GitHub...`);
-      execSync('git add server_config.json', { cwd: __dirname, stdio: 'ignore' });
-      execSync('git commit -m "chore: auto-sync live tunnel URL to server_config.json [skip ci]"', { cwd: __dirname, stdio: 'ignore' });
-      execSync('git push origin main', { cwd: __dirname, stdio: 'ignore' });
-      console.log(`✨ SUCCESS: GitHub raw config synced! All mobile APKs across any network are now connected!`);
+      console.log(`🚀 [3/3] Auto-syncing server_config.json to GitHub origin/main...`);
+      execSync('git add server_config.json', { stdio: 'ignore' });
+      execSync('git commit -m "chore: auto-update live tunnel URL for mobile APKs"', { stdio: 'ignore' });
+      execSync('git push origin main', { stdio: 'ignore' });
+      console.log(`✨ GitHub updated! Mobile APKs across all networks will auto-connect to: ${activeUrl}`);
     } catch (gitErr) {
-      console.warn(`⚠️ Git auto-push warning (manual push may be needed): ${gitErr.message}`);
+      console.warn(`⚠️ Git auto-push note: ${gitErr.message}`);
     }
 
     startHealthMonitor(activeUrl);

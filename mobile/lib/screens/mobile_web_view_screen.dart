@@ -264,8 +264,40 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
               _startTimeoutTimer();
             }
           },
-          onPageFinished: (String url) {
+          onHttpError: (HttpResponseError error) {
+            final status = error.response?.statusCode;
+            if (status != null && status >= 400) {
+              debugPrint('[WebView] HTTP Error $status on $_currentUrl. Trying next candidate...');
+              _timeoutTimer?.cancel();
+              if (mounted) {
+                _tryNextCandidateOrShowError();
+              }
+            }
+          },
+          onPageFinished: (String url) async {
             _timeoutTimer?.cancel();
+
+            // Validate that we didn't receive a 404 / 502 error page title (e.g. from Render or dead proxy)
+            bool isPageValid = true;
+            try {
+              final title = (await _controller?.getTitle() ?? '').trim().toLowerCase();
+              if (title.contains('404') ||
+                  title.contains('not found') ||
+                  title.contains('bad gateway') ||
+                  title.contains('502') ||
+                  title.contains('503')) {
+                isPageValid = false;
+              }
+            } catch (_) {}
+
+            if (!isPageValid) {
+              debugPrint('[WebView] Page title indicates error. Auto-recovering next candidate...');
+              if (mounted) {
+                _tryNextCandidateOrShowError();
+              }
+              return;
+            }
+
             if (mounted) {
               setState(() {
                 _isLoading = false;

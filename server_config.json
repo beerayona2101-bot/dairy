@@ -1,9 +1,8 @@
 {
-  "activeServerUrl": "https://berkeley-puerto-icq-logos.trycloudflare.com",
+  "activeServerUrl": "https://bulk-implementing-algorithm-attitudes.trycloudflare.com",
   "fallbackUrls": [
-    "https://berkeley-puerto-icq-logos.trycloudflare.com",
-    "https://natural-milk-dairy.onrender.com",
-    "http://10.39.242.110:9000"
+    "https://bulk-implementing-algorithm-attitudes.trycloudflare.com",
+    "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
   "maintenance": false,
