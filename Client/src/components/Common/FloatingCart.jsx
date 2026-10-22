@@ -45,10 +45,12 @@ export default function FloatingCart() {
   // 2. PATH EXCLUSIONS:
   const pathname = (location.pathname || "").toLowerCase();
   
-  // Keep the floating button off Home, Cart, Checkout, and Admin pages.
+  // Keep the floating button off Home, Products collection page, Cart, Checkout, and Admin pages.
   if (
     pathname === "/" ||
     pathname === "/home" ||
+    pathname === "/products" ||
+    pathname === "/products/" ||
     pathname.startsWith("/cart") ||
     pathname.startsWith("/order-checkout") ||
     pathname.startsWith("/checkout") ||

@@ -574,19 +574,6 @@ export default function ProductPage() {
                                                     {filteredMobileCategoryCards.length} Categories Available
                                                 </span>
                                             </div>
-
-                                            <Link
-                                                to="/cart"
-                                                title="View Cart"
-                                                className="relative p-2 rounded-xl text-gray-700 dark:text-gray-200 hover:text-[#075C2A] dark:hover:text-blue-400 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 active:scale-95 transition-all flex items-center justify-center"
-                                            >
-                                                <ShoppingCartIcon sx={{ fontSize: "1.35rem" }} />
-                                                {cartItems?.length > 0 && (
-                                                    <span className="absolute -top-0.5 -right-0.5 bg-[#075C2A] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md">
-                                                        {cartItems.length}
-                                                    </span>
-                                                )}
-                                            </Link>
                                         </div>
 
                                         {/* Mobile Search Bar Row (Google Style Pill Search Bar) */}
