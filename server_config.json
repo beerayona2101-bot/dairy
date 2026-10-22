@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://burning-sport-physics-hart.trycloudflare.com",
+  "activeServerUrl": "https://fixes-specially-recreational-lexmark.trycloudflare.com",
   "fallbackUrls": [
-    "https://burning-sport-physics-hart.trycloudflare.com",
+    "https://fixes-specially-recreational-lexmark.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
