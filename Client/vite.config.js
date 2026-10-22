@@ -31,13 +31,31 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         '/u': 'http://127.0.0.1:9000',
-        '/products': 'http://127.0.0.1:9000',
-        '/order': 'http://127.0.0.1:9000',
-        '/user-profile': 'http://127.0.0.1:9000',
-        '/admin': 'http://127.0.0.1:9000',
+        '/products': {
+          target: 'http://127.0.0.1:9000',
+          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
+        },
+        '/order': {
+          target: 'http://127.0.0.1:9000',
+          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
+        },
+        '/user-profile': {
+          target: 'http://127.0.0.1:9000',
+          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
+        },
+        '/admin': {
+          target: 'http://127.0.0.1:9000',
+          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
+        },
         '/admin-profile': 'http://127.0.0.1:9000',
-        '/payment': 'http://127.0.0.1:9000',
-        '/store': 'http://127.0.0.1:9000',
+        '/payment': {
+          target: 'http://127.0.0.1:9000',
+          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
+        },
+        '/store': {
+          target: 'http://127.0.0.1:9000',
+          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
+        },
         '/pdf': 'http://127.0.0.1:9000',
         '/page-content': 'http://127.0.0.1:9000',
         '/api': 'http://127.0.0.1:9000',

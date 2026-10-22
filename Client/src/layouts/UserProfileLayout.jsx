@@ -1,20 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { useLocation, Navigate } from "react-router-dom";
+import React, { useContext, useEffect, useRef } from "react";
+import { useLocation, Navigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import UserProfileSidebar from "../components/UserProfileSidebar";
 import { UserAuthContext } from "../context/AuthProvider";
 import PropTypes from "prop-types";
 import BuffaloLoader from "../components/BuffaloLoader";
 import PageTransition from "../components/PageTransition";
-import { X } from "lucide-react";
-import { Drawer } from "@mui/material";
 import BackButton from "../components/Common/BackButton";
 
 export default function UserProfileLayout({ children }) {
     const scrollRef = useRef(null);
     const location = useLocation();
     const { authUser, authUserLoading } = useContext(UserAuthContext);
-    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -25,7 +22,16 @@ export default function UserProfileLayout({ children }) {
     const userToken = sessionStorage.getItem("userToken") || localStorage.getItem("userToken");
     const userRole = sessionStorage.getItem("userRole") || localStorage.getItem("userRole");
 
-    const isSubProfilePage = location.pathname !== "/user-profile" && location.pathname !== "/user-profile/dashboard" && location.pathname.startsWith("/user-profile/");
+    const isSubProfilePage = location.pathname !== "/user-profile" && location.pathname.startsWith("/user-profile/");
+
+    const getSubProfileTitle = (path) => {
+        if (path.includes("/dashboard")) return "Dashboard Overview";
+        if (path.includes("/orders")) return "My Orders";
+        if (path.includes("/addresses")) return "Saved Addresses";
+        if (path.includes("/payments")) return "Payment Methods";
+        if (path.includes("/wishlist")) return "My Wishlist";
+        return "Account";
+    };
 
     if (authUserLoading) {
         return <BuffaloLoader variant="full" text="Loading your profile... Please wait." />;
@@ -50,10 +56,21 @@ export default function UserProfileLayout({ children }) {
                 {/* Main Content Glass Card (Full Width Transparent on Mobile, Rounded Card on Desktop) */}
                 <div className="flex-1 w-full min-w-0 h-full rounded-none md:rounded-[24px] shadow-none md:shadow-[0_10px_30px_rgba(0,0,0,0.06)] bg-transparent md:bg-white dark:md:bg-slate-900 backdrop-blur-none md:backdrop-blur-2xl dark:text-white px-3.5 sm:px-6 pt-1 sm:pt-6 pb-3.5 sm:pb-6 transition-all duration-300 border-0 md:border border-gray-200/90 dark:border-gray-800 flex flex-col overflow-hidden">
                     
-                    {/* Mobile Navigation Header with Back Arrow Only (Mobile Only - Only shown when inside sub-options) */}
+                    {/* Mobile Navigation Header (Shown when inside sub-options on mobile) */}
                     {isSubProfilePage && !location.pathname.includes("wishlist") && (
-                        <div className="md:hidden flex items-center justify-start pb-2 mb-2 border-b border-gray-200/80 dark:border-gray-800 shrink-0">
-                            <BackButton fallbackPath="/user-profile" />
+                        <div className="md:hidden flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-200/80 dark:border-gray-800 shrink-0">
+                            <div className="flex items-center gap-2">
+                                <BackButton fallbackPath="/user-profile" />
+                                <h2 className="text-sm font-black text-gray-900 dark:text-white tracking-tight">
+                                    {getSubProfileTitle(location.pathname)}
+                                </h2>
+                            </div>
+                            <Link
+                                to="/user-profile"
+                                className="text-[11px] font-extrabold text-[#075C2A] dark:text-emerald-400 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-900/40 hover:bg-emerald-100 transition-colors"
+                            >
+                                Profile Menu
+                            </Link>
                         </div>
                     )}
 
@@ -63,35 +80,6 @@ export default function UserProfileLayout({ children }) {
                     </PageTransition>
                 </div>
             </main>
-
-            {/* Mobile Sidebar Slide Drawer */}
-            <Drawer
-                anchor="left"
-                open={mobileDrawerOpen}
-                onClose={() => setMobileDrawerOpen(false)}
-                slotProps={{
-                    paper: {
-                        className: "!bg-transparent !p-0 !m-0 !w-[280px] sm:!w-[320px] !shadow-2xl !rounded-l-none !rounded-r-[24px] !border-l-0",
-                    },
-                    backdrop: {
-                        className: "!bg-black/60 !backdrop-blur-xs",
-                    },
-                }}
-            >
-                <div className="h-full relative rounded-l-none rounded-r-[24px] overflow-hidden">
-                    <button
-                        type="button"
-                        onClick={() => setMobileDrawerOpen(false)}
-                        className="absolute top-3 right-3 z-50 p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-200 hover:bg-red-50 hover:text-red-500 transition cursor-pointer shadow-xs"
-                    >
-                        <X size={18} />
-                    </button>
-                    <UserProfileSidebar
-                        userProfileDrawer={mobileDrawerOpen}
-                        setUserProfileDrawer={setMobileDrawerOpen}
-                    />
-                </div>
-            </Drawer>
         </div>
     );
 }

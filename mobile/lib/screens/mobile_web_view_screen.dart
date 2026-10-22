@@ -185,28 +185,13 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
         }
       }
 
-      // Ensure active baseUrl is prioritized
-      final active = ApiConfig.baseUrl;
-      if (!_isLoopbackUrl(active)) {
-        if (_candidateUrls.contains(active)) {
-          _candidateUrls.remove(active);
-        }
-        _candidateUrls.insert(0, active);
-      }
+      // Proactively resolve the live working server across networks (Cellular/Wi-Fi)
+      final workingServer = await ApiConfig.resolveWorkingServer();
+      final resolvedUrl = _buildResolvedUrl(workingServer, token: token);
 
-      if (savedUrl != null && savedUrl.isNotEmpty && !_isLoopbackUrl(savedUrl)) {
-        if (!(isCellular && ApiConfig.isPrivateLan(savedUrl))) {
-          if (!_candidateUrls.contains(savedUrl)) {
-            _candidateUrls.add(savedUrl);
-          }
-        }
-      }
-
-      final resolvedUrl = _buildResolvedUrl(_currentUrl, token: token);
-      if (resolvedUrl != _currentUrl) {
-        if (mounted) {
-          _loadSpecificUrl(resolvedUrl);
-        }
+      if (mounted && resolvedUrl != _currentUrl) {
+        debugPrint('[WebView] Connecting to live server: $resolvedUrl');
+        _loadSpecificUrl(resolvedUrl);
       }
     } catch (_) {}
   }
@@ -397,7 +382,15 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
             if (isMain && isFatal) {
               _timeoutTimer?.cancel();
               if (mounted) {
-                _tryNextCandidateOrShowError();
+                ApiConfig.resolveWorkingServer().then((live) {
+                  if (mounted && live != _currentUrl) {
+                    _loadSpecificUrl(live);
+                  } else if (mounted) {
+                    _tryNextCandidateOrShowError();
+                  }
+                }).catchError((_) {
+                  if (mounted) _tryNextCandidateOrShowError();
+                });
               }
             }
           },

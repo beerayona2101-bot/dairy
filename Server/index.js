@@ -117,26 +117,38 @@ app.use(express.static(clientDistPath));
 
 // SPA fallback for frontend routes
 app.get("*", (req, res, next) => {
+  // If request is for a missing static file with an extension (e.g. .js, .css, .png, .ico), return 404
+  if (path.extname(req.path)) {
+    return res.status(404).end();
+  }
+
+  // Purely backend or system paths that should never serve the HTML SPA
   if (
-    req.path.startsWith("/admin") ||
-    req.path.startsWith("/u") ||
-    req.path.startsWith("/user-profile") ||
-    req.path.startsWith("/admin-profile") ||
-    req.path.startsWith("/products") ||
-    req.path.startsWith("/order") ||
-    req.path.startsWith("/payment") ||
-    req.path.startsWith("/store") ||
-    req.path.startsWith("/pdf") ||
-    req.path.startsWith("/page-content") ||
-    req.path.startsWith("/api") ||
-    req.path.startsWith("/enquiry") ||
-    req.path.startsWith("/notifications") ||
     req.path.startsWith("/uploads") ||
     req.path.startsWith("/socket.io") ||
+    req.path.startsWith("/api") ||
+    req.path.startsWith("/pdf") ||
     req.path === "/health"
   ) {
     return next();
   }
+
+  // If the request explicitly wants JSON only (API client) and not HTML, return 404 JSON
+  const wantsJsonOnly =
+    req.xhr ||
+    (req.headers.accept &&
+      req.headers.accept.includes("application/json") &&
+      !req.headers.accept.includes("text/html"));
+
+  if (wantsJsonOnly) {
+    return res.status(404).json({
+      success: false,
+      statusCode: 404,
+      message: `API endpoint not found: ${req.method} ${req.path}`,
+    });
+  }
+
+  // Serve React SPA index.html for frontend routes (/user-profile, /admin, /products, etc.)
   const indexPath = path.join(clientDistPath, "index.html");
   if (fs.existsSync(indexPath)) {
     return res.sendFile(indexPath);

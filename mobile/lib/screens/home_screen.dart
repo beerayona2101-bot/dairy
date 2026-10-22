@@ -348,7 +348,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             label: 'Cart',
           ),
           const BottomNavigationBarItem(icon: Icon(Icons.favorite_rounded), label: 'Wishlist'),
-          const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: authProvider.isAuthenticated
+                ? Container(
+                    width: 22,
+                    height: 22,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF075C2A), Color(0xFF1E88E5)],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      ((authProvider.currentUser?.firstName?.isNotEmpty == true
+                              ? authProvider.currentUser!.firstName!
+                              : (authProvider.currentUser?.username?.isNotEmpty == true
+                                  ? authProvider.currentUser!.username!
+                                  : (authProvider.currentUser?.displayName.isNotEmpty == true
+                                      ? authProvider.currentUser!.displayName
+                                      : authProvider.currentUser?.email ?? 'U'))))
+                          .trim()
+                          .substring(0, 1)
+                          .toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  )
+                : const Icon(Icons.person_rounded),
+            label: 'Profile',
+          ),
         ],
       ),
     );

@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from "date-fns";
 import {
-    Box, Drawer, Avatar, IconButton, Badge, Tooltip,
+    Box, Drawer, IconButton, Badge, Tooltip,
     Dialog, Menu, MenuItem
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
@@ -20,7 +20,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import { motion } from "framer-motion";
 import { ThemeContext } from '../context/ThemeProvider';
@@ -33,7 +32,6 @@ import { removeUserNotification } from '../services/userProfileService';
 import { removeAdminNotification } from '../services/adminService';
 import { markNotificationAsRead } from '../services/notificationService';
 import { useSnackbar } from 'notistack';
-import UserProfileSidebar from './UserProfileSidebar';
 import company from "../data/company.json";
 import logoDarkMode from "../assets/logoDarkMode.png";
 import logoLightMode from "../assets/logoLightMode.png";
@@ -137,9 +135,25 @@ export default function Navbar() {
     }, []);
 
     const [open, setOpen] = useState(false);
-    const [userProfileDrawer, setUserProfileDrawer] = useState(false);
     const [adminMenuAnchor, setAdminMenuAnchor] = useState(null);
     const openAdminMenu = Boolean(adminMenuAnchor);
+
+    const getFirstLetter = (user, admin) => {
+        const candidate =
+            user?.firstName ||
+            user?.fullName ||
+            user?.name ||
+            user?.username ||
+            user?.email ||
+            admin?.name ||
+            admin?.username ||
+            admin?.email ||
+            "";
+        const clean = candidate.trim();
+        return clean.length > 0 ? clean.charAt(0).toUpperCase() : "";
+    };
+
+    const userInitial = getFirstLetter(authUser, authAdmin);
 
     const handleAdminMenuClick = (event) => {
         setAdminMenuAnchor(event.currentTarget);
@@ -341,7 +355,9 @@ export default function Navbar() {
                 className="flex items-center gap-2 bg-white dark:bg-gray-800 shadow-sm border border-white dark:border-gray-700 rounded-full px-3.5 py-1.5 transition hover:scale-105 cursor-pointer text-[#2D3748] dark:text-white"
                 title="Admin Dashboard"
             >
-                <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#075C2A]" />
+                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center text-[10px] font-black uppercase select-none">
+                    {userInitial || "A"}
+                </div>
                 <span className="text-xs font-extrabold">
                     {authAdmin?.name || "Super Admin"}
                 </span>
@@ -355,9 +371,11 @@ export default function Navbar() {
                 className="flex items-center gap-2 bg-white dark:bg-gray-800 shadow-sm border border-white dark:border-gray-700 rounded-full px-3.5 py-1.5 transition hover:scale-105 cursor-pointer text-[#2D3748] dark:text-white"
                 title="My Profile"
             >
-                <PersonIcon sx={{ fontSize: "1.1rem" }} className="text-[#075C2A]" />
+                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center text-[10px] font-black uppercase select-none">
+                    {userInitial || "U"}
+                </div>
                 <span className="text-xs font-extrabold">
-                    {authUser?.firstName || "User"}
+                    {authUser?.firstName || authUser?.fullName || authUser?.name || authUser?.username || "User"}
                 </span>
             </button>
         );
@@ -780,12 +798,16 @@ export default function Navbar() {
                                 : "text-slate-700 dark:text-slate-300 hover:text-[#075C2A] dark:hover:text-[#3F9E18]"
                         }`}
                     >
-                        {authUser?.photo ? (
-                            <Avatar
-                                alt={authUser?.firstName}
-                                src={authUser?.photo}
-                                sx={{ width: 20, height: 20, border: "1.5px solid #075C2A" }}
-                            />
+                        {userInitial ? (
+                            <div
+                                className={`w-[22px] h-[22px] rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center text-[10.5px] font-black leading-none uppercase select-none transition-all duration-200 shadow-xs ${
+                                    location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin')
+                                        ? "ring-2 ring-[#075C2A] dark:ring-[#3F9E18] scale-110 drop-shadow-[0_2px_8px_rgba(7,92,42,0.4)]"
+                                        : "opacity-90"
+                                }`}
+                            >
+                                {userInitial}
+                            </div>
                         ) : (
                             <User className={`w-5 h-5 transition-all duration-200 ${
                                 location.pathname.startsWith('/user-profile') || location.pathname.startsWith('/admin') ? 'stroke-[2.5] scale-110 drop-shadow-[0_2px_8px_rgba(108,92,231,0.4)]' : 'stroke-[1.8]'
@@ -946,34 +968,6 @@ export default function Navbar() {
                     </div>
                 </div>
             )}
-
-            <SwipeableDrawer
-                anchor="top"
-                open={userProfileDrawer}
-                onClose={() => setUserProfileDrawer(false)}
-                onOpen={() => setUserProfileDrawer(true)}
-                className="md:hidden"
-                slotProps={{
-                    paper: {
-                        sx: {
-                            width: '100%',
-                            backgroundColor: 'transparent',
-                        },
-                    },
-                }}
-            >
-                <div className="dark:bg-black relative">
-
-                    <button
-                        onClick={() => setUserProfileDrawer(false)}
-                        className="flex justify-center items-center absolute top-3 right-3 transform text-[#6d286e] bg-[#762e7720] w-10 h-10 rounded text-xl backdrop-blur-md cursor-pointer z-50"
-                    >
-                        <X />
-                    </button>
-
-                    <UserProfileSidebar userProfileDrawer={userProfileDrawer} setUserProfileDrawer={setUserProfileDrawer}/>
-                </div>
-            </SwipeableDrawer>
         </>
     );
 }

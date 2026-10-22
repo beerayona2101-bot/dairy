@@ -10,7 +10,7 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://bulk-implementing-algorithm-attitudes.trycloudflare.com';
+  static const String productionServerUrl = 'https://burning-sport-physics-hart.trycloudflare.com';
 
   // Permanent Cloud Backup (Set once deployed on Render.com or leave empty)
   static const String permanentCloudUrl = '';
@@ -20,6 +20,7 @@ class ApiConfig {
 
   // Remote Dynamic Configuration URL mirrors (Ensures global reach even if raw GitHub is throttled)
   static const List<String> remoteConfigUrls = [
+    'https://api.github.com/repos/beerayona2101-bot/dairy/contents/server_config.json',
     'https://raw.githubusercontent.com/beerayona2101-bot/dairy/main/server_config.json',
     'https://cdn.jsdelivr.net/gh/beerayona2101-bot/dairy@main/server_config.json',
     'https://fastly.jsdelivr.net/gh/beerayona2101-bot/dairy@main/server_config.json',
@@ -98,17 +99,21 @@ class ApiConfig {
       }
     }
 
-    // 1. Fetch remote dynamic config across redundant CDN mirrors with cache-busting
+    // 1. Fetch remote dynamic config across redundant CDN & GitHub mirrors with cache-busting
     final dynamicConfigCompleter = Completer<Map<String, dynamic>?>();
     final cacheBuster = DateTime.now().millisecondsSinceEpoch;
 
     for (final mirror in remoteConfigUrls) {
       final mirrorUri = Uri.parse('$mirror?_t=$cacheBuster');
-      http.get(mirrorUri, headers: {
+      final headers = <String, String>{
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0',
-      }).timeout(const Duration(milliseconds: 5500)).then((res) {
+      };
+      if (mirror.contains('api.github.com')) {
+        headers['Accept'] = 'application/vnd.github.v3.raw';
+      }
+      http.get(mirrorUri, headers: headers).timeout(const Duration(milliseconds: 3800)).then((res) {
         if (res.statusCode == 200 && !dynamicConfigCompleter.isCompleted) {
           try {
             final data = jsonDecode(res.body);

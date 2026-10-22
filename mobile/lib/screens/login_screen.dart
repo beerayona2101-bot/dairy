@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const MobileWebViewScreen(destinationPath: '/user-profile'),
+          builder: (_) => const MobileWebViewScreen(),
         ),
         (route) => false,
       );

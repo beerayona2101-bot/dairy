@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import http from "http";
 import https from "https";
+import os from "os";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -15,12 +16,28 @@ let currentLiveUrl = null;
 let healthCheckTimer = null;
 let consecutiveFailures = 0;
 
+function getActiveLanIp() {
+  try {
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+      for (const iface of interfaces[name]) {
+        if (iface.family === "IPv4" && !iface.internal) {
+          return iface.address;
+        }
+      }
+    }
+  } catch (_) {}
+  return "192.168.1.84";
+}
+
 function updateConfigFileAndSync(activeUrl) {
   if (currentLiveUrl === activeUrl) return;
   currentLiveUrl = activeUrl;
   consecutiveFailures = 0;
 
   try {
+    const activeLanIp = getActiveLanIp();
+
     // 1. Update server_config.json
     let config = {};
     if (fs.existsSync(configPath)) {
@@ -29,20 +46,24 @@ function updateConfigFileAndSync(activeUrl) {
     config.activeServerUrl = activeUrl;
     config.fallbackUrls = [
       activeUrl,
-      "http://192.168.1.84:9000"
+      `http://${activeLanIp}:9000`
     ];
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf-8");
-    console.log(`\n✅ [1/3] Updated server_config.json with live URL: ${activeUrl}`);
+    console.log(`\n✅ [1/3] Updated server_config.json with live URL: ${activeUrl} (LAN: http://${activeLanIp}:9000)`);
 
-    // 2. Update api_config.dart productionServerUrl
+    // 2. Update api_config.dart productionServerUrl and lanIp
     if (fs.existsSync(apiConfigPath)) {
       let dartContent = fs.readFileSync(apiConfigPath, "utf-8");
       dartContent = dartContent.replace(
         /static const String productionServerUrl = 'https:\/\/[^']+';/,
         `static const String productionServerUrl = '${activeUrl}';`
       );
+      dartContent = dartContent.replace(
+        /static const String lanIp = '[^']+';/,
+        `static const String lanIp = '${activeLanIp}';`
+      );
       fs.writeFileSync(apiConfigPath, dartContent, "utf-8");
-      console.log(`✅ [2/3] Updated mobile/lib/config/api_config.dart`);
+      console.log(`✅ [2/3] Updated mobile/lib/config/api_config.dart with live server and LAN IP: ${activeLanIp}`);
     }
 
     // 3. Auto push to GitHub so all remote APKs sync instantly

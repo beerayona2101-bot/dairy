@@ -19,7 +19,7 @@ import { updateUserProfilePhoto } from "../services/userProfileService";
 import { enqueueSnackbar } from "notistack";
 import { LanguagesIcon } from "lucide-react";
 
-export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDrawer }) {
+export default function UserProfileSidebar() {
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -91,7 +91,6 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
         }
         navigate("/");
         if (setOpenLoginDialog) setOpenLoginDialog(true);
-        if (setUserProfileDrawer) setUserProfileDrawer(false);
     }
 
     const navigationLinks = [
@@ -114,29 +113,15 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
     };
 
     return (
-        <aside className={`scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 font-dashboard ${userProfileDrawer ? "rounded-l-none rounded-r-[24px] border-y border-r border-l-0 border-gray-200 dark:border-gray-700/80" : "rounded-[24px] border border-gray-200/90 dark:border-gray-700/80"}`}>
+        <aside className="scrollbar-hide w-full h-full bg-white dark:bg-gray-800 backdrop-blur-[20px] p-4 sm:p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col justify-between overflow-y-auto transition-all duration-300 font-dashboard rounded-[24px] border border-gray-200/90 dark:border-gray-700/80">
             <div>
-                {/* Mobile Drawer Only: Avatar & Name (Removed on Web Response) */}
-                {userProfileDrawer && (
-                    <div className="flex md:hidden flex-col items-center mb-4 relative group">
-                        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-2xl shadow-md border-2 border-purple-100 dark:border-gray-700 select-none">
-                            {(authUser?.firstName || authUser?.name || authUser?.username || authAdmin?.name || "U").charAt(0).toUpperCase()}
-                        </div>
-
-                        <h2 className="text-base font-extrabold mt-2 text-[#2D3748] dark:text-white tracking-tight text-center">
-                            {authAdmin ? (authAdmin?.name || "Natural Admin") : `${authUser?.firstName || ""} ${authUser?.lastName || ""}`}
-                        </h2>
-                    </div>
-                )}
-
-                <nav className={`${userProfileDrawer ? "mt-4" : "mt-0"} space-y-1.5`}>
+                <nav className="space-y-1.5">
                     {navigationLinks.map((item) => {
                         const active = isLinkActive(item.key);
                         return (
                             <Link
                                 key={item.key}
                                 to={item.key}
-                                onClick={userProfileDrawer ? () => setUserProfileDrawer(false) : null}
                                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl text-xs font-bold tracking-tight transition-all duration-200 ${active ? "bg-[#075C2A] text-white shadow-md shadow-emerald-500/20" : "hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-[#4A5568] dark:text-gray-300"}`}
                             >
                                 <span className="text-base">{item.icon}</span> {item.label}
@@ -170,10 +155,7 @@ export default function UserProfileSidebar({ userProfileDrawer, setUserProfileDr
                   </button>
                 ) : (
                   <button
-                      onClick={() => {
-                        if (setUserProfileDrawer) setUserProfileDrawer(false);
-                        navigate("/login");
-                      }}
+                      onClick={() => navigate("/login")}
                       className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#075C2A] to-[#054593] shadow-md hover:opacity-95 transition cursor-pointer"
                   >
                       <span>Sign In / Create Account</span>

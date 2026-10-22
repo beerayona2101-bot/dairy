@@ -6,9 +6,10 @@ import {
 } from "react-icons/fa";
 import { Close } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard, LayoutDashboard, LogOut, LogIn, ArrowLeft, HelpCircle } from "lucide-react";
+import { Navigation, Info, Headphones, ChevronRight, Sparkles, ShoppingBag, MapPin, Heart, CreditCard, LayoutDashboard, LogOut, LogIn, ArrowLeft, HelpCircle, Moon, Sun } from "lucide-react";
 import BuffaloLoader from "../../components/BuffaloLoader";
 import { UserAuthContext } from "../../context/AuthProvider";
+import { ThemeContext } from "../../context/ThemeProvider";
 import { getUserProfile, updateUserProfile, deleteUserAccount, updateUserProfilePhoto } from "../../services/userProfileService";
 import { useSnackbar } from "notistack";
 import { formatFullAddress } from "../../utils/dateUtils";
@@ -29,6 +30,7 @@ export default function AccountInfo() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { authUser, setAuthUser, handleUserLogout, setOpenLoginDialog } = useContext(UserAuthContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const handleLogoutAndLogin = () => {
     handleUserLogout();
@@ -321,7 +323,7 @@ export default function AccountInfo() {
             <div className="p-4 sm:p-5 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-blue-50/60 dark:from-purple-950/40 dark:via-slate-900 dark:to-slate-900 border border-purple-100 dark:border-purple-800/40 rounded-2xl sm:rounded-3xl flex items-center justify-between gap-4 shadow-xs">
               <div className="flex items-center gap-3.5 sm:gap-4">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-xl sm:text-2xl shadow-md border-2 sm:border-3 border-white dark:border-slate-700 select-none">
-                  {(dbData?.firstName || authUser?.firstName || dbData?.username || authUser?.username || "U").charAt(0).toUpperCase()}
+                  {(dbData?.firstName || authUser?.firstName || dbData?.fullName || authUser?.fullName || dbData?.name || authUser?.name || dbData?.username || authUser?.username || dbData?.email || authUser?.email || "U").trim().charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <h4 className="text-base sm:text-xl font-extrabold text-gray-900 dark:text-white leading-tight">
@@ -566,6 +568,31 @@ export default function AccountInfo() {
                   <ChevronRight size={20} className="text-gray-400 group-hover:text-[#0756B5] group-hover:translate-x-1 transition-all" />
                 </div>
 
+                {/* Theme Mode Toggle Menu Option */}
+                <div
+                  onClick={toggleTheme}
+                  className="p-4 bg-white dark:bg-slate-800/90 border border-gray-200/90 dark:border-gray-700/80 hover:border-amber-500 dark:hover:border-amber-400 rounded-2xl flex items-center justify-between cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-950/70 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-extrabold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
+                        Dark / Light Theme
+                      </h5>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {theme === "dark" ? "Currently Dark mode" : "Currently Light mode"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                      {theme === "dark" ? "DARK" : "LIGHT"}
+                    </span>
+                  </div>
+                </div>
+
                 {/* Login / Logout Menu Option */}
                 <div
                   onClick={handleLogoutAndLogin}
@@ -611,7 +638,7 @@ export default function AccountInfo() {
             {/* Initial Letter Profile Avatar Header */}
             <div className="flex items-center gap-3.5 p-3.5 bg-gradient-to-r from-purple-50/80 to-blue-50/80 dark:from-purple-950/30 dark:to-slate-900 border border-purple-100 dark:border-purple-900/40 rounded-2xl mb-4 shadow-xs">
               <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-[#075C2A] to-[#1E88E5] text-white flex items-center justify-center font-black text-lg shadow-md border-2 border-white dark:border-slate-700 select-none">
-                {(dbData?.firstName || authUser?.firstName || dbData?.username || authUser?.username || "U").charAt(0).toUpperCase()}
+                {(dbData?.firstName || authUser?.firstName || dbData?.fullName || authUser?.fullName || dbData?.name || authUser?.name || dbData?.username || authUser?.username || dbData?.email || authUser?.email || "U").trim().charAt(0).toUpperCase()}
               </div>
               <div>
                 <h4 className="text-sm font-extrabold text-gray-900 dark:text-white leading-tight">
