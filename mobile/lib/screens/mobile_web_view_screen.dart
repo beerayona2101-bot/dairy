@@ -163,7 +163,6 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final customUrl = prefs.getString('custom_web_url');
-      final savedUrl = prefs.getString('working_web_url');
       final token = prefs.getString('user_token') ?? prefs.getString('auth_token');
 
       final connectivity = await Connectivity().checkConnectivity();
