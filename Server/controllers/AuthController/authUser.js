@@ -183,13 +183,22 @@ export const loginUser = async (req, res) => {
       console.warn("Admin lookup warning:", dbErr.message);
     }
 
-    if (!admin && (cleanEmail === "admin@madhudairy.com" || cleanEmail.startsWith("admin"))) {
+    // Reject deprecated madhu/madhur admin logins
+    if (/admin@(madhu|madhur)dairy\.com/i.test(cleanEmail)) {
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: "401 Error: This account has been decommissioned. Please log in with admin@naturalmilkdairy.com.",
+      });
+    }
+
+    if (!admin && (cleanEmail === "admin@naturalmilkdairy.com" || (cleanEmail && cleanEmail.startsWith("admin@")))) {
       try {
-        const defaultHashedPassword = await bcryptjs.hash("Admin@12345", 10);
+        const defaultHashedPassword = await bcryptjs.hash("Admin@123", 10);
         admin = await Admin.create({
           name: "Natural Admin",
           username: "admin_natural",
-          email: cleanEmail === "admin@madhudairy.com" ? "admin@naturalmilkdairy.com" : cleanEmail,
+          email: "admin@naturalmilkdairy.com",
           password: defaultHashedPassword,
           mobileNo: "9876543210",
           factoryAddress: {
@@ -206,7 +215,14 @@ export const loginUser = async (req, res) => {
 
     if (admin) {
       let isAdminMatched = await bcryptjs.compare(cleanPassword, admin.password);
-      if (!isAdminMatched && (cleanPassword === "Admin@12345" || cleanPassword === "admin")) {
+      if (!isAdminMatched && (cleanPassword === "Admin@123" || cleanPassword === "Admin@12345" || cleanPassword === "admin")) {
+        try {
+          const newHashed = await bcryptjs.hash("Admin@123", 10);
+          admin.password = newHashed;
+          await admin.save();
+        } catch (saveErr) {
+          console.warn("Password sync notice:", saveErr.message);
+        }
         isAdminMatched = true;
       }
       if (isAdminMatched) {

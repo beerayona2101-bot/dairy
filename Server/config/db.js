@@ -74,16 +74,29 @@ const defaultCustomers = [
 
 const seedDefaultData = async () => {
   try {
-    // 1. Seed Admin
+    // 1. Maintain single Admin account and remove duplicate madhu / madhur accounts
     const adminEmail = "admin@naturalmilkdairy.com";
-    const existingAdmin = await Admin.findOne({
+    const adminPasswordPlain = "Admin@123";
+    const hashedAdminPassword = await bcryptjs.hash(adminPasswordPlain, 10);
+
+    // Delete any legacy/duplicate admin accounts matching madhu or madhur or other emails
+    await Admin.deleteMany({
       $or: [
-        { email: { $in: [adminEmail, "admin@MADHUdairy.com"] } },
-        { username: "admin_natural" },
+        { email: { $regex: /madhu|madhur/i } },
+        { username: { $regex: /madhu|madhur/i } },
+        { name: { $regex: /madhu|madhur/i } },
+        { email: { $ne: adminEmail } },
       ],
     });
-    if (!existingAdmin) {
-      const hashedAdminPassword = await bcryptjs.hash("Admin@12345", 10);
+
+    // Remove any user accounts created with admin madhu/madhur emails
+    await User.deleteMany({
+      email: { $regex: /admin@(madhu|madhur)dairy\.com/i },
+    });
+
+    // Find or create the single primary admin account
+    let singleAdmin = await Admin.findOne({ email: adminEmail });
+    if (!singleAdmin) {
       await Admin.create({
         name: "Natural Admin",
         username: "admin_natural",
@@ -97,12 +110,13 @@ const seedDefaultData = async () => {
           pincode: "400001",
         },
       });
-      console.log("✅ Admin Account Ready: admin@naturalmilkdairy.com / Admin@12345");
-    } else if (existingAdmin.name && existingAdmin.name.includes("MADHU")) {
-      existingAdmin.name = "Natural Admin";
-      existingAdmin.username = "admin_natural";
-      existingAdmin.email = adminEmail;
-      await existingAdmin.save();
+      console.log("✅ Admin Account Configured: admin@naturalmilkdairy.com / Admin@123");
+    } else {
+      singleAdmin.name = "Natural Admin";
+      singleAdmin.username = "admin_natural";
+      singleAdmin.password = hashedAdminPassword;
+      await singleAdmin.save();
+      console.log("✅ Admin Account Synced: admin@naturalmilkdairy.com / Admin@123");
     }
 
     // 2. Seed Customers

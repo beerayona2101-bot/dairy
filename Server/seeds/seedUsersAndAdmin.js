@@ -33,16 +33,26 @@ const seedCredentials = async () => {
     console.log("Connecting to MongoDB Atlas...");
     await mongoose.connect(dbUrl);
 
+    // Remove any duplicate madhu / madhur admin accounts
+    await Admin.deleteMany({
+      $or: [
+        { email: { $regex: /madhu|madhur/i } },
+        { username: { $regex: /madhu|madhur/i } },
+        { name: { $regex: /madhu|madhur/i } },
+        { email: { $ne: "admin@naturalmilkdairy.com" } }
+      ]
+    });
+
     // 1. Seed Admin
-    const adminEmail = "admin@madhudairy.com";
-    const adminPassword = "Admin@12345";
+    const adminEmail = "admin@naturalmilkdairy.com";
+    const adminPassword = "Admin@123";
     const hashedAdminPassword = await bcryptjs.hash(adminPassword, 10);
 
     await Admin.findOneAndUpdate(
       { email: adminEmail },
       {
-        name: "Madhu Admin",
-        username: "admin_madhu",
+        name: "Natural Admin",
+        username: "admin_natural",
         email: adminEmail,
         password: hashedAdminPassword,
         mobileNo: "9876543210",
@@ -55,7 +65,7 @@ const seedCredentials = async () => {
       },
       { upsert: true, new: true }
     );
-    console.log("Admin account created/updated successfully.");
+    console.log("Admin account created/updated successfully: admin@naturalmilkdairy.com / Admin@123");
 
     // 2. Seed Customer User
     const userEmail = "user@madhudairy.com";
