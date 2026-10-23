@@ -23,6 +23,8 @@
     rel="stylesheet" />
 
   <link rel="stylesheet" href="/src/index.css" />
+  <!-- Razorpay Checkout SDK -->
+  <script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
@@ -35,9 +37,6 @@
   <div id="root"></div>
 
   <script type="module" src="/src/main.jsx"></script>
-
-  <!-- Razorpay: deferred so it does NOT block HTML parsing -->
-  <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <script>
     function googleTranslateElementInit() {

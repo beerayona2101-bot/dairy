@@ -244,6 +244,12 @@ export const loginUser = async (req, res) => {
             mobileNo: admin.mobileNo,
           },
         });
+      } else {
+        return res.status(401).json({
+          success: false,
+          statusCode: 401,
+          message: "Incorrect password. Please try again.",
+        });
       }
     }
 
@@ -262,7 +268,7 @@ export const loginUser = async (req, res) => {
       return res.status(404).json({
         success: false,
         statusCode: 404,
-        message: "404 Error: User account not found. Please register an account first.",
+        message: "User ID not found. Please register an account first.",
       });
     }
 
@@ -275,7 +281,7 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({
         success: false,
         statusCode: 401,
-        message: "401 Error: Invalid email or password.",
+        message: "Incorrect password. Please try again.",
       });
     }
 

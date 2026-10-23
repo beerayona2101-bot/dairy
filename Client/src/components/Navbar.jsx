@@ -53,11 +53,12 @@ export default function Navbar() {
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
     const location = useLocation();
-    const isCheckoutPage = location.pathname.includes("checkout");
-    const isCartPage = location.pathname.includes("cart");
-    const isProductsCatalog = location.pathname === "/products";
-    const isProductsPage = location.pathname === "/products" || location.pathname.startsWith("/products");
-    const isProductDetailsPage = location.pathname.startsWith("/product-details") || location.pathname.includes("product-details");
+    const currentPath = (location.pathname || "").toLowerCase();
+    const isCheckoutPage = currentPath.includes("checkout");
+    const isCartPage = currentPath.includes("cart");
+    const isProductsCatalog = currentPath === "/products";
+    const isProductsPage = currentPath === "/products" || currentPath.startsWith("/products");
+    const isProductDetailsPage = currentPath.startsWith("/product-details") || currentPath.includes("product-details");
     const hideNavItems = isCheckoutPage || isCartPage;
     const hideMobileTopNav = isProductsPage || isProductDetailsPage || isCartPage || isCheckoutPage;
 
@@ -699,9 +700,10 @@ export default function Navbar() {
                 ) : null}
             </Menu>
 
-            {/* Mobile Bottom Navigation Bar (Hidden on Product Details, Category Products Listing, and Checkout) */}
+            {/* Mobile Bottom Navigation Bar (Hidden on Product Details, Category Products Listing, Cart, and Checkout) */}
             {!location.pathname.startsWith('/product-details') &&
              !(location.pathname.startsWith('/products/') && location.pathname.replace(/^\/products\/?/, '').trim().length > 0) &&
+             !isCartPage &&
              !isCheckoutPage && (
                 <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-[52px] sm:h-[56px] bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border-t border-gray-200/85 dark:border-gray-800/85 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-6px_24px_rgba(0,0,0,0.4)] flex items-center justify-around px-1 sm:px-3 translate-y-0">
                     {/* 1. Products */}

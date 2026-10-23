@@ -36,7 +36,7 @@ export default function Layout({ children }) {
     const isWishlistPage = location.pathname.includes("wishlist");
     const hideFooter = isProductsPage || isWishlistPage || isProductDetailsPage || isCheckoutPage || isCartPage;
 
-    const isNoBottomNav = isProductDetailsPage || isCheckoutPage;
+    const isNoBottomNav = isProductDetailsPage || isCheckoutPage || isCartPage;
 
     return (
         <div ref={scrollRef} className="min-h-screen w-full max-w-full flex flex-col bg-fixed bg-cover bg-center text-black dark:text-white transition-colors duration-300 relative">

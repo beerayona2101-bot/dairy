@@ -57,7 +57,7 @@ export const loginAdmin = async (req, res) => {
       return res.status(404).json({
         success: false,
         statusCode: 404,
-        message: "404 Error: Admin account not found.",
+        message: "User ID not found. Admin account does not exist.",
       });
     }
 
@@ -78,7 +78,7 @@ export const loginAdmin = async (req, res) => {
       return res.status(401).json({
         success: false,
         statusCode: 401,
-        message: "401 Error: Invalid email or password.",
+        message: "Incorrect password. Please try again.",
       });
     }
 

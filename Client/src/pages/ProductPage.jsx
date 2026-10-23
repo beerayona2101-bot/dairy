@@ -252,10 +252,6 @@ export default function ProductPage() {
                             <ArrowBackIcon sx={{ fontSize: "1rem" }} />
                             <span>All Categories</span>
                         </button>
-                        <span className="text-slate-300 dark:text-slate-600 font-bold">/</span>
-                        <span className="font-black text-[#0756B5] dark:text-emerald-400 capitalize truncate max-w-[170px] sm:max-w-none">
-                            {categoryInfo?.title || unslugify(productId)}
-                        </span>
                     </div>
 
                     <div className="hidden sm:flex items-center gap-2">
@@ -388,6 +384,8 @@ export default function ProductPage() {
                                     stock={product?.stock || 0}
                                     quantityUnit={product?.quantityUnit || "unit"}
                                     rating={product?.rating || 4.9}
+                                    titleColor="text-black dark:text-white"
+                                    priceColor="text-[#0756B5] dark:text-blue-400"
                                 />
                             ))}
                         </div>

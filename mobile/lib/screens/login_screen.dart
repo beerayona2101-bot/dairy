@@ -21,9 +21,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _acceptTerms = true;
   bool _obscurePassword = true;
+  String? _inlineError;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_clearInlineError);
+    _passwordController.addListener(_clearInlineError);
+  }
+
+  void _clearInlineError() {
+    if (_inlineError != null) {
+      setState(() {
+        _inlineError = null;
+      });
+    }
+  }
 
   @override
   void dispose() {
+    _emailController.removeListener(_clearInlineError);
+    _passwordController.removeListener(_clearInlineError);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -42,6 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
+
+    setState(() {
+      _inlineError = null;
+    });
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.login(
@@ -71,9 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
         (route) => false,
       );
     } else {
+      String rawMsg = authProvider.errorMessage ?? 'Login Failed';
+      rawMsg = rawMsg.replaceAll(RegExp(r'^\d{3}\s+Error:\s*'), '');
+      setState(() {
+        _inlineError = rawMsg;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.errorMessage ?? 'Login Failed'),
+          content: Text(rawMsg),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -269,6 +296,52 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Prominent Inline Error Banner
+                      if (_inlineError != null) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF450A0A).withValues(alpha: 0.6) : const Color(0xFFFEF2F2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF991B1B) : const Color(0xFFFECACA),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.error_outline_rounded,
+                                color: Color(0xFFEF4444),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _inlineError!,
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => setState(() => _inlineError = null),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 16,
+                                  color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+
                       // 1. Email Address Label
                       Text(
                         'Email Address',

@@ -6,7 +6,7 @@ import { loginUser } from "../../../services/userService";
 import { AdminAuthContext, UserAuthContext } from "../../../context/AuthProvider";
 import company from "../../../data/company.json";
 import BuffaloLoader from "../../../components/BuffaloLoader";
-import { Eye, EyeOff, ArrowLeft, Home, Mail, Lock, ChevronRight } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Home, Mail, Lock, ChevronRight, AlertCircle } from "lucide-react";
 import { ThemeContext } from "../../../context/ThemeProvider";
 import logoDarkMode from "../../../assets/logoDarkMode.png";
 import logoLightMode from "../../../assets/logoLightMode.png";
@@ -29,6 +29,7 @@ export default function UserLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(true);
   const [termsModalTab, setTermsModalTab] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,6 +44,9 @@ export default function UserLogin() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (errorMessage) {
+      setErrorMessage("");
+    }
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -51,8 +55,10 @@ export default function UserLogin() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
     if (!agreeTerms) {
+      setErrorMessage("Please tick the checkbox to agree to the Terms and Conditions.");
       return enqueueSnackbar("Please tick the checkbox to agree to the Terms and Conditions.", {
         variant: "warning",
       });
@@ -113,17 +119,26 @@ export default function UserLogin() {
           navigate(destination, { replace: true });
         }
       } else {
-        const errorMsg = getFriendlyErrorMessage(res?.message || "401 Error: Login failed, please check your credentials.");
-        enqueueSnackbar(errorMsg, {
+        const rawMsg = res?.message || "Login failed, please check your credentials.";
+        const cleanMsg = typeof rawMsg === "string" ? rawMsg.replace(/^\d{3}\s+Error:\s*/i, "") : rawMsg;
+        setErrorMessage(cleanMsg);
+        enqueueSnackbar(cleanMsg, {
           variant: "error",
         });
       }
     } catch (error) {
-      const errorMsg = getFriendlyErrorMessage(error, "500 Error: Server error or invalid credentials.");
-      enqueueSnackbar(errorMsg, { variant: "error" });
+      const rawServerMsg = error?.response?.data?.message || error?.message;
+      let cleanMsg = rawServerMsg;
+      if (cleanMsg && typeof cleanMsg === "string") {
+        cleanMsg = cleanMsg.replace(/^\d{3}\s+Error:\s*/i, "");
+      } else {
+        cleanMsg = "Server error or invalid credentials. Please try again.";
+      }
+      setErrorMessage(cleanMsg);
+      enqueueSnackbar(cleanMsg, { variant: "error" });
     } finally {
       setIsLoading(false);
-      setFormData({ email: "", password: "" });
+      // Retain entered email so user never has to re-type on invalid credentials!
     }
   };
 
@@ -231,6 +246,28 @@ export default function UserLogin() {
             {/* Inputs Card Container */}
             <div className="bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/40 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:dark:bg-transparent">
               <form onSubmit={handleFormSubmit} className="space-y-2.5 sm:space-y-2.5">
+                {/* Prominent Inline Error Message Alert Banner */}
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className="flex items-start gap-2.5 p-3 rounded-xl sm:rounded-2xl bg-rose-50/95 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-semibold shadow-xs"
+                    role="alert"
+                  >
+                    <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-bold leading-snug">{errorMessage}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setErrorMessage("")}
+                      className="text-rose-400 hover:text-rose-700 dark:hover:text-rose-200 text-lg leading-none px-1 cursor-pointer"
+                      aria-label="Dismiss error"
+                    >
+                      ×
+                    </button>
+                  </motion.div>
+                )}
             {/* Email Address */}
             <div>
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">

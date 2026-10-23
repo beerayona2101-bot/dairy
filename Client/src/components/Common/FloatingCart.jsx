@@ -71,7 +71,8 @@ export default function FloatingCart() {
   // On product-details or category-products (where bottom nav is hidden), float comfortably above bottom safe area.
   const isBottomNavHidden =
     pathname.startsWith("/product-details") ||
-    (pathname.startsWith("/products/") && pathname.replace(/^\/products\/?/, "").trim().length > 0);
+    (pathname.startsWith("/products/") && pathname.replace(/^\/products\/?/, "").trim().length > 0) ||
+    pathname.startsWith("/cart");
   const bottomPositionClass = isBottomNavHidden
     ? "bottom-[calc(18px+env(safe-area-inset-bottom,0px))]"
     : "bottom-[calc(64px+env(safe-area-inset-bottom,0px))]";

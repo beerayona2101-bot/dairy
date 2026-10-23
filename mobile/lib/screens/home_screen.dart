@@ -194,14 +194,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(cartProvider, authProvider),
+      bottomNavigationBar: _selectedNavIndex == 2 ? null : _buildBottomNavBar(cartProvider, authProvider),
     );
   }
 
   PreferredSizeWidget _buildAppBar(bool isDark, AuthProvider authProvider, CartProvider cartProvider) {
     return AppBar(
       automaticallyImplyLeading: false,
-      titleSpacing: 16,
+      leading: _selectedNavIndex == 2
+          ? IconButton(
+              icon: Icon(Icons.arrow_back_rounded, color: isDark ? Colors.white : AppTheme.textDark),
+              onPressed: () => setState(() => _selectedNavIndex = 0),
+              tooltip: 'Back to Home',
+            )
+          : null,
+      titleSpacing: _selectedNavIndex == 2 ? 0 : 16,
       elevation: 0,
       backgroundColor: isDark ? AppTheme.darkCard : Colors.white,
       title: Row(
@@ -469,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               itemCount: _filteredProducts.take(6).length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.68,
+                childAspectRatio: 0.58,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),
@@ -856,7 +863,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       itemCount: _filteredProducts.length,
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 0.68,
+                        childAspectRatio: 0.58,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
@@ -877,42 +884,78 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // ============================================================
   Widget _buildCartTab(bool isDark, CartProvider cart, AuthProvider auth) {
     if (cart.cartItems.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey.shade300),
-              const SizedBox(height: 16),
-              Text(
-                'Your cart is empty',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : AppTheme.textDark,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedNavIndex = 0),
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  size: 20,
+                  color: Color(0xFF075C2A),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Add fresh dairy products from our catalog!',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-                icon: const Icon(Icons.storefront_rounded, color: Colors.white),
-                label: const Text('Browse Products', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                onPressed: () => setState(() => _selectedNavIndex = 1),
-              ),
-            ],
+            ),
           ),
-        ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey.shade300),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Your cart is empty',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : AppTheme.textDark,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Add fresh dairy products from our catalog!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      icon: const Icon(Icons.storefront_rounded, color: Colors.white),
+                      label: const Text('Browse Products', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      onPressed: () => setState(() => _selectedNavIndex = 1),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       );
     }
 
@@ -920,19 +963,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     return Column(
       children: [
-        // Cart header
+        // Cart header with back arrow button at top left corner
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Cart (${cart.itemCount} items)',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: isDark ? Colors.white : AppTheme.textDark,
-                ),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => setState(() => _selectedNavIndex = 0),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      margin: const EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                        border: Border.all(
+                          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        size: 18,
+                        color: Color(0xFF075C2A),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Cart (${cart.itemCount} items)',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: isDark ? Colors.white : AppTheme.textDark,
+                    ),
+                  ),
+                ],
               ),
               TextButton.icon(
                 onPressed: () => _confirmClearCart(cart),
@@ -1200,7 +1274,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             itemCount: wishlisted.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.68,
+              childAspectRatio: 0.58,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
             ),
@@ -1510,14 +1584,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             top: 12,
                             left: 12,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                               decoration: BoxDecoration(
-                                color: Colors.redAccent,
-                                borderRadius: BorderRadius.circular(8),
+                                color: const Color(0xFFFEF9C3),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: const Color(0xFFFDE047)),
                               ),
                               child: Text(
                                 '${product.discount.toInt()}% OFF',
-                                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                                style: const TextStyle(color: Color(0xFF854D0E), fontSize: 11, fontWeight: FontWeight.w900),
                               ),
                             ),
                           ),
@@ -1575,7 +1650,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w900,
-                            color: isDark ? Colors.white : AppTheme.textDark,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -1589,7 +1664,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: const TextStyle(
                                 fontSize: 26,
                                 fontWeight: FontWeight.w900,
-                                color: AppTheme.primary,
+                                color: Color(0xFF0756B5),
                               ),
                             ),
                             if (product.discount > 0) ...[
@@ -1909,7 +1984,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ? null
                               : () async {
                                   if (!formKey.currentState!.validate()) return;
-                                  setModalState(() => isPlacingOrder = true);
 
                                   final orderItems = cart.cartItems.values.map((item) {
                                     final prod = item['product'] as ProductModel;
@@ -1921,16 +1995,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     };
                                   }).toList();
 
+                                  final addressData = {
+                                    'name': nameController.text.trim(),
+                                    'phone': phoneController.text.trim(),
+                                    'address': addressController.text.trim(),
+                                    'pincode': pincodeController.text.trim(),
+                                  };
+
+                                  final finalTotal = cart.totalAmount + (cart.totalAmount >= 200 ? 0 : 30);
+
+                                  if (selectedPayment == 'ONLINE') {
+                                    Navigator.pop(ctx);
+                                    _showMobileRazorpayModal(
+                                      context,
+                                      cart: cart,
+                                      auth: auth,
+                                      orderItems: orderItems,
+                                      totalAmount: finalTotal,
+                                      address: addressData,
+                                    );
+                                    return;
+                                  }
+
+                                  setModalState(() => isPlacingOrder = true);
                                   final result = await OrderService.placeOrder(
                                     token: auth.currentUser?.token ?? '',
                                     items: orderItems,
-                                    totalAmount: cart.totalAmount + (cart.totalAmount >= 200 ? 0 : 30),
-                                    address: {
-                                      'name': nameController.text.trim(),
-                                      'phone': phoneController.text.trim(),
-                                      'address': addressController.text.trim(),
-                                      'pincode': pincodeController.text.trim(),
-                                    },
+                                    totalAmount: finalTotal,
+                                    address: addressData,
                                     paymentMethod: selectedPayment,
                                   );
 
@@ -1973,6 +2065,255 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           );
         });
+      },
+    );
+  }
+
+  void _showMobileRazorpayModal(
+    BuildContext parentContext, {
+    required CartProvider cart,
+    required AuthProvider auth,
+    required List<Map<String, dynamic>> orderItems,
+    required double totalAmount,
+    required Map<String, dynamic> address,
+  }) {
+    String selectedMethod = 'UPI';
+    bool isProcessing = false;
+
+    showModalBottomSheet(
+      context: parentContext,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) {
+        final isDark = Theme.of(sheetCtx).brightness == Brightness.dark;
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 20, spreadRadius: 4),
+                ],
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Razorpay Payment',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: isDark ? Colors.white : AppTheme.textDark,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                'TEST MODE',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            Navigator.pop(sheetCtx);
+                            ScaffoldMessenger.of(parentContext).showSnackBar(
+                              const SnackBar(
+                                content: Text('❌ Not Paid: Order Cancelled\nPayment was cancelled.'),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Amount Payable: ₹${totalAmount.toStringAsFixed(0)}',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'Choose any payment option below to simulate payment:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        {'id': 'UPI', 'name': 'UPI', 'desc': 'GPay, PhonePe, Paytm', 'icon': '📱'},
+                        {'id': 'WALLET', 'name': 'Wallets', 'desc': 'Airtel, Mobikwik', 'icon': '👛'},
+                        {'id': 'CARD', 'name': 'Cards', 'desc': 'Visa, Mastercard, RuPay', 'icon': '💳'},
+                        {'id': 'NETBANKING', 'name': 'Net Banking', 'desc': 'SBI, HDFC, ICICI, Axis', 'icon': '🏦'},
+                      ].map((item) {
+                        final isSel = selectedMethod == item['id'];
+                        return InkWell(
+                          onTap: () => setSheetState(() => selectedMethod = item['id'] as String),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            width: (MediaQuery.of(context).size.width - 50) / 2,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: isSel
+                                  ? AppTheme.primary.withValues(alpha: 0.12)
+                                  : (isDark ? const Color(0xFF334155) : Colors.grey.shade100),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSel ? AppTheme.primary : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                                width: isSel ? 2 : 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(item['icon'] as String, style: const TextStyle(fontSize: 22)),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item['name'] as String,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: isSel
+                                              ? AppTheme.primary
+                                              : (isDark ? Colors.white : AppTheme.textDark),
+                                        ),
+                                      ),
+                                      Text(
+                                        item['desc'] as String,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(sheetCtx);
+                              ScaffoldMessenger.of(parentContext).showSnackBar(
+                                const SnackBar(
+                                  content: Text('❌ Not Paid: Order Cancelled\nPayment was cancelled.'),
+                                  backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              '❌ Cancel (Not Paid)',
+                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                            onPressed: isProcessing
+                                ? null
+                                : () async {
+                                    setSheetState(() => isProcessing = true);
+                                    final result = await OrderService.placeOrder(
+                                      token: auth.currentUser?.token ?? '',
+                                      items: orderItems,
+                                      totalAmount: totalAmount,
+                                      address: address,
+                                      paymentMethod: 'ONLINE ($selectedMethod)',
+                                    );
+                                    setSheetState(() => isProcessing = false);
+                                    if (!sheetCtx.mounted) return;
+                                    Navigator.pop(sheetCtx);
+
+                                    cart.clearCart();
+                                    setState(() => _selectedNavIndex = 0);
+
+                                    if (!parentContext.mounted) return;
+                                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                                      SnackBar(
+                                        content: Text(result['success'] == true
+                                            ? '🎉 Demo Payment Successful via $selectedMethod! Order placed.'
+                                            : '✅ Order received! Placed successfully.'),
+                                        backgroundColor: Colors.green,
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: const Duration(seconds: 3),
+                                      ),
+                                    );
+                                  },
+                            child: isProcessing
+                                ? const SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                  )
+                                : Text(
+                                    '🎉 Success ($selectedMethod)',
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
       },
     );
   }

@@ -37,6 +37,46 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && window.Razorpay) {
+      return resolve(true);
+    }
+    const existingScript = document.getElementById("razorpay-checkout-js");
+    if (existingScript) {
+      if (window.Razorpay) return resolve(true);
+      let elapsed = 0;
+      const interval = setInterval(() => {
+        elapsed += 100;
+        if (typeof window !== "undefined" && window.Razorpay) {
+          clearInterval(interval);
+          resolve(true);
+        } else if (elapsed >= 1000) {
+          clearInterval(interval);
+          resolve(Boolean(window.Razorpay));
+        }
+      }, 100);
+      return;
+    }
+
+    try {
+      const script = document.createElement("script");
+      script.id = "razorpay-checkout-js";
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+
+      setTimeout(() => {
+        resolve(Boolean(typeof window !== "undefined" && window.Razorpay));
+      }, 1200);
+    } catch {
+      resolve(false);
+    }
+  });
+};
+
 export default function OrderCheckoutPage() {
 
   const { enqueueSnackbar } = useSnackbar();
@@ -66,6 +106,10 @@ export default function OrderCheckoutPage() {
   const [orderLoading, setOrderLoading] = useState(false);
   const [selectedPaymentMode, setSelectedPaymentMode] = useState(null);
   const [highlightedItems, setHighlightedItems] = useState([]);
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
+  const [selectedDemoMethod, setSelectedDemoMethod] = useState("upi");
+  const [demoOrderHandler, setDemoOrderHandler] = useState(null);
+  const [demoOrderData, setDemoOrderData] = useState(null);
 
   const handleOpenEditAddress = () => {
     if (!deliveryAddress) return;
@@ -229,143 +273,151 @@ export default function OrderCheckoutPage() {
           enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
         }
       } else if (selectedMode === "Online") {
-        let data = null;
-        try {
-          data = await razorpayOrderPayment(totalAmount);
-        } catch (err) {
-          console.warn("Razorpay order error, falling back to instant online payment", err);
-        }
-
-        if (!data || data?.isMock || !window.Razorpay) {
-          const finalPayload = {
-            ...orderPayload,
-            paymentMode: "Online",
-          };
-          const res = await createOrderApi(finalPayload);
-          if (res?.success) {
-            if (socket && socket.connected) {
-              socket.emit("place-new-order", { orderData: finalPayload, createdOrder: res.order });
-            }
-            setOpen(false);
-            clearCart();
-            fetchOrders?.();
-            alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
-            enqueueSnackbar("Payment successful! Order placed successfully.", { variant: 'success' });
-            navigate(`/user-profile/orders`, { replace: true });
-          } else {
-            enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
-          }
-          return;
-        }
+        // Close the payment selection dialog immediately
+        setOpen(false);
 
         let orderProcessed = false;
 
         const completeDemoOrder = async (payInfo = null) => {
           if (orderProcessed) return;
           orderProcessed = true;
+          setDemoModalOpen(false);
+          setOrderLoading(true);
 
           const finalPayload = {
             ...orderPayload,
             paymentMode: "Online",
             razorpay: payInfo || {
-              orderId: data.orderId || `order_demo_${Date.now()}`,
+              orderId: demoOrderData?.orderId || `order_demo_${Date.now()}`,
               paymentId: `pay_demo_${Date.now()}`,
               signature: `mock_sig_${Date.now()}`,
             },
           };
 
-          const res = await createOrderApi(finalPayload);
-          if (res?.success) {
-            if (payInfo?.signature) {
-              await verifyRazorpayPayment({
-                razorpay_order_id: payInfo.orderId,
-                razorpay_payment_id: payInfo.paymentId,
-                razorpay_signature: payInfo.signature,
-                dbOrderId: res.order?._id,
-              }).catch(() => {});
-            }
+          try {
+            const res = await createOrderApi(finalPayload);
+            if (res?.success) {
+              if (payInfo?.signature && !payInfo.signature.startsWith("mock_")) {
+                await verifyRazorpayPayment({
+                  razorpay_order_id: payInfo.orderId,
+                  razorpay_payment_id: payInfo.paymentId,
+                  razorpay_signature: payInfo.signature,
+                  dbOrderId: res.order?._id,
+                }).catch(() => {});
+              }
 
-            if (socket && socket.connected) {
-              socket.emit("place-new-order", {
-                orderData: finalPayload,
-                createdOrder: res.order,
-              });
+              if (socket && socket.connected) {
+                socket.emit("place-new-order", {
+                  orderData: finalPayload,
+                  createdOrder: res.order,
+                });
+              }
+              setOpen(false);
+              clearCart();
+              fetchOrders?.();
+              alert(`🎉 Demo Payment Successful!\n\nYour payment via ${selectedDemoMethod.toUpperCase()} has been accepted. Your order has been placed successfully.`);
+              enqueueSnackbar(`Demo payment successful (${selectedDemoMethod.toUpperCase()})! Order placed.`, { variant: 'success' });
+              navigate(`/user-profile/orders`, { replace: true });
+            } else {
+              enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
             }
-            setOpen(false);
-            clearCart();
-            fetchOrders?.();
-            alert("🎉 Payment Successful!\n\nYour order has been placed successfully.");
-            enqueueSnackbar("Payment successful! Order placed.", { variant: 'success' });
-            navigate(`/user-profile/orders`, { replace: true });
-          } else {
-            enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
+          } catch (err) {
+            enqueueSnackbar(err?.response?.data?.message || "Failed to place order.", { variant: "error" });
+          } finally {
+            setOrderLoading(false);
           }
         };
 
-        const options = {
-          key: data.keyId,
-          amount: data.amount,
-          currency: data.currency,
-          name: "Natural Milk Dairy",
-          description: "Payment for your order",
-          order_id: data.orderId,
-          handler: async (response) => {
-            await completeDemoOrder({
+        const handleCancelOrder = (reason = "Payment was cancelled.") => {
+          if (orderProcessed) return;
+          orderProcessed = true;
+          setDemoModalOpen(false);
+          setOrderLoading(false);
+          alert("❌ Not Paid: Order Cancelled\n\nPayment was cancelled. Your order has not been placed.");
+          enqueueSnackbar("Not paid: Order cancelled.", { variant: "error" });
+        };
+
+        // Open the Razorpay Payment Options Modal immediately!
+        setDemoOrderHandler({ complete: completeDemoOrder, cancel: handleCancelOrder });
+        setDemoModalOpen(true);
+        setOrderLoading(false);
+
+        // Preload order details in background for instant gateway integration
+        razorpayOrderPayment(totalAmount)
+          .then((data) => {
+            if (data?.orderId) setDemoOrderData(data);
+          })
+          .catch((e) => console.warn("Background order creation:", e));
+      }
+    } catch (error) {
+      enqueueSnackbar(error?.response?.data?.message || "An error occurred while placing the order.", { variant: "error" });
+    } finally {
+      setOrderLoading(false);
+    }
+  };
+
+  const handleLaunchOfficialRazorpay = async () => {
+    try {
+      setOrderLoading(true);
+      await loadRazorpayScript();
+
+      if (!window.Razorpay) {
+        enqueueSnackbar("Razorpay SDK is unreachable in your browser/network. Please use Demo Payment buttons.", { variant: "warning" });
+        return;
+      }
+
+      let orderData = demoOrderData;
+      if (!orderData?.orderId) {
+        orderData = await razorpayOrderPayment(totalAmount);
+        setDemoOrderData(orderData);
+      }
+
+      const options = {
+        key: orderData?.keyId || "rzp_test_TZpv3bxIAHtj7y",
+        amount: orderData?.amount || Math.round(totalAmount * 100),
+        currency: orderData?.currency || "INR",
+        name: "Natural Milk Dairy",
+        description: `Payment for Order - ${selectedDemoMethod.toUpperCase()}`,
+        order_id: orderData?.orderId,
+        handler: async (response) => {
+          if (demoOrderHandler?.complete) {
+            await demoOrderHandler.complete({
               orderId: response.razorpay_order_id,
               paymentId: response.razorpay_payment_id,
               signature: response.razorpay_signature,
             });
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            if (demoOrderHandler?.cancel) {
+              demoOrderHandler.cancel("Razorpay window closed by user.");
+            }
           },
-          modal: {
-            ondismiss: async () => {
-              if (!orderProcessed) {
-                await completeDemoOrder();
-              }
-            },
-          },
-          prefill: {
-            name: authUser?.firstName && authUser?.lastName
-              ? `${authUser.firstName} ${authUser.lastName}`
-              : authUser?.username || authUser?.shopName,
-            email: authUser?.email,
-            contact: authUser?.mobileNo,
-          },
-          theme: {
-            color: theme === "dark" ? "#1f2937" : "#1E88E5",
-          },
-          config: {
-            display: {
-              blocks: {
-                wallets: {
-                  name: "All Wallet Options",
-                  instruments: [
-                    {
-                      method: "wallet",
-                      wallets: ["airtelmoney", "mobikwik", "olamoney", "payzapp", "freecharge", "jio"],
-                    },
-                  ],
-                },
-              },
-              sequence: ["block.wallets"],
-              preferences: {
-                show_default_blocks: true,
-              },
-            },
-          },
-        };
+        },
+        prefill: {
+          name: authUser?.firstName && authUser?.lastName
+            ? `${authUser.firstName} ${authUser.lastName}`
+            : authUser?.username || authUser?.shopName || "Customer",
+          email: authUser?.email || "customer@naturalmilkdairy.com",
+          contact: authUser?.mobileNo || "9876543210",
+        },
+        theme: {
+          color: theme === "dark" ? "#0F172A" : "#0284C7",
+        },
+      };
 
-        try {
-          const rzp = new window.Razorpay(options);
-          rzp.on("payment.failed", async function () {
-            await completeDemoOrder();
-          });
-          rzp.open();
-        } catch {
-          await completeDemoOrder();
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        if (demoOrderHandler?.cancel) {
+          demoOrderHandler.cancel(response?.error?.description || "Payment failed or cancelled.");
         }
-      }
-    } catch (error) {
-      enqueueSnackbar(error?.response?.data?.message || "An error occurred while placing the order.", { variant: "error" });
+      });
+      setDemoModalOpen(false);
+      rzp.open();
+    } catch (err) {
+      console.warn("Failed to open official Razorpay window:", err);
+      enqueueSnackbar("Could not open Razorpay gateway. Please use the simulated payment buttons.", { variant: "warning" });
     } finally {
       setOrderLoading(false);
     }
@@ -432,7 +484,7 @@ export default function OrderCheckoutPage() {
 
       {/* Main Full Viewport Checkout Container */}
       <div className="w-full min-h-[calc(100vh-60px)] flex flex-col justify-between bg-slate-50/50 dark:bg-slate-950/40">
-        <section className="w-full max-w-7xl mx-auto pt-2 sm:pt-6 pb-12 px-3 sm:px-6 lg:px-8 flex-1">
+        <section className="w-full max-w-[100%] xl:max-w-[1650px] 2xl:max-w-[1850px] mx-auto pt-2 sm:pt-6 pb-12 px-3 sm:px-6 lg:px-10 flex-1">
           {/* Desktop Header Bar (Shown on Desktop) */}
           <div className="hidden md:flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -670,6 +722,8 @@ export default function OrderCheckoutPage() {
               backgroundColor: "transparent",
               boxShadow: "none",
               borderRadius: "28px",
+              margin: { xs: "12px", sm: "32px" },
+              width: { xs: "calc(100% - 24px)", sm: "100%" },
             },
           },
         }}
@@ -736,6 +790,126 @@ export default function OrderCheckoutPage() {
                   <PaidIcon fontSize="small" />
                   Online Payment
                 </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Demo Razorpay Payment Modal (UPI, Wallet, Cards, Netbanking) */}
+      <Dialog
+        open={demoModalOpen}
+        onClose={() => {
+          if (demoOrderHandler?.cancel) demoOrderHandler.cancel();
+          else setDemoModalOpen(false);
+        }}
+        slots={{
+          transition: Transition,
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              backgroundColor: "transparent",
+              boxShadow: "none",
+              borderRadius: "28px",
+              margin: { xs: "12px", sm: "32px" },
+              width: { xs: "calc(100% - 24px)", sm: "100%" },
+            },
+          },
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-[20px] text-gray-900 dark:text-white rounded-[28px] border border-white/90 dark:border-gray-700/80 p-6 shadow-2xl space-y-4">
+          <header className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
+            <div>
+              <span className="text-xl font-black text-[#2D3748] dark:text-white flex items-center gap-2">
+                <span>Razorpay Demo Payment</span>
+                <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 px-2 py-0.5 rounded-full font-bold uppercase">Test Mode</span>
+              </span>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Amount Payable: <strong className="text-gray-900 dark:text-white">&#8377;{formatNumberWithCommas(totalAmount)}</strong>
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                if (demoOrderHandler?.cancel) demoOrderHandler.cancel();
+                else setDemoModalOpen(false);
+              }}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
+            >
+              <CloseIcon fontSize="small" />
+            </button>
+          </header>
+
+          <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+            Choose any payment option below to simulate payment:
+          </p>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            {[
+              { id: "upi", name: "UPI", desc: "GPay, PhonePe, Paytm", icon: "📱" },
+              { id: "wallet", name: "Wallets", desc: "Airtel, Mobikwik, Freecharge", icon: "👛" },
+              { id: "card", name: "Cards", desc: "Visa, Mastercard, RuPay", icon: "💳" },
+              { id: "netbanking", name: "Net Banking", desc: "SBI, HDFC, ICICI, Axis", icon: "🏦" },
+            ].map((method) => {
+              const isSelected = selectedDemoMethod === method.id;
+              return (
+                <button
+                  key={method.id}
+                  type="button"
+                  onClick={() => setSelectedDemoMethod(method.id)}
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-2.5 ${
+                    isSelected
+                      ? "border-[#0284C7] bg-sky-50 dark:bg-sky-950/40 text-[#0284C7] dark:text-[#38BDF8] ring-2 ring-[#0284C7]/20"
+                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
+                  }`}
+                >
+                  <span className="text-2xl">{method.icon}</span>
+                  <div>
+                    <p className="text-xs font-black leading-tight">{method.name}</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">{method.desc}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="pt-1">
+            <button
+              type="button"
+              disabled={orderLoading}
+              onClick={handleLaunchOfficialRazorpay}
+              className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[#0284C7]/60 hover:border-[#0284C7] bg-sky-50/60 dark:bg-sky-950/30 text-[#0284C7] dark:text-[#38BDF8] hover:bg-sky-100/80 dark:hover:bg-sky-900/40 text-xs font-black transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>⚡ Open Standard Razorpay Gateway Popup</span>
+            </button>
+          </div>
+
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row gap-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                if (demoOrderHandler?.cancel) demoOrderHandler.cancel();
+                else setDemoModalOpen(false);
+              }}
+              className="flex-1 py-3 px-4 rounded-full border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-black text-xs sm:text-sm transition cursor-pointer text-center"
+            >
+              ❌ Cancel (Not Paid)
+            </button>
+
+            <button
+              type="button"
+              disabled={orderLoading}
+              onClick={() => {
+                if (demoOrderHandler?.complete) demoOrderHandler.complete();
+              }}
+              className="flex-1 py-3 px-4 rounded-full bg-gradient-to-r from-[#0284C7] to-[#0369A1] hover:from-[#0369A1] hover:to-[#075985] text-white font-black text-xs sm:text-sm shadow-md transition cursor-pointer text-center"
+            >
+              {orderLoading ? (
+                <BuffaloLoader variant="button" text="Processing..." />
+              ) : (
+                `🎉 Demo Payment Success (${selectedDemoMethod.toUpperCase()})`
               )}
             </button>
           </div>

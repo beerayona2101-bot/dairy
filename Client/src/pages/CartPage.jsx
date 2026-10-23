@@ -115,15 +115,15 @@ export default function CartPage() {
 
     if (cartItems?.length === 0) {
         return (
-            <div className="w-full max-w-5xl mx-auto px-4 py-8 sm:py-14 flex flex-col items-center justify-center min-h-[55vh]">
-                {/* Desktop Web Back Button Header for Empty Cart (Web Response Only) */}
-                <div className="hidden md:flex self-start mb-4">
+            <div className="w-full max-w-5xl mx-auto px-4 py-4 sm:py-14 flex flex-col items-center justify-center min-h-[55vh]">
+                {/* Top Left Corner Back Button Header for Empty Cart */}
+                <div className="flex self-start mb-4">
                     <BackButton
                         fallbackPath="/products"
                         hideOnWeb={false}
                         label="Back to Products"
                         title="Back to Products"
-                        className="hidden md:inline-flex"
+                        className="inline-flex"
                     />
                 </div>
                 <div className="w-full max-w-md px-4 py-8 text-center">
@@ -147,15 +147,15 @@ export default function CartPage() {
 
     return (
         <>
-            {/* Desktop Web Top Navigation Bar: Back Button (Web Response Only) */}
-            <div className="hidden md:flex items-center justify-between w-full max-w-5xl mx-auto pt-3 sm:pt-4 pb-2 px-1 md:px-6">
-                <div className="flex items-center gap-3">
+            {/* Top Navigation Bar: Back Button at the Top Left Corner */}
+            <div className="flex items-center justify-between w-full max-w-5xl mx-auto pt-3 sm:pt-4 pb-2 px-3 sm:px-4 md:px-6">
+                <div className="flex items-center gap-2.5 sm:gap-3">
                     <BackButton
                         fallbackPath="/products"
                         hideOnWeb={false}
                         label="Back"
                         title="Back to Previous Page"
-                        className="hidden md:inline-flex"
+                        className="inline-flex"
                     />
                     <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
                         Shopping Cart
@@ -163,7 +163,7 @@ export default function CartPage() {
                 </div>
                 <Link
                     to="/products"
-                    className="hidden md:inline-flex items-center gap-1.5 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] hover:underline transition-all"
+                    className="inline-flex items-center gap-1.5 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] hover:underline transition-all"
                 >
                     <span>Continue Shopping</span>
                     <span className="text-sm font-black">&rarr;</span>

@@ -15,9 +15,6 @@ import {
     ShieldCheck,
     Clock,
     Sparkles,
-    ChevronLeft,
-    ChevronRight,
-    ArrowRight,
     Milk,
 } from "lucide-react";
 
@@ -400,10 +397,9 @@ export default function HomeWelcomeHero() {
                                         <motion.div variants={ctaEntry} className="pt-0.5 sm:pt-1.5">
                                             <Link
                                                 to={currentSlide.ctaLink}
-                                                className="inline-flex items-center gap-1.5 xs:gap-2 px-3.5 py-1.5 xs:px-4.5 xs:py-2 sm:px-6 sm:py-2.5 rounded-full bg-[#134E24] hover:bg-[#0E3B1B] text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base shadow-[0_2px_8px_rgba(19,78,36,0.25)] hover:shadow-[0_4px_14px_rgba(19,78,36,0.35)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                                                className="inline-flex items-center justify-center px-4 py-1.5 xs:px-5 xs:py-2 sm:px-6 sm:py-2.5 rounded-full bg-[#134E24] hover:bg-[#0E3B1B] text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base shadow-[0_2px_8px_rgba(19,78,36,0.25)] hover:shadow-[0_4px_14px_rgba(19,78,36,0.35)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
                                             >
                                                 <span>{currentSlide.ctaText}</span>
-                                                <ArrowRight className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4" />
                                             </Link>
                                         </motion.div>
                                     </>
@@ -459,10 +455,9 @@ export default function HomeWelcomeHero() {
                                         <motion.div variants={ctaEntry} className="pt-0.5 sm:pt-1.5">
                                             <Link
                                                 to={currentSlide.ctaLink}
-                                                className="inline-flex items-center gap-1.5 xs:gap-2 px-3.5 py-1.5 xs:px-4.5 xs:py-2 sm:px-6 sm:py-2.5 rounded-full bg-[#134E24] hover:bg-[#0E3B1B] text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base shadow-[0_2px_8px_rgba(19,78,36,0.25)] hover:shadow-[0_4px_14px_rgba(19,78,36,0.35)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                                                className="inline-flex items-center justify-center px-4 py-1.5 xs:px-5 xs:py-2 sm:px-6 sm:py-2.5 rounded-full bg-[#134E24] hover:bg-[#0E3B1B] text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base shadow-[0_2px_8px_rgba(19,78,36,0.25)] hover:shadow-[0_4px_14px_rgba(19,78,36,0.35)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
                                             >
                                                 <span>{currentSlide.ctaText}</span>
-                                                <ArrowRight className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4" />
                                             </Link>
                                         </motion.div>
                                     </>
@@ -473,50 +468,6 @@ export default function HomeWelcomeHero() {
                 </motion.div>
             </AnimatePresence>
 
-            {/* Desktop Navigation Chevrons: Visible on hover */}
-            <button
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handlePrev();
-                }}
-                className="hidden md:flex absolute left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 lg:w-12 lg:h-12 items-center justify-center rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 cursor-pointer border border-white/70"
-                aria-label="Previous Slide"
-            >
-                <ChevronLeft className="w-6 h-6 text-slate-900" />
-            </button>
-            <button
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleNext();
-                }}
-                className="hidden md:flex absolute right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 lg:w-12 lg:h-12 items-center justify-center rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 cursor-pointer border border-white/70"
-                aria-label="Next Slide"
-            >
-                <ChevronRight className="w-6 h-6 text-slate-900" />
-            </button>
-
-            {/* Pagination Indicators (4 dots on web, 3 dots on mobile) */}
-            <div className="absolute bottom-2 xs:bottom-2.5 sm:bottom-4 md:bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/20">
-                {activeSlides.map((_, i) => (
-                    <button
-                        key={`hero-dot-${i}`}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setDirection(i > currentIndex ? 1 : -1);
-                            setCurrentIndex(i);
-                        }}
-                        className={`rounded-full transition-all duration-300 cursor-pointer ${
-                            i === currentIndex
-                                ? "w-5 xs:w-6 sm:w-8 h-1.5 sm:h-2.5 bg-[#134E24] ring-1.5 sm:ring-2 ring-white shadow-md"
-                                : "w-1.5 xs:w-2 sm:w-2.5 h-1.5 xs:h-2 sm:h-2.5 bg-white/75 hover:bg-white shadow-2xs"
-                        }`}
-                        aria-label={`Go to slide ${i + 1}`}
-                    />
-                ))}
-            </div>
         </section>
     );
 }

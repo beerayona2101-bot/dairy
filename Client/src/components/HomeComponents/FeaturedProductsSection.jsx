@@ -87,7 +87,11 @@ export default function FeaturedProductsSection({ products = [] }) {
                             key={`featured-${product?._id || idx}`}
                             className={`${isExtraWebCard ? "hidden md:flex" : "flex"} flex-col h-full`}
                         >
-                            <ProductVarietyCard product={product} />
+                            <ProductVarietyCard
+                                product={product}
+                                titleColor="text-black dark:text-white"
+                                priceColor="text-[#0756B5] dark:text-blue-400"
+                            />
                         </div>
                     );
                 })}

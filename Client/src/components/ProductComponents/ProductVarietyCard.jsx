@@ -21,6 +21,7 @@ import { formatNumberWithCommas } from "../../utils/format";
 import { addToWishlist, removeProductFromWishList } from "../../services/userProfileService";
 import { useSnackbar } from 'notistack';
 import { getGuestWishlist, toggleGuestWishlist } from "../../utils/guestWishlist";
+import DiscountBadge from "../Common/DiscountBadge";
 
 export default function ProductVarietyCard(props) {
     const productObj = props.product || props || {};
@@ -246,7 +247,7 @@ export default function ProductVarietyCard(props) {
                     <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-0 m-0 border-0">
                         <EmojiFoodBeverageIcon className="text-[#075C2A] text-2xl sm:text-4xl" />
                         <Link to={`/product-details/${slugify(name)}`}>
-                            <span className="text-[#0756B5] dark:text-[#35A8E8] text-[11px] sm:text-xs font-semibold hover:underline">
+                            <span className={`${props.titleColor || "text-black dark:text-white"} text-[11px] sm:text-xs font-semibold hover:underline`}>
                                 {name}
                             </span>
                         </Link>
@@ -265,6 +266,15 @@ export default function ProductVarietyCard(props) {
                             className="w-full h-full object-cover block p-0 m-0 border-0"
                         />
                     </Link>
+                )}
+
+                {/* Floating Top-Left Discount Tag Badge */}
+                {discountPercent > 0 && (
+                    <DiscountBadge
+                        discount={discountPercent}
+                        isFloating={true}
+                        size="md"
+                    />
                 )}
 
                 {/* Floating Top-Right Wishlist Heart Circle Button */}
@@ -309,18 +319,18 @@ export default function ProductVarietyCard(props) {
                         </div>
                     </div>
 
-                    {/* Title: 2-Line clean font with blue product name and distinct smaller variant tag */}
+                    {/* Title: 2-Line clean font with black product name and distinct smaller variant tag */}
                     <div className="mb-1 min-h-[38px] sm:min-h-[42px] flex items-start min-w-0">
                         <Link
                             to={`/product-details/${slugify(name)}`}
-                            className="text-xs sm:text-[13px] font-extrabold leading-snug line-clamp-2 hover:opacity-90 transition-opacity block min-w-0"
+                            className="text-xs sm:text-[13px] font-extrabold leading-snug line-clamp-2 hover:opacity-90 transition-opacity block min-w-0 text-black dark:text-white"
                             title={name}
                         >
-                            <span className="text-[#0756B5] dark:text-[#35A8E8]">
+                            <span className={props.titleColor || "text-black dark:text-white"}>
                                 {mainTitle}
                             </span>
                             {variantInfo && (
-                                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 ml-1">
+                                <span className="text-[10px] sm:text-[11px] font-semibold text-black/75 dark:text-slate-400 ml-1">
                                     {variantInfo}
                                 </span>
                             )}
@@ -344,7 +354,7 @@ export default function ProductVarietyCard(props) {
                     {/* Price Row: Discounted price + Strike price */}
                     <div className="flex items-baseline justify-between gap-1 min-w-0">
                         <div className="flex items-baseline gap-1.5 min-w-0 flex-wrap">
-                            <span className="text-sm sm:text-base font-black text-[#075C2A] dark:text-[#3F9E18] leading-none whitespace-nowrap">
+                            <span className={`text-sm sm:text-base font-black leading-none whitespace-nowrap ${props.priceColor || "text-[#0756B5] dark:text-blue-400"}`}>
                                 &#8377;{formatNumberWithCommas(discountedPrice)}
                             </span>
                             {discountPercent > 0 && (
