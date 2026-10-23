@@ -83,7 +83,7 @@ export default function CartPage() {
         if (!currentUser) {
             sessionStorage.setItem("redirectAfterLogin", "/order-checkout");
             enqueueSnackbar("Please log in to proceed to checkout.", { variant: "info" });
-            setOpenLoginDialog(true);
+            setOpenLoginDialog(true, { state: { from: "/order-checkout" } });
             return;
         }
 
@@ -161,13 +161,6 @@ export default function CartPage() {
                         Shopping Cart
                     </h1>
                 </div>
-                <Link
-                    to="/products"
-                    className="inline-flex items-center gap-1.5 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] hover:underline transition-all"
-                >
-                    <span>Continue Shopping</span>
-                    <span className="text-sm font-black">&rarr;</span>
-                </Link>
             </div>
 
             {/* Delivery Address Section (Logged-in User Only) */}

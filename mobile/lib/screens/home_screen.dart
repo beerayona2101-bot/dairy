@@ -10,6 +10,7 @@ import '../services/product_service.dart';
 import '../services/order_service.dart';
 import '../widgets/product_card.dart';
 import 'login_screen.dart';
+import 'mobile_web_view_screen.dart';
 import 'onboarding_screen.dart';
 import 'register_screen.dart';
 
@@ -1985,6 +1986,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               : () async {
                                   if (!formKey.currentState!.validate()) return;
 
+                                  final finalTotal = cart.totalAmount + (cart.totalAmount >= 200 ? 0 : 30);
+                                  final addressData = {
+                                    'name': nameController.text.trim(),
+                                    'phone': phoneController.text.trim(),
+                                    'address': addressController.text.trim(),
+                                    'pincode': pincodeController.text.trim(),
+                                  };
+
+                                  if (selectedPayment == 'ONLINE') {
+                                    Navigator.pop(ctx);
+                                    _showRazorpayDemoSheet(context, cart, auth, addressData, finalTotal);
+                                    return;
+                                  }
+
+                                  setModalState(() => isPlacingOrder = true);
+
                                   final orderItems = cart.cartItems.values.map((item) {
                                     final prod = item['product'] as ProductModel;
                                     return {
@@ -1995,29 +2012,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     };
                                   }).toList();
 
-                                  final addressData = {
-                                    'name': nameController.text.trim(),
-                                    'phone': phoneController.text.trim(),
-                                    'address': addressController.text.trim(),
-                                    'pincode': pincodeController.text.trim(),
-                                  };
-
-                                  final finalTotal = cart.totalAmount + (cart.totalAmount >= 200 ? 0 : 30);
-
-                                  if (selectedPayment == 'ONLINE') {
-                                    Navigator.pop(ctx);
-                                    _showMobileRazorpayModal(
-                                      context,
-                                      cart: cart,
-                                      auth: auth,
-                                      orderItems: orderItems,
-                                      totalAmount: finalTotal,
-                                      address: addressData,
-                                    );
-                                    return;
-                                  }
-
-                                  setModalState(() => isPlacingOrder = true);
                                   final result = await OrderService.placeOrder(
                                     token: auth.currentUser?.token ?? '',
                                     items: orderItems,
@@ -2051,9 +2045,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   width: 20,
                                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                                 )
-                              : const Text(
-                                  'Place Order 🥛',
-                                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                              : Text(
+                                  selectedPayment == 'ONLINE'
+                                      ? 'Proceed to Online Payment 💳'
+                                      : 'Place Order (Cash on Delivery) 🥛',
+                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
                         ),
                       ),
@@ -2065,255 +2061,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           );
         });
-      },
-    );
-  }
-
-  void _showMobileRazorpayModal(
-    BuildContext parentContext, {
-    required CartProvider cart,
-    required AuthProvider auth,
-    required List<Map<String, dynamic>> orderItems,
-    required double totalAmount,
-    required Map<String, dynamic> address,
-  }) {
-    String selectedMethod = 'UPI';
-    bool isProcessing = false;
-
-    showModalBottomSheet(
-      context: parentContext,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetCtx) {
-        final isDark = Theme.of(sheetCtx).brightness == Brightness.dark;
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 20, spreadRadius: 4),
-                ],
-              ),
-              child: SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Razorpay Payment',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                                color: isDark ? Colors.white : AppTheme.textDark,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                'TEST MODE',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            Navigator.pop(sheetCtx);
-                            ScaffoldMessenger.of(parentContext).showSnackBar(
-                              const SnackBar(
-                                content: Text('❌ Not Paid: Order Cancelled\nPayment was cancelled.'),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Amount Payable: ₹${totalAmount.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      'Choose any payment option below to simulate payment:',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: [
-                        {'id': 'UPI', 'name': 'UPI', 'desc': 'GPay, PhonePe, Paytm', 'icon': '📱'},
-                        {'id': 'WALLET', 'name': 'Wallets', 'desc': 'Airtel, Mobikwik', 'icon': '👛'},
-                        {'id': 'CARD', 'name': 'Cards', 'desc': 'Visa, Mastercard, RuPay', 'icon': '💳'},
-                        {'id': 'NETBANKING', 'name': 'Net Banking', 'desc': 'SBI, HDFC, ICICI, Axis', 'icon': '🏦'},
-                      ].map((item) {
-                        final isSel = selectedMethod == item['id'];
-                        return InkWell(
-                          onTap: () => setSheetState(() => selectedMethod = item['id'] as String),
-                          borderRadius: BorderRadius.circular(16),
-                          child: Container(
-                            width: (MediaQuery.of(context).size.width - 50) / 2,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: isSel
-                                  ? AppTheme.primary.withValues(alpha: 0.12)
-                                  : (isDark ? const Color(0xFF334155) : Colors.grey.shade100),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: isSel ? AppTheme.primary : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
-                                width: isSel ? 2 : 1,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Text(item['icon'] as String, style: const TextStyle(fontSize: 22)),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item['name'] as String,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                          color: isSel
-                                              ? AppTheme.primary
-                                              : (isDark ? Colors.white : AppTheme.textDark),
-                                        ),
-                                      ),
-                                      Text(
-                                        item['desc'] as String,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.red),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(sheetCtx);
-                              ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(
-                                  content: Text('❌ Not Paid: Order Cancelled\nPayment was cancelled.'),
-                                  backgroundColor: Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              '❌ Cancel (Not Paid)',
-                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primary,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                            ),
-                            onPressed: isProcessing
-                                ? null
-                                : () async {
-                                    setSheetState(() => isProcessing = true);
-                                    final result = await OrderService.placeOrder(
-                                      token: auth.currentUser?.token ?? '',
-                                      items: orderItems,
-                                      totalAmount: totalAmount,
-                                      address: address,
-                                      paymentMethod: 'ONLINE ($selectedMethod)',
-                                    );
-                                    setSheetState(() => isProcessing = false);
-                                    if (!sheetCtx.mounted) return;
-                                    Navigator.pop(sheetCtx);
-
-                                    cart.clearCart();
-                                    setState(() => _selectedNavIndex = 0);
-
-                                    if (!parentContext.mounted) return;
-                                    ScaffoldMessenger.of(parentContext).showSnackBar(
-                                      SnackBar(
-                                        content: Text(result['success'] == true
-                                            ? '🎉 Demo Payment Successful via $selectedMethod! Order placed.'
-                                            : '✅ Order received! Placed successfully.'),
-                                        backgroundColor: Colors.green,
-                                        behavior: SnackBarBehavior.floating,
-                                        duration: const Duration(seconds: 3),
-                                      ),
-                                    );
-                                  },
-                            child: isProcessing
-                                ? const SizedBox(
-                                    height: 18,
-                                    width: 18,
-                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                                  )
-                                : Text(
-                                    '🎉 Success ($selectedMethod)',
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                                  ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
       },
     );
   }
@@ -2375,6 +2122,514 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     color: isSelected ? AppTheme.primary : Colors.grey.shade600,
                   ),
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showRazorpayDemoSheet(
+    BuildContext context,
+    CartProvider cart,
+    AuthProvider auth,
+    Map<String, String> addressData,
+    double totalAmount,
+  ) {
+    String selectedTab = 'upi';
+    String selectedUpi = 'gpay';
+    String selectedBank = 'HDFC Bank';
+    String selectedWallet = 'Paytm Wallet';
+    String paymentStep = 'idle'; // 'idle', 'connecting', 'authorizing', 'approved'
+
+    final upiIdController = TextEditingController(
+      text: (auth.currentUser?.displayName != null && auth.currentUser!.displayName.isNotEmpty)
+          ? '${auth.currentUser!.displayName.toLowerCase().replaceAll(' ', '')}@okaxis'
+          : 'naturalmilk@upi',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      backgroundColor: Colors.white,
+      builder: (sheetCtx) {
+        return StatefulBuilder(builder: (sheetCtx, setSheetState) {
+          final isProcessing = paymentStep != 'idle';
+
+          void handleCancel() {
+            if (isProcessing && paymentStep != 'idle') return;
+            Navigator.pop(sheetCtx);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  '❌ Not Paid: Order Cancelled\nPayment was cancelled. Your order has not been placed.',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                backgroundColor: Color(0xFFDC2626),
+                behavior: SnackBarBehavior.floating,
+                duration: Duration(seconds: 4),
+              ),
+            );
+          }
+
+          void handleStartPayment() {
+            setSheetState(() => paymentStep = 'connecting');
+
+            Future.delayed(const Duration(milliseconds: 900), () {
+              if (!sheetCtx.mounted) return;
+              setSheetState(() => paymentStep = 'authorizing');
+            });
+
+            Future.delayed(const Duration(milliseconds: 1900), () {
+              if (!sheetCtx.mounted) return;
+              setSheetState(() => paymentStep = 'approved');
+            });
+
+            Future.delayed(const Duration(milliseconds: 2800), () async {
+              if (!sheetCtx.mounted) return;
+
+              final orderItems = cart.cartItems.values.map((item) {
+                final prod = item['product'] as ProductModel;
+                return {
+                  'productId': prod.id,
+                  'name': prod.name,
+                  'quantity': item['quantity'],
+                  'price': prod.finalPrice,
+                };
+              }).toList();
+
+              final result = await OrderService.placeOrder(
+                token: auth.currentUser?.token ?? '',
+                items: orderItems,
+                totalAmount: totalAmount,
+                address: addressData,
+                paymentMethod: 'Online (Razorpay Verified)',
+              );
+
+              if (!sheetCtx.mounted) return;
+              Navigator.pop(sheetCtx);
+
+              cart.clearCart();
+              setState(() => _selectedNavIndex = 0);
+
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    result['success'] == true
+                        ? '🎉 Demo Payment Successful! Order placed successfully.'
+                        : '✅ Demo Payment Approved! Order received.',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: const Color(0xFF075C2A),
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 4),
+                ),
+              );
+            });
+          }
+
+          return SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Razorpay Header Bar
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF0C2340),
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0284C7),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.shield, color: Colors.white, size: 18),
+                                ),
+                                const SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'RAZORPAY SECURE',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 0.8,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Demo Payment Gateway • Zero OTP',
+                                      style: TextStyle(
+                                        color: Color(0xFF93C5FD),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            if (!isProcessing)
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.white70, size: 20),
+                                onPressed: handleCancel,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    'AMOUNT PAYABLE',
+                                    style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    '100% Instant Approval (No OTP)',
+                                    style: TextStyle(color: Color(0xFF86EFAC), fontSize: 11, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                '₹${totalAmount.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Processing Overlay if active
+                  if (isProcessing)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (paymentStep == 'connecting') ...[
+                            const SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: CircularProgressIndicator(color: Color(0xFF0284C7), strokeWidth: 3.5),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Connecting to Banking Gateway...',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0C2340)),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text('Establishing 256-bit secure bank handshake', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                          ] else if (paymentStep == 'authorizing') ...[
+                            const SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: CircularProgressIndicator(color: Color(0xFF075C2A), strokeWidth: 3.5),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Authorizing Payment (No OTP Required)...',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF075C2A)),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text('Auto-approving demo transaction without phone verification', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                          ] else if (paymentStep == 'approved') ...[
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: const BoxDecoration(color: Color(0xFFDCFCE7), shape: BoxShape.circle),
+                              child: const Icon(Icons.check_circle, color: Color(0xFF16A34A), size: 48),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Payment Approved! 🎉',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF16A34A)),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text('Order confirmed! Finalizing your delivery...', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                          ],
+                        ],
+                      ),
+                    )
+                  else ...[
+                    // Tab Selector: UPI | Card | NetBanking | Wallets
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildPaymentTabItem('upi', '📱 UPI / QR', selectedTab, (v) => setSheetState(() => selectedTab = v)),
+                            const SizedBox(width: 8),
+                            _buildPaymentTabItem('card', '💳 Cards', selectedTab, (v) => setSheetState(() => selectedTab = v)),
+                            const SizedBox(width: 8),
+                            _buildPaymentTabItem('netbanking', '🏦 NetBanking', selectedTab, (v) => setSheetState(() => selectedTab = v)),
+                            const SizedBox(width: 8),
+                            _buildPaymentTabItem('wallet', '👛 Wallets', selectedTab, (v) => setSheetState(() => selectedTab = v)),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Tab Body
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Column(
+                        children: [
+                          if (selectedTab == 'upi') ...[
+                            // UPI App Choice
+                            Row(
+                              children: [
+                                _buildUpiAppChip('gpay', 'Google Pay', const Color(0xFF4285F4), selectedUpi, (v) => setSheetState(() => selectedUpi = v)),
+                                const SizedBox(width: 8),
+                                _buildUpiAppChip('phonepe', 'PhonePe', const Color(0xFF5F259F), selectedUpi, (v) => setSheetState(() => selectedUpi = v)),
+                                const SizedBox(width: 8),
+                                _buildUpiAppChip('paytm', 'Paytm', const Color(0xFF00BAF2), selectedUpi, (v) => setSheetState(() => selectedUpi = v)),
+                                const SizedBox(width: 8),
+                                _buildUpiAppChip('bhim', 'BHIM', const Color(0xFFF37021), selectedUpi, (v) => setSheetState(() => selectedUpi = v)),
+                              ],
+                            ),
+                            const SizedBox(height: 14),
+                            TextField(
+                              controller: upiIdController,
+                              decoration: InputDecoration(
+                                labelText: 'UPI ID / VPA',
+                                hintText: 'username@upi',
+                                prefixIcon: const Icon(Icons.alternate_email, color: Color(0xFF0284C7), size: 20),
+                                suffixIcon: const Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Icon(Icons.verified, color: Color(0xFF16A34A), size: 20),
+                                ),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              ),
+                            ),
+                          ] else if (selectedTab == 'card') ...[
+                            // Card Preview
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.15),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: const [
+                                      Text('PLATINUM DEBIT', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                                      Icon(Icons.contactless, color: Colors.white70, size: 22),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 18),
+                                  const Text(
+                                    '4532 •••• •••• 8824',
+                                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 2),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        auth.currentUser?.displayName.toUpperCase() ?? 'CARD HOLDER',
+                                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                      ),
+                                      const Text('EXP 08/29', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text('⚡ 1-Click authorization (No OTP SMS code needed)', style: TextStyle(color: Color(0xFF16A34A), fontSize: 11, fontWeight: FontWeight.bold)),
+                          ] else if (selectedTab == 'netbanking') ...[
+                            // NetBanking choices
+                            Column(
+                              children: ['HDFC Bank', 'State Bank of India', 'ICICI Bank', 'Axis Bank'].map((bank) {
+                                final isBankSelected = selectedBank == bank;
+                                return ListTile(
+                                  dense: true,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                  leading: const Icon(Icons.account_balance, color: Color(0xFF0284C7)),
+                                  title: Text(bank, style: TextStyle(fontWeight: isBankSelected ? FontWeight.bold : FontWeight.normal)),
+                                  trailing: isBankSelected ? const Icon(Icons.check_circle, color: Color(0xFF0284C7)) : null,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    side: BorderSide(color: isBankSelected ? const Color(0xFF0284C7) : Colors.grey.shade200),
+                                  ),
+                                  onTap: () => setSheetState(() => selectedBank = bank),
+                                );
+                              }).toList(),
+                            ),
+                          ] else ...[
+                            // Wallets
+                            Column(
+                              children: ['Paytm Wallet', 'PhonePe Wallet', 'MobiKwik'].map((wallet) {
+                                final isWalletSelected = selectedWallet == wallet;
+                                return ListTile(
+                                  dense: true,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                  leading: const Icon(Icons.account_balance_wallet, color: Color(0xFF075C2A)),
+                                  title: Text(wallet, style: TextStyle(fontWeight: isWalletSelected ? FontWeight.bold : FontWeight.normal)),
+                                  subtitle: const Text('Available Demo Balance: ₹2,500.00', style: TextStyle(fontSize: 10, color: Colors.green)),
+                                  trailing: isWalletSelected ? const Icon(Icons.check_circle, color: Color(0xFF075C2A)) : null,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    side: BorderSide(color: isWalletSelected ? const Color(0xFF075C2A) : Colors.grey.shade200),
+                                  ),
+                                  onTap: () => setSheetState(() => selectedWallet = wallet),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+
+                    // Pay and Cancel Action Buttons
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF0284C7),
+                                padding: const EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                elevation: 2,
+                              ),
+                              onPressed: handleStartPayment,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.lock, color: Colors.white, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Pay ₹${totalAmount.toStringAsFixed(2)} Securely',
+                                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: double.infinity,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                              ),
+                              onPressed: handleCancel,
+                              child: const Text(
+                                '✕ Cancel Payment & Return to Cart',
+                                style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  Widget _buildPaymentTabItem(String tabKey, String label, String activeTab, ValueChanged<String> onSelect) {
+    final isSelected = tabKey == activeTab;
+    return GestureDetector(
+      onTap: () => onSelect(tabKey),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF0284C7) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.grey.shade700,
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUpiAppChip(String id, String label, Color color, String activeUpi, ValueChanged<String> onSelect) {
+    final isSelected = id == activeUpi;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onSelect(id),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? color.withValues(alpha: 0.12) : Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: isSelected ? 1.8 : 1),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.payment, color: color, size: 22),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal),
               ),
             ],
           ),
@@ -2522,6 +2777,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               style: const TextStyle(color: Colors.grey, fontSize: 11),
             ),
           ],
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: const [
+                  Icon(Icons.receipt_long, size: 16, color: Color(0xFF075C2A)),
+                  SizedBox(width: 4),
+                  Text(
+                    'Tax Invoice Receipt',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey),
+                  ),
+                ],
+              ),
+              InkWell(
+                onTap: () {
+                  final orderId = (order['_id'] ?? order['id'] ?? '').toString();
+                  if (orderId.isEmpty) return;
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MobileWebViewScreen(
+                        destinationPath: '/user-profile/invoice/$orderId',
+                      ),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF075C2A).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF075C2A).withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.download, size: 14, color: Color(0xFF075C2A)),
+                      SizedBox(width: 4),
+                      Text(
+                        'Invoice PDF',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF075C2A)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

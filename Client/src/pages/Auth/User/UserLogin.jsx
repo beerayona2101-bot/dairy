@@ -86,7 +86,9 @@ export default function UserLogin() {
         };
 
         if (res?.isAdmin || res?.admin) {
-          handleUserLogout();
+          if (authUser?._id) {
+            handleUserLogout();
+          }
           if (res?.adminToken) {
             sessionStorage.setItem("adminToken", res.adminToken);
             sessionStorage.setItem("adminRole", "admin");
@@ -98,7 +100,9 @@ export default function UserLogin() {
           enqueueSnackbar("Admin Login Successful!", { variant: "success" });
           navigate("/admin/dashboard", { replace: true });
         } else {
-          handleAdminLogout();
+          if (authAdmin?._id) {
+            handleAdminLogout();
+          }
           if (res?.userToken) {
             sessionStorage.setItem("userToken", res.userToken);
             sessionStorage.setItem("userRole", "user");
@@ -110,10 +114,10 @@ export default function UserLogin() {
           enqueueSnackbar("Login Successful!", { variant: "success" });
 
           const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
-          const destination = !isAuthPath(targetPath)
-            ? targetPath
-            : !isAuthPath(storedRedirect)
+          const destination = !isAuthPath(storedRedirect)
             ? storedRedirect
+            : !isAuthPath(targetPath)
+            ? targetPath
             : "/";
           sessionStorage.removeItem("redirectAfterLogin");
           navigate(destination, { replace: true });

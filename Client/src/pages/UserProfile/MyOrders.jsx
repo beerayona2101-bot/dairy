@@ -16,9 +16,9 @@ import { cancelOrderApi } from "../../services/orderService";
 
 import api from "../../services/api";
 import { formatOrderDate, formatFullAddress } from "../../utils/dateUtils";
-import OrderStatusTracker from "../../components/OrderStatusTracker";
-import { ChevronRight, Headphones, Search, Filter, X, FileText, Download, Eye, ArrowLeft } from "lucide-react";
+import { ChevronRight, Headphones, Search, Filter, X, FileText, Download, Eye, ArrowLeft, Loader2 } from "lucide-react";
 import InvoiceModal from "../../components/InvoiceModal";
+import { downloadInvoicePdf } from "../../utils/downloadInvoice";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -42,6 +42,21 @@ export default function MyOrders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewInvoiceOrderId, setViewInvoiceOrderId] = useState(null);
+  const [downloadingOrderId, setDownloadingOrderId] = useState(null);
+
+  const handleDownloadInvoice = async (orderId, orderDisplayId) => {
+    if (!orderId || downloadingOrderId) return;
+    try {
+      setDownloadingOrderId(orderId);
+      await downloadInvoicePdf(orderId, orderDisplayId);
+      enqueueSnackbar("Tax invoice PDF downloaded successfully!", { variant: "success" });
+    } catch (err) {
+      console.error("Failed to download invoice:", err);
+      enqueueSnackbar("Failed to download invoice PDF. Please try again.", { variant: "error" });
+    } finally {
+      setDownloadingOrderId(null);
+    }
+  };
 
   const urlStatus = searchParams.get("status") || "all";
   const urlOrderId = searchParams.get("orderId") || location.state?.orderId;
@@ -322,7 +337,7 @@ export default function MyOrders() {
               </div>
 
               {/* Card Footer Actions */}
-              <div className="pt-3 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-between gap-2">
+              <div className="pt-3 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-between gap-2 flex-wrap">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -334,15 +349,35 @@ export default function MyOrders() {
                   View Details <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#1E88E5] transition" />
                 </button>
 
-                {order?.status?.toLowerCase() === "delivered" && (
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={(e) => handleOrderAgain(order, e)}
-                    className="text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 px-4.5 py-1.5 rounded-full transition cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDownloadInvoice(order._id, displayId);
+                    }}
+                    disabled={downloadingOrderId === order._id}
+                    className="text-xs font-extrabold text-[#075C2A] dark:text-emerald-400 bg-[#075C2A]/10 hover:bg-[#075C2A]/20 px-2.5 py-1.5 rounded-lg border border-[#075C2A]/30 transition flex items-center gap-1 cursor-pointer active:scale-95 disabled:opacity-60"
+                    title="Download Tax Invoice as PDF"
                   >
-                    <FaShoppingCart className="text-xs" /> Order Again
+                    {downloadingOrderId === order._id ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Download className="w-3.5 h-3.5" />
+                    )}
+                    <span>{downloadingOrderId === order._id ? "Downloading..." : "Invoice PDF"}</span>
                   </button>
-                )}
+
+                  {order?.status?.toLowerCase() === "delivered" && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleOrderAgain(order, e)}
+                      className="text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-[#FF2E63] to-[#e02654] hover:brightness-105 px-4.5 py-1.5 rounded-full transition cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
+                    >
+                      <FaShoppingCart className="text-xs" /> Order Again
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -604,14 +639,30 @@ export default function MyOrders() {
                   <span className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     <FileText className="w-3.5 h-3.5 text-[#075C2A]" /> Tax Invoice Receipt
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setViewInvoiceOrderId(activeSelectedOrder?._id)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-[#075C2A] hover:bg-[#054593] text-white transition shadow-xs cursor-pointer active:scale-95"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>View Invoice</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setViewInvoiceOrderId(activeSelectedOrder?._id)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold bg-[#075C2A] hover:bg-[#054593] text-white transition shadow-xs cursor-pointer active:scale-95"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadInvoice(activeSelectedOrder?._id, activeSelectedOrder?.orderId)}
+                      disabled={downloadingOrderId === activeSelectedOrder?._id}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600 transition shadow-xs cursor-pointer active:scale-95 disabled:opacity-60"
+                      title="Download Invoice as PDF"
+                    >
+                      {downloadingOrderId === activeSelectedOrder?._id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
+                      ) : (
+                        <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      )}
+                      <span>{downloadingOrderId === activeSelectedOrder?._id ? "Downloading..." : "Download PDF"}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 

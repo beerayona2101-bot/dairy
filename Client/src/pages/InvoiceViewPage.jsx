@@ -1,18 +1,31 @@
 import React, { useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Printer, Download, FileText, RefreshCw } from "lucide-react";
+import { ArrowLeft, Printer, Download, FileText, RefreshCw, Loader2 } from "lucide-react";
 import api, { getBaseUrl } from "../services/api";
 import BackButton from "../components/Common/BackButton";
+import { downloadInvoicePdf } from "../utils/downloadInvoice";
 
 export default function InvoiceViewPage() {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const iframeRef = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   const baseUrl = api.defaults.baseURL || getBaseUrl();
   const iframeSrc = `${baseUrl}/pdf/generate-bill/${orderId}`;
-  const downloadSrc = `${baseUrl}/pdf/generate-bill/${orderId}?download=true`;
+
+  const handleDownload = async () => {
+    if (!orderId || downloading) return;
+    try {
+      setDownloading(true);
+      await downloadInvoicePdf(orderId);
+    } catch (e) {
+      console.error("Invoice download failed:", e);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handlePrint = () => {
     try {
@@ -54,15 +67,21 @@ export default function InvoiceViewPage() {
           </button>
 
           {/* Download PDF Button */}
-          <a
-            href={downloadSrc}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-extrabold text-xs transition border border-slate-200 dark:border-slate-600 cursor-pointer active:scale-95"
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-extrabold text-xs transition border border-slate-200 dark:border-slate-600 cursor-pointer active:scale-95 disabled:opacity-60"
+            title="Download Invoice as PDF"
           >
-            <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="hidden sm:inline">Download PDF</span>
-          </a>
+            {downloading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            )}
+            <span className="hidden sm:inline">{downloading ? "Downloading..." : "Download PDF"}</span>
+            <span className="inline sm:hidden">{downloading ? "..." : "PDF"}</span>
+          </button>
         </div>
       </header>
 

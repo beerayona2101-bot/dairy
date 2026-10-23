@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 export default function GoogleLoginComponent( {setOpenLoginDialog, setGoogleLoginLoading} ) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const { handleAdminLogout } = useContext(AdminAuthContext);
+  const { handleAdminLogout, authAdmin } = useContext(AdminAuthContext);
   const { fetchUserData } = useContext(UserAuthContext);
 
   return (
@@ -29,12 +29,14 @@ export default function GoogleLoginComponent( {setOpenLoginDialog, setGoogleLogi
               localStorage.setItem("userRole", "user");
             }
             await fetchUserData(res?.user);
-            handleAdminLogout();
+            if (authAdmin?._id) handleAdminLogout();
             enqueueSnackbar("Login Successful!", { variant: "success" });
               
-              sessionStorage.removeItem("redirectAfterLogin");
-              navigate("/", { replace: true });
-            }
+            const storedRedirect = sessionStorage.getItem("redirectAfterLogin");
+            const destination = storedRedirect && !["/login", "/signup"].includes(storedRedirect) ? storedRedirect : "/";
+            sessionStorage.removeItem("redirectAfterLogin");
+            navigate(destination, { replace: true });
+          }
             
           } else {
             enqueueSnackbar("Login failed, please try again.", { variant: "error" });

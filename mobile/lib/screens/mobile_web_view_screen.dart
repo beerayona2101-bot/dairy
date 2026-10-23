@@ -246,23 +246,25 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           try {
             if (message.message == 'logout') {
               final auth = Provider.of<AuthProvider>(context, listen: false);
-              await auth.logout();
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.remove('user_token');
-              await prefs.remove('auth_token');
-              await prefs.remove('user_id');
-              await prefs.remove('user_role');
-              await prefs.remove('user_email');
-              await prefs.setBool('is_guest_user', true);
-              try {
-                await WebViewCookieManager().clearCookies();
-                await _controller?.clearLocalStorage();
-              } catch (_) {}
-              if (mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-                  (route) => false,
-                );
+              if (auth.isAuthenticated) {
+                await auth.logout();
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('user_token');
+                await prefs.remove('auth_token');
+                await prefs.remove('user_id');
+                await prefs.remove('user_role');
+                await prefs.remove('user_email');
+                await prefs.setBool('is_guest_user', true);
+                try {
+                  await WebViewCookieManager().clearCookies();
+                  await _controller?.clearLocalStorage();
+                } catch (_) {}
+                if (mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                    (route) => false,
+                  );
+                }
               }
             } else {
               final decoded = jsonDecode(message.message);
@@ -289,28 +291,30 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                   debugPrint('[Bridge] User authenticated ($event): $userId ($role). Syncing FCM token...');
                   await FcmService.syncTokenWithBackend(userId, role: role);
                 } else if (event == 'logout') {
-                  if (userId != null && userId.isNotEmpty) {
-                    await FcmService.removeTokenFromBackend(userId);
-                  }
-                  if (!mounted) return;
                   final auth = Provider.of<AuthProvider>(context, listen: false);
-                  await auth.logout();
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('user_token');
-                  await prefs.remove('auth_token');
-                  await prefs.remove('user_id');
-                  await prefs.remove('user_role');
-                  await prefs.remove('user_email');
-                  await prefs.setBool('is_guest_user', true);
-                  try {
-                    await WebViewCookieManager().clearCookies();
-                    await _controller?.clearLocalStorage();
-                  } catch (_) {}
-                  if (mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-                      (route) => false,
-                    );
+                  if (auth.isAuthenticated && (userId == null || userId.isEmpty || auth.currentUser?.id == userId)) {
+                    if (userId != null && userId.isNotEmpty) {
+                      await FcmService.removeTokenFromBackend(userId);
+                    }
+                    if (!mounted) return;
+                    await auth.logout();
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove('user_token');
+                    await prefs.remove('auth_token');
+                    await prefs.remove('user_id');
+                    await prefs.remove('user_role');
+                    await prefs.remove('user_email');
+                    await prefs.setBool('is_guest_user', true);
+                    try {
+                      await WebViewCookieManager().clearCookies();
+                      await _controller?.clearLocalStorage();
+                    } catch (_) {}
+                    if (mounted) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                        (route) => false,
+                      );
+                    }
                   }
                 }
               }

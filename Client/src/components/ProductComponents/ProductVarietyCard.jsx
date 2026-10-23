@@ -117,6 +117,11 @@ export default function ProductVarietyCard(props) {
             }
             addToCart(id, qtyToAdd, discountedPrice);
         }
+        if (!activeUser) {
+            try {
+                sessionStorage.setItem("redirectAfterLogin", "/order-checkout");
+            } catch (_) {}
+        }
         navigate("/order-checkout");
     };
 

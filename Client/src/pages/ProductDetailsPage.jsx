@@ -127,11 +127,6 @@ export default function ProductDetailsPage() {
                         className="shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:scale-105 active:scale-95 transition"
                         title="Back to Products"
                     />
-                    <div className="flex items-center gap-2 pr-1">
-                        <span className="text-xs font-black text-slate-800 dark:text-slate-100 max-w-[210px] truncate">
-                            {selectedProduct?.name}
-                        </span>
-                    </div>
                 </div>
 
                 <div className="w-full">

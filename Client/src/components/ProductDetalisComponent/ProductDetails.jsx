@@ -161,6 +161,11 @@ export default function ProductDetails({ productId: propProductId }) {
             }
             addToCart(targetId, qtyToAdd, discountedPrice);
         }
+        if (!activeUser) {
+            try {
+                sessionStorage.setItem("redirectAfterLogin", "/order-checkout");
+            } catch (_) {}
+        }
         navigate("/order-checkout");
     };
 

@@ -15,14 +15,28 @@ import {
   MdToday,
 } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { Download, Sparkles, FileText, Calendar, CreditCard as CreditCardIcon, Search, X, Filter, Eye } from "lucide-react";
+import { Download, Sparkles, FileText, Calendar, CreditCard as CreditCardIcon, Search, X, Filter, Eye, Loader2 } from "lucide-react";
 import InvoiceModal from "../../components/InvoiceModal";
+import { downloadInvoicePdf } from "../../utils/downloadInvoice";
 
 export default function Payments() {
   const { userOrders, orderLoading } = useContext(UserOrderContext);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewInvoiceOrderId, setViewInvoiceOrderId] = useState(null);
+  const [downloadingOrderId, setDownloadingOrderId] = useState(null);
+
+  const handleDownloadInvoice = async (orderId, orderDisplayId) => {
+    if (!orderId || downloadingOrderId) return;
+    try {
+      setDownloadingOrderId(orderId);
+      await downloadInvoicePdf(orderId, orderDisplayId);
+    } catch (err) {
+      console.error("Failed to download invoice:", err);
+    } finally {
+      setDownloadingOrderId(null);
+    }
+  };
 
   const isToday = (dateStr) => {
     if (!dateStr) return false;
@@ -359,14 +373,28 @@ export default function Payments() {
                   </div>
                 </div>
 
-                {/* Footer Action: View Invoice (In-Page Modal) */}
-                <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60">
+                {/* Footer Action: View & Download Invoice */}
+                <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setViewInvoiceOrderId(order._id)}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 text-[#075C2A] dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/60 font-bold text-xs transition cursor-pointer active:scale-98"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 text-[#075C2A] dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/60 font-bold text-xs transition cursor-pointer active:scale-98"
                   >
                     <Eye className="w-4 h-4 text-[#075C2A] dark:text-purple-300" /> View Invoice
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadInvoice(order._id, order.orderId)}
+                    disabled={downloadingOrderId === order._id}
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600 font-bold text-xs transition cursor-pointer active:scale-98 disabled:opacity-60"
+                    title="Download Tax Invoice PDF"
+                  >
+                    {downloadingOrderId === order._id ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    )}
+                    <span>{downloadingOrderId === order._id ? "..." : "PDF"}</span>
                   </button>
                 </div>
               </div>
@@ -426,13 +454,30 @@ export default function Payments() {
                         &#8377;{formatNumberWithCommas(order.totalAmount || 0)}
                       </td>
                       <td className="p-3.5 text-center">
-                        <button
-                          type="button"
-                          onClick={() => setViewInvoiceOrderId(order._id)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#075C2A]/10 hover:bg-[#075C2A]/20 text-[#075C2A] dark:text-purple-300 border border-[#075C2A]/20 font-bold text-xs transition cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5" /> View Invoice
-                        </button>
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setViewInvoiceOrderId(order._id)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#075C2A]/10 hover:bg-[#075C2A]/20 text-[#075C2A] dark:text-purple-300 border border-[#075C2A]/20 font-bold text-xs transition cursor-pointer"
+                            title="View Invoice"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> View
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadInvoice(order._id, order.orderId)}
+                            disabled={downloadingOrderId === order._id}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 font-bold text-xs transition cursor-pointer disabled:opacity-60"
+                            title="Download Tax Invoice as PDF"
+                          >
+                            {downloadingOrderId === order._id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Download className="w-3.5 h-3.5" />
+                            )}
+                            <span>PDF</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

@@ -339,7 +339,7 @@ export const AuthProvider = ({ children }) => {
             } catch {}
         }
 
-        if (typeof window !== "undefined" && window.FlutterAuthBridge) {
+        if (typeof window !== "undefined" && window.FlutterAuthBridge && oldUserId) {
             try {
                 window.FlutterAuthBridge.postMessage(JSON.stringify({
                     event: "logout",
@@ -382,7 +382,7 @@ export const AuthProvider = ({ children }) => {
             } catch {}
         }
 
-        if (typeof window !== "undefined" && window.FlutterAuthBridge) {
+        if (typeof window !== "undefined" && window.FlutterAuthBridge && oldAdminId) {
             try {
                 window.FlutterAuthBridge.postMessage(JSON.stringify({
                     event: "logout",

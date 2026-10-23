@@ -1,7 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Dialog, Slide } from "@mui/material";
-import { X, Printer, Download, FileText } from "lucide-react";
+import { X, Printer, Download, FileText, Loader2 } from "lucide-react";
 import api, { getBaseUrl } from "../services/api";
+import { downloadInvoicePdf } from "../utils/downloadInvoice";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -9,9 +10,21 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function InvoiceModal({ open, onClose, orderId }) {
   const iframeRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
   const baseUrl = api.defaults.baseURL || getBaseUrl();
   const iframeSrc = orderId ? `${baseUrl}/pdf/generate-bill/${orderId}` : "";
-  const downloadSrc = orderId ? `${baseUrl}/pdf/generate-bill/${orderId}?download=true` : "";
+
+  const handleDownload = async () => {
+    if (!orderId || downloading) return;
+    try {
+      setDownloading(true);
+      await downloadInvoicePdf(orderId);
+    } catch (e) {
+      console.error("Invoice download failed:", e);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handlePrint = () => {
     try {
@@ -77,15 +90,20 @@ export default function InvoiceModal({ open, onClose, orderId }) {
           </button>
 
           {/* Download PDF Button */}
-          <a
-            href={downloadSrc}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#075C2A] sm:bg-slate-100 dark:sm:bg-slate-700 hover:bg-[#054593] sm:hover:bg-slate-200 dark:sm:hover:bg-slate-600 text-white sm:text-slate-800 dark:sm:text-white font-extrabold text-xs transition border-0 sm:border sm:border-slate-200 dark:sm:border-slate-600 cursor-pointer active:scale-95 shrink-0 whitespace-nowrap shadow-xs sm:shadow-none"
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#075C2A] sm:bg-slate-100 dark:sm:bg-slate-700 hover:bg-[#054593] sm:hover:bg-slate-200 dark:sm:hover:bg-slate-600 text-white sm:text-slate-800 dark:sm:text-white font-extrabold text-xs transition border-0 sm:border sm:border-slate-200 dark:sm:border-slate-600 cursor-pointer active:scale-95 shrink-0 whitespace-nowrap shadow-xs sm:shadow-none disabled:opacity-60"
+            title="Download Invoice as PDF"
           >
-            <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white sm:text-emerald-600 dark:sm:text-emerald-400 shrink-0" />
-            <span className="whitespace-nowrap">Download</span>
-          </a>
+            {downloading ? (
+              <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-white sm:text-emerald-600 dark:sm:text-emerald-400 shrink-0" />
+            ) : (
+              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white sm:text-emerald-600 dark:sm:text-emerald-400 shrink-0" />
+            )}
+            <span className="whitespace-nowrap">{downloading ? "Downloading..." : "Download PDF"}</span>
+          </button>
         </div>
       </div>
 
