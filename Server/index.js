@@ -153,6 +153,13 @@ app.get("*", (req, res, next) => {
   if (fs.existsSync(indexPath)) {
     return res.sendFile(indexPath);
   }
+
+  // If Client/dist does not exist in this backend container (e.g. multi-container Docker where Nginx serves static files),
+  // and the browser is requesting a page (HTML), redirect to / so Nginx serves index.html and React Router handles the route!
+  if (req.headers.accept && req.headers.accept.includes("text/html")) {
+    return res.redirect("/");
+  }
+
   return res.status(404).json({
     success: false,
     statusCode: 404,
