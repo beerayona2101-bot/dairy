@@ -73,6 +73,12 @@ function updateConfigFileAndSync(activeUrl) {
       execSync('git commit -m "chore: auto-update live tunnel URL for mobile APKs"', { stdio: 'ignore' });
       execSync('git push origin main', { stdio: 'ignore' });
       console.log(`✨ GitHub updated! Mobile APKs across all networks will auto-connect to: ${activeUrl}`);
+      // 4. Purge jsdelivr CDN cache so mobile APKs get updated URL immediately
+      try {
+        https.get('https://purge.jsdelivr.net/gh/beerayona2101-bot/dairy@main/server_config.json', (purgeRes) => {
+          console.log(`🧹 Flushed jsdelivr CDN cache (status: ${purgeRes.statusCode})`);
+        });
+      } catch (_) {}
     } catch (gitErr) {
       console.warn(`⚠️ Git auto-push note: ${gitErr.message}`);
     }

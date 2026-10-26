@@ -10,7 +10,7 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://weddings-daily-hindu-parish.trycloudflare.com';
+  static const String productionServerUrl = 'https://west-song-align-appreciated.trycloudflare.com';
 
   // Permanent Cloud Backup (Set once deployed on Render.com or leave empty)
   static const String permanentCloudUrl = '';
@@ -20,10 +20,10 @@ class ApiConfig {
 
   // Remote Dynamic Configuration URL mirrors (Ensures global reach even if raw GitHub is throttled)
   static const List<String> remoteConfigUrls = [
-    'https://api.github.com/repos/beerayona2101-bot/dairy/contents/server_config.json',
     'https://raw.githubusercontent.com/beerayona2101-bot/dairy/main/server_config.json',
     'https://cdn.jsdelivr.net/gh/beerayona2101-bot/dairy@main/server_config.json',
     'https://fastly.jsdelivr.net/gh/beerayona2101-bot/dairy@main/server_config.json',
+    'https://api.github.com/repos/beerayona2101-bot/dairy/contents/server_config.json',
   ];
 
   static const String remoteConfigUrl =
