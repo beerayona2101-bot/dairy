@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://weddings-daily-hindu-parish.trycloudflare.com",
+  "activeServerUrl": "https://west-song-align-appreciated.trycloudflare.com",
   "fallbackUrls": [
-    "https://weddings-daily-hindu-parish.trycloudflare.com",
+    "https://west-song-align-appreciated.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
