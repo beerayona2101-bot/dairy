@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://west-song-align-appreciated.trycloudflare.com",
+  "activeServerUrl": "https://wines-juan-cherry-bradford.trycloudflare.com",
   "fallbackUrls": [
-    "https://west-song-align-appreciated.trycloudflare.com",
+    "https://wines-juan-cherry-bradford.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
