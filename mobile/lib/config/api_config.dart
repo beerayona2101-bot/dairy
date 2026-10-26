@@ -10,10 +10,10 @@ class ApiConfig {
   static const bool isProduction = true;
 
   // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://acres-finder-ships-texas.trycloudflare.com';
+  static const String productionServerUrl = 'https://substance-korea-appointment-outside.trycloudflare.com';
 
   // Permanent Cloud Backup (Set once deployed on Render.com or leave empty)
-  static const String permanentCloudUrl = '';
+  static const String permanentCloudUrl = 'https://dairy.speshway.site';
 
   // Host machine local Wi-Fi IP
   static const String lanIp = '192.168.1.84';
@@ -270,7 +270,7 @@ class ApiConfig {
   static String get getProductsUrl => '$baseUrl/products/get-all-products';
   static String getProductUrl(String id) => '$baseUrl/products/get-product/$id';
 
-  static String get pageContentUrl => '$baseUrl/page-content/get';
+  static String get pageContentUrl => '$baseUrl/page-content/get-content';
 
   static String get createOrderUrl => '$baseUrl/order/create-order';
   static String get getUserOrdersUrl => '$baseUrl/order/get-user-orders';

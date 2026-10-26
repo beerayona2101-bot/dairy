@@ -5,6 +5,7 @@ import { verifyAdminAuth } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+router.get("/get", wrapAsync(getPageContent));
 router.get("/get-content", wrapAsync(getPageContent));
 router.put("/update-content", verifyAdminAuth, wrapAsync(updatePageContent));
 
