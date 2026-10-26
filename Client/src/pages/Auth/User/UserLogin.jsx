@@ -17,7 +17,7 @@ export default function UserLogin() {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const { fetchUserData, handleUserLogout } = useContext(UserAuthContext);
+  const { authUser, fetchUserData, handleUserLogout } = useContext(UserAuthContext);
   const { authAdmin, authAdminLoading, fetchAdminData, handleAdminLogout } = useContext(AdminAuthContext);
   const { theme } = useContext(ThemeContext) || {};
 
