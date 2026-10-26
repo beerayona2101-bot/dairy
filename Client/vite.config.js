@@ -7,55 +7,20 @@ export default defineConfig(({ mode }) => {
   const isProd = env.VITE_IS_PRODUCTION === 'true' || mode === 'production';
 
   return {
-    plugins: [
-      react(),
-      {
-        name: 'chrome-devtools-well-known',
-        configureServer(server) {
-          server.middlewares.use((req, res, next) => {
-            if (req.url && req.url.includes('/.well-known/appspecific/com.chrome.devtools.json')) {
-              res.setHeader('Content-Type', 'application/json');
-              res.setHeader('Access-Control-Allow-Origin', '*');
-              res.statusCode = 200;
-              res.end(JSON.stringify({}));
-              return;
-            }
-            next();
-          });
-        },
-      },
-    ],
+    plugins: [react()],
 
     server: {
       host: true,
       port: 5173,
       proxy: {
         '/u': 'http://127.0.0.1:9000',
-        '/products': {
-          target: 'http://127.0.0.1:9000',
-          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
-        },
-        '/order': {
-          target: 'http://127.0.0.1:9000',
-          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
-        },
-        '/user-profile': {
-          target: 'http://127.0.0.1:9000',
-          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
-        },
-        '/admin': {
-          target: 'http://127.0.0.1:9000',
-          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
-        },
+        '/products': 'http://127.0.0.1:9000',
+        '/order': 'http://127.0.0.1:9000',
+        '/user-profile': 'http://127.0.0.1:9000',
+        '/admin': 'http://127.0.0.1:9000',
         '/admin-profile': 'http://127.0.0.1:9000',
-        '/payment': {
-          target: 'http://127.0.0.1:9000',
-          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
-        },
-        '/store': {
-          target: 'http://127.0.0.1:9000',
-          bypass: (req) => (req.headers.accept?.includes('text/html') ? '/index.html' : undefined),
-        },
+        '/payment': 'http://127.0.0.1:9000',
+        '/store': 'http://127.0.0.1:9000',
         '/pdf': 'http://127.0.0.1:9000',
         '/page-content': 'http://127.0.0.1:9000',
         '/api': 'http://127.0.0.1:9000',
@@ -88,8 +53,37 @@ export default defineConfig(({ mode }) => {
   build: {
     target: 'es2020',
     cssCodeSplit: true,
-    chunkSizeWarningLimit: 1500,
+    chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@mui/icons-material')) {
+              return 'mui-icons';
+            }
+            if (id.includes('@mui') || id.includes('@emotion')) {
+              return 'mui-core';
+            }
+            if (id.includes('framer-motion') || id.includes('motion')) {
+              return 'framer-motion';
+            }
+            if (id.includes('recharts') || id.includes('chart.js') || id.includes('react-chartjs-2')) {
+              return 'charts';
+            }
+            if (id.includes('socket.io-client') || id.includes('axios')) {
+              return 'network-vendor';
+            }
+            if (id.includes('lucide-react') || id.includes('@fortawesome')) {
+              return 'icons-vendor';
+            }
+          }
+        },
+      },
+    },
   },
 };
 });
