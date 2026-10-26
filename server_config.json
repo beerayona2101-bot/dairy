@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://wines-juan-cherry-bradford.trycloudflare.com",
+  "activeServerUrl": "https://counsel-faces-persons-constitute.trycloudflare.com",
   "fallbackUrls": [
-    "https://wines-juan-cherry-bradford.trycloudflare.com",
+    "https://counsel-faces-persons-constitute.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
