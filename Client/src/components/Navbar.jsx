@@ -427,11 +427,25 @@ export default function Navbar() {
                             }}
                         />
                         <div className="flex flex-col items-start justify-center leading-none">
-                            <span className="font-black text-lg lg:text-xl tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
+                            <span 
+                                className="text-xl lg:text-2xl font-black text-[#075C2A] dark:text-emerald-400 uppercase leading-none drop-shadow-xs"
+                                style={{
+                                    fontFamily: "'Playfair Display', Georgia, serif",
+                                    letterSpacing: "0.03em",
+                                    fontWeight: 900,
+                                }}
+                            >
                                 NATURAL
                             </span>
-                            <span className="text-[10px] lg:text-[11px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-widest uppercase leading-tight mt-0.5">
-                                Milk Dairy
+                            <span 
+                                className="text-[9.5px] lg:text-[10.5px] font-black text-[#0756B5] dark:text-blue-400 uppercase leading-tight mt-0.5"
+                                style={{
+                                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                    letterSpacing: "0.26em",
+                                    fontWeight: 800,
+                                }}
+                            >
+                                MILK DAIRY
                             </span>
                         </div>
                     </Link>
@@ -452,11 +466,25 @@ export default function Navbar() {
                             }}
                         />
                         <div className="flex flex-col items-start justify-center leading-none">
-                            <span className="font-black text-sm sm:text-base tracking-tight text-[#075C2A] dark:text-emerald-400 uppercase leading-none">
+                            <span 
+                                className="text-base sm:text-lg font-black text-[#075C2A] dark:text-emerald-400 uppercase leading-none drop-shadow-xs"
+                                style={{
+                                    fontFamily: "'Playfair Display', Georgia, serif",
+                                    letterSpacing: "0.03em",
+                                    fontWeight: 900,
+                                }}
+                            >
                                 NATURAL
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-extrabold text-[#0756B5] dark:text-blue-400 tracking-wider uppercase leading-tight mt-0.5">
-                                Milk Dairy
+                            <span 
+                                className="text-[8.5px] sm:text-[9.5px] font-black text-[#0756B5] dark:text-blue-400 uppercase leading-tight mt-0.5"
+                                style={{
+                                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                    letterSpacing: "0.22em",
+                                    fontWeight: 800,
+                                }}
+                            >
+                                MILK DAIRY
                             </span>
                         </div>
                     </Link>
