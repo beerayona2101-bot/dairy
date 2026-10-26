@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://api.trycloudflare.com",
+  "activeServerUrl": "https://acres-finder-ships-texas.trycloudflare.com",
   "fallbackUrls": [
-    "https://api.trycloudflare.com",
+    "https://acres-finder-ships-texas.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
