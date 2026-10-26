@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://detector-live-nominations-threaded.trycloudflare.com",
+  "activeServerUrl": "https://threaded-powered-insulation-fever.trycloudflare.com",
   "fallbackUrls": [
-    "https://detector-live-nominations-threaded.trycloudflare.com",
+    "https://threaded-powered-insulation-fever.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
