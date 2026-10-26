@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://acres-finder-ships-texas.trycloudflare.com",
+  "activeServerUrl": "https://comparisons-defines-wma-riverside.trycloudflare.com",
   "fallbackUrls": [
-    "https://acres-finder-ships-texas.trycloudflare.com",
+    "https://comparisons-defines-wma-riverside.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
