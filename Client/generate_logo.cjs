@@ -29,8 +29,8 @@ async function createLogo() {
           letter-spacing: 3px;
         }
       </style>
-      <text x="390" y="145" class="brand-title">Madhu</text>
-      <text x="390" y="255" class="brand-title">Dairy</text>
+      <text x="390" y="145" class="brand-title">Natural</text>
+      <text x="390" y="255" class="brand-title">Milk Dairy</text>
       <text x="395" y="335" class="brand-subtitle">And Daily Needs</text>
     </svg>
   `;

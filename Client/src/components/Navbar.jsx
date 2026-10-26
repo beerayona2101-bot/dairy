@@ -200,7 +200,7 @@ export default function Navbar() {
     const activeLinkStyle = "bg-gray-500/20 dark:bg-[#00000091] dark:text-white";
 
     const navItems = [
-        { label: 'Home', icon: <HomeIcon sx={{ fontSize: '1.2rem' }} />, path: '/home' },
+        { label: 'Home', icon: <HomeIcon sx={{ fontSize: '1.2rem' }} />, path: '/' },
         { label: 'Products', icon: <StorefrontIcon sx={{ fontSize: '1.2rem' }} />, path: '/products' },
         { label: 'About Us', icon: <Diversity3Icon sx={{ fontSize: '1.2rem' }} />, path: '/about' },
         { label: 'Contact Us', icon: <CallIcon sx={{ fontSize: '1.2rem' }} />, path: '/contact-us' },
@@ -490,11 +490,14 @@ export default function Navbar() {
                     </Link>
 
 
-                    {/* Center Navigation Links: Default Black Text, Active Violet with Light Glow */}
+                    {/* Center Navigation Links: Default Black Text, Active Blue with Underline Indicator */}
                     {!hideNavItems && (
                         <div className="hidden md:flex items-center gap-8 md:gap-10 lg:gap-12">
                             {navItems.map((item, idx) => {
-                                const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
+                                const isHomeItem = item.path === "/home" || item.path === "/";
+                                const isActive = isHomeItem
+                                    ? (location.pathname === "/" || location.pathname === "/home")
+                                    : (location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path)));
                                 return (
                                     <Link
                                         key={item.path || idx}
@@ -507,13 +510,18 @@ export default function Navbar() {
                                             if (item.path.includes('product')) prefetchProducts();
                                             prefetchPageContent();
                                         }}
-                                        className={`relative py-1 text-sm font-extrabold no-underline transition-all duration-300 cursor-pointer ${
+                                        className={`relative py-1 text-sm font-extrabold no-underline transition-all duration-300 cursor-pointer flex flex-col items-center ${
                                             isActive
-                                                ? "text-blue-700 dark:text-blue-400 drop-shadow-[0_0_12px_rgba(29,78,216,0.75)] scale-105"
-                                                : "text-black dark:text-white hover:text-blue-700 dark:hover:text-blue-400 hover:drop-shadow-[0_0_8px_rgba(29,78,216,0.5)]"
+                                                ? "text-[#0756B5] dark:text-blue-400 drop-shadow-[0_0_12px_rgba(7,86,181,0.5)] scale-105 font-black"
+                                                : "text-slate-800 dark:text-slate-200 hover:text-[#0756B5] dark:hover:text-blue-400 hover:drop-shadow-[0_0_8px_rgba(7,86,181,0.35)]"
                                         }`}
                                     >
-                                        {item.label}
+                                        <span>{item.label}</span>
+                                        {isActive && (
+                                            <span 
+                                                className="absolute -bottom-1 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#075C2A] via-[#0756B5] to-[#075C2A] rounded-full shadow-[0_2px_8px_rgba(7,86,181,0.45)]"
+                                            />
+                                        )}
                                     </Link>
                                 );
                             })}
@@ -777,7 +785,7 @@ export default function Navbar() {
 
                     {/* 3. Centralized Home Button */}
                     <Link
-                        to="/home"
+                        to="/"
                         onMouseEnter={() => import('../pages/HomePage')}
                         onTouchStart={() => import('../pages/HomePage')}
                         className="flex flex-col items-center justify-center flex-1 max-w-[64px] -mt-3.5 group cursor-pointer"

@@ -15,6 +15,7 @@ import CartPage from "../pages/CartPage";
 import ContactPage from "../pages/ContactPage";
 import OrderCheckoutPage from "../pages/OrderCheckoutPage";
 import FaqPage from "../pages/FaqPage";
+import LandingPage from "../pages/LandingPage";
 
 // Lazy loaded secondary layout components
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
@@ -212,6 +213,7 @@ export default function Routers() {
                 <Routes location={location}>
                     <Route path="/" element={<Layout><HomePage /></Layout>} />
                     <Route path="/home" element={<Layout><HomePage /></Layout>} />
+                    <Route path="/landing" element={<Layout><LandingPage /></Layout>} />
 
                     <Route path="/login" element={<UserLogin />} />
                     <Route path="/login/forget-password" element={<ForgetPassword />} />

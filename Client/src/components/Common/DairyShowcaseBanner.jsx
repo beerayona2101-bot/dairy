@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import AnimatedHeading from "./AnimatedHeading";
-import madhuLineupFullwidth from "../../assets/madhu_dairy_lineup_fullwidth.png";
+import naturalMilkDeliveryBanner from "../../assets/natural_milk_delivery_banner.jpg";
 
 const FEATURES = [
   {
@@ -95,8 +95,8 @@ export default function DairyShowcaseBanner() {
         className="w-full mt-0 overflow-hidden"
       >
         <img
-          src={madhuLineupFullwidth}
-          alt="Natural Milk Dairy Wide Range of Products - A2 Milk, Milk, Cow Ghee, Paneer, Curd, Butter, Lassi, Sweet Peda with milk splash"
+          src={naturalMilkDeliveryBanner}
+          alt="Natural Milk Dairy farm-fresh milk, ghee, paneer, and daily delivery"
           className="w-full h-auto object-contain object-center block animate-banner-zoom pointer-events-none mx-auto"
           style={{ maxHeight: "clamp(220px, 38vw, 560px)" }}
           loading="lazy"

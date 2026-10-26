@@ -361,7 +361,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                           alt={prod?.name}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/images/madhu_cow_milk.png";
+                            e.target.src = "/images/natural_cow_milk.png";
                           }}
                           className="w-10 h-10 object-cover rounded-lg border-2 border-white dark:border-gray-800 shadow-xs"
                         />
@@ -654,7 +654,7 @@ export default function OrderDetails({ allOrders = [], loading, statusFilter, ha
                                 alt={prod?.name}
                                 onError={(e) => {
                                   e.target.onerror = null;
-                                  e.target.src = "/images/madhu_cow_milk.png";
+                                  e.target.src = "/images/natural_cow_milk.png";
                                 }}
                                 className="w-7 h-7 sm:w-9 sm:h-9 object-cover rounded-lg border shrink-0"
                               />
