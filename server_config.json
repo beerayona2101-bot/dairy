@@ -1,7 +1,7 @@
 {
-  "activeServerUrl": "https://comparisons-defines-wma-riverside.trycloudflare.com",
+  "activeServerUrl": "https://api.trycloudflare.com",
   "fallbackUrls": [
-    "https://comparisons-defines-wma-riverside.trycloudflare.com",
+    "https://api.trycloudflare.com",
     "http://192.168.1.84:9000"
   ],
   "minAppVersion": "1.0.0",
