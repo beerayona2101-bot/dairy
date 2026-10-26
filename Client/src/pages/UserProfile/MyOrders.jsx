@@ -19,6 +19,7 @@ import { formatOrderDate, formatFullAddress } from "../../utils/dateUtils";
 import { ChevronRight, Headphones, Search, Filter, X, FileText, Download, Eye, ArrowLeft, Loader2 } from "lucide-react";
 import InvoiceModal from "../../components/InvoiceModal";
 import { downloadInvoicePdf } from "../../utils/downloadInvoice";
+import OrderStatusTracker from "../../components/OrderStatusTracker";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
