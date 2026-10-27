@@ -298,7 +298,7 @@ export default function HomeWelcomeHero() {
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
-            className="group relative w-full aspect-[2.1/1] xs:aspect-[2.15/1] sm:aspect-[16/7.2] md:aspect-[16/6.8] min-h-[175px] xs:min-h-[190px] sm:min-h-[270px] md:min-h-[420px] max-h-[540px] rounded-2xl sm:rounded-3xl md:rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-xs dark:shadow-none select-none"
+            className="group relative w-full aspect-[2.1/1] xs:aspect-[2.15/1] sm:aspect-[16/7.2] md:aspect-[16/6.8] lg:aspect-[16/6.4] min-h-[175px] xs:min-h-[190px] sm:min-h-[270px] md:min-h-[380px] lg:min-h-[440px] max-h-[520px] rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-xs dark:shadow-none select-none"
         >
             {/* Slide Container */}
             <AnimatePresence initial={false} custom={direction}>
