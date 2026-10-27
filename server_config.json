@@ -1,8 +1,7 @@
 {
-  "activeServerUrl": "https://substance-korea-appointment-outside.trycloudflare.com",
+  "activeServerUrl": "https://dairy.speshway.site",
   "fallbackUrls": [
-    "https://substance-korea-appointment-outside.trycloudflare.com",
-    "http://192.168.1.84:9000"
+    "https://dairy.speshway.site"
   ],
   "minAppVersion": "1.0.0",
   "maintenance": false,
