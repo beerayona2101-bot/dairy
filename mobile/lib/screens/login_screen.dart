@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../config/api_config.dart';
 import '../providers/auth_provider.dart';
 import 'forget_screen.dart';
 import 'mobile_web_view_screen.dart';
@@ -88,7 +89,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const MobileWebViewScreen(),
+          builder: (_) => const MobileWebViewScreen(
+            initialUrl: ApiConfig.productionServerUrl,
+          ),
         ),
         (route) => false,
       );
@@ -123,7 +126,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(),
+        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(
+          initialUrl: ApiConfig.productionServerUrl,
+        ),
         transitionsBuilder: (context, animation, secAnim, child) =>
             FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 400),

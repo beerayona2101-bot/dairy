@@ -18,6 +18,7 @@
         <domain includeSubdomains="true">cloudflare.com</domain>
         <domain includeSubdomains="true">onrender.com</domain>
         <domain includeSubdomains="true">railway.app</domain>
+        <domain includeSubdomains="true">speshway.site</domain>
         <domain includeSubdomains="true">githubusercontent.com</domain>
         <trust-anchors>
             <certificates src="system" />

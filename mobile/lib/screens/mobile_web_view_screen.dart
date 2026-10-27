@@ -327,14 +327,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            if (mounted && progress >= 75) {
-              setState(() {
-                _isLoading = false;
-                _hasError = false;
-                _isFirstLoad = false;
-                _timeoutTimer?.cancel();
-              });
-            }
+            // Keep loading indicator visible until onPageFinished confirms full page render
           },
           onPageStarted: (String url) {
             _injectAuthTokens();
@@ -359,7 +352,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           onPageFinished: (String url) async {
             _timeoutTimer?.cancel();
 
-            // Validate that we didn't receive a 404 / 502 error page title (e.g. from Render or dead proxy)
+            // Validate that we didn't receive a 404 / 502 / error page title
             bool isPageValid = true;
             try {
               final title = (await _controller?.getTitle() ?? '').trim().toLowerCase();
@@ -367,8 +360,19 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
                   title.contains('not found') ||
                   title.contains('bad gateway') ||
                   title.contains('502') ||
-                  title.contains('503')) {
-                isPageValid = false;
+                  title.contains('503') ||
+                  title.contains('webpage not available') ||
+                  title.contains('err_') ||
+                  title.isEmpty) {
+                // If title is empty or indicates error, verify further
+                if (title.contains('404') ||
+                    title.contains('not found') ||
+                    title.contains('bad gateway') ||
+                    title.contains('502') ||
+                    title.contains('503') ||
+                    title.contains('webpage not available')) {
+                  isPageValid = false;
+                }
               }
             } catch (_) {}
 
@@ -394,22 +398,11 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
           },
           onWebResourceError: (WebResourceError error) {
             final isMain = error.isForMainFrame ?? true;
-            final isFatal = error.errorCode == -2 || // ERROR_HOST_LOOKUP
-                error.errorCode == -6 || // ERROR_CONNECT
-                error.errorCode == -8 || // ERROR_TIMEOUT
-                error.errorCode == -1; // ERROR_UNKNOWN
-            if (isMain && isFatal) {
+            if (isMain) {
+              debugPrint('[WebView] WebResourceError on main frame: ${error.description} (code: ${error.errorCode})');
               _timeoutTimer?.cancel();
               if (mounted) {
-                ApiConfig.resolveWorkingServer().then((live) {
-                  if (mounted && live != _currentUrl) {
-                    _loadSpecificUrl(live);
-                  } else if (mounted) {
-                    _tryNextCandidateOrShowError();
-                  }
-                }).catchError((_) {
-                  if (mounted) _tryNextCandidateOrShowError();
-                });
+                _tryNextCandidateOrShowError();
               }
             }
           },

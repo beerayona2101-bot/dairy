@@ -9,10 +9,10 @@ class ApiConfig {
   // Environment mode toggle
   static const bool isProduction = true;
 
-  // Active production server URL (Fresh live Cloudflare tunnel or permanent cloud URL)
-  static const String productionServerUrl = 'https://substance-korea-appointment-outside.trycloudflare.com';
+  // Active permanent production server URL (Global Cloudflare SSL domain - works on all networks)
+  static const String productionServerUrl = 'https://dairy.speshway.site';
 
-  // Permanent Cloud Backup (Set once deployed on Render.com or leave empty)
+  // Permanent Cloud Backup
   static const String permanentCloudUrl = 'https://dairy.speshway.site';
 
   // Host machine local Wi-Fi IP
@@ -237,13 +237,16 @@ class ApiConfig {
     }
   }
 
-  /// Reliable health check against /health endpoint
+  /// Reliable health check against /products/get-all-products or /health endpoint
   static Future<bool> _testHealth(String host, {int timeoutMs = 4500}) async {
     try {
       final clean = host.trim().replaceFirst(RegExp(r'/+$'), '');
-      final uri = Uri.parse('$clean/health');
+      final uri = Uri.parse('$clean/products/get-all-products');
       final res = await http.get(uri).timeout(Duration(milliseconds: timeoutMs));
-      return res.statusCode == 200;
+      if (res.statusCode == 200) return true;
+      final healthUri = Uri.parse('$clean/health');
+      final healthRes = await http.get(healthUri).timeout(const Duration(milliseconds: 2000));
+      return healthRes.statusCode == 200;
     } catch (_) {
       return false;
     }

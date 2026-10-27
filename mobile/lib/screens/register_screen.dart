@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/api_config.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 import 'mobile_web_view_screen.dart';
@@ -73,7 +74,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const MobileWebViewScreen(destinationPath: '/user-profile'),
+          builder: (_) => const MobileWebViewScreen(
+            initialUrl: ApiConfig.productionServerUrl,
+            destinationPath: '/user-profile',
+          ),
         ),
         (route) => false,
       );
@@ -103,7 +107,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(),
+        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(
+          initialUrl: ApiConfig.productionServerUrl,
+        ),
         transitionsBuilder: (context, animation, secAnim, child) =>
             FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 400),

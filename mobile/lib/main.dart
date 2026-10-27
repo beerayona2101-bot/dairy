@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'config/api_config.dart';
 import 'config/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
@@ -87,7 +88,7 @@ class AppStartupGate extends StatelessWidget {
     }
 
     if (authProvider.isAuthenticated) {
-      return const MobileWebViewScreen();
+      return const MobileWebViewScreen(initialUrl: ApiConfig.productionServerUrl);
     }
 
     return const OnboardingScreen();
