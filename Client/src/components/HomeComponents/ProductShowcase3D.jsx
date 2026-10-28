@@ -172,15 +172,15 @@ export default function ProductShowcase3D() {
 
     // Fast Auto-play Carousel Timer (Slides to next item every 3s, pauses on hover)
     useEffect(() => {
-        if (isHoveringCard || showcaseSlides.length <= 1) return;
+        if (showcaseSlides.length <= 1) return;
 
         const timer = setInterval(() => {
             setDirection(1);
             setActiveIndex((prev) => (prev + 1) % showcaseSlides.length);
-        }, 3000);
+        }, 2200);
 
         return () => clearInterval(timer);
-    }, [isHoveringCard, showcaseSlides.length]);
+    }, [showcaseSlides.length]);
 
     const handlePrev = () => {
         setDirection(-1);

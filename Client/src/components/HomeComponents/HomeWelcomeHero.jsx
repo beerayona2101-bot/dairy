@@ -203,7 +203,6 @@ export default function HomeWelcomeHero() {
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(1);
-    const [isHovered, setIsHovered] = useState(false);
     const touchStartX = useRef(null);
 
     // Keep currentIndex within bounds when switching between mobile (3) and web (4)
@@ -223,14 +222,13 @@ export default function HomeWelcomeHero() {
         setCurrentIndex((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
     }, [activeSlides.length]);
 
-    // Auto-advance slides every 5.5 seconds, paused on hover
+    // Fast auto-advance slides every 3 seconds (continuous movement, never pauses on hover)
     useEffect(() => {
-        if (isHovered) return;
         const timer = setInterval(() => {
             handleNext();
-        }, 5500);
+        }, 3000);
         return () => clearInterval(timer);
-    }, [isHovered, handleNext]);
+    }, [handleNext]);
 
     // Touch swipe gesture handlers for mobile
     const handleTouchStart = (e) => {
@@ -251,7 +249,7 @@ export default function HomeWelcomeHero() {
 
     const currentSlide = activeSlides[currentIndex] || activeSlides[0];
 
-    // Smooth horizontal slide transition variants
+    // Fast, smooth horizontal slide transition variants
     const slideVariants = {
         enter: (dir) => ({
             opacity: 0,
@@ -261,16 +259,16 @@ export default function HomeWelcomeHero() {
             opacity: 1,
             x: 0,
             transition: {
-                x: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-                opacity: { duration: 0.4 },
+                x: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+                opacity: { duration: 0.28 },
             },
         },
         exit: (dir) => ({
             opacity: 0,
             x: dir > 0 ? "-100%" : "100%",
             transition: {
-                x: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-                opacity: { duration: 0.4 },
+                x: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+                opacity: { duration: 0.28 },
             },
         }),
     };
@@ -328,8 +326,6 @@ export default function HomeWelcomeHero() {
     return (
         <section
             aria-label="Natural Milk Dairy Hero Highlights"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             className="group relative w-full aspect-[2.1/1] xs:aspect-[2.15/1] sm:aspect-[16/7.2] md:aspect-auto md:w-full md:h-[calc(100vh-60px)] md:min-h-[calc(100vh-60px)] md:max-h-[calc(100vh-60px)] min-h-[175px] xs:min-h-[190px] sm:min-h-[270px] rounded-2xl sm:rounded-3xl md:rounded-none overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 md:border-0 shadow-xs dark:shadow-none select-none"
