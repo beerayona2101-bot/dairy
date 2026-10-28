@@ -124,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
     // - Authenticated: go directly to main app (MobileWebViewScreen). Skip onboarding completely!
     // - Not authenticated: show onboarding flow.
     final Widget targetScreen = authProvider.isAuthenticated
-        ? const MobileWebViewScreen(initialUrl: ApiConfig.productionServerUrl)
+        ? const MobileWebViewScreen()
         : const OnboardingScreen();
 
     Navigator.of(context).pushReplacement(

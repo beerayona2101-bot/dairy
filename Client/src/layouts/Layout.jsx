@@ -45,7 +45,7 @@ export default function Layout({ children }) {
                 (isProductsPage || isProductDetailsPage || isCartPage || isCheckoutPage)
                     ? 'pt-0 md:pt-[60px]'
                     : 'pt-[48px] sm:pt-[54px] md:pt-[60px]'
-            } ${isNoBottomNav ? 'pb-6 lg:pb-0' : 'pb-[56px] sm:pb-[62px] lg:pb-0'}`}>
+            } ${isNoBottomNav ? 'pb-6 md:pb-0' : 'pb-[56px] sm:pb-[62px] md:pb-0'}`}>
                 <PageTransition key={location.pathname}>
                     {children}
                 </PageTransition>

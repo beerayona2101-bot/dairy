@@ -23,12 +23,16 @@ import {
   Heart,
   ShieldCheck,
   Sun,
+  Moon,
   Clock,
   MessageCircle,
   CheckCircle2,
   X,
   ExternalLink,
   Leaf,
+  Monitor,
+  Smartphone,
+  Sparkles,
 } from "lucide-react";
 import { convertToBase64 } from "../../utils/InventoryHelpers/imageBase64Converter";
 import bannerWelcomeImg from "../../assets/banner_welcome_sunrise.jpg";
@@ -256,6 +260,8 @@ export default function PageContentManager() {
   const [activeTab, setActiveTab] = useState("hero");
   const [saving, setSaving] = useState(false);
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
+  const [heroSubView, setHeroSubView] = useState("web"); // "web" | "shared"
+  const [activeSharedSlide, setActiveSharedSlide] = useState(1); // 1, 2, or 3 (Shared slides between mobile & web)
 
   const [formData, setFormData] = useState({
     // 1. Hero Carousels
@@ -526,93 +532,348 @@ export default function PageContentManager() {
       ========================================================================= */}
       {activeTab === "hero" && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-          <AdminAccordion
-            title="Homepage Hero Carousel (4 Canonical Slides)"
-            subtitle="Configure images, badges, headings, descriptions, and CTA links for each slide"
-            icon={<Sun className="w-5 h-5 text-amber-500" />}
-            defaultExpanded={true}
-          >
-            <div className="space-y-6">
-              {/* Slide Selector Tabs */}
-              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3 overflow-x-auto">
-                {formData.heroCarouselSlides.map((slide, idx) => (
-                  <button
-                    key={`slide-tab-${idx}`}
-                    type="button"
-                    onClick={() => setActiveHeroSlide(idx)}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
-                      activeHeroSlide === idx
-                        ? "bg-[#0756B5] text-white shadow-sm"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
-                    }`}
-                  >
-                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-black">
-                      {idx + 1}
-                    </span>
-                    <span>Slide {idx + 1}: {slide.mainHeading || slide.title || "Hero Slide"}</span>
-                  </button>
-                ))}
-              </div>
+          {/* Sub-view switcher for distinct Carousel Options */}
+          <div className="flex flex-wrap items-center gap-2.5 p-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs">
+            <span className="text-xs font-black text-slate-500 dark:text-slate-400 px-2 uppercase tracking-wider">
+              Select Carousel Option:
+            </span>
+            <button
+              type="button"
+              onClick={() => setHeroSubView("web")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition cursor-pointer ${
+                heroSubView === "web"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                  : "bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+              }`}
+            >
+              <Monitor className="w-4 h-4" />
+              <span>Option 1: Web Homepage Welcome Carousel (Web Only)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setHeroSubView("shared")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition cursor-pointer ${
+                heroSubView === "shared"
+                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/20"
+                  : "bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+              }`}
+            >
+              <Smartphone className="w-4 h-4" />
+              <span>Option 2: Shared Campaign Carousels (3 Slides: Mobile & Web)</span>
+            </button>
+          </div>
 
-              {/* Active Hero Slide Editor */}
-              {(() => {
-                const current = formData.heroCarouselSlides[activeHeroSlide] || {};
-                const fallbackImg =
-                  activeHeroSlide === 0
-                    ? bannerWelcomeImg
-                    : activeHeroSlide === 1
-                    ? bannerMilkImg
-                    : activeHeroSlide === 2
-                    ? bannerProductsImg
-                    : bannerDeliveryImg;
+          {/* =========================================================================
+              OPTION 1: WEB HOMEPAGE WELCOME CAROUSEL (WEB ONLY)
+          ========================================================================= */}
+          {heroSubView === "web" && (() => {
+            const webSlide = formData.heroCarouselSlides[0] || defaultHeroSlides[0] || {};
+            const updateWebSlide = (field, val) => {
+              setFormData((prev) => {
+                const copy = [...(prev.heroCarouselSlides || defaultHeroSlides)];
+                while (copy.length < 4) {
+                  copy.push(defaultHeroSlides[copy.length] || {});
+                }
+                copy[0] = { ...copy[0], [field]: val };
+                return { ...prev, heroCarouselSlides: copy };
+              });
+            };
 
-                const updateCurrent = (field, val) => {
-                  setFormData((prev) => {
-                    const copy = [...prev.heroCarouselSlides];
-                    copy[activeHeroSlide] = { ...copy[activeHeroSlide], [field]: val };
-                    return { ...prev, heroCarouselSlides: copy };
-                  });
-                };
+            const nowHour = new Date().getHours();
+            const liveTiming =
+              nowHour >= 5 && nowHour < 12
+                ? { text: "Good Morning", icon: Sun, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800" }
+                : nowHour >= 12 && nowHour < 17
+                ? { text: "Good Afternoon", icon: Sun, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800" }
+                : { text: "Good Evening", icon: Moon, color: "text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800" };
+            const LiveIcon = liveTiming.icon;
 
-                return (
-                  <div className="space-y-5 bg-slate-50/70 dark:bg-slate-900/40 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-black px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-950/60 text-[#0756B5] dark:text-blue-300">
-                        Editing Slide {activeHeroSlide + 1} of {formData.heroCarouselSlides.length}
-                      </span>
+            return (
+              <AdminAccordion
+                title="Option 1: Web Homepage Welcome Carousel (Web Desktop Only)"
+                subtitle="Exclusive introductory slide for Web Homepage with automatic time-based greeting (Good Morning / Afternoon / Evening)"
+                icon={<Monitor className="w-5 h-5 text-indigo-500" />}
+                defaultExpanded={true}
+              >
+                <div className="space-y-6">
+                  {/* Scope Notice & Dynamic Timing Status */}
+                  <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-800/60 space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-indigo-600 text-white tracking-wide uppercase">
+                          Web Only Slide
+                        </span>
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Not displayed in Mobile App (mobile uses top app greeting bar)
+                        </span>
+                      </div>
+                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-xl border text-xs font-bold ${liveTiming.bg} ${liveTiming.color}`}>
+                        <LiveIcon className="w-3.5 h-3.5" />
+                        <span>Live Preview Now: {liveTiming.text}</span>
+                      </div>
                     </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      💡 <strong>Dynamic Timing Note:</strong> If the Badge Greeting Tag is left empty or set to <em>"Good Morning"</em>, <em>"auto"</em>, <em>"Good Afternoon"</em>, or <em>"Good Evening"</em>, it automatically adapts dynamically based on the visitor's local device time:
+                      <br />
+                      • <strong>5:00 AM – 11:59 AM:</strong> Good Morning ☀️ &nbsp;|&nbsp;
+                      • <strong>12:00 PM – 4:59 PM:</strong> Good Afternoon ☀️ &nbsp;|&nbsp;
+                      • <strong>5:00 PM – 4:59 AM:</strong> Good Evening 🌙
+                    </p>
+                  </div>
 
-                    {/* Single Image Upload for this slide */}
+                  <div className="space-y-5 bg-slate-50/70 dark:bg-slate-900/40 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    {/* Slide 1 Image Upload */}
                     <ItemImageUploader
-                      label={`Slide ${activeHeroSlide + 1} Background Image`}
-                      value={current.image}
-                      fallbackDefault={fallbackImg}
-                      onChange={(img) => updateCurrent("image", img)}
+                      label="Web Welcome Carousel Background Image"
+                      value={webSlide.image}
+                      fallbackDefault={bannerWelcomeImg}
+                      onChange={(img) => updateWebSlide("image", img)}
                     />
 
-                    {/* Badge & Eyebrow */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                          Badge Greeting Tag (e.g. Good Morning / 100% PURE & UNTOUCHED)
+                    {/* Badge Greeting Tag & Quick Presets */}
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                          Welcome Badge Greeting Note
                         </label>
-                        <input
-                          type="text"
-                          value={current.badgeText || ""}
-                          onChange={(e) => updateCurrent("badgeText", e.target.value)}
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
-                        />
+                        <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
+                          Type "auto" for dynamic time-based greeting
+                        </span>
                       </div>
+                      <input
+                        type="text"
+                        value={webSlide.badgeText ?? "Good Morning"}
+                        onChange={(e) => updateWebSlide("badgeText", e.target.value)}
+                        placeholder="Good Morning (or type 'auto' for dynamic timing)"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-indigo-500"
+                      />
+                      <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span className="text-[11px] text-slate-500 font-medium">Quick Presets:</span>
+                        <button
+                          type="button"
+                          onClick={() => updateWebSlide("badgeText", "auto")}
+                          className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 transition cursor-pointer"
+                        >
+                          ⚡ Auto Dynamic Timing
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateWebSlide("badgeText", "Good Morning")}
+                          className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 hover:bg-amber-200 transition cursor-pointer"
+                        >
+                          ☀️ Good Morning
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateWebSlide("badgeText", "Good Afternoon")}
+                          className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 hover:bg-amber-200 transition cursor-pointer"
+                        >
+                          ☀️ Good Afternoon
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateWebSlide("badgeText", "Good Evening")}
+                          className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 transition cursor-pointer"
+                        >
+                          🌙 Good Evening
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Eyebrow & Main Heading */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                           Eyebrow Text (e.g. "Welcome to")
                         </label>
                         <input
                           type="text"
-                          value={current.eyebrow || ""}
-                          onChange={(e) => updateCurrent("eyebrow", e.target.value)}
+                          value={webSlide.eyebrow ?? "Welcome to"}
+                          onChange={(e) => updateWebSlide("eyebrow", e.target.value)}
                           placeholder="Welcome to"
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          Main Headline (Green Serif Title)
+                        </label>
+                        <input
+                          type="text"
+                          value={webSlide.mainHeading || webSlide.title || "Natural Milk Dairy"}
+                          onChange={(e) => {
+                            updateWebSlide("mainHeading", e.target.value);
+                            updateWebSlide("title", e.target.value);
+                          }}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Description Paragraph */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                        Welcome Description / Intro Statement
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={webSlide.description || ""}
+                        onChange={(e) => updateWebSlide("description", e.target.value)}
+                        placeholder="Direct from our ethical farms to your home. Pure, hygienic & fresh dairy for you and your family."
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-indigo-500"
+                      />
+                    </div>
+
+                    {/* CTA Button Text & Link */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          CTA Button Text
+                        </label>
+                        <input
+                          type="text"
+                          value={webSlide.ctaText || webSlide.buttonText || "Explore Fresh Dairy"}
+                          onChange={(e) => {
+                            updateWebSlide("ctaText", e.target.value);
+                            updateWebSlide("buttonText", e.target.value);
+                          }}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          CTA Button Link
+                        </label>
+                        <input
+                          type="text"
+                          value={webSlide.ctaLink || webSlide.buttonLink || "/products"}
+                          onChange={(e) => {
+                            updateWebSlide("ctaLink", e.target.value);
+                            updateWebSlide("buttonLink", e.target.value);
+                          }}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </AdminAccordion>
+            );
+          })()}
+
+          {/* =========================================================================
+              OPTION 2: SHARED CAMPAIGN CAROUSELS (3 SLIDES - MOBILE & WEB)
+          ========================================================================= */}
+          {heroSubView === "shared" && (() => {
+            const currentShared = formData.heroCarouselSlides[activeSharedSlide] || defaultHeroSlides[activeSharedSlide] || {};
+            const fallbackImg =
+              activeSharedSlide === 1
+                ? bannerMilkImg
+                : activeSharedSlide === 2
+                ? bannerProductsImg
+                : bannerDeliveryImg;
+
+            const updateCurrentShared = (field, val) => {
+              setFormData((prev) => {
+                const copy = [...(prev.heroCarouselSlides || defaultHeroSlides)];
+                while (copy.length < 4) {
+                  copy.push(defaultHeroSlides[copy.length] || {});
+                }
+                copy[activeSharedSlide] = { ...copy[activeSharedSlide], [field]: val };
+                return { ...prev, heroCarouselSlides: copy };
+              });
+            };
+
+            const sharedTitles = [
+              { idx: 1, label: "Slide 1: Farm Fresh Milk (7 AM Delivery)", defaultTitle: "Farm Fresh Milk" },
+              { idx: 2, label: "Slide 2: Pure & Healthy Dairy Range", defaultTitle: "Pure & Healthy" },
+              { idx: 3, label: "Slide 3: Farm to Home Direct Dispatch", defaultTitle: "From Our Farm" },
+            ];
+
+            return (
+              <AdminAccordion
+                title="Option 2: Shared Campaign Carousels (3 Slides — Mobile App & Web)"
+                subtitle="Promotional campaign banners synchronized identically across BOTH the Web Homepage and the Mobile App"
+                icon={<Smartphone className="w-5 h-5 text-emerald-600" />}
+                defaultExpanded={true}
+              >
+                <div className="space-y-6">
+                  {/* Scope Notice */}
+                  <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-600 text-white tracking-wide uppercase">
+                        Mobile & Web Synced (3 Slides)
+                      </span>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        Changes here apply in real-time to both Web users and Mobile App users.
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 3 Shared Slides Tabs */}
+                  <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3 overflow-x-auto">
+                    {sharedTitles.map((item) => {
+                      const slideData = formData.heroCarouselSlides[item.idx] || {};
+                      const slideTitle = slideData.mainHeading || slideData.title || item.defaultTitle;
+                      return (
+                        <button
+                          key={`shared-slide-tab-${item.idx}`}
+                          type="button"
+                          onClick={() => setActiveSharedSlide(item.idx)}
+                          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+                            activeSharedSlide === item.idx
+                              ? "bg-emerald-600 text-white shadow-sm"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                          }`}
+                        >
+                          <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-black">
+                            {item.idx}
+                          </span>
+                          <span>{item.label.split(":")[0]}: {slideTitle}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Active Shared Slide Editor */}
+                  <div className="space-y-5 bg-slate-50/70 dark:bg-slate-900/40 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-black px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                        Editing Shared Campaign Slide {activeSharedSlide} of 3 (Mobile & Web)
+                      </span>
+                    </div>
+
+                    {/* Image Uploader */}
+                    <ItemImageUploader
+                      label={`Shared Slide ${activeSharedSlide} Background Image`}
+                      value={currentShared.image}
+                      fallbackDefault={fallbackImg}
+                      onChange={(img) => updateCurrentShared("image", img)}
+                    />
+
+                    {/* Badge & Eyebrow */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          Badge Tag (e.g. 100% PURE & UNTOUCHED / ARTISANAL & NUTRITIOUS)
+                        </label>
+                        <input
+                          type="text"
+                          value={currentShared.badgeText || ""}
+                          onChange={(e) => updateCurrentShared("badgeText", e.target.value)}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-emerald-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                          Eyebrow Text (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={currentShared.eyebrow || ""}
+                          onChange={(e) => updateCurrentShared("eyebrow", e.target.value)}
+                          placeholder="Optional eyebrow text"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-emerald-600"
                         />
                       </div>
                     </div>
@@ -625,12 +886,12 @@ export default function PageContentManager() {
                         </label>
                         <input
                           type="text"
-                          value={current.mainHeading || current.title || ""}
+                          value={currentShared.mainHeading || currentShared.title || ""}
                           onChange={(e) => {
-                            updateCurrent("mainHeading", e.target.value);
-                            updateCurrent("title", e.target.value);
+                            updateCurrentShared("mainHeading", e.target.value);
+                            updateCurrentShared("title", e.target.value);
                           }}
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-[#0756B5]"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-emerald-600"
                         />
                       </div>
                       <div>
@@ -639,12 +900,12 @@ export default function PageContentManager() {
                         </label>
                         <input
                           type="text"
-                          value={current.subHeading || current.subtitle || ""}
+                          value={currentShared.subHeading || currentShared.subtitle || ""}
                           onChange={(e) => {
-                            updateCurrent("subHeading", e.target.value);
-                            updateCurrent("subtitle", e.target.value);
+                            updateCurrentShared("subHeading", e.target.value);
+                            updateCurrentShared("subtitle", e.target.value);
                           }}
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-[#0756B5]"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-bold focus:outline-none focus:border-emerald-600"
                         />
                       </div>
                     </div>
@@ -652,26 +913,26 @@ export default function PageContentManager() {
                     {/* Description Paragraph */}
                     <div>
                       <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                        Slide Description / Value Proposition
+                        Slide Description / Value Proposition (Desktop & Tablets)
                       </label>
                       <textarea
                         rows={2}
-                        value={current.description || ""}
-                        onChange={(e) => updateCurrent("description", e.target.value)}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
+                        value={currentShared.description || ""}
+                        onChange={(e) => updateCurrentShared("description", e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-emerald-600"
                       />
                     </div>
 
                     {/* Mobile Subtitle */}
                     <div>
                       <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                        Mobile Subtitle (Compact one-liner for phone viewports)
+                        Mobile Subtitle (Compact one-liner for mobile phone viewports)
                       </label>
                       <input
                         type="text"
-                        value={current.mobileSubtitle || ""}
-                        onChange={(e) => updateCurrent("mobileSubtitle", e.target.value)}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-[#0756B5]"
+                        value={currentShared.mobileSubtitle || ""}
+                        onChange={(e) => updateCurrentShared("mobileSubtitle", e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-medium focus:outline-none focus:border-emerald-600"
                       />
                     </div>
 
@@ -683,12 +944,12 @@ export default function PageContentManager() {
                         </label>
                         <input
                           type="text"
-                          value={current.ctaText || current.buttonText || ""}
+                          value={currentShared.ctaText || currentShared.buttonText || ""}
                           onChange={(e) => {
-                            updateCurrent("ctaText", e.target.value);
-                            updateCurrent("buttonText", e.target.value);
+                            updateCurrentShared("ctaText", e.target.value);
+                            updateCurrentShared("buttonText", e.target.value);
                           }}
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-emerald-600"
                         />
                       </div>
                       <div>
@@ -697,20 +958,20 @@ export default function PageContentManager() {
                         </label>
                         <input
                           type="text"
-                          value={current.ctaLink || current.buttonLink || ""}
+                          value={currentShared.ctaLink || currentShared.buttonLink || ""}
                           onChange={(e) => {
-                            updateCurrent("ctaLink", e.target.value);
-                            updateCurrent("buttonLink", e.target.value);
+                            updateCurrentShared("ctaLink", e.target.value);
+                            updateCurrentShared("buttonLink", e.target.value);
                           }}
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-[#0756B5]"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:border-emerald-600"
                         />
                       </div>
                     </div>
                   </div>
-                );
-              })()}
-            </div>
-          </AdminAccordion>
+                </div>
+              </AdminAccordion>
+            );
+          })()}
         </motion.div>
       )}
 

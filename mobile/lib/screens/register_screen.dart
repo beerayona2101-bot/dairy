@@ -75,7 +75,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const MobileWebViewScreen(
-            initialUrl: ApiConfig.productionServerUrl,
             destinationPath: '/user-profile',
           ),
         ),
@@ -107,9 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(
-          initialUrl: ApiConfig.productionServerUrl,
-        ),
+        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(),
         transitionsBuilder: (context, animation, secAnim, child) =>
             FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 400),

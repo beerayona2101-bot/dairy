@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../config/api_config.dart';
 import '../providers/auth_provider.dart';
 import '../services/fcm_service.dart';
@@ -175,7 +176,7 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
             _candidateUrls.insert(0, customUrl);
           }
           final customResolved = _buildResolvedUrl(customUrl, token: token);
-          if (widget.initialUrl == null && customResolved != _currentUrl) {
+          if (customResolved != _currentUrl) {
             if (mounted) {
               _loadSpecificUrl(customResolved);
             }
@@ -240,6 +241,9 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(false)
       ..setBackgroundColor(Colors.white)
+      ..setOnConsoleMessage((JavaScriptConsoleMessage consoleMessage) {
+        debugPrint('[WebView Console] [${consoleMessage.level.name}] ${consoleMessage.message}');
+      })
       ..addJavaScriptChannel(
         'FlutterAuthBridge',
         onMessageReceived: (JavaScriptMessage message) async {
@@ -409,6 +413,11 @@ class _MobileWebViewScreenState extends State<MobileWebViewScreen> {
         ),
       )
       ..loadRequest(Uri.parse(_currentUrl));
+
+    if (_controller!.platform is AndroidWebViewController) {
+      final androidController = _controller!.platform as AndroidWebViewController;
+      androidController.setMediaPlaybackRequiresUserGesture(false);
+    }
   }
 
   void _loadSpecificUrl(String url) {

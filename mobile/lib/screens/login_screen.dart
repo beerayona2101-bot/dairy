@@ -89,9 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const MobileWebViewScreen(
-            initialUrl: ApiConfig.productionServerUrl,
-          ),
+          builder: (_) => const MobileWebViewScreen(),
         ),
         (route) => false,
       );
@@ -126,9 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(
-          initialUrl: ApiConfig.productionServerUrl,
-        ),
+        pageBuilder: (context, anim, secAnim) => const MobileWebViewScreen(),
         transitionsBuilder: (context, animation, secAnim, child) =>
             FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 400),

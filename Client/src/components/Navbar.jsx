@@ -395,7 +395,7 @@ export default function Navbar() {
                         }
                         navigate("/login", { state: { from: location.pathname + location.search } });
                     }}
-                    className="flex items-center gap-1.5 text-white bg-gradient-to-r from-sky-400 via-sky-500 to-sky-400 hover:from-sky-500 hover:to-sky-600 font-extrabold px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm shadow-sky-400/25 hover:shadow-md hover:shadow-sky-400/35 hover:scale-105 active:scale-95 cursor-pointer border border-sky-300/40 text-xs"
+                    className="flex items-center gap-1.5 text-white bg-gradient-to-r from-[#0756B5] via-[#0861CB] to-[#054593] hover:from-[#054593] hover:via-[#0756B5] hover:to-[#043675] font-extrabold px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm shadow-[#0756B5]/30 hover:shadow-md hover:shadow-[#0756B5]/40 hover:scale-105 active:scale-95 cursor-pointer border border-[#0861CB]/50 text-xs"
                 >
                     <LoginIcon sx={{ fontSize: "1rem" }} />
                     <span>Login</span>
@@ -510,18 +510,13 @@ export default function Navbar() {
                                             if (item.path.includes('product')) prefetchProducts();
                                             prefetchPageContent();
                                         }}
-                                        className={`relative py-1 text-sm font-extrabold no-underline transition-all duration-300 cursor-pointer flex flex-col items-center ${
+                                        className={`py-1 text-sm font-bold no-underline transition-colors duration-200 cursor-pointer ${
                                             isActive
-                                                ? "text-[#0756B5] dark:text-blue-400 drop-shadow-[0_0_12px_rgba(7,86,181,0.5)] scale-105 font-black"
-                                                : "text-slate-800 dark:text-slate-200 hover:text-[#0756B5] dark:hover:text-blue-400 hover:drop-shadow-[0_0_8px_rgba(7,86,181,0.35)]"
+                                                ? "text-[#0756B5] dark:text-blue-400 font-extrabold"
+                                                : "text-slate-800 dark:text-slate-200 hover:text-[#0756B5] dark:hover:text-blue-400"
                                         }`}
                                     >
                                         <span>{item.label}</span>
-                                        {isActive && (
-                                            <span 
-                                                className="absolute -bottom-1 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#075C2A] via-[#0756B5] to-[#075C2A] rounded-full shadow-[0_2px_8px_rgba(7,86,181,0.45)]"
-                                            />
-                                        )}
                                     </Link>
                                 );
                             })}
@@ -741,7 +736,7 @@ export default function Navbar() {
              !(location.pathname.startsWith('/products/') && location.pathname.replace(/^\/products\/?/, '').trim().length > 0) &&
              !isCartPage &&
              !isCheckoutPage && (
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-[52px] sm:h-[56px] bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border-t border-gray-200/85 dark:border-gray-800/85 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-6px_24px_rgba(0,0,0,0.4)] flex items-center justify-around px-1 sm:px-3 translate-y-0">
+                <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-[52px] sm:h-[56px] bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border-t border-gray-200/85 dark:border-gray-800/85 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-6px_24px_rgba(0,0,0,0.4)] flex items-center justify-around px-1 sm:px-3 translate-y-0">
                     {/* 1. Products */}
                     <Link
                         to="/products"

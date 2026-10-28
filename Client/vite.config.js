@@ -53,37 +53,8 @@ export default defineConfig(({ mode }) => {
   build: {
     target: 'es2020',
     cssCodeSplit: true,
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1500,
     minify: 'esbuild',
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@mui/icons-material')) {
-              return 'mui-icons';
-            }
-            if (id.includes('@mui') || id.includes('@emotion')) {
-              return 'mui-core';
-            }
-            if (id.includes('framer-motion') || id.includes('motion')) {
-              return 'framer-motion';
-            }
-            if (id.includes('recharts') || id.includes('chart.js') || id.includes('react-chartjs-2')) {
-              return 'charts';
-            }
-            if (id.includes('socket.io-client') || id.includes('axios')) {
-              return 'network-vendor';
-            }
-            if (id.includes('lucide-react') || id.includes('@fortawesome')) {
-              return 'icons-vendor';
-            }
-          }
-        },
-      },
-    },
   },
 };
 });

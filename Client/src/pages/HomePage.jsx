@@ -25,8 +25,8 @@ export default function HomePage() {
                 <MobileWelcomeBanner />
             </div>
 
-            {/* 2. HERO CAROUSEL: Harmoniously framed across all screen sizes */}
-            <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-1.5 sm:pt-3 pb-2 sm:pb-3">
+            {/* 2. HERO CAROUSEL: Untouched on mobile (<md); 100% Viewport on Desktop/Web (md:) */}
+            <div className="w-full max-w-7xl md:max-w-none mx-auto px-3 sm:px-6 md:px-0 pt-1.5 sm:pt-3 md:pt-0 pb-2 sm:pb-3 md:pb-0">
                 <HomeWelcomeHero />
             </div>
 

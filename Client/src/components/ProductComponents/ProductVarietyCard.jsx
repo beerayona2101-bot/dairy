@@ -305,25 +305,17 @@ export default function ProductVarietyCard(props) {
                         <FavoriteBorderIcon className="text-gray-400 hover:text-[#FF385C] transition-colors" sx={{ fontSize: { xs: "0.85rem", sm: "1.1rem" } }} />
                     )}
                 </button>
+
+                {/* Floating Bottom-Right Rating Badge on Image */}
+                <div className="absolute bottom-2 right-2 sm:bottom-2.5 sm:right-2.5 z-10 flex items-center gap-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-amber-700 dark:text-amber-300 text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-full shadow-sm border border-amber-500/30">
+                    <StarIcon sx={{ fontSize: "0.75rem" }} className="text-amber-500 fill-amber-400" />
+                    <span>{displayRating}</span>
+                </div>
             </div>
 
             {/* Bottom Content Container with balanced padding & responsive flex */}
             <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between space-y-1.5 min-w-0">
                 <div className="min-w-0">
-                    {/* Top Pill Row: Upper-case category pill + Star rating */}
-                    <div className="flex items-center justify-between gap-1.5 mb-1.5 min-w-0">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-500/10 dark:bg-blue-400/10 border border-blue-500/20 dark:border-blue-400/20 min-w-0 max-w-[68%]">
-                            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#0756B5] dark:text-blue-400 truncate">
-                                {type && type !== "Unknown" ? type : "ORGANIC DAIRY"}
-                            </span>
-                        </span>
-
-                        <div className="flex items-center gap-0.5 sm:gap-1 bg-amber-500/10 dark:bg-amber-400/10 text-amber-700 dark:text-amber-300 text-[10px] sm:text-xs font-black px-1.5 sm:px-2 py-0.5 rounded-full shrink-0 border border-amber-500/20">
-                            <StarIcon sx={{ fontSize: "0.75rem" }} className="text-amber-500" />
-                            <span>{displayRating}</span>
-                        </div>
-                    </div>
-
                     {/* Title: 2-Line clean font with black product name and distinct smaller variant tag */}
                     <div className="mb-1 min-h-[38px] sm:min-h-[42px] flex items-start min-w-0">
                         <Link

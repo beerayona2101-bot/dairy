@@ -88,7 +88,7 @@ class AppStartupGate extends StatelessWidget {
     }
 
     if (authProvider.isAuthenticated) {
-      return const MobileWebViewScreen(initialUrl: ApiConfig.productionServerUrl);
+      return const MobileWebViewScreen();
     }
 
     return const OnboardingScreen();

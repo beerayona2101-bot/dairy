@@ -164,27 +164,26 @@ export default function UserLogin() {
   };
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-[#F5F8F6] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center px-2.5 py-1.5 sm:px-3 sm:py-2">
+    <div className="relative min-h-[100dvh] lg:h-[100dvh] w-full overflow-y-auto lg:overflow-hidden bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-300 flex flex-col items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
       <header className="w-full max-w-[440px] lg:max-w-[1220px] h-9 shrink-0 flex items-center justify-between">
         <button
           type="button"
           onClick={handleGoBack}
-          className="p-2 sm:px-3 sm:py-1.5 text-gray-700 dark:text-gray-200 hover:text-[#0284C7] dark:hover:text-[#38BDF8] transition-colors rounded-full sm:rounded-xl hover:bg-white dark:hover:bg-gray-800 shadow-2xs border border-gray-200/60 dark:border-gray-700/60 flex items-center gap-1.5 cursor-pointer"
+          className="w-8.5 h-8.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[#075C2A] dark:text-[#3F9E18] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-xs"
           aria-label="Back"
         >
-          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#0284C7] dark:text-[#38BDF8]" />
-          <span className="hidden sm:inline text-xs font-bold">Back</span>
+          <ArrowLeft className="w-4.5 h-4.5 text-[#075C2A] dark:text-[#3F9E18]" />
         </button>
 
-        {/* Top-Right Corner Guest Option for Mobile Response */}
+        {/* Top-Right Corner Guest Option */}
         <button
           type="button"
           onClick={handleGuestContinue}
-          className="lg:hidden px-3.5 py-1.5 text-xs font-black text-[#0284C7] dark:text-[#38BDF8] bg-white/95 dark:bg-slate-800/95 rounded-full border border-sky-200/90 dark:border-slate-700/80 shadow-xs hover:bg-[#F0F9FF] dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+          className="lg:hidden px-3 py-1 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] bg-white dark:bg-slate-800 rounded-full border border-green-300 dark:border-green-700 shadow-xs hover:bg-green-50 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
           aria-label="Continue as Guest"
         >
           <span>Guest</span>
-          <ChevronRight className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
+          <ChevronRight className="w-3.5 h-3.5 text-[#075C2A] dark:text-[#3F9E18]" />
         </button>
       </header>
 
@@ -195,7 +194,7 @@ export default function UserLogin() {
         transition={{ duration: 0.35, ease: "easeOut" }}
         className="w-full max-w-[440px] flex-1 min-h-0 flex flex-col justify-center my-0 lg:max-w-[1220px] lg:h-[calc(100dvh-4.1rem)] lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:flex-none lg:my-0 lg:overflow-hidden lg:rounded-[26px] lg:border lg:border-slate-200/90 lg:bg-[#F8FBF9] lg:shadow-xl lg:shadow-slate-300/40 dark:lg:border-slate-800 dark:lg:bg-[#1E293B] dark:lg:shadow-black/40"
       >
-        <aside className="hidden lg:flex flex-col justify-center items-center bg-gradient-to-br from-[#0284C7] via-[#0369A1] to-[#054593] px-8 py-8 xl:px-12 text-white">
+        <aside className="hidden lg:flex flex-col justify-center items-center bg-gradient-to-br from-[#075C2A] via-[#08713A] to-[#054593] px-8 py-8 xl:px-12 text-white">
           <img
             src={brandLogo}
             alt={company?.name || "Natural Milk Dairy"}
@@ -215,7 +214,7 @@ export default function UserLogin() {
             <Link
               to="/signup"
               state={{ previous: "/login", fromAuthFlow: true }}
-              className="mt-3 inline-flex items-center gap-2 rounded-xl border border-white/50 px-4 py-2.5 text-sm font-extrabold transition-colors hover:bg-white hover:text-[#0284C7]"
+              className="mt-3 inline-flex items-center gap-2 rounded-xl border border-white/50 px-4 py-2.5 text-sm font-extrabold transition-colors hover:bg-white hover:text-[#075C2A]"
             >
               Create your account
               <ChevronRight className="h-4 w-4" />
@@ -224,7 +223,7 @@ export default function UserLogin() {
         </aside>
 
         <section className="flex w-full flex-col justify-center px-0 py-1.5 sm:py-2 lg:px-8 lg:py-8 xl:px-12">
-          <div className="w-full max-w-[420px] mx-auto">
+          <div className="w-full max-w-[440px] mx-auto">
             {/* Brand Cow Logo Header */}
             <div className="flex flex-col items-center text-center mb-2.5 sm:mb-3 lg:hidden">
               <img
@@ -249,7 +248,7 @@ export default function UserLogin() {
 
             {/* Inputs Card Container */}
             <div className="bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/40 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:dark:bg-transparent">
-              <form onSubmit={handleFormSubmit} className="space-y-2.5 sm:space-y-2.5">
+              <form onSubmit={handleFormSubmit} className="space-y-3.5 sm:space-y-4">
                 {/* Prominent Inline Error Message Alert Banner */}
                 {errorMessage && (
                   <motion.div
@@ -277,8 +276,8 @@ export default function UserLogin() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Email Address
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-slate-900/70 border border-slate-200/90 dark:border-slate-700/90 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-3 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-slate-900/70 border border-slate-200/90 dark:border-slate-700/90 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
+                <Mail className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-3 shrink-0 transition-colors" />
                 <input
                   type="email"
                   name="email"
@@ -296,8 +295,8 @@ export default function UserLogin() {
               <label className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 mb-1">
                 Password
               </label>
-              <div className="group flex items-center px-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-slate-900/70 border border-slate-200/90 dark:border-slate-700/90 focus-within:border-[#0284C7] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#0284C7]/20 transition-all shadow-xs">
-                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#0284C7] mr-3 shrink-0 transition-colors" />
+              <div className="group flex items-center px-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-slate-900/70 border border-slate-200/90 dark:border-slate-700/90 focus-within:border-[#075C2A] focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-[#075C2A]/20 transition-all shadow-xs">
+                <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-[#075C2A] mr-3 shrink-0 transition-colors" />
                 <input
                   name="password"
                   placeholder="••••••••"
@@ -321,7 +320,7 @@ export default function UserLogin() {
             <div className="flex justify-end pt-0.5">
               <Link
                 to="/login/forget-password"
-                className="text-xs font-bold text-[#0284C7] dark:text-[#38BDF8] hover:text-[#0369A1] hover:underline"
+                className="text-xs font-bold text-[#0756B5] dark:text-blue-400 hover:text-[#075C2A] hover:underline"
               >
                 Forgot Password?
               </Link>
@@ -336,7 +335,7 @@ export default function UserLogin() {
                   name="agreeTerms"
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded text-[#0284C7] focus:ring-[#0284C7] focus:ring-offset-0 border-slate-300 dark:border-slate-600 dark:bg-slate-800 accent-[#0284C7] cursor-pointer shrink-0 transition-all"
+                  className="w-4 h-4 mt-0.5 rounded text-[#075C2A] focus:ring-[#075C2A] focus:ring-offset-0 border-slate-300 dark:border-slate-600 dark:bg-slate-800 accent-[#075C2A] cursor-pointer shrink-0 transition-all"
                   required
                 />
                 <span className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
@@ -347,7 +346,7 @@ export default function UserLogin() {
                       e.preventDefault();
                       setTermsModalTab("terms");
                     }}
-                    className="font-bold text-[#0284C7] dark:text-[#38BDF8] hover:underline cursor-pointer"
+                    className="font-bold text-[#0756B5] dark:text-blue-400 hover:underline cursor-pointer"
                   >
                     Terms &amp; Conditions
                   </button>{" "}
@@ -358,7 +357,7 @@ export default function UserLogin() {
                       e.preventDefault();
                       setTermsModalTab("privacy");
                     }}
-                    className="font-bold text-[#0284C7] dark:text-[#38BDF8] hover:underline cursor-pointer"
+                    className="font-bold text-[#0756B5] dark:text-blue-400 hover:underline cursor-pointer"
                   >
                     Privacy Policy
                   </button>
@@ -386,10 +385,10 @@ export default function UserLogin() {
                 <Link
                   to="/signup"
                   state={{ previous: "/login", fromAuthFlow: true }}
-                  className="font-black text-[#0284C7] dark:text-[#38BDF8] hover:text-[#0369A1] hover:underline cursor-pointer ml-1 inline-flex items-center gap-0.5"
+                  className="font-black text-[#0756B5] dark:text-blue-400 hover:text-[#075C2A] hover:underline cursor-pointer ml-1 inline-flex items-center gap-0.5"
                 >
                   <span>Create Account</span>
-                  <ChevronRight className="w-3.5 h-3.5 inline text-[#0284C7] dark:text-[#38BDF8]" />
+                  <ChevronRight className="w-3.5 h-3.5 inline text-[#0756B5] dark:text-blue-400" />
                 </Link>
               </p>
             </div>

@@ -8,6 +8,7 @@ import bannerProductsImg from "../../assets/banner_pure_healthy_products.jpg";
 import bannerDeliveryImg from "../../assets/banner_farm_to_home_delivery.jpg";
 import {
     Sun,
+    Moon,
     Leaf,
     Droplets,
     Truck,
@@ -37,14 +38,47 @@ export default function HomeWelcomeHero() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    // Dynamic time-of-day greeting (Good Morning / Good Afternoon / Good Evening)
+    const timingGreeting = useMemo(() => {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) {
+            return {
+                greeting: "Good Morning",
+                icon: Sun,
+                iconClass: "text-amber-500 fill-amber-400",
+                badgeBorder: "border-amber-400/30 dark:border-amber-700/50",
+                badgeBg: "bg-amber-400/20 dark:bg-amber-950/50",
+                textClass: "text-slate-800 dark:text-amber-200",
+            };
+        } else if (hour >= 12 && hour < 17) {
+            return {
+                greeting: "Good Afternoon",
+                icon: Sun,
+                iconClass: "text-amber-500 fill-amber-400",
+                badgeBorder: "border-amber-500/30 dark:border-amber-700/50",
+                badgeBg: "bg-amber-500/20 dark:bg-amber-950/50",
+                textClass: "text-slate-800 dark:text-amber-200",
+            };
+        } else {
+            return {
+                greeting: "Good Evening",
+                icon: Moon,
+                iconClass: "text-indigo-400 fill-indigo-300",
+                badgeBorder: "border-indigo-400/30 dark:border-indigo-700/50",
+                badgeBg: "bg-indigo-400/20 dark:bg-indigo-950/50",
+                textClass: "text-slate-800 dark:text-indigo-200",
+            };
+        }
+    }, []);
+
     // Canonical default slides fallback
     const defaultSlides = useMemo(() => [
         {
             id: "welcome-slide",
             isWelcomeSlide: true, // Shown in web/desktop; excluded in mobile response
-            badgeText: "Good Morning",
-            badgeIcon: Sun,
-            badgeIconColor: "text-amber-500 fill-amber-400",
+            badgeText: timingGreeting.greeting,
+            badgeIcon: timingGreeting.icon,
+            badgeIconColor: timingGreeting.iconClass,
             eyebrow: "Welcome to",
             mainHeading: "Natural Milk Dairy",
             subHeading: "",
@@ -298,7 +332,7 @@ export default function HomeWelcomeHero() {
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
-            className="group relative w-full aspect-[2.1/1] xs:aspect-[2.15/1] sm:aspect-[16/7.2] md:aspect-[16/6.8] lg:aspect-[16/6.4] min-h-[175px] xs:min-h-[190px] sm:min-h-[270px] md:min-h-[380px] lg:min-h-[440px] max-h-[520px] rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-xs dark:shadow-none select-none"
+            className="group relative w-full aspect-[2.1/1] xs:aspect-[2.15/1] sm:aspect-[16/7.2] md:aspect-auto md:w-full md:h-[calc(100vh-60px)] md:min-h-[calc(100vh-60px)] md:max-h-[calc(100vh-60px)] min-h-[175px] xs:min-h-[190px] sm:min-h-[270px] rounded-2xl sm:rounded-3xl md:rounded-none overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 md:border-0 shadow-xs dark:shadow-none select-none"
         >
             {/* Slide Container */}
             <AnimatePresence initial={false} custom={direction}>
@@ -329,26 +363,36 @@ export default function HomeWelcomeHero() {
 
                     {/* Staggered Content Overlay (Left-Aligned with generous space for visual asset on the right) */}
                     <div className="absolute inset-0 flex flex-col justify-center z-10 pointer-events-none">
-                        <div className="w-full max-w-7xl mx-auto px-3.5 xs:px-4 sm:px-10 md:px-14 lg:px-16">
+                        <div className="w-full max-w-7xl 2xl:max-w-[1400px] mx-auto px-3.5 xs:px-4 sm:px-10 md:px-14 lg:px-16 2xl:px-20">
                             <motion.div
                                 variants={textContainerVariants}
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="max-w-[62%] xs:max-w-[60%] sm:max-w-lg md:max-w-xl lg:max-w-2xl text-left pointer-events-auto space-y-1 xs:space-y-1.5 sm:space-y-2.5"
+                                className="max-w-[62%] xs:max-w-[60%] sm:max-w-lg md:max-w-xl lg:max-w-2xl 2xl:max-w-3xl text-left pointer-events-auto space-y-1 xs:space-y-1.5 sm:space-y-2.5 md:space-y-4"
                             >
                                 {currentSlide.isWelcomeSlide ? (
                                     /* 1. WELCOME SLIDE CONTENT (Desktop/Web only) */
                                     <>
-                                        {/* Sun Icon + Good Morning Greeting */}
-                                        <motion.div variants={itemSlideIn} className="flex items-center gap-1.5 xs:gap-2">
-                                            <div className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 rounded-full bg-amber-400/20 dark:bg-amber-950/50 border border-amber-400/30 dark:border-amber-700/50 flex items-center justify-center shrink-0">
-                                                <Sun className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-amber-500 fill-amber-400" />
-                                            </div>
-                                            <span className="text-[11px] xs:text-xs sm:text-base font-bold text-slate-800 dark:text-amber-200 tracking-wide drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] dark:drop-shadow-none">
-                                                {currentSlide.badgeText}
-                                            </span>
-                                        </motion.div>
+                                        {/* Dynamic Time-of-Day Greeting Badge */}
+                                        {(() => {
+                                            const GreetingIcon = timingGreeting.icon;
+                                            const customText = currentSlide.badgeText?.trim();
+                                            const isAutoTiming = !customText ||
+                                                ["good morning", "good afternoon", "good evening", "auto", "dynamic", "timing"].includes(customText.toLowerCase());
+                                            const displayGreeting = isAutoTiming ? timingGreeting.greeting : customText;
+
+                                            return (
+                                                <motion.div variants={itemSlideIn} className="flex items-center gap-1.5 xs:gap-2">
+                                                    <div className={`w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 rounded-full ${timingGreeting.badgeBg} border ${timingGreeting.badgeBorder} flex items-center justify-center shrink-0`}>
+                                                        <GreetingIcon className={`w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 ${timingGreeting.iconClass}`} />
+                                                    </div>
+                                                    <span className={`text-[11px] xs:text-xs sm:text-base font-bold ${timingGreeting.textClass} tracking-wide drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] dark:drop-shadow-none`}>
+                                                        {displayGreeting}
+                                                    </span>
+                                                </motion.div>
+                                            );
+                                        })()}
 
                                         {/* "Welcome to" */}
                                         <motion.p
@@ -361,7 +405,7 @@ export default function HomeWelcomeHero() {
                                         {/* "Natural Milk Dairy" in grand serif typography */}
                                         <motion.h1
                                             variants={itemSlideIn}
-                                            className="font-serif-display text-base xs:text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-[#134E24] dark:text-[#4ADE80] leading-[1.08] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
+                                            className="font-serif-display text-base xs:text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-[#134E24] dark:text-[#4ADE80] leading-[1.08] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
                                         >
                                             {currentSlide.mainHeading}
                                         </motion.h1>
@@ -369,7 +413,7 @@ export default function HomeWelcomeHero() {
                                         {/* Subtitle / Description (Visible on larger screens) */}
                                         <motion.p
                                             variants={itemSlideIn}
-                                            className="hidden sm:block text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-lg line-clamp-2 drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] dark:drop-shadow-none"
+                                            className="hidden sm:block text-xs sm:text-sm md:text-base lg:text-lg text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-lg lg:max-w-xl line-clamp-2 drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] dark:drop-shadow-none"
                                         >
                                             {currentSlide.description}
                                         </motion.p>
@@ -394,10 +438,10 @@ export default function HomeWelcomeHero() {
                                         </motion.div>
 
                                         {/* Call to Action Button */}
-                                        <motion.div variants={ctaEntry} className="pt-0.5 sm:pt-1.5">
+                                        <motion.div variants={ctaEntry} className="pt-0.5 sm:pt-1.5 md:pt-2">
                                             <Link
                                                 to={currentSlide.ctaLink}
-                                                className="inline-flex items-center justify-center px-4 py-1.5 xs:px-5 xs:py-2 sm:px-6 sm:py-2.5 rounded-full bg-[#134E24] hover:bg-[#0E3B1B] text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base shadow-[0_2px_8px_rgba(19,78,36,0.25)] hover:shadow-[0_4px_14px_rgba(19,78,36,0.35)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                                                className="inline-flex items-center justify-center px-4 py-1.5 xs:px-5 xs:py-2 sm:px-6 sm:py-2.5 md:px-7 md:py-3 rounded-full bg-[#134E24] hover:bg-[#0E3B1B] text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base shadow-[0_2px_8px_rgba(19,78,36,0.25)] hover:shadow-[0_4px_14px_rgba(19,78,36,0.35)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
                                             >
                                                 <span>{currentSlide.ctaText}</span>
                                             </Link>
@@ -409,7 +453,7 @@ export default function HomeWelcomeHero() {
                                         {/* Main Campaign Headline in Serif Font (e.g. "Farm Fresh Milk", "Pure & Healthy", "From Our Farm") */}
                                         <motion.h2
                                             variants={itemSlideIn}
-                                            className="font-serif-display text-sm xs:text-lg sm:text-2xl md:text-3xl lg:text-[40px] font-bold tracking-tight text-[#134E24] dark:text-[#4ADE80] leading-[1.1] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
+                                            className="font-serif-display text-sm xs:text-lg sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-[#134E24] dark:text-[#4ADE80] leading-[1.1] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
                                         >
                                             {currentSlide.mainHeading}
                                         </motion.h2>
@@ -427,7 +471,7 @@ export default function HomeWelcomeHero() {
                                         {/* Subtitle / Value Proposition */}
                                         <motion.p
                                             variants={itemSlideIn}
-                                            className="text-[10px] xs:text-[11px] sm:text-sm md:text-base text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-md line-clamp-1 xs:line-clamp-2 drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] dark:drop-shadow-none"
+                                            className="text-[10px] xs:text-[11px] sm:text-sm md:text-base lg:text-lg text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-md lg:max-w-lg line-clamp-1 xs:line-clamp-2 drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] dark:drop-shadow-none"
                                         >
                                             {currentSlide.mobileSubtitle || currentSlide.description}
                                         </motion.p>
@@ -467,7 +511,6 @@ export default function HomeWelcomeHero() {
                     </div>
                 </motion.div>
             </AnimatePresence>
-
         </section>
     );
 }
