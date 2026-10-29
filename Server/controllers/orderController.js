@@ -33,6 +33,8 @@ export const createOrder = async (req, res) => {
     totalAmount,
     deliveryInstructions: deliveryInstructions || precautions || "",
     status: "Pending",
+    paymentStatus: (paymentMode === "Online" || paymentMode === "Online (Test Mode)") ? "Paid" : "Pending",
+    razorpay: req.body.razorpay || undefined,
   });
 
   const savedOrder = await newOrder.save();

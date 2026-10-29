@@ -7,8 +7,8 @@ import { broadcastOrderStatusUpdate } from "../socket/socket.js";
 
 const getRazorpayInstance = () => {
   return new Razorpay({
-    key_id: (process.env.RAZORPAY_KEY_ID || "rzp_test_dummy_key_id").trim(),
-    key_secret: (process.env.RAZORPAY_KEY_SECRET || "dummy_key_secret").trim(),
+    key_id: (process.env.RAZORPAY_KEY_ID || "rzp_test_TZpv3bxIAHtj7y").trim(),
+    key_secret: (process.env.RAZORPAY_KEY_SECRET || "jinx3yiEbQqiPfCvWnWkNgBo").trim(),
   });
 };
 
@@ -23,8 +23,8 @@ export const createRazorpayOrder = async (req, res) => {
     return res.status(400).json({ success: false, message: "Valid amount is required." });
   }
 
-  const keyId = (process.env.RAZORPAY_KEY_ID || "rzp_test_dummy_key_id").trim();
-  const keySecret = (process.env.RAZORPAY_KEY_SECRET || "dummy_key_secret").trim();
+  const keyId = (process.env.RAZORPAY_KEY_ID || "rzp_test_TZpv3bxIAHtj7y").trim();
+  const keySecret = (process.env.RAZORPAY_KEY_SECRET || "jinx3yiEbQqiPfCvWnWkNgBo").trim();
 
   if (!keyId || keyId.includes("dummy") || !keySecret || keySecret.includes("dummy")) {
     return res.status(200).json({

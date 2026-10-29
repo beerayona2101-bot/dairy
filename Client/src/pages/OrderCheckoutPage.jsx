@@ -32,7 +32,6 @@ import { ProductContext } from "../context/ProductProvider";
 import { socket } from "../socket/socket";
 import { Percent, ShoppingBag, IndianRupee, Receipt } from "lucide-react";
 import BuffaloLoader from "../components/BuffaloLoader";
-import RazorpayDemoModal from "../components/Payment/RazorpayDemoModal";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -87,8 +86,6 @@ export default function OrderCheckoutPage() {
   const [orderLoading, setOrderLoading] = useState(false);
   const [selectedPaymentMode, setSelectedPaymentMode] = useState(null);
   const [highlightedItems, setHighlightedItems] = useState([]);
-  const [razorpayDemoOpen, setRazorpayDemoOpen] = useState(false);
-  const [pendingOnlinePayload, setPendingOnlinePayload] = useState(null);
 
   const handleOpenEditAddress = () => {
     if (!deliveryAddress) return;
@@ -253,76 +250,110 @@ export default function OrderCheckoutPage() {
         }
       } else if (selectedMode === "Online") {
         setOpen(false);
-        setPendingOnlinePayload(orderPayload);
-        setRazorpayDemoOpen(true);
+        setOrderLoading(true);
+
+        const loaded = await loadRazorpayScript();
+        if (!loaded || !window.Razorpay) {
+          setOrderLoading(false);
+          enqueueSnackbar("Unable to load Razorpay checkout. Please check your internet connection.", { variant: "error" });
+          return;
+        }
+
+        let orderData = null;
+        try {
+          orderData = await razorpayOrderPayment(totalAmount);
+        } catch (err) {
+          console.warn("Backend Razorpay order creation notice:", err);
+        }
+
+        const razorpayKey =
+          orderData?.keyId ||
+          import.meta.env.VITE_RAZORPAY_KEY_ID ||
+          "rzp_test_TZpv3bxIAHtj7y";
+
+        const hasValidOrderId =
+          orderData?.orderId &&
+          typeof orderData.orderId === "string" &&
+          orderData.orderId.startsWith("order_") &&
+          !orderData.orderId.includes("mock");
+
+        const options = {
+          key: razorpayKey,
+          amount: orderData?.amount || Math.round(totalAmount * 100),
+          currency: orderData?.currency || "INR",
+          name: "Natural Milk Dairy",
+          description: `Order Payment - ₹${totalAmount}`,
+          image: "/logo192.png",
+          ...(hasValidOrderId ? { order_id: orderData.orderId } : {}),
+          prefill: {
+            name: deliveryAddress?.name || currentUser?.name || currentUser?.fullName || "Valued Customer",
+            email: currentUser?.email || "customer@naturalmilk.com",
+            contact: deliveryAddress?.phone || deliveryAddress?.mobile || currentUser?.phone || "9876543210",
+          },
+          notes: {
+            address: `${deliveryAddress?.addressLine1 || ""}, ${deliveryAddress?.city || ""}`,
+            userId: currentUser?._id || currentUser?.id || "",
+          },
+          theme: {
+            color: "#0756B5",
+          },
+          modal: {
+            ondismiss: function () {
+              setOrderLoading(false);
+              enqueueSnackbar("Payment cancelled by user. Order not placed.", { variant: "info" });
+            },
+          },
+          handler: async function (response) {
+            try {
+              setOrderLoading(true);
+              const finalPayload = {
+                ...orderPayload,
+                paymentMode: "Online",
+                razorpay: {
+                  orderId: response.razorpay_order_id || orderData?.orderId || `order_${Date.now()}`,
+                  paymentId: response.razorpay_payment_id || `pay_${Date.now()}`,
+                  signature: response.razorpay_signature || `sig_${Date.now()}`,
+                },
+              };
+
+              const res = await createOrderApi(finalPayload);
+              if (res?.success) {
+                if (socket && socket.connected) {
+                  socket.emit("place-new-order", {
+                    orderData: finalPayload,
+                    createdOrder: res.order,
+                  });
+                }
+                clearCart();
+                fetchOrders?.();
+                alert("🎉 Payment Successful!\n\nYour order has been placed successfully via Razorpay.");
+                enqueueSnackbar("Payment successful! Order placed.", { variant: "success" });
+                navigate(`/user-profile/orders`, { replace: true });
+              } else {
+                enqueueSnackbar(res?.message || "Failed to place order after payment.", { variant: "error" });
+              }
+            } catch (err) {
+              console.error("Order completion failed:", err);
+              enqueueSnackbar(err?.response?.data?.message || "An error occurred while saving your order.", { variant: "error" });
+            } finally {
+              setOrderLoading(false);
+            }
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (response) {
+          setOrderLoading(false);
+          alert(`❌ Payment Failed\n\n${response?.error?.description || "Payment could not be processed."}`);
+          enqueueSnackbar(response?.error?.description || "Payment failed. Please try again.", { variant: "error" });
+        });
+        rzp.open();
         setOrderLoading(false);
       }
     } catch (error) {
       enqueueSnackbar(error?.response?.data?.message || "An error occurred while placing the order.", { variant: "error" });
       setOrderLoading(false);
     }
-  };
-
-  const handleRazorpayDemoSuccess = async (payInfo) => {
-    setRazorpayDemoOpen(false);
-    setOrderLoading(true);
-
-    try {
-      const finalPayload = {
-        ...(pendingOnlinePayload || {
-          address: deliveryAddress?._id,
-          productsData: cartDetails.map((item) => {
-            const discount = item.discount || 0;
-            const discountedPrice = item.price - (item.price * discount) / 100;
-            return {
-              productId: item.id,
-              productQuantity: item.selectedQuantity,
-              productPrice: parseFloat(discountedPrice.toFixed(2)),
-              productName: item.name,
-            };
-          }),
-          paymentMode: "Online",
-          totalAmount: totalAmount,
-          userId: currentUser?._id || currentUser?.id,
-          date: new Date().toISOString()
-        }),
-        paymentMode: "Online",
-        razorpay: {
-          orderId: payInfo?.orderId || `order_demo_${Date.now()}`,
-          paymentId: payInfo?.paymentId || `pay_demo_${Date.now()}`,
-          signature: payInfo?.signature || `mock_sig_${Date.now()}`,
-        },
-      };
-
-      const res = await createOrderApi(finalPayload);
-      if (res?.success) {
-        if (socket && socket.connected) {
-          socket.emit("place-new-order", {
-            orderData: finalPayload,
-            createdOrder: res.order,
-          });
-        }
-        setOpen(false);
-        clearCart();
-        fetchOrders?.();
-        alert("🎉 Demo Payment Successful!\n\nYour order has been placed successfully.");
-        enqueueSnackbar("Demo payment successful! Order placed.", { variant: 'success' });
-        navigate(`/user-profile/orders`, { replace: true });
-      } else {
-        enqueueSnackbar(res?.message || "Failed to place order.", { variant: "error" });
-      }
-    } catch (error) {
-      enqueueSnackbar(error?.response?.data?.message || "An error occurred while placing the order.", { variant: "error" });
-    } finally {
-      setOrderLoading(false);
-    }
-  };
-
-  const handleRazorpayDemoCancel = () => {
-    setRazorpayDemoOpen(false);
-    setOrderLoading(false);
-    alert("❌ Not Paid: Order Cancelled\n\nPayment was cancelled. Your order has not been placed.");
-    enqueueSnackbar("Not paid: Order cancelled.", { variant: "error" });
   };
 
   if (productLoading) {
@@ -705,15 +736,6 @@ export default function OrderCheckoutPage() {
         </div>
       </Dialog>
 
-      {/* Razorpay Demo Payment Modal (Zero OTP, Realistic UPI/Cards/Wallets/Netbanking) */}
-      <RazorpayDemoModal
-        isOpen={razorpayDemoOpen}
-        totalAmount={totalAmount}
-        currentUser={currentUser}
-        deliveryAddress={deliveryAddress}
-        onSuccess={handleRazorpayDemoSuccess}
-        onCancel={handleRazorpayDemoCancel}
-      />
-    </>
+          </>
   );
 }
