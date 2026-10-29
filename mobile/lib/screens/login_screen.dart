@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF5F8F6),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -229,11 +229,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Image.asset(
                         isDark ? 'assets/images/logoDarkMode.png' : 'assets/images/logoLightMode.png',
-                        height: 118,
+                        height: 104,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) => Image.asset(
                           'assets/images/cowLogo.png',
-                          height: 118,
+                          height: 104,
                           fit: BoxFit.contain,
                         ),
                       ),

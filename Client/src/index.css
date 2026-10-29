@@ -458,6 +458,59 @@ body,
   animation: reflectionSweep 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+/* Glass Travelling Reflection Animation for Navbar Login Button */
+@keyframes glassTravellingSweep {
+  0% {
+    transform: translateX(-180%) skewX(-25deg);
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(360%) skewX(-25deg);
+    opacity: 1;
+  }
+  22%, 100% {
+    transform: translateX(360%) skewX(-25deg);
+    opacity: 0;
+  }
+}
+
+.login-glass-btn {
+  position: relative !important;
+  overflow: hidden !important;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+
+.login-glass-reflection {
+  position: absolute !important;
+  top: -60% !important;
+  left: -20% !important;
+  width: 60% !important;
+  height: 220% !important;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0.7) 48%,
+    rgba(255, 255, 255, 0.95) 51%,
+    rgba(255, 255, 255, 0.7) 54%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  box-shadow: 0 0 16px 2px rgba(255, 255, 255, 0.5) !important;
+  transform: translateX(-180%) skewX(-25deg) !important;
+  animation: glassTravellingSweep 7s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  pointer-events: none !important;
+  z-index: 5 !important;
+}
+
+.login-glass-btn:hover .login-glass-reflection {
+  animation: glassTravellingSweep 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+
 /* Premium Floating Perimeter Border Light Effect */
 @property --border-angle {
   syntax: "<angle>";

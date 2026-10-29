@@ -395,10 +395,13 @@ export default function Navbar() {
                         }
                         navigate("/login", { state: { from: location.pathname + location.search } });
                     }}
-                    className="flex items-center gap-1.5 text-white bg-gradient-to-r from-[#0756B5] via-[#0861CB] to-[#054593] hover:from-[#054593] hover:via-[#0756B5] hover:to-[#043675] font-extrabold px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm shadow-[#0756B5]/30 hover:shadow-md hover:shadow-[#0756B5]/40 hover:scale-105 active:scale-95 cursor-pointer border border-[#0861CB]/50 text-xs"
+                    className="login-glass-btn relative overflow-hidden group flex items-center gap-1.5 text-white bg-gradient-to-r from-[#0756B5] via-[#0861CB] to-[#054593] hover:from-[#054593] hover:via-[#0756B5] hover:to-[#043675] font-extrabold px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm shadow-[#0756B5]/30 hover:shadow-md hover:shadow-[#0756B5]/40 hover:scale-105 active:scale-95 cursor-pointer border border-[#0861CB]/50 text-xs"
                 >
-                    <LoginIcon sx={{ fontSize: "1rem" }} />
-                    <span>Login</span>
+                    <span className="relative z-10 flex items-center gap-1.5">
+                        <LoginIcon sx={{ fontSize: "1rem" }} />
+                        <span>Login</span>
+                    </span>
+                    <span className="login-glass-reflection" aria-hidden="true" />
                 </button>
             </div>
         );

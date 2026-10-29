@@ -119,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -132,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Form(
                     key: _formKey,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // 1. Top Bar: Back Button (Circle) & Guest > Pill
@@ -146,13 +146,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 height: 34,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: const Color(0xFFF1F5F9),
+                                  color: Colors.white,
                                   border: Border.all(color: const Color(0xFFE2E8F0)),
                                 ),
                                 child: const Icon(
                                   Icons.arrow_back_rounded,
                                   size: 18,
-                                  color: Color(0xFF075C2A),
+                                  color: Color(0xFF0284C7),
                                 ),
                               ),
                             ),
@@ -163,7 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   color: Colors.white,
-                                  border: Border.all(color: const Color(0xFF86EFAC)),
+                                  border: Border.all(color: const Color(0xFFBAE6FD)),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -173,14 +173,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       style: GoogleFonts.outfit(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w800,
-                                        color: const Color(0xFF075C2A),
+                                        color: const Color(0xFF0284C7),
                                       ),
                                     ),
                                     const SizedBox(width: 3),
                                     const Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      size: 10,
-                                      color: Color(0xFF075C2A),
+                                      Icons.chevron_right_rounded,
+                                      size: 14,
+                                      color: Color(0xFF0284C7),
                                     ),
                                   ],
                                 ),
@@ -197,11 +197,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               Image.asset(
                                 'assets/images/logoLightMode.png',
-                                height: 58,
+                                height: 64,
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) => Image.asset(
                                   'assets/images/cowLogo.png',
-                                  height: 58,
+                                  height: 64,
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -230,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               style: GoogleFonts.outfit(
                                 fontSize: 21,
                                 fontWeight: FontWeight.w900,
-                                color: const Color(0xFF0F2742),
+                                color: const Color(0xFF0F172A),
                                 letterSpacing: -0.3,
                               ),
                             ),

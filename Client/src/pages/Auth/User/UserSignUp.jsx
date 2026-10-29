@@ -171,21 +171,21 @@ export default function UserSignUp() {
         <button
           type="button"
           onClick={handleGoBack}
-          className="w-8.5 h-8.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[#075C2A] dark:text-[#3F9E18] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-xs"
+          className="w-8.5 h-8.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[#0284C7] dark:text-[#38BDF8] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-xs"
           aria-label="Back"
         >
-          <ArrowLeft className="w-4.5 h-4.5 text-[#075C2A] dark:text-[#3F9E18]" />
+          <ArrowLeft className="w-4.5 h-4.5 text-[#0284C7] dark:text-[#38BDF8]" />
         </button>
 
         {/* Top-Right Corner Guest Option */}
         <button
           type="button"
           onClick={handleGuestContinue}
-          className="lg:hidden px-3 py-1 text-xs font-black text-[#075C2A] dark:text-[#3F9E18] bg-white dark:bg-slate-800 rounded-full border border-green-300 dark:border-green-700 shadow-xs hover:bg-green-50 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
+          className="lg:hidden px-3 py-1 text-xs font-black text-[#0284C7] dark:text-[#38BDF8] bg-white dark:bg-slate-800 rounded-full border border-sky-200 dark:border-sky-800 shadow-xs hover:bg-sky-50 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
           aria-label="Continue as Guest"
         >
           <span>Guest</span>
-          <ChevronRight className="w-3.5 h-3.5 text-[#075C2A] dark:text-[#3F9E18]" />
+          <ChevronRight className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
         </button>
       </header>
 
@@ -194,7 +194,7 @@ export default function UserSignUp() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="w-full max-w-[440px] flex-1 min-h-0 flex flex-col justify-center my-0 lg:max-w-[1220px] lg:h-[calc(100dvh-4.1rem)] lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:flex-none lg:my-0 lg:overflow-hidden lg:rounded-[26px] lg:border lg:border-slate-200/90 lg:bg-[#F8FBF9] lg:shadow-xl lg:shadow-slate-300/40 dark:lg:border-slate-800 dark:lg:bg-[#1E293B] dark:lg:shadow-black/40"
+        className="w-full max-w-[440px] flex-1 min-h-0 flex flex-col justify-start my-0 lg:justify-center lg:max-w-[1220px] lg:h-[calc(100dvh-4.1rem)] lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:flex-none lg:my-0 lg:overflow-hidden lg:rounded-[26px] lg:border lg:border-slate-200/90 lg:bg-[#F8FBF9] lg:shadow-xl lg:shadow-slate-300/40 dark:lg:border-slate-800 dark:lg:bg-[#1E293B] dark:lg:shadow-black/40"
       >
         <aside className="hidden lg:flex flex-col justify-center items-center bg-gradient-to-br from-[#075C2A] via-[#08713A] to-[#054593] px-8 py-8 xl:px-12 text-white">
           <img
@@ -224,14 +224,14 @@ export default function UserSignUp() {
           </div>
         </aside>
 
-        <section className="flex w-full flex-col justify-center px-0 py-1 sm:py-2 lg:px-8 lg:py-8 xl:px-12">
+        <section className="flex w-full flex-col justify-start px-0 py-1 sm:py-2 lg:justify-center lg:px-8 lg:py-8 xl:px-12">
           <div className="w-full max-w-[440px] mx-auto">
             {/* Brand Cow Logo Header */}
             <div className="flex flex-col items-center text-center mb-2 lg:hidden">
               <img
                 src={brandLogo}
                 alt={company?.name || "Natural Milk Dairy"}
-                className="h-14 sm:h-16 w-auto object-contain mb-0.5 drop-shadow-md transition-transform duration-300 hover:scale-105"
+                className="h-16 sm:h-20 w-auto object-contain mb-1 drop-shadow-md transition-transform duration-300 hover:scale-105"
               />
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xs">
                 Farm-fresh milk &amp; daily needs delivered to your door
