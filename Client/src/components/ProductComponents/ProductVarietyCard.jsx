@@ -244,7 +244,7 @@ export default function ProductVarietyCard(props) {
                     transition: "transform 240ms cubic-bezier(0.22, 1, 0.36, 1)",
                     willChange: "transform",
                 }}
-                className={`relative rounded-[18px] sm:rounded-[24px] overflow-hidden bg-white/95 dark:bg-slate-800/90 backdrop-blur-lg border border-blue-100/80 dark:border-slate-700/80 p-0 shadow-sm hover:shadow-xl transition-shadow duration-200 flex flex-col justify-between h-full ${props.className || ""}`}
+                className={`relative rounded-[18px] sm:rounded-[24px] overflow-hidden bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 p-0 shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.35)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.45)] hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 flex flex-col justify-between h-full ${props.className || ""}`}
             >
             {/* Square Product Image: Flush with top and side edges with 0 border/margin/padding */}
             <div className="relative w-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700/60 p-0 m-0 border-0 rounded-none transition-colors duration-300 shrink-0">

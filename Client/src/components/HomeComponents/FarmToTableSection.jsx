@@ -81,37 +81,41 @@ export default function FarmToTableSection() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.4, delay: idx * 0.08 }}
-                        className="rounded-2xl sm:rounded-3xl overflow-hidden bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex flex-col group transition-all"
+                        className="h-full"
                     >
-                        {/* Step Image */}
-                        <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
-                            <img
-                                src={s.image}
-                                alt={s.title}
-                                loading="lazy"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
+                        <div
+                            className="rounded-2xl sm:rounded-3xl overflow-hidden bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_20px_35px_-8px_rgba(7,86,181,0.22)] dark:hover:shadow-[0_20px_35px_-8px_rgba(0,0,0,0.6)] hover:border-[#0756B5] dark:hover:border-blue-400 hover:scale-[1.03] hover:-translate-y-2 transform-gpu transition-all duration-200 ease-out flex flex-col group cursor-pointer h-full relative z-0 hover:z-20 will-change-transform"
+                        >
+                            {/* Step Image without inner zoom */}
+                            <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
+                                <img
+                                    src={s.image}
+                                    alt={s.title}
+                                    loading="lazy"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
 
-                            {/* Step Number Tag */}
-                            <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-slate-200/60 dark:border-slate-700 text-[11px] font-black text-[#0756B5] dark:text-blue-400 shadow-xs">
-                                Step {s.step}
+                                {/* Step Number Tag */}
+                                <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-slate-200/60 dark:border-slate-700 text-[11px] font-black text-[#0756B5] dark:text-blue-400 shadow-xs">
+                                    Step {s.step}
+                                </div>
+
+                                {/* Badge */}
+                                <div className="absolute bottom-2.5 left-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-200 drop-shadow">
+                                    {s.badge}
+                                </div>
                             </div>
 
-                            {/* Badge */}
-                            <div className="absolute bottom-2.5 left-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-200 drop-shadow">
-                                {s.badge}
+                            {/* Step Content */}
+                            <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-2">
+                                <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white tracking-tight group-hover:text-[#0756B5] dark:group-hover:text-blue-400 transition-colors">
+                                    {s.title}
+                                </h3>
+                                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                                    {s.description}
+                                </p>
                             </div>
-                        </div>
-
-                        {/* Step Content */}
-                        <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-2">
-                            <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white tracking-tight">
-                                {s.title}
-                            </h3>
-                            <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                                {s.description}
-                            </p>
                         </div>
                     </motion.div>
                 ))}

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../config/api_config.dart';
+
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 import 'mobile_web_view_screen.dart';

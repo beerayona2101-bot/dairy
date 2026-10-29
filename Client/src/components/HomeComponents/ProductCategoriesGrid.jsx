@@ -93,18 +93,19 @@ export default function ProductCategoriesGrid({ pageContent, liveProducts }) {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.4, delay: idx * 0.05 }}
+                        className="h-full"
                     >
                         <Link
                             to={`/products/${slugify(cat.title)}`}
-                            className="group block rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(7,86,181,0.18)] hover:border-[#0756B5]/60 dark:hover:border-blue-500/60 transition-all duration-300 cursor-pointer h-full flex flex-col"
+                            className="group block rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_35px_-8px_rgba(7,86,181,0.22)] dark:hover:shadow-[0_20px_35px_-8px_rgba(0,0,0,0.6)] hover:border-[#0756B5] dark:hover:border-blue-400 hover:scale-[1.03] hover:-translate-y-2 transform-gpu transition-all duration-200 ease-out cursor-pointer h-full flex flex-col relative z-0 hover:z-20 will-change-transform"
                         >
-                            {/* Card Image with subtle zoom & gradient overlay */}
+                            {/* Card Image without inner zoom */}
                             <div className="relative h-44 sm:h-52 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
                                 <img
                                     src={cat.image}
                                     alt={cat.title}
                                     loading="lazy"
-                                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                                    className="w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
 
@@ -113,7 +114,7 @@ export default function ProductCategoriesGrid({ pageContent, liveProducts }) {
                                     <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
                                         {cat.title}
                                     </h3>
-                                    <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-[#0756B5] group-hover:scale-110 transition-all duration-300 shrink-0">
+                                    <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-[#0756B5] group-hover:scale-110 transition-all duration-200 shrink-0">
                                         <ArrowRight className="w-3.5 h-3.5" />
                                     </div>
                                 </div>
