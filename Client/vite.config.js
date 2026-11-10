@@ -51,43 +51,34 @@ export default defineConfig(({ mode }) => {
   },
 
   build: {
-    target: 'es2022',
+    target: 'es2020',
     cssCodeSplit: true,
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (
-              id.includes('/react/') ||
-              id.includes('/react-dom/') ||
-              id.includes('/react-router/') ||
-              id.includes('/react-router-dom/') ||
-              id.includes('@tanstack/react-query')
-            ) {
-              return 'vendor-react';
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@mui/icons-material')) {
+              return 'mui-icons';
             }
             if (id.includes('@mui') || id.includes('@emotion')) {
-              return 'vendor-mui';
+              return 'mui-core';
             }
-            if (id.includes('framer-motion') || id.includes('/motion/')) {
-              return 'vendor-motion';
+            if (id.includes('framer-motion') || id.includes('motion')) {
+              return 'framer-motion';
             }
             if (id.includes('recharts') || id.includes('chart.js') || id.includes('react-chartjs-2')) {
-              return 'vendor-charts';
+              return 'charts';
             }
-            if (id.includes('lucide-react') || id.includes('react-icons') || id.includes('@fortawesome')) {
-              return 'vendor-icons';
+            if (id.includes('socket.io-client') || id.includes('axios')) {
+              return 'network-vendor';
             }
-            if (
-              id.includes('socket.io-client') ||
-              id.includes('axios') ||
-              id.includes('date-fns') ||
-              id.includes('dayjs') ||
-              id.includes('notistack')
-            ) {
-              return 'vendor-utils';
+            if (id.includes('lucide-react') || id.includes('@fortawesome')) {
+              return 'icons-vendor';
             }
           }
         },
