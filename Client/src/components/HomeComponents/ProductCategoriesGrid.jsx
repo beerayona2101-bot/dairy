@@ -105,6 +105,7 @@ export default function ProductCategoriesGrid({ pageContent, liveProducts }) {
                                     src={cat.image}
                                     alt={cat.title}
                                     loading="lazy"
+                                    decoding="async"
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />

@@ -70,11 +70,14 @@ class WebSocketManager {
     if (userId) payload.userId = userId;
 
     this.socket = io(this.getSocketUrl(), {
-      transports: ["polling", "websocket"],
+      transports: ["websocket", "polling"],
+      upgrade: true,
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 20,
+      reconnectionAttempts: 25,
       reconnectionDelay: this.baseDelay,
+      reconnectionDelayMax: 5000,
+      timeout: 10000,
       auth: payload,
       query: payload,
     });

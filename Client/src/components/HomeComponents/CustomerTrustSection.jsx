@@ -161,6 +161,8 @@ export default function CustomerTrustSection() {
                                     <img
                                         src={review.avatar}
                                         alt={review.name}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="w-8 h-8 rounded-full object-cover border border-blue-200 dark:border-slate-700 shrink-0"
                                     />
                                 ) : (

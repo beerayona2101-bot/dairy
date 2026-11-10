@@ -5,21 +5,23 @@ import { AdminProtectedRoute, UserProtectedRoute } from "../components/Protected
 import { AdminAuthContext, UserAuthContext } from "../context/AuthProvider";
 import { socket } from "../socket/socket";
 
-// Core Layout & Main User Pages loaded directly for instant 0ms tab switching
+// Core Layout & Main Home Page loaded directly for instant initial render
 import Layout from "../layouts/Layout";
 import HomePage from "../pages/HomePage";
-import AboutPage from "../pages/AboutPage";
-import ProductPage from "../pages/ProductPage";
-import ProductDetailsPage from "../pages/ProductDetailsPage";
-import CartPage from "../pages/CartPage";
-import ContactPage from "../pages/ContactPage";
-import OrderCheckoutPage from "../pages/OrderCheckoutPage";
-import FaqPage from "../pages/FaqPage";
-import LandingPage from "../pages/LandingPage";
 
 // Lazy loaded secondary layout components
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
 const UserProfileLayout = lazy(() => import("../layouts/UserProfileLayout"));
+
+// Main user pages lazy loaded for route code splitting & fast initial load
+const AboutPage = lazy(() => import("../pages/AboutPage"));
+const ProductPage = lazy(() => import("../pages/ProductPage"));
+const ProductDetailsPage = lazy(() => import("../pages/ProductDetailsPage"));
+const CartPage = lazy(() => import("../pages/CartPage"));
+const ContactPage = lazy(() => import("../pages/ContactPage"));
+const OrderCheckoutPage = lazy(() => import("../pages/OrderCheckoutPage"));
+const FaqPage = lazy(() => import("../pages/FaqPage"));
+const LandingPage = lazy(() => import("../pages/LandingPage"));
 
 // Secondary & Admin Pages lazy loaded for code splitting
 const UserLogin = lazy(() => import("../pages/Auth/User/UserLogin"));
@@ -62,6 +64,9 @@ export const prefetchRoute = (importer) => {
     }
 };
 
+export const prefetchProductPage = () => import("../pages/ProductPage");
+export const prefetchCartPage = () => import("../pages/CartPage");
+export const prefetchAboutPage = () => import("../pages/AboutPage");
 export const prefetchUserDashboard = () => import("../pages/UserProfile/UserDashboard");
 export const prefetchMyOrders = () => import("../pages/UserProfile/MyOrders");
 export const prefetchMyWishlist = () => import("../pages/UserProfile/MyWishlist");
@@ -190,10 +195,12 @@ export default function Routers() {
     // Background idle prefetch for instant 0ms page opening
     useEffect(() => {
         const idlePrefetch = () => {
-            prefetchUserDashboard();
-            prefetchMyOrders();
-            prefetchMyWishlist();
+            prefetchProductPage();
+            prefetchCartPage();
             prefetchUserLogin();
+            prefetchMyOrders();
+            prefetchUserDashboard();
+            prefetchMyWishlist();
         };
 
         if (typeof window !== "undefined") {

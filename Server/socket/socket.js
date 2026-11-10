@@ -124,7 +124,7 @@ export const connectToSocket = (server, customCors) => {
       methods: ["GET", "POST", "DELETE", "PUT"],
       credentials: true,
     },
-    transports: ["polling", "websocket"],
+    transports: ["websocket", "polling"],
     pingInterval: 25000,
     pingTimeout: 20000,
   });

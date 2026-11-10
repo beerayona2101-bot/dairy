@@ -784,8 +784,6 @@ export default function Navbar() {
                     {/* 3. Centralized Home Button */}
                     <Link
                         to="/"
-                        onMouseEnter={() => import('../pages/HomePage')}
-                        onTouchStart={() => import('../pages/HomePage')}
                         className="flex flex-col items-center justify-center flex-1 max-w-[64px] -mt-3.5 group cursor-pointer"
                     >
                         <div className={`p-2 rounded-full border-[3px] border-white dark:border-slate-900 shadow-md transition-all duration-300 ${
